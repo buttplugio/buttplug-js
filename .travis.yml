@@ -3,7 +3,7 @@ sudo: false
 node_js:
   - 7
 install:
-  - npm install --dev
+  - npm install --only=dev
 script:
   - npm test
 

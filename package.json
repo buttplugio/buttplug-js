@@ -4,7 +4,10 @@
   "description": "Javascript library for accessing buttplug servers via node.js or web sockets",
   "main": "index.js",
   "scripts": {
-    "test": "mocha -r ts-node/register tests/**/*.ts"
+    "postinstall": "tsd install",
+    "pretest": "tsc tests/**/*.ts --module commonjs --sourcemap",
+    "test": "nyc mocha -r ts-node/register tests/**/*.ts",
+    "posttest": "nyc report --reporter=json && codecov -f coverage/*.json"
   },
   "repository": {
     "type": "git",
@@ -30,9 +33,12 @@
     "@types/chai": "^3.5.2",
     "@types/mocha": "^2.2.41",
     "chai": "^3.5.0",
+    "codecov": "^2.2.0",
     "mocha": "^3.4.1",
+    "nyc": "^10.3.2",
     "ts-loader": "^2.1.0",
     "ts-node": "^3.0.4",
+    "tsd": "^0.6.5",
     "typescript": "^2.3.3",
     "webpack": "^2.6.0"
   }
