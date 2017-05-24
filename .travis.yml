@@ -1,0 +1,9 @@
+language: node_js
+sudo: false
+node_js:
+  - 7
+install:
+  - npm install --dev
+script:
+  - npm test
+
