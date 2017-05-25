@@ -1,18 +1,16 @@
 'use strict';
 
-//import EventEmitter from 'events';
+import {EventEmitter} from 'events';
 import * as Messages from './messages';
 
-export class ButtplugClient //extends EventEmitter
+export class ButtplugClient extends EventEmitter
 {
-  private _devices : object;
+  private _devices : object = new Map();
   private _ws : WebSocket;
 
   constructor()
   {
-  //  super();
-    this._devices = new Map();
-
+    super();
   }
 
   public Connect = (aUrl: string) =>
