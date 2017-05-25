@@ -1,12 +1,12 @@
 var path = require("path");
 
-var config = {
+module.exports = {
   /*
    * app.ts represents the entry point to your web application. Webpack will
    * recursively go through every "require" statement in app.ts and
    * efficiently build out the application's dependency tree.
    */
-  entry: ["./src/index.ts"],
+  entry: ["./src/core/client.ts"],
 
   /*
    * The combination of path and filename tells Webpack what name to give to
@@ -14,7 +14,9 @@ var config = {
    */
   output: {
     path: path.resolve(__dirname, "build"),
-    filename: "bundle.js"
+    filename: "bundle.js",
+    libraryTarget: 'umd',
+    library: 'Buttplug'
   },
 
   /*
@@ -23,7 +25,7 @@ var config = {
    * in your code.
    */
   resolve: {
-    extensions: ["", ".ts", ".tsx", ".js"]
+    extensions: [".ts", ".tsx", ".js"]
   },
 
   module: {
