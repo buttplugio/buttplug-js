@@ -1,8 +1,10 @@
 'use strict';
+
 import 'reflect-metadata';
 import {plainToClass, classToPlain} from 'class-transformer';
 
 export class ButtplugMessage {
+
   constructor(public Id: number) {
   }
 
@@ -28,15 +30,15 @@ export class Ping extends ButtplugMessage {
 }
 
 export class Test extends ButtplugMessage {
-  constructor(public Id: number,
-              public TestString: string) {
+  constructor(public TestString: string,
+              public Id: number = 1) {
     super(Id);
   }
 }
 
 export class Error extends ButtplugMessage {
-  constructor(public Id: number,
-              public ErrorMessage: string) {
+  constructor(public ErrorMessage: string,
+              public Id: number = 1) {
     super(Id);
   }
 }
@@ -51,94 +53,94 @@ export class Device
 
 
 export class DeviceList extends ButtplugMessage {
-  constructor(public Id: number,
-              public Devices: Array<Device>) {
+  constructor(public Devices: Array<Device>,
+              public Id: number = 1) {
     super(Id);
   }
 }
 
 export class DeviceAdded extends ButtplugMessage {
-  constructor(public Id: number,
-              public DeviceIndex: number,
+  constructor(public DeviceIndex: number,
               public DeviceName: string,
-              public DeviceMessages: Array<string>) {
+              public DeviceMessages: Array<string>,
+              public Id: number = 1) {
     super(Id);
   }
 }
 
 export class DeviceRemoved extends ButtplugMessage {
-  constructor(public Id: number,
-              public DeviceIndex: number) {
+  constructor(public DeviceIndex: number,
+              public Id: number = 1) {
     super(Id);
   }
 }
 
 export class RequestDeviceList extends ButtplugMessage {
-  constructor(public Id: number) {
+  constructor(public Id: number = 1) {
     super(Id);
   }
 }
 
 export class StartScanning extends ButtplugMessage {
-  constructor(public Id: number) {
+  constructor(public Id: number = 1) {
     super(Id);
   }
 }
 
 export class StopScanning extends ButtplugMessage {
-  constructor(public Id: number) {
+  constructor(public Id: number = 1) {
     super(Id);
   }
 }
 
 export class RequestLog extends ButtplugMessage {
-  constructor(public Id: number,
-              public LogLevel: string) {
+  constructor(public LogLevel: string,
+              public Id: number = 1) {
     super(Id);
   }
 }
 
 export class Log extends ButtplugMessage {
-  constructor(public Id: number,
-              public LogLevel: string,
-              public LogMessage: string) {
+  constructor(public LogLevel: string,
+              public LogMessage: string,
+              public Id: number = 1) {
     super(Id);
   }
 }
 
 export class RequestServerInfo extends ButtplugMessage {
-  constructor(public Id: number) {
+  constructor(public Id: number = 1) {
     super(Id);
   }
 }
 
 export class ServerInfo extends ButtplugMessage {
-  constructor(public Id: number,
-              public MajorVersion: number,
+  constructor(public MajorVersion: number,
               public MinorVersion: number,
-              public BuildVersion: number) {
+              public BuildVersion: number,
+              public Id: number = 1) {
     super(Id);
   }
 }
 
 export class FleshlightLaunchRawCmd extends ButtplugMessage {
-  constructor(public Id: number,
-              public Speed: number,
-              public Position: number) {
+  constructor(public Speed: number,
+              public Position: number,
+              public Id: number = 1,) {
     super(Id);
   }
 }
 
 export class KiirooRawCmd extends ButtplugMessage {
-  constructor(public Id: number,
-              public Position: number) {
+  constructor(public Position: number,
+              public Id: number = 1) {
     super(Id);
   }
 }
 
 export class SingleMotorVibrateCmd extends ButtplugMessage {
-  constructor(public Id: number,
-              public Speed: number) {
+  constructor(public Speed: number,
+              public Id: number = 1) {
     super(Id);
   }
 }
