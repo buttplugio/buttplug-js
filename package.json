@@ -4,6 +4,7 @@
   "description": "Javascript library for accessing buttplug servers via node.js or web sockets",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
     "postinstall": "tsd install",
     "pretest": "tsc tests/**/*.ts --module commonjs --sourcemap",
     "test": "nyc mocha -r ts-node/register tests/**/*.ts",

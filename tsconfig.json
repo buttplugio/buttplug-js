@@ -1,10 +1,15 @@
 {
   "compilerOptions" : {
+    "target": "ES6",
+    "moduleResolution": "node",
     "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "strictNullChecks": true,
-    "noImplicitThis": true
+    "noImplicitThis": true,
+    "outDir": "build"
   },
   "include": [
-    "lib/**/*.ts"
+    "src/**/*.ts"
   ]
 }
