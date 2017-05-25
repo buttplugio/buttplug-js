@@ -1,24 +1,24 @@
 'use strict';
 
-import EventEmitter from 'events';
+//import EventEmitter from 'events';
 import * as Messages from './messages';
 
-class ButtplugClient extends EventEmitter
+export class ButtplugClient //extends EventEmitter
 {
-  private _devices : object = new Map();
+  private _devices : object;
   private _ws : WebSocket;
-  private _reader : FileReader = new FileReader();
 
   constructor()
   {
-    super();
-    this._reader.onload = this.OnReaderLoad;
+  //  super();
+    this._devices = new Map();
+
   }
 
-  public Connect(aUrl: string)
+  public Connect = (aUrl: string) =>
   {
     this._ws = new WebSocket(aUrl);
-    this._ws.onmessage = this.ParseIncomingMessage;
+    this._ws.addEventListener('message', (ev) => { this.ParseIncomingMessage(ev) });
   }
 
   private async SendMessage(aMsg: Messages.ButtplugMessage)
@@ -48,7 +48,7 @@ class ButtplugClient extends EventEmitter
 
   public OnReaderLoad(aEvent: Event)
   {
-    this.ParseJSONMessage(this._reader.result);
+    this.ParseJSONMessage((aEvent.target as FileReader).result);
   }
 
   public ParseJSONMessage(aJSONMsg: string)
@@ -57,7 +57,7 @@ class ButtplugClient extends EventEmitter
     console.log(msgs)
   }
 
-  public ParseIncomingMessage(aEvent: MessageEvent)
+  public ParseIncomingMessage = (aEvent: MessageEvent) =>
   {
     if (typeof(aEvent.data) === 'string')
     {
@@ -65,7 +65,9 @@ class ButtplugClient extends EventEmitter
     }
     else if (aEvent.data instanceof Blob)
     {
-      this._reader.readAsText(aEvent.data);
+      let reader = new FileReader();
+      reader.addEventListener('load', (ev) => { this.OnReaderLoad(ev) });
+      reader.readAsText(aEvent.data);
     }
   }
 }
