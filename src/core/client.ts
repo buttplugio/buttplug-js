@@ -28,7 +28,7 @@ class ButtplugClient extends EventEmitter
 
   public async RequestDeviceList()
   {
-    return await this.SendMessage(new Messages.RequestDeviceList()));
+    return await this.SendMessage(new Messages.RequestDeviceList());
   }
 
   public async StartScanning()
@@ -54,6 +54,7 @@ class ButtplugClient extends EventEmitter
   public ParseJSONMessage(aJSONMsg: string)
   {
     let msgs = Messages.FromJSON(aJSONMsg);
+    console.log(msgs)
   }
 
   public ParseIncomingMessage(aEvent: MessageEvent)
