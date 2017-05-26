@@ -20,9 +20,6 @@ export class ButtplugMessage {
   }
 }
 
-export interface ButtplugMessageOutgoingOnly {
-}
-
 export class ButtplugDeviceMessage extends ButtplugMessage {
   constructor(public DeviceIndex: number,
               public Id: number) {
@@ -30,13 +27,13 @@ export class ButtplugDeviceMessage extends ButtplugMessage {
   }
 }
 
-export class ButtplugSystemMessage extends ButtplugMessage implements ButtplugMessageOutgoingOnly {
-  constructor() {
-    super(0)
+export class ButtplugSystemMessage extends ButtplugMessage {
+  constructor(public Id: number = 0) {
+    super(Id)
   }
 }
 
-export class Ok extends ButtplugMessage implements ButtplugMessageOutgoingOnly {
+export class Ok extends ButtplugSystemMessage {
   constructor(public Id: number) {
     super(Id);
   }
@@ -55,7 +52,7 @@ export class Test extends ButtplugMessage {
   }
 }
 
-export class Error extends ButtplugMessage implements ButtplugMessageOutgoingOnly {
+export class Error extends ButtplugSystemMessage {
   constructor(public ErrorMessage: string,
               public Id: number = 1) {
     super(Id);
@@ -132,7 +129,8 @@ export class RequestServerInfo extends ButtplugMessage {
 export class ServerInfo extends ButtplugSystemMessage {
   constructor(public MajorVersion: number,
               public MinorVersion: number,
-              public BuildVersion: number) {
+              public BuildVersion: number,
+              public Id: number = 1) {
     super();
   }
 }
