@@ -8,7 +8,11 @@ export class ButtplugMessage {
   constructor(public Id: number) {
   }
 
-  toJSON() {
+  public getType() : string {
+    return this.constructor.name;
+  }
+
+  public toJSON() : string {
     let json_obj = {};
     let instance: any = this.constructor;
     json_obj[instance.name] = classToPlain(this);
@@ -165,8 +169,7 @@ let Messages = {
   SingleMotorVibrateCmd: SingleMotorVibrateCmd
 };
 
-export function FromJSON(str) : Array<ButtplugMessage>
-{
+export function FromJSON(str) : Array<ButtplugMessage> {
   // TODO We're assuming we'll always get valid json here. While it should pass
   // through the schema parser first, it'd probably be good to make sure it
   // deals with parse failures too.

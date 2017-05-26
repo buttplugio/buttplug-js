@@ -33,27 +33,39 @@ export class ButtplugClient extends EventEmitter
     return await msgPromise;
   }
 
-  public async RequestDeviceList()
-  {
-    return await this.SendMessage(new Messages.RequestDeviceList());
+  private SendMsgExpectOk = async (aMsg: Messages.ButtplugMessage) : Promise<void> => {
+    let res, rej;
+    let msg = await this.SendMessage(aMsg);
+    let p = new Promise<void>((resolve, reject) => { res = resolve; rej = reject;});
+    switch (msg.getType())
+    {
+    case 'Ok':
+      res();
+      break
+    default:
+      rej();
+      break;
+    }
+    return p;
   }
 
-  public async StartScanning()
-  {
-    return await this.SendMessage(new Messages.StartScanning());
+  public RequestDeviceList = async () => {
+    let deviceList = await this.SendMessage(new Messages.RequestDeviceList());
   }
 
-  public async StopScanning()
-  {
-    return await this.SendMessage(new Messages.StopScanning());
+  public StartScanning = async () : Promise<void> => {
+    return await this.SendMsgExpectOk(new Messages.StartScanning());
   }
 
-  public async RequestLog(aLogLevel: string)
-  {
-    return await this.SendMessage(new Messages.RequestLog(aLogLevel));
+  public StopScanning = async () : Promise<void> => {
+    return await this.SendMsgExpectOk(new Messages.StopScanning());
   }
 
-  public OnReaderLoad(aEvent: Event) {
+  public RequestLog = async (aLogLevel: string) : Promise<void> => {
+    return await this.SendMsgExpectOk(new Messages.RequestLog(aLogLevel));
+  }
+
+  private OnReaderLoad(aEvent: Event) {
     this.ParseJSONMessage((aEvent.target as FileReader).result);
   }
 
@@ -63,12 +75,24 @@ export class ButtplugClient extends EventEmitter
       if (this._waitingMsgs.has(x.Id))
       {
         let res = this._waitingMsgs.get(x.Id);
+        // We already checked for this via has, but typescript is bitching if I
+        // don't do it again.
         if (res === undefined)
         {
           return;
         }
         res(x);
+        return;
       }
+      switch (x.constructor.name) {
+      case 'Log':
+        this.emit('log', x);
+        break;
+      case 'DeviceAdded':
+        break;
+      case 'DeviceRemoved':
+        break;
+      };
     });
   }
 
