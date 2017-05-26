@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "postinstall": "tsd install",
-    "pretest": "tsc tests/**/*.ts --module commonjs --sourcemap",
+    "pretest": "tsc",
     "test": "nyc mocha -r ts-node/register tests/**/*.ts",
     "posttest": "nyc report --reporter=json && codecov -f coverage/*.json"
   },
@@ -36,6 +36,7 @@
     "chai": "^3.5.0",
     "codecov": "^2.2.0",
     "mocha": "^3.4.1",
+    "mock-socket": "^6.1.0",
     "nyc": "^10.3.2",
     "ts-loader": "^2.1.0",
     "ts-node": "^3.0.4",
