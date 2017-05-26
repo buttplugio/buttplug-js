@@ -3,16 +3,16 @@ import { expect } from "chai";
 import 'mocha';
 
 describe("Message", () => {
-  it ("Converts ok message to json correctly",
-      () => {
-        let ok = new Messages.Ok(2);
-        expect(ok.toJSON()).to.equal('{"Ok":{"Id":2}}');
-      });
-  it ("Converts ok message from json correctly",
-      () => {
-        let json_str = '[{"Ok":{"Id":2}}]';
-        expect(Messages.FromJSON(json_str)).to.deep.equal([new Messages.Ok(2)]);
-      });
+  it("Converts ok message to json correctly",
+    () => {
+      let ok = new Messages.Ok(2);
+      expect(ok.toJSON()).to.equal('{"Ok":{"Id":2}}');
+    });
+  it("Converts ok message from json correctly",
+    () => {
+      let json_str = '[{"Ok":{"Id":2}}]';
+      expect(Messages.FromJSON(json_str)).to.deep.equal([new Messages.Ok(2)]);
+    });
   // it ("Converts DeviceList message from json correctly",
   //     () => {
   //       let json_str = '{"DeviceList":{"Id":2,"Devices": [{"DeviceIndex":0,"DeviceName":"Test","DeviceMessages":["Ok","Ping"]},{"DeviceIndex":1,"DeviceName":"Test1","DeviceMessages":["Ok","Ping"]}]}}';
