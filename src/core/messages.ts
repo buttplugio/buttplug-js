@@ -18,10 +18,25 @@ export class ButtplugMessage {
     json_obj[instance.name] = classToPlain(this);
     return JSON.stringify(json_obj);
   }
-
 }
 
-export class Ok extends ButtplugMessage {
+export interface ButtplugMessageOutgoingOnly {
+}
+
+export class ButtplugDeviceMessage extends ButtplugMessage {
+  constructor(public DeviceIndex: number,
+              public Id: number) {
+    super(Id)
+  }
+}
+
+export class ButtplugSystemMessage extends ButtplugMessage implements ButtplugMessageOutgoingOnly {
+  constructor() {
+    super(0)
+  }
+}
+
+export class Ok extends ButtplugMessage implements ButtplugMessageOutgoingOnly {
   constructor(public Id: number) {
     super(Id);
   }
@@ -40,7 +55,7 @@ export class Test extends ButtplugMessage {
   }
 }
 
-export class Error extends ButtplugMessage {
+export class Error extends ButtplugMessage implements ButtplugMessageOutgoingOnly {
   constructor(public ErrorMessage: string,
               public Id: number = 1) {
     super(Id);
@@ -56,26 +71,23 @@ export class Device
 }
 
 
-export class DeviceList extends ButtplugMessage {
-  constructor(public Devices: Array<Device>,
-              public Id: number = 1) {
-    super(Id);
+export class DeviceList extends ButtplugSystemMessage {
+  constructor(public Devices: Array<Device>) {
+    super();
   }
 }
 
-export class DeviceAdded extends ButtplugMessage {
+export class DeviceAdded extends ButtplugSystemMessage {
   constructor(public DeviceIndex: number,
               public DeviceName: string,
-              public DeviceMessages: Array<string>,
-              public Id: number = 1) {
-    super(Id);
+              public DeviceMessages: Array<string>) {
+    super();
   }
 }
 
-export class DeviceRemoved extends ButtplugMessage {
-  constructor(public DeviceIndex: number,
-              public Id: number = 1) {
-    super(Id);
+export class DeviceRemoved extends ButtplugSystemMessage {
+  constructor(public DeviceIndex: number) {
+    super();
   }
 }
 
@@ -104,11 +116,10 @@ export class RequestLog extends ButtplugMessage {
   }
 }
 
-export class Log extends ButtplugMessage {
+export class Log extends ButtplugSystemMessage {
   constructor(public LogLevel: string,
-              public LogMessage: string,
-              public Id: number = 1) {
-    super(Id);
+              public LogMessage: string) {
+    super();
   }
 }
 
@@ -118,34 +129,36 @@ export class RequestServerInfo extends ButtplugMessage {
   }
 }
 
-export class ServerInfo extends ButtplugMessage {
+export class ServerInfo extends ButtplugSystemMessage {
   constructor(public MajorVersion: number,
               public MinorVersion: number,
-              public BuildVersion: number,
-              public Id: number = 1) {
-    super(Id);
+              public BuildVersion: number) {
+    super();
   }
 }
 
-export class FleshlightLaunchRawCmd extends ButtplugMessage {
-  constructor(public Speed: number,
+export class FleshlightLaunchRawCmd extends ButtplugDeviceMessage {
+  constructor(public DeviceIndex: number,
+              public Speed: number,
               public Position: number,
-              public Id: number = 1,) {
-    super(Id);
+              public Id: number = 1) {
+    super(DeviceIndex, Id);
   }
 }
 
-export class KiirooRawCmd extends ButtplugMessage {
-  constructor(public Position: number,
+export class KiirooRawCmd extends ButtplugDeviceMessage {
+  constructor(public DeviceIndex: number,
+              public Position: number,
               public Id: number = 1) {
-    super(Id);
+    super(DeviceIndex, Id);
   }
 }
 
-export class SingleMotorVibrateCmd extends ButtplugMessage {
-  constructor(public Speed: number,
+export class SingleMotorVibrateCmd extends ButtplugDeviceMessage {
+  constructor(public DeviceIndex: number,
+              public Speed: number,
               public Id: number = 1) {
-    super(Id);
+    super(DeviceIndex, Id);
   }
 }
 

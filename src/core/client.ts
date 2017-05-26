@@ -69,10 +69,20 @@ export class ButtplugClient extends EventEmitter
     this.ParseJSONMessage((aEvent.target as FileReader).result);
   }
 
+  public async SendDeviceMessage(aDevice : Device,
+                                 aDeviceMsg : Messages.ButtplugDeviceMessage)
+  : Promise<void> {
+    if (aDevice.AllowedMessages.indexOf(aDeviceMsg.getType()) == -1)
+    {
+      return Promise.reject(new Error("Device does not accept that message type."));
+    }
+    return await this.SendMsgExpectOk(aDeviceMsg);
+  }
+
   public ParseJSONMessage = (aJSONMsg: string) => {
     let msgs = Messages.FromJSON(aJSONMsg);
     msgs.forEach((x : Messages.ButtplugMessage) => {
-      if (this._waitingMsgs.has(x.Id))
+      if (x.Id > 0 && this._waitingMsgs.has(x.Id))
       {
         let res = this._waitingMsgs.get(x.Id);
         // We already checked for this via has, but typescript is bitching if I
@@ -89,8 +99,19 @@ export class ButtplugClient extends EventEmitter
         this.emit('log', x);
         break;
       case 'DeviceAdded':
+        let added_msg = x as Messages.DeviceAdded;
+        let d = Device.fromMsg(added_msg)
+        this._devices.set(added_msg.DeviceIndex, d);
+        this.emit('deviceadded', d);
         break;
       case 'DeviceRemoved':
+        let removed_msg = x as Messages.DeviceRemoved;
+        if (this._devices.has(removed_msg.DeviceIndex))
+        {
+          let d = this._devices.get(removed_msg.DeviceIndex);
+          this._devices.delete(removed_msg.DeviceIndex);
+          this.emit('deviceremoved', d);
+        }
         break;
       };
     });
