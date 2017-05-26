@@ -7,8 +7,8 @@
     "build": "tsc",
     "postinstall": "tsd install",
     "pretest": "tsc",
-    "test": "nyc mocha -r ts-node/register tests/**/*.ts",
-    "posttest": "nyc report --reporter=json && codecov -f coverage/*.json"
+    "test": "nyc mocha tests/**/*.ts",
+    "posttest": "nyc report && codecov -f coverage/*.json"
   },
   "repository": {
     "type": "git",
@@ -43,5 +43,27 @@
     "tsd": "^0.6.5",
     "typescript": "^2.3.3",
     "webpack": "^2.6.0"
+  },
+  "nyc": {
+    "extension": [
+      ".ts"
+    ],
+    "exclude": [
+      "**/*.d.ts",
+      "build",
+      "coverage",
+      "*.js"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "text",
+      "json",
+      "html"
+    ],
+    "sourceMap": true,
+    "instrument": true,
+    "all": true
   }
 }
