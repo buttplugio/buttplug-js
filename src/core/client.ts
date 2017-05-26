@@ -2,11 +2,14 @@
 
 import {EventEmitter} from 'events';
 import * as Messages from './messages';
+import {Device} from './device';
 
 export class ButtplugClient extends EventEmitter
 {
-  private _devices : object = new Map();
+  private _devices : Map<number, Device> = new Map();
   private _ws : WebSocket;
+  private _counter : number = 1;
+  private _waitingMsgs : Map<number, (val: Messages.ButtplugMessage) => void > = new Map();
 
   constructor()
   {
@@ -19,9 +22,15 @@ export class ButtplugClient extends EventEmitter
     this._ws.addEventListener('message', (ev) => { this.ParseIncomingMessage(ev) });
   }
 
-  private async SendMessage(aMsg: Messages.ButtplugMessage)
+  private async SendMessage(aMsg: Messages.ButtplugMessage) : Promise<Messages.ButtplugMessage>
   {
-    this._ws.send(aMsg.toJSON());
+    let res;
+    aMsg.Id = this._counter;
+    let msgPromise = new Promise<Messages.ButtplugMessage>(resolve => { res=resolve; });
+    this._waitingMsgs.set(this._counter, res);
+    this._counter += 1;
+    this._ws.send("[" + aMsg.toJSON() + "]");
+    return await msgPromise;
   }
 
   public async RequestDeviceList()
@@ -44,15 +53,23 @@ export class ButtplugClient extends EventEmitter
     return await this.SendMessage(new Messages.RequestLog(aLogLevel));
   }
 
-  public OnReaderLoad(aEvent: Event)
-  {
+  public OnReaderLoad(aEvent: Event) {
     this.ParseJSONMessage((aEvent.target as FileReader).result);
   }
 
-  public ParseJSONMessage(aJSONMsg: string)
-  {
+  public ParseJSONMessage = (aJSONMsg: string) => {
     let msgs = Messages.FromJSON(aJSONMsg);
-    console.log(msgs)
+    msgs.forEach((x : Messages.ButtplugMessage) => {
+      if (this._waitingMsgs.has(x.Id))
+      {
+        let res = this._waitingMsgs.get(x.Id);
+        if (res === undefined)
+        {
+          return;
+        }
+        res(x);
+      }
+    });
   }
 
   public ParseIncomingMessage = (aEvent: MessageEvent) =>

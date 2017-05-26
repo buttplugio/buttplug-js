@@ -165,13 +165,21 @@ let Messages = {
   SingleMotorVibrateCmd: SingleMotorVibrateCmd
 };
 
-export function FromJSON(str)
+export function FromJSON(str) : Array<ButtplugMessage>
 {
   // TODO We're assuming we'll always get valid json here. While it should pass
   // through the schema parser first, it'd probably be good to make sure it
   // deals with parse failures too.
-  let obj = JSON.parse(str);
-  return plainToClass(Messages[Object.getOwnPropertyNames(obj)[0]],
-                      obj[Object.getOwnPropertyNames(obj)[0]]);
+  let msgarray = JSON.parse(str);
+  let msgs : Array<ButtplugMessage> = [];
+  for (let x of Array.from(msgarray)) {
+    // Can't get this to resolve nicely as a type, so just start from any and cast
+    // after. Not sure how to resolve plainToClass to a type since this is
+    // dynamic.
+    let msg : any = plainToClass(Messages[Object.getOwnPropertyNames(x)[0]],
+                                 x[Object.getOwnPropertyNames(x)[0]]);
+    msgs.push(msg as ButtplugMessage);
+  }
+  return msgs;
 }
 
