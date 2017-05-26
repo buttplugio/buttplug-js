@@ -48,11 +48,8 @@
     "extension": [
       ".ts"
     ],
-    "exclude": [
-      "**/*.d.ts",
-      "build",
-      "coverage",
-      "*.js"
+    "include": [
+      "src/**/*.ts"
     ],
     "require": [
       "ts-node/register"
