@@ -69,7 +69,8 @@ export class Device
 
 
 export class DeviceList extends ButtplugSystemMessage {
-  constructor(public Devices: Array<Device>) {
+  constructor(public Devices: Array<Device>,
+              public Id: number) {
     super();
   }
 }

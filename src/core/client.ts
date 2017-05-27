@@ -45,7 +45,14 @@ export class ButtplugClient extends EventEmitter {
   }
 
   public RequestDeviceList = async () => {
-    let deviceList = await this.SendMessage(new Messages.RequestDeviceList());
+    let deviceList = (await this.SendMessage(new Messages.RequestDeviceList())) as Messages.DeviceList;
+    deviceList.Devices.forEach((d) => {
+      if (!this._devices.has(d.DeviceIndex)) {
+        let device = Device.fromMsg(d);
+        this._devices.set(d.DeviceIndex, device);
+        this.emit('deviceadded', device);
+      }
+    });
   }
 
   public StartScanning = async (): Promise<void> => {

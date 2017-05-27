@@ -64,6 +64,18 @@ describe("Client Tests", async () => {
     return p;
   });
 
+  it("Should emit a device when device list request received with new devices", async () => {
+    mockServer.on('message', (jsonmsg: string) => {
+      let msg: Messages.ButtplugMessage = Messages.FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
+      delaySend(new Messages.DeviceList([new Messages.Device(0, "Test Device", ["SingleMotorVibrateCmd"])], msg.Id));
+    });
+    bp.on('deviceadded', (x) => {
+      res();
+    });
+    await bp.RequestDeviceList();
+    return p;
+  });
+
   it("Should allow correct device messages and reject unauthorized", async () => {
     mockServer.on('message', (jsonmsg: string) => {
       let msg: Messages.ButtplugMessage = Messages.FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
