@@ -63,4 +63,34 @@ describe("Client Tests", async () => {
     await bp.StartScanning();
     return p;
   });
+
+  it("Should allow correct device messages and reject unauthorized", async () => {
+    mockServer.on('message', (jsonmsg: string) => {
+      let msg: Messages.ButtplugMessage = Messages.FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
+      delaySend(new Messages.Ok(msg.Id));
+      if (msg.getType() == 'StartScanning') {
+        delaySend(new Messages.DeviceAdded(0, "Test Device", ["SingleMotorVibrateCmd"]));
+      }
+      if (msg instanceof Messages.ButtplugDeviceMessage)
+      {
+        expect(msg.DeviceIndex).to.equal(0);
+      }
+    });
+    let device;
+    bp.on('deviceadded', async (x) => {
+      device = x;
+      await bp.SendDeviceMessage(x, new Messages.SingleMotorVibrateCmd(1.0));
+      try
+      {
+        await bp.SendDeviceMessage(x, new Messages.KiirooRawCmd(2));
+        throw Error("Should've thrown!");
+      }
+      catch(_)
+      {
+        res();
+      }
+    });
+    await bp.StartScanning();
+    return p;
+  });
 });

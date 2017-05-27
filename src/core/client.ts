@@ -64,12 +64,15 @@ export class ButtplugClient extends EventEmitter {
     this.ParseJSONMessage((aEvent.target as FileReader).result);
   }
 
-  public async SendDeviceMessage(aDevice: Device,
-    aDeviceMsg: Messages.ButtplugDeviceMessage)
-    : Promise<void> {
-    if (aDevice.AllowedMessages.indexOf(aDeviceMsg.getType()) == -1) {
+  public async SendDeviceMessage(aDevice: Device, aDeviceMsg: Messages.ButtplugDeviceMessage) : Promise<void> {
+    let dev = this._devices.get(aDevice.Index);
+    if (dev === undefined) {
+      return Promise.reject(new Error("Device not available."));
+    }
+    if (dev.AllowedMessages.indexOf(aDeviceMsg.getType()) == -1) {
       return Promise.reject(new Error("Device does not accept that message type."));
     }
+    aDeviceMsg.DeviceIndex = aDevice.Index;
     return await this.SendMsgExpectOk(aDeviceMsg);
   }
 

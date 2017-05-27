@@ -136,25 +136,25 @@ export class ServerInfo extends ButtplugSystemMessage {
 }
 
 export class FleshlightLaunchRawCmd extends ButtplugDeviceMessage {
-  constructor(public DeviceIndex: number,
-              public Speed: number,
+  constructor(public Speed: number,
               public Position: number,
+              public DeviceIndex: number = -1,
               public Id: number = 1) {
     super(DeviceIndex, Id);
   }
 }
 
 export class KiirooRawCmd extends ButtplugDeviceMessage {
-  constructor(public DeviceIndex: number,
-              public Position: number,
+  constructor(public Position: number,
+              public DeviceIndex: number = -1,
               public Id: number = 1) {
     super(DeviceIndex, Id);
   }
 }
 
 export class SingleMotorVibrateCmd extends ButtplugDeviceMessage {
-  constructor(public DeviceIndex: number,
-              public Speed: number,
+  constructor(public Speed: number,
+              public DeviceIndex: number = -1,
               public Id: number = 1) {
     super(DeviceIndex, Id);
   }
