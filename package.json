@@ -2,10 +2,11 @@
   "name": "buttplug",
   "version": "0.0.1",
   "description": "Javascript library for accessing buttplug servers via node.js or web sockets",
-  "main": "build/index.js",
+  "main": "./dist/main/index.js",
   "scripts": {
-    "build": "tsc",
-    "pretest": "tsc",
+    "build": "trash dist && yarn build:main",
+    "build:main": "tsc -p tsconfig.json",
+    "pretest": "yarn build:main",
     "test": "nyc mocha tests/**/*.ts",
     "posttest": "nyc report && codecov -f coverage/*.json"
   },
@@ -38,10 +39,12 @@
     "mocha": "^3.4.1",
     "mock-socket": "^6.1.0",
     "nyc": "^10.3.2",
+    "trash-cli": "^1.4.0",
     "ts-loader": "^2.1.0",
     "ts-node": "^3.0.4",
     "typescript": "^2.3.3",
-    "webpack": "^2.6.0"
+    "webpack": "^2.6.0",
+    "yarn": "^0.24.5"
   },
   "nyc": {
     "extension": [
@@ -49,6 +52,9 @@
     ],
     "include": [
       "src/**/*.ts"
+    ],
+    "exclude": [
+      "**/*.d.ts"
     ],
     "require": [
       "ts-node/register"
