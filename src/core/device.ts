@@ -7,10 +7,10 @@ export class Device {
     private _allowedMessages: Array<string>) {
   }
 
-  static fromMsg(aMsg: Messages.DeviceAdded | Messages.Device): Device {
+  static fromMsg(aMsg: Messages.DeviceAdded | Messages.DeviceInfo): Device {
     return new Device(aMsg.DeviceIndex,
-      aMsg.DeviceName,
-      aMsg.DeviceMessages);
+                      aMsg.DeviceName,
+                      aMsg.DeviceMessages);
   }
 
   public get Name(): string {

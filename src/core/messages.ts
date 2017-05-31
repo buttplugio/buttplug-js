@@ -59,7 +59,7 @@ export class Error extends ButtplugSystemMessage {
   }
 }
 
-export class Device
+export class DeviceInfo
 {
   constructor(public DeviceIndex: number,
               public DeviceName: string,
@@ -69,7 +69,7 @@ export class Device
 
 
 export class DeviceList extends ButtplugSystemMessage {
-  constructor(public Devices: Array<Device>,
+  constructor(public Devices: Array<DeviceInfo>,
               public Id: number) {
     super();
   }

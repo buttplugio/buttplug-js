@@ -67,7 +67,7 @@ describe("Client Tests", async () => {
   it("Should emit a device when device list request received with new devices", async () => {
     mockServer.on('message', (jsonmsg: string) => {
       let msg: Messages.ButtplugMessage = Messages.FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
-      delaySend(new Messages.DeviceList([new Messages.Device(0, "Test Device", ["SingleMotorVibrateCmd"])], msg.Id));
+      delaySend(new Messages.DeviceList([new Messages.DeviceInfo(0, "Test Device", ["SingleMotorVibrateCmd"])], msg.Id));
     });
     bp.on('deviceadded', (x) => {
       res();
