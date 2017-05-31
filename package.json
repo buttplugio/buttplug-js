@@ -2,7 +2,7 @@
   "name": "buttplug",
   "version": "0.0.1",
   "description": "Javascript library for accessing buttplug servers via node.js or web sockets",
-  "main": "index.js",
+  "main": "build/index.js",
   "scripts": {
     "build": "tsc",
     "pretest": "tsc",
