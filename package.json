@@ -2,7 +2,7 @@
   "name": "buttplug",
   "version": "0.0.1",
   "description": "Javascript library for accessing buttplug servers via node.js or web sockets",
-  "main": "./dist/main/index.js",
+  "main": "./dist/main/src/index.js",
   "scripts": {
     "build": "trash dist && yarn build:main",
     "build:main": "tsc -p tsconfig.json",
