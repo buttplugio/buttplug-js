@@ -1,5 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+var Messages = require("./messages");
 var Device = (function () {
     function Device(_index, _name, _allowedMessages) {
         this._index = _index;
@@ -30,6 +31,10 @@ var Device = (function () {
         enumerable: true,
         configurable: true
     });
+    Device.prototype.newMessage = function (allowedMsg) {
+        var msg = this._allowedMessages[allowedMsg];
+        return Messages[msg];
+    };
     return Device;
 }());
 exports.Device = Device;

@@ -58,6 +58,11 @@ var ButtplugClient = (function (_super) {
         _this.Connect = function (aUrl) {
             _this._ws = new WebSocket(aUrl);
             _this._ws.addEventListener('message', function (ev) { _this.ParseIncomingMessage(ev); });
+            var res, rej;
+            var p = new Promise(function (resolve, reject) { res = resolve; rej = reject; });
+            _this._ws.addEventListener('open', function (ev) { res(ev); });
+            _this._ws.addEventListener('close', function (ev) { rej(ev); });
+            return p;
         };
         _this.SendMsgExpectOk = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
             var res, rej, msg, p;

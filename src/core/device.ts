@@ -24,4 +24,9 @@ export class Device {
   public get AllowedMessages(): Array<string> {
     return this._allowedMessages;
   }
+
+  public newMessage(allowedMsg: number): Messages.ButtplugMessage {
+    let msg = this._allowedMessages[allowedMsg];
+    return Messages[msg];
+  }
 }

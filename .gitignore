@@ -39,3 +39,10 @@ src/**/*.js
 src/**/*.map
 tests/**/*.js
 tests/**/*.map
+
+# VS files
+*.sln
+*.njsproj
+bin/
+obj/
+.vs/

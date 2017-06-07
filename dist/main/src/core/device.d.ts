@@ -8,4 +8,5 @@ export declare class Device {
     readonly Name: string;
     readonly Index: number;
     readonly AllowedMessages: Array<string>;
+    newMessage(allowedMsg: number): Messages.ButtplugMessage;
 }

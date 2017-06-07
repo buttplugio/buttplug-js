@@ -195,6 +195,13 @@ export function FromJSON(str) : Array<ButtplugMessage> {
                                  x[Object.getOwnPropertyNames(x)[0]]);
     msgs.push(msg as ButtplugMessage);
   }
+  if (msgs.length == 0) {
+    // Backup in case the server sent us a single object outside of an array.
+    // Accoring to the schema, this should be illegal, so once schema checking
+    // is added this should become dead code.
+    let msg: any = plainToClass(Messages[Object.getOwnPropertyNames(msgarray)[0]],
+                                msgarray[Object.getOwnPropertyNames(msgarray)[0]]);
+    msgs.push(msg as ButtplugMessage);
+  }
   return msgs;
 }
-

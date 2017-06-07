@@ -14,9 +14,14 @@ export class ButtplugClient extends EventEmitter {
     super();
   }
 
-  public Connect = (aUrl: string) => {
+  public Connect = (aUrl: string): Promise<void> => {
     this._ws = new WebSocket(aUrl);
     this._ws.addEventListener('message', (ev) => { this.ParseIncomingMessage(ev) });
+    let res, rej;
+    let p = new Promise<void>((resolve, reject) => { res = resolve; rej = reject; });
+    this._ws.addEventListener('open', (ev) => { res(ev) });
+    this._ws.addEventListener('close', (ev) => { rej(ev) });
+    return p;
   }
 
   private async SendMessage(aMsg: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage> {
