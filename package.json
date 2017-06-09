@@ -4,8 +4,8 @@
   "description": "Javascript library for accessing buttplug servers via node.js or web sockets",
   "main": "./dist/main/src/index.js",
   "scripts": {
-    "build": "trash dist && yarn build:main",
-    "build:main": "tsc -p tsconfig.json",
+    "build": "trash dist dist-bundle && yarn build:main",
+    "build:main": "tsc -p tsconfig.json && webpack",
     "pretest": "yarn build:main",
     "test": "nyc mocha tests/**/*.ts",
     "posttest": "nyc report && codecov -f coverage/*.json"
@@ -36,6 +36,7 @@
     "@types/node": "^7.0.22",
     "chai": "^3.5.0",
     "codecov": "^2.2.0",
+    "html-webpack-plugin": "^2.28.0",
     "mocha": "^3.4.1",
     "mock-socket": "^6.1.0",
     "nyc": "^10.3.2",

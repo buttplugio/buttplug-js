@@ -60,6 +60,14 @@ export class ButtplugClient extends EventEmitter {
     });
   }
 
+  public getDevices(): Device[] {
+    let devices: Device[] = [];
+    this._devices.forEach((d, i) => {
+      devices.push(d);
+    });
+    return devices;
+  }
+
   public StartScanning = async (): Promise<void> => {
     return await this.SendMsgExpectOk(new Messages.StartScanning());
   }

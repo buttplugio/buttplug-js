@@ -12,6 +12,7 @@ export declare class ButtplugClient extends EventEmitter {
     private SendMessage(aMsg);
     private SendMsgExpectOk;
     RequestDeviceList: () => Promise<void>;
+    getDevices(): Device[];
     StartScanning: () => Promise<void>;
     StopScanning: () => Promise<void>;
     RequestLog: (aLogLevel: string) => Promise<void>;

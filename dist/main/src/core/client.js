@@ -191,6 +191,13 @@ var ButtplugClient = (function (_super) {
             });
         });
     };
+    ButtplugClient.prototype.getDevices = function () {
+        var devices = [];
+        this._devices.forEach(function (d, i) {
+            devices.push(d);
+        });
+        return devices;
+    };
     ButtplugClient.prototype.OnReaderLoad = function (aEvent) {
         this.ParseJSONMessage(aEvent.target.result);
     };
