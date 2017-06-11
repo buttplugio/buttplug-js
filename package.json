@@ -3,6 +3,7 @@
   "version": "0.0.2",
   "description": "Javascript library for accessing buttplug servers via node.js or web sockets",
   "main": "./dist/main/src/index.js",
+  "types": "./dist/main/src/index.d.ts",
   "scripts": {
     "build": "trash dist dist-bundle && yarn build:main",
     "build:main": "tsc -p tsconfig.json && webpack",
