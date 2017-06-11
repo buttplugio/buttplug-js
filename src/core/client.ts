@@ -9,18 +9,32 @@ export class ButtplugClient extends EventEmitter {
   private _ws: WebSocket;
   private _counter: number = 1;
   private _waitingMsgs: Map<number, (val: Messages.ButtplugMessage) => void> = new Map();
+  private _clientName: string;
 
-  constructor() {
+  constructor(aClientName: string) {
     super();
+    this._clientName = aClientName;
   }
 
-  public Connect = (aUrl: string): Promise<void> => {
+  public Connect = async (aUrl: string): Promise<void> => {
     this._ws = new WebSocket(aUrl);
     this._ws.addEventListener('message', (ev) => { this.ParseIncomingMessage(ev) });
     let res, rej;
     let p = new Promise<void>((resolve, reject) => { res = resolve; rej = reject; });
-    this._ws.addEventListener('open', (ev) => { res(ev) });
-    this._ws.addEventListener('close', (ev) => { rej(ev) });
+    this._ws.addEventListener('open', async (ev) => {
+      let msg = await this.SendMessage(new Messages.RequestServerInfo(this._clientName));
+      switch (msg.getType()) {
+        case 'ServerInfo':
+          // TODO: Actually deal with ping timing, maybe store server name, do
+          // something with message template version?
+          res();
+          break;
+        case 'Error':
+          rej();
+          break;
+      }
+    });
+    this._ws.addEventListener('close', (ev) => { rej(ev); });
     return p;
   }
 
@@ -41,7 +55,7 @@ export class ButtplugClient extends EventEmitter {
     switch (msg.getType()) {
       case 'Ok':
         res();
-        break
+        break;
       default:
         rej();
         break;

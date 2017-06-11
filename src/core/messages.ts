@@ -122,7 +122,7 @@ export class Log extends ButtplugSystemMessage {
 }
 
 export class RequestServerInfo extends ButtplugMessage {
-  constructor(public Id: number = 1) {
+  constructor(public ClientName: string, public Id: number = 1) {
     super(Id);
   }
 }
@@ -131,6 +131,9 @@ export class ServerInfo extends ButtplugSystemMessage {
   constructor(public MajorVersion: number,
               public MinorVersion: number,
               public BuildVersion: number,
+              public MessageVersion: number,
+              public MaxPingTime: number,
+              public ServerName: string,
               public Id: number = 1) {
     super();
   }

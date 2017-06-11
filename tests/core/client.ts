@@ -10,7 +10,7 @@ describe("Client Tests", async () => {
   let p, res;
   beforeEach(function() {
     mockServer = new Server("ws://localhost:6868");
-    bp = new ButtplugClient();
+    bp = new ButtplugClient("Test Buttplug Client");
     bp.Connect("ws://localhost:6868");
     p = new Promise((resolve) => { res = resolve; });
   });

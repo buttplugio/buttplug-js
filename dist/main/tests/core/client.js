@@ -52,7 +52,7 @@ describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, f
     return __generator(this, function (_a) {
         beforeEach(function () {
             mockServer = new mock_socket_1.Server("ws://localhost:6868");
-            bp = new client_1.ButtplugClient();
+            bp = new client_1.ButtplugClient("Test Buttplug Client");
             bp.Connect("ws://localhost:6868");
             p = new Promise(function (resolve) { res = resolve; });
         });

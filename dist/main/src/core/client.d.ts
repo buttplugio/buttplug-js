@@ -7,7 +7,8 @@ export declare class ButtplugClient extends EventEmitter {
     private _ws;
     private _counter;
     private _waitingMsgs;
-    constructor();
+    private _clientName;
+    constructor(aClientName: string);
     Connect: (aUrl: string) => Promise<void>;
     private SendMessage(aMsg);
     private SendMsgExpectOk;

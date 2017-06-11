@@ -194,9 +194,10 @@ var Log = (function (_super) {
 exports.Log = Log;
 var RequestServerInfo = (function (_super) {
     __extends(RequestServerInfo, _super);
-    function RequestServerInfo(Id) {
+    function RequestServerInfo(ClientName, Id) {
         if (Id === void 0) { Id = 1; }
         var _this = _super.call(this, Id) || this;
+        _this.ClientName = ClientName;
         _this.Id = Id;
         return _this;
     }
@@ -205,12 +206,15 @@ var RequestServerInfo = (function (_super) {
 exports.RequestServerInfo = RequestServerInfo;
 var ServerInfo = (function (_super) {
     __extends(ServerInfo, _super);
-    function ServerInfo(MajorVersion, MinorVersion, BuildVersion, Id) {
+    function ServerInfo(MajorVersion, MinorVersion, BuildVersion, MessageVersion, MaxPingTime, ServerName, Id) {
         if (Id === void 0) { Id = 1; }
         var _this = _super.call(this) || this;
         _this.MajorVersion = MajorVersion;
         _this.MinorVersion = MinorVersion;
         _this.BuildVersion = BuildVersion;
+        _this.MessageVersion = MessageVersion;
+        _this.MaxPingTime = MaxPingTime;
+        _this.ServerName = ServerName;
         _this.Id = Id;
         return _this;
     }

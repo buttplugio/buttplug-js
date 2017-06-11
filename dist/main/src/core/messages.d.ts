@@ -76,15 +76,19 @@ export declare class Log extends ButtplugSystemMessage {
     constructor(LogLevel: string, LogMessage: string);
 }
 export declare class RequestServerInfo extends ButtplugMessage {
+    ClientName: string;
     Id: number;
-    constructor(Id?: number);
+    constructor(ClientName: string, Id?: number);
 }
 export declare class ServerInfo extends ButtplugSystemMessage {
     MajorVersion: number;
     MinorVersion: number;
     BuildVersion: number;
+    MessageVersion: number;
+    MaxPingTime: number;
+    ServerName: string;
     Id: number;
-    constructor(MajorVersion: number, MinorVersion: number, BuildVersion: number, Id?: number);
+    constructor(MajorVersion: number, MinorVersion: number, BuildVersion: number, MessageVersion: number, MaxPingTime: number, ServerName: string, Id?: number);
 }
 export declare class FleshlightLaunchRawCmd extends ButtplugDeviceMessage {
     Speed: number;

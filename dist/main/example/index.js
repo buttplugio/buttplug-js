@@ -38,8 +38,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var client_1 = require("../src/core/client");
 var Messages = require("../src/core/messages");
 var devices = [];
-var client = new client_1.ButtplugClient();
-client.Connect("ws://localhost:12345/buttplug").then(function (result) {
+var client = new client_1.ButtplugClient("Example Typescript Client");
+client.Connect("ws://192.168.123.2:12345/buttplug").then(function (result) {
     console.log(result); // "Stuff worked!"
     return client.StartScanning();
 }, function (err) {

@@ -277,9 +277,10 @@ var Log = (function (_super) {
 exports.Log = Log;
 var RequestServerInfo = (function (_super) {
     __extends(RequestServerInfo, _super);
-    function RequestServerInfo(Id) {
+    function RequestServerInfo(ClientName, Id) {
         if (Id === void 0) { Id = 1; }
         var _this = _super.call(this, Id) || this;
+        _this.ClientName = ClientName;
         _this.Id = Id;
         return _this;
     }
@@ -288,12 +289,15 @@ var RequestServerInfo = (function (_super) {
 exports.RequestServerInfo = RequestServerInfo;
 var ServerInfo = (function (_super) {
     __extends(ServerInfo, _super);
-    function ServerInfo(MajorVersion, MinorVersion, BuildVersion, Id) {
+    function ServerInfo(MajorVersion, MinorVersion, BuildVersion, MessageVersion, MaxPingTime, ServerName, Id) {
         if (Id === void 0) { Id = 1; }
         var _this = _super.call(this) || this;
         _this.MajorVersion = MajorVersion;
         _this.MinorVersion = MinorVersion;
         _this.BuildVersion = BuildVersion;
+        _this.MessageVersion = MessageVersion;
+        _this.MaxPingTime = MaxPingTime;
+        _this.ServerName = ServerName;
         _this.Id = Id;
         return _this;
     }
@@ -518,20 +522,43 @@ var Messages = __webpack_require__(0);
 var device_1 = __webpack_require__(4);
 var ButtplugClient = (function (_super) {
     __extends(ButtplugClient, _super);
-    function ButtplugClient() {
+    function ButtplugClient(aClientName) {
         var _this = _super.call(this) || this;
         _this._devices = new Map();
         _this._counter = 1;
         _this._waitingMsgs = new Map();
-        _this.Connect = function (aUrl) {
-            _this._ws = new WebSocket(aUrl);
-            _this._ws.addEventListener('message', function (ev) { _this.ParseIncomingMessage(ev); });
-            var res, rej;
-            var p = new Promise(function (resolve, reject) { res = resolve; rej = reject; });
-            _this._ws.addEventListener('open', function (ev) { res(ev); });
-            _this._ws.addEventListener('close', function (ev) { rej(ev); });
-            return p;
-        };
+        _this.Connect = function (aUrl) { return __awaiter(_this, void 0, void 0, function () {
+            var _this = this;
+            var res, rej, p;
+            return __generator(this, function (_a) {
+                this._ws = new WebSocket(aUrl);
+                this._ws.addEventListener('message', function (ev) { _this.ParseIncomingMessage(ev); });
+                p = new Promise(function (resolve, reject) { res = resolve; rej = reject; });
+                this._ws.addEventListener('open', function (ev) { return __awaiter(_this, void 0, void 0, function () {
+                    var msg;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, this.SendMessage(new Messages.RequestServerInfo(this._clientName))];
+                            case 1:
+                                msg = _a.sent();
+                                switch (msg.getType()) {
+                                    case 'ServerInfo':
+                                        // TODO: Actually deal with ping timing, maybe store server name, do
+                                        // something with message template version?
+                                        res();
+                                        break;
+                                    case 'Error':
+                                        rej();
+                                        break;
+                                }
+                                return [2 /*return*/];
+                        }
+                    });
+                }); });
+                this._ws.addEventListener('close', function (ev) { rej(ev); });
+                return [2 /*return*/, p];
+            });
+        }); };
         _this.SendMsgExpectOk = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
             var res, rej, msg, p;
             return __generator(this, function (_a) {
@@ -640,6 +667,7 @@ var ButtplugClient = (function (_super) {
                 reader.readAsText(aEvent.data);
             }
         };
+        _this._clientName = aClientName;
         return _this;
     }
     ButtplugClient.prototype.SendMessage = function (aMsg) {
@@ -3141,8 +3169,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var client_1 = __webpack_require__(3);
 var Messages = __webpack_require__(0);
 var devices = [];
-var client = new client_1.ButtplugClient();
-client.Connect("ws://localhost:12345/buttplug").then(function (result) {
+var client = new client_1.ButtplugClient("Example Typescript Client");
+client.Connect("ws://192.168.123.2:12345/buttplug").then(function (result) {
     console.log(result); // "Stuff worked!"
     return client.StartScanning();
 }, function (err) {

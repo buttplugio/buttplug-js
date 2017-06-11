@@ -50,20 +50,43 @@ var Messages = require("./messages");
 var device_1 = require("./device");
 var ButtplugClient = (function (_super) {
     __extends(ButtplugClient, _super);
-    function ButtplugClient() {
+    function ButtplugClient(aClientName) {
         var _this = _super.call(this) || this;
         _this._devices = new Map();
         _this._counter = 1;
         _this._waitingMsgs = new Map();
-        _this.Connect = function (aUrl) {
-            _this._ws = new WebSocket(aUrl);
-            _this._ws.addEventListener('message', function (ev) { _this.ParseIncomingMessage(ev); });
-            var res, rej;
-            var p = new Promise(function (resolve, reject) { res = resolve; rej = reject; });
-            _this._ws.addEventListener('open', function (ev) { res(ev); });
-            _this._ws.addEventListener('close', function (ev) { rej(ev); });
-            return p;
-        };
+        _this.Connect = function (aUrl) { return __awaiter(_this, void 0, void 0, function () {
+            var _this = this;
+            var res, rej, p;
+            return __generator(this, function (_a) {
+                this._ws = new WebSocket(aUrl);
+                this._ws.addEventListener('message', function (ev) { _this.ParseIncomingMessage(ev); });
+                p = new Promise(function (resolve, reject) { res = resolve; rej = reject; });
+                this._ws.addEventListener('open', function (ev) { return __awaiter(_this, void 0, void 0, function () {
+                    var msg;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, this.SendMessage(new Messages.RequestServerInfo(this._clientName))];
+                            case 1:
+                                msg = _a.sent();
+                                switch (msg.getType()) {
+                                    case 'ServerInfo':
+                                        // TODO: Actually deal with ping timing, maybe store server name, do
+                                        // something with message template version?
+                                        res();
+                                        break;
+                                    case 'Error':
+                                        rej();
+                                        break;
+                                }
+                                return [2 /*return*/];
+                        }
+                    });
+                }); });
+                this._ws.addEventListener('close', function (ev) { rej(ev); });
+                return [2 /*return*/, p];
+            });
+        }); };
         _this.SendMsgExpectOk = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
             var res, rej, msg, p;
             return __generator(this, function (_a) {
@@ -172,6 +195,7 @@ var ButtplugClient = (function (_super) {
                 reader.readAsText(aEvent.data);
             }
         };
+        _this._clientName = aClientName;
         return _this;
     }
     ButtplugClient.prototype.SendMessage = function (aMsg) {
