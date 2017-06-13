@@ -94,7 +94,7 @@ describe("Client Tests", async () => {
       await bp.SendDeviceMessage(x, new Messages.SingleMotorVibrateCmd(1.0));
       try
       {
-        await bp.SendDeviceMessage(x, new Messages.KiirooRawCmd(2));
+        await bp.SendDeviceMessage(x, new Messages.KiirooCmd(2));
         throw Error("Should've thrown!");
       }
       catch(_)

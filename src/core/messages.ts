@@ -139,7 +139,7 @@ export class ServerInfo extends ButtplugSystemMessage {
   }
 }
 
-export class FleshlightLaunchRawCmd extends ButtplugDeviceMessage {
+export class FleshlightLaunchFW12Cmd extends ButtplugDeviceMessage {
   constructor(public Speed: number,
               public Position: number,
               public DeviceIndex: number = -1,
@@ -148,7 +148,7 @@ export class FleshlightLaunchRawCmd extends ButtplugDeviceMessage {
   }
 }
 
-export class KiirooRawCmd extends ButtplugDeviceMessage {
+export class KiirooCmd extends ButtplugDeviceMessage {
   constructor(public Position: number,
               public DeviceIndex: number = -1,
               public Id: number = 1) {
@@ -158,6 +158,27 @@ export class KiirooRawCmd extends ButtplugDeviceMessage {
 
 export class SingleMotorVibrateCmd extends ButtplugDeviceMessage {
   constructor(public Speed: number,
+              public DeviceIndex: number = -1,
+              public Id: number = 1) {
+    super(DeviceIndex, Id);
+  }
+}
+
+export class StopDeviceCmd extends ButtplugDeviceMessage {
+  constructor(public DeviceIndex: number = -1,
+              public Id: number = 1) {
+    super(DeviceIndex, Id);
+  }
+}
+
+export class StopAllDevices extends ButtplugMessage {
+  constructor(public Id: number = 1) {
+    super(Id);
+  }
+}
+
+export class LovenseCmd extends ButtplugDeviceMessage {
+  constructor(public Command: string,
               public DeviceIndex: number = -1,
               public Id: number = 1) {
     super(DeviceIndex, Id);
@@ -179,9 +200,12 @@ let Messages = {
   Log: Log,
   RequestServerInfo: RequestServerInfo,
   ServerInfo: ServerInfo,
-  FleshlightLaunchRawCmd: FleshlightLaunchRawCmd,
-  KiirooRawCmd: KiirooRawCmd,
-  SingleMotorVibrateCmd: SingleMotorVibrateCmd
+  FleshlightLaunchFW12Cmd: FleshlightLaunchFW12Cmd,
+  KiirooCmd: KiirooCmd,
+  StopDeviceCmd: StopDeviceCmd,
+  StopAllDevices: StopAllDevices,
+  SingleMotorVibrateCmd: SingleMotorVibrateCmd,
+  LovenseCmd: LovenseCmd
 };
 
 export function FromJSON(str) : Array<ButtplugMessage> {
