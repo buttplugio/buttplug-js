@@ -167,7 +167,7 @@ describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, f
                                         _a.label = 2;
                                     case 2:
                                         _a.trys.push([2, 4, , 5]);
-                                        return [4 /*yield*/, bp.SendDeviceMessage(x, new Messages.KiirooRawCmd(2))];
+                                        return [4 /*yield*/, bp.SendDeviceMessage(x, new Messages.KiirooCmd(2))];
                                     case 3:
                                         _a.sent();
                                         throw Error("Should've thrown!");

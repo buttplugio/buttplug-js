@@ -90,14 +90,14 @@ export declare class ServerInfo extends ButtplugSystemMessage {
     Id: number;
     constructor(MajorVersion: number, MinorVersion: number, BuildVersion: number, MessageVersion: number, MaxPingTime: number, ServerName: string, Id?: number);
 }
-export declare class FleshlightLaunchRawCmd extends ButtplugDeviceMessage {
+export declare class FleshlightLaunchFW12Cmd extends ButtplugDeviceMessage {
     Speed: number;
     Position: number;
     DeviceIndex: number;
     Id: number;
     constructor(Speed: number, Position: number, DeviceIndex?: number, Id?: number);
 }
-export declare class KiirooRawCmd extends ButtplugDeviceMessage {
+export declare class KiirooCmd extends ButtplugDeviceMessage {
     Position: number;
     DeviceIndex: number;
     Id: number;
@@ -108,5 +108,20 @@ export declare class SingleMotorVibrateCmd extends ButtplugDeviceMessage {
     DeviceIndex: number;
     Id: number;
     constructor(Speed: number, DeviceIndex?: number, Id?: number);
+}
+export declare class StopDeviceCmd extends ButtplugDeviceMessage {
+    DeviceIndex: number;
+    Id: number;
+    constructor(DeviceIndex?: number, Id?: number);
+}
+export declare class StopAllDevices extends ButtplugMessage {
+    Id: number;
+    constructor(Id?: number);
+}
+export declare class LovenseCmd extends ButtplugDeviceMessage {
+    Command: string;
+    DeviceIndex: number;
+    Id: number;
+    constructor(Command: string, DeviceIndex?: number, Id?: number);
 }
 export declare function FromJSON(str: any): Array<ButtplugMessage>;

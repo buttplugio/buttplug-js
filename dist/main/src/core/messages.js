@@ -221,9 +221,9 @@ var ServerInfo = (function (_super) {
     return ServerInfo;
 }(ButtplugSystemMessage));
 exports.ServerInfo = ServerInfo;
-var FleshlightLaunchRawCmd = (function (_super) {
-    __extends(FleshlightLaunchRawCmd, _super);
-    function FleshlightLaunchRawCmd(Speed, Position, DeviceIndex, Id) {
+var FleshlightLaunchFW12Cmd = (function (_super) {
+    __extends(FleshlightLaunchFW12Cmd, _super);
+    function FleshlightLaunchFW12Cmd(Speed, Position, DeviceIndex, Id) {
         if (DeviceIndex === void 0) { DeviceIndex = -1; }
         if (Id === void 0) { Id = 1; }
         var _this = _super.call(this, DeviceIndex, Id) || this;
@@ -233,12 +233,12 @@ var FleshlightLaunchRawCmd = (function (_super) {
         _this.Id = Id;
         return _this;
     }
-    return FleshlightLaunchRawCmd;
+    return FleshlightLaunchFW12Cmd;
 }(ButtplugDeviceMessage));
-exports.FleshlightLaunchRawCmd = FleshlightLaunchRawCmd;
-var KiirooRawCmd = (function (_super) {
-    __extends(KiirooRawCmd, _super);
-    function KiirooRawCmd(Position, DeviceIndex, Id) {
+exports.FleshlightLaunchFW12Cmd = FleshlightLaunchFW12Cmd;
+var KiirooCmd = (function (_super) {
+    __extends(KiirooCmd, _super);
+    function KiirooCmd(Position, DeviceIndex, Id) {
         if (DeviceIndex === void 0) { DeviceIndex = -1; }
         if (Id === void 0) { Id = 1; }
         var _this = _super.call(this, DeviceIndex, Id) || this;
@@ -247,9 +247,9 @@ var KiirooRawCmd = (function (_super) {
         _this.Id = Id;
         return _this;
     }
-    return KiirooRawCmd;
+    return KiirooCmd;
 }(ButtplugDeviceMessage));
-exports.KiirooRawCmd = KiirooRawCmd;
+exports.KiirooCmd = KiirooCmd;
 var SingleMotorVibrateCmd = (function (_super) {
     __extends(SingleMotorVibrateCmd, _super);
     function SingleMotorVibrateCmd(Speed, DeviceIndex, Id) {
@@ -264,6 +264,44 @@ var SingleMotorVibrateCmd = (function (_super) {
     return SingleMotorVibrateCmd;
 }(ButtplugDeviceMessage));
 exports.SingleMotorVibrateCmd = SingleMotorVibrateCmd;
+var StopDeviceCmd = (function (_super) {
+    __extends(StopDeviceCmd, _super);
+    function StopDeviceCmd(DeviceIndex, Id) {
+        if (DeviceIndex === void 0) { DeviceIndex = -1; }
+        if (Id === void 0) { Id = 1; }
+        var _this = _super.call(this, DeviceIndex, Id) || this;
+        _this.DeviceIndex = DeviceIndex;
+        _this.Id = Id;
+        return _this;
+    }
+    return StopDeviceCmd;
+}(ButtplugDeviceMessage));
+exports.StopDeviceCmd = StopDeviceCmd;
+var StopAllDevices = (function (_super) {
+    __extends(StopAllDevices, _super);
+    function StopAllDevices(Id) {
+        if (Id === void 0) { Id = 1; }
+        var _this = _super.call(this, Id) || this;
+        _this.Id = Id;
+        return _this;
+    }
+    return StopAllDevices;
+}(ButtplugMessage));
+exports.StopAllDevices = StopAllDevices;
+var LovenseCmd = (function (_super) {
+    __extends(LovenseCmd, _super);
+    function LovenseCmd(Command, DeviceIndex, Id) {
+        if (DeviceIndex === void 0) { DeviceIndex = -1; }
+        if (Id === void 0) { Id = 1; }
+        var _this = _super.call(this, DeviceIndex, Id) || this;
+        _this.Command = Command;
+        _this.DeviceIndex = DeviceIndex;
+        _this.Id = Id;
+        return _this;
+    }
+    return LovenseCmd;
+}(ButtplugDeviceMessage));
+exports.LovenseCmd = LovenseCmd;
 var Messages = {
     Ok: Ok,
     Ping: Ping,
@@ -279,9 +317,12 @@ var Messages = {
     Log: Log,
     RequestServerInfo: RequestServerInfo,
     ServerInfo: ServerInfo,
-    FleshlightLaunchRawCmd: FleshlightLaunchRawCmd,
-    KiirooRawCmd: KiirooRawCmd,
-    SingleMotorVibrateCmd: SingleMotorVibrateCmd
+    FleshlightLaunchFW12Cmd: FleshlightLaunchFW12Cmd,
+    KiirooCmd: KiirooCmd,
+    StopDeviceCmd: StopDeviceCmd,
+    StopAllDevices: StopAllDevices,
+    SingleMotorVibrateCmd: SingleMotorVibrateCmd,
+    LovenseCmd: LovenseCmd
 };
 function FromJSON(str) {
     // TODO We're assuming we'll always get valid json here. While it should pass
