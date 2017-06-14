@@ -27,7 +27,11 @@ client.Connect("ws://192.168.123.2:12345/buttplug").then(
         console.log(err); // Error: "It broke"
       }
   );
-
+  
+client.on("deviceadded", function() {
+        devices = client.getDevices();
+});
+  
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
