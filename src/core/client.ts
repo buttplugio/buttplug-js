@@ -141,6 +141,9 @@ export class ButtplugClient extends EventEmitter {
             this.emit('deviceremoved', d);
           }
           break;
+        case 'ScanningFinished':
+          this.emit('scanningfinished', x);
+          break;
       };
     });
   }
