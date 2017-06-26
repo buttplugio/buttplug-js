@@ -76,6 +76,19 @@ describe("Client Tests", async () => {
     return p;
   });
 
+  it("Should emit when device scanning is over", async () => {
+      mockServer.on('message', (jsonmsg: string) => {
+          let msg: Messages.ButtplugMessage = Messages.FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
+          delaySend(new Messages.Ok(msg.Id));
+          delaySend(new Messages.ScanningFinished());
+      });
+      bp.on('scanningfinished', (x) => {
+          res();
+      });
+      await bp.StartScanning();
+      return p;
+  });
+
   it("Should allow correct device messages and reject unauthorized", async () => {
     mockServer.on('message', (jsonmsg: string) => {
       let msg: Messages.ButtplugMessage = Messages.FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;

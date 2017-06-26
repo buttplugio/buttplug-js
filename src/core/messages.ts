@@ -52,9 +52,20 @@ export class Test extends ButtplugMessage {
   }
 }
 
+export enum ErrorClass {
+    ERROR_UNKNOWN,
+    ERROR_INIT,
+    ERROR_PING,
+    ERROR_MSG,
+    ERROR_DEVICE
+}
+
 export class Error extends ButtplugSystemMessage {
-  constructor(public ErrorMessage: string,
-              public Id: number = 1) {
+     
+
+    constructor(public ErrorMessage: string,
+                public ErrorCode: ErrorClass = ErrorClass.ERROR_UNKNOWN,
+                public Id: number = 1) {
     super(Id);
   }
 }
@@ -102,9 +113,15 @@ export class StartScanning extends ButtplugMessage {
 }
 
 export class StopScanning extends ButtplugMessage {
-  constructor(public Id: number = 1) {
-    super(Id);
-  }
+    constructor(public Id: number = 1) {
+        super(Id);
+    }
+}
+
+export class ScanningFinished extends ButtplugSystemMessage {
+    constructor() {
+        super();
+    }
 }
 
 export class RequestLog extends ButtplugMessage {
@@ -196,6 +213,7 @@ let Messages = {
   RequestDeviceList: RequestDeviceList,
   StartScanning: StartScanning,
   StopScanning: StopScanning,
+  ScanningFinished: ScanningFinished,
   RequestLog: RequestLog,
   Log: Log,
   RequestServerInfo: RequestServerInfo,
