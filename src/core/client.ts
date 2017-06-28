@@ -10,6 +10,7 @@ export class ButtplugClient extends EventEmitter {
   private _counter: number = 1;
   private _waitingMsgs: Map<number, (val: Messages.ButtplugMessage) => void> = new Map();
   private _clientName: string;
+  private _pingTimer;
 
   constructor(aClientName: string) {
     super();
@@ -25,8 +26,12 @@ export class ButtplugClient extends EventEmitter {
       let msg = await this.SendMessage(new Messages.RequestServerInfo(this._clientName));
       switch (msg.getType()) {
         case 'ServerInfo':
-          // TODO: Actually deal with ping timing, maybe store server name, do
-          // something with message template version?
+          // TODO: maybe store server name, do something with message template version?
+          let ping = (msg as Messages.ServerInfo).MaxPingTime;
+          if (ping > 0) {
+            this._pingTimer = setInterval(() =>
+              this.SendMessage(new Messages.Ping(this._counter)), Math.round(ping / 2));
+          }
           res();
           break;
         case 'Error':
