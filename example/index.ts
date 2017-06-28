@@ -4,7 +4,7 @@ import * as Messages from "../src/core/messages";
 
 let devices: Device[] = [];
 let client = new ButtplugClient("Example Typescript Client");
-client.Connect("ws://192.168.123.2:12345/buttplug").then(
+client.Connect("wss://localhost:12345/buttplug").then(
     function (result) {
         console.log(result); // "Stuff worked!"
         return client.StartScanning();
