@@ -7,6 +7,8 @@
   "scripts": {
     "build": "trash dist dist-bundle && yarn build:main",
     "build:main": "tsc -p tsconfig.json && webpack",
+    "tslint": "tslint -c tslint.json src/**/* tests/**/*",
+    "tslint:fix": "tslint -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports src/**/* tests/**/*",
     "pretest": "yarn build:main",
     "test": "nyc mocha tests/**/*.ts",
     "posttest": "nyc report && codecov -f coverage/*.json"
@@ -44,6 +46,7 @@
     "trash-cli": "^1.4.0",
     "ts-loader": "^2.1.0",
     "ts-node": "^3.0.4",
+    "tslint": "^5.4.3",
     "typescript": "^2.3.3",
     "webpack": "^2.6.0",
     "yarn": "^0.24.5"
