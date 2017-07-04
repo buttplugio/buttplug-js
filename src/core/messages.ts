@@ -1,3 +1,4 @@
+// tslint:disable:max-classes-per-file
 "use strict";
 
 import {classToPlain, plainToClass} from "class-transformer";
@@ -13,10 +14,10 @@ export class ButtplugMessage {
   }
 
   public toJSON(): string {
-    const json_obj = {};
+    const jsonObj = {};
     const instance: any = this.constructor;
-    json_obj[instance.name] = classToPlain(this);
-    return JSON.stringify(json_obj);
+    jsonObj[instance.name] = classToPlain(this);
+    return JSON.stringify(jsonObj);
   }
 }
 
@@ -69,8 +70,7 @@ export class Error extends ButtplugSystemMessage {
   }
 }
 
-export class DeviceInfo
-{
+export class DeviceInfo {
   constructor(public DeviceIndex: number,
               public DeviceName: string,
               public DeviceMessages: string[]) {
@@ -201,27 +201,27 @@ export class LovenseCmd extends ButtplugDeviceMessage {
 }
 
 const Messages = {
-  Ok,
-  Ping,
-  Test,
-  Error,
-  DeviceList,
   DeviceAdded,
+  DeviceList,
   DeviceRemoved,
-  RequestDeviceList,
-  StartScanning,
-  StopScanning,
-  ScanningFinished,
-  RequestLog,
-  Log,
-  RequestServerInfo,
-  ServerInfo,
+  Error,
   FleshlightLaunchFW12Cmd,
   KiirooCmd,
-  StopDeviceCmd,
-  StopAllDevices,
-  SingleMotorVibrateCmd,
+  Log,
   LovenseCmd,
+  Ok,
+  Ping,
+  RequestDeviceList,
+  RequestLog,
+  RequestServerInfo,
+  ScanningFinished,
+  ServerInfo,
+  SingleMotorVibrateCmd,
+  StartScanning,
+  StopAllDevices,
+  StopDeviceCmd,
+  StopScanning,
+  Test,
 };
 
 export function FromJSON(str): ButtplugMessage[] {
@@ -238,7 +238,7 @@ export function FromJSON(str): ButtplugMessage[] {
                                  x[Object.getOwnPropertyNames(x)[0]]);
     msgs.push(msg as ButtplugMessage);
   }
-  if (msgs.length == 0) {
+  if (msgs.length === 0) {
     // Backup in case the server sent us a single object outside of an array.
     // Accoring to the schema, this should be illegal, so once schema checking
     // is added this should become dead code.

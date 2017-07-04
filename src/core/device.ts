@@ -2,15 +2,15 @@
 import * as Messages from "./messages";
 
 export class Device {
-  constructor(private _index: number,
-              private _name: string,
-              private _allowedMessages: string[]) {
-  }
-
-  static fromMsg(aMsg: Messages.DeviceAdded | Messages.DeviceInfo): Device {
+  public static fromMsg(aMsg: Messages.DeviceAdded | Messages.DeviceInfo): Device {
     return new Device(aMsg.DeviceIndex,
                       aMsg.DeviceName,
                       aMsg.DeviceMessages);
+  }
+
+  constructor(private _index: number,
+              private _name: string,
+              private _allowedMessages: string[]) {
   }
 
   public get Name(): string {
