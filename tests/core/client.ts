@@ -7,7 +7,8 @@ import * as Messages from "../../src/core/messages";
 describe("Client Tests", async () => {
   let mockServer: Server;
   let bp: ButtplugClient;
-  let p, res;
+  let p;
+  let res;
   beforeEach(function() {
     mockServer = new Server("ws://localhost:6868");
     bp = new ButtplugClient("Test Buttplug Client");
@@ -39,13 +40,13 @@ describe("Client Tests", async () => {
       delaySend(new Messages.Log("Trace", "Test"));
     });
 
-    const p = new Promise((resolve) => { res = resolve; });
+    const finishTestPromise = new Promise((resolve) => { res = resolve; });
     bp.on("log", (x) => {
       expect(x).to.deep.equal(new Messages.Log("Trace", "Test"));
       res();
     });
     await bp.RequestLog("Trace");
-    return p;
+    return finishTestPromise;
   });
 
   it("Should emit a device on addition", async () => {
@@ -67,7 +68,10 @@ describe("Client Tests", async () => {
   it("Should emit a device when device list request received with new devices", async () => {
     mockServer.on("message", (jsonmsg: string) => {
       const msg: Messages.ButtplugMessage = Messages.FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
-      delaySend(new Messages.DeviceList([new Messages.DeviceInfo(0, "Test Device", ["SingleMotorVibrateCmd"])], msg.Id));
+      delaySend(new Messages.DeviceList([new Messages.DeviceInfo(0,
+                                                                 "Test Device",
+                                                                 ["SingleMotorVibrateCmd"])],
+                                        msg.Id));
     });
     bp.on("deviceadded", (x) => {
       res();
@@ -93,11 +97,10 @@ describe("Client Tests", async () => {
     mockServer.on("message", (jsonmsg: string) => {
       const msg: Messages.ButtplugMessage = Messages.FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
       delaySend(new Messages.Ok(msg.Id));
-      if (msg.getType() == "StartScanning") {
+      if (msg.getType() === "StartScanning") {
         delaySend(new Messages.DeviceAdded(0, "Test Device", ["SingleMotorVibrateCmd"]));
       }
-      if (msg instanceof Messages.ButtplugDeviceMessage)
-      {
+      if (msg instanceof Messages.ButtplugDeviceMessage) {
         expect(msg.DeviceIndex).to.equal(0);
       }
     });
@@ -105,13 +108,10 @@ describe("Client Tests", async () => {
     bp.on("deviceadded", async (x) => {
       device = x;
       await bp.SendDeviceMessage(x, new Messages.SingleMotorVibrateCmd(1.0));
-      try
-      {
+      try {
         await bp.SendDeviceMessage(x, new Messages.KiirooCmd(2));
         throw Error("Should've thrown!");
-      }
-      catch (_)
-      {
+      } catch (_) {
         res();
       }
     });
