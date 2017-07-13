@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-06/schema#",
   "title": "Buttplug Message Schema",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "The JSON Protocol format for the Buttplug Protocol.",
   "components" : {
     "Id": {
@@ -384,7 +384,7 @@
         "Id": {"$ref": "#/components/Id"},
         "DeviceIndex":  { "$ref" : "#/components/DeviceIndex" },
         "Command": {
-          "description": "Command to send to Lovense device.",
+          "description": "Raw byte string to send to device.",
           "type": "array",
           "items": {
             "type": "integer",
@@ -410,7 +410,7 @@
         "Id": {"$ref": "#/components/Id"},
         "DeviceIndex":  { "$ref" : "#/components/DeviceIndex" },
         "Command": {
-          "description": "Command to send to Lovense device.",
+          "description": "Command to send to Kiiroo device.",
           "type": "string"
         }
       },
@@ -421,6 +421,33 @@
         "Id",
         "DeviceIndex",
         "Command"
+      ]
+    },
+    "VorzeA10CycloneCmd": {
+      "type": "object",
+      "description": "Sends a raw byte string to a Kiiroo Onyx/Pearl device.",
+      "properties": {
+        "Id": {"$ref": "#/components/Id"},
+        "DeviceIndex":  { "$ref" : "#/components/DeviceIndex" },
+        "Speed": {
+          "description": "Rotation speed command for the Cyclone.",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "Clockwise": {
+          "description": "True for clockwise rotation (in relation to device facing user), false for Counter-clockwise",
+          "type": "boolean"
+        }
+      },
+      "minProperties": 4,
+      "maxProperties": 4,
+      "additionalProperties": false,
+      "required": [
+        "Id",
+        "DeviceIndex",
+        "Speed",
+        "Clockwise"
       ]
     },
     "StopDeviceCmd": {
@@ -469,7 +496,8 @@
       "LovenseCmd": {"$ref": "#/messages/LovenseCmd"},
       "SingleMotorVibrateCmd": {"$ref": "#/messages/SingleMotorVibrateCmd"},
       "KiirooCmd": {"$ref": "#/messages/KiirooCmd"},
-      "RawCmd": {"$ref": "#/messages/RawCmd"}
+      "RawCmd": {"$ref": "#/messages/RawCmd"},
+      "VorzeA10CycloneCmd": {"$ref": "#/messages/VorzeA10CycloneCmd"}
     },
     "additionalProperties": false,
     "minProperties": 1,
