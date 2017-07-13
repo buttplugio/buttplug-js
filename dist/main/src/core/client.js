@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -46,8 +46,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var events_1 = require("events");
-var Messages = require("./messages");
 var device_1 = require("./device");
+var Messages = require("./messages");
 var ButtplugClient = (function (_super) {
     __extends(ButtplugClient, _super);
     function ButtplugClient(aClientName) {
@@ -60,22 +60,27 @@ var ButtplugClient = (function (_super) {
             var res, rej, p;
             return __generator(this, function (_a) {
                 this._ws = new WebSocket(aUrl);
-                this._ws.addEventListener('message', function (ev) { _this.ParseIncomingMessage(ev); });
+                this._ws.addEventListener("message", function (ev) { _this.ParseIncomingMessage(ev); });
                 p = new Promise(function (resolve, reject) { res = resolve; rej = reject; });
-                this._ws.addEventListener('open', function (ev) { return __awaiter(_this, void 0, void 0, function () {
-                    var msg;
+                this._ws.addEventListener("open", function (ev) { return __awaiter(_this, void 0, void 0, function () {
+                    var _this = this;
+                    var msg, ping;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0: return [4 /*yield*/, this.SendMessage(new Messages.RequestServerInfo(this._clientName))];
                             case 1:
                                 msg = _a.sent();
                                 switch (msg.getType()) {
-                                    case 'ServerInfo':
-                                        // TODO: Actually deal with ping timing, maybe store server name, do
-                                        // something with message template version?
+                                    case "ServerInfo":
+                                        ping = msg.MaxPingTime;
+                                        if (ping > 0) {
+                                            this._pingTimer = setInterval(function () {
+                                                return _this.SendMessage(new Messages.Ping(_this._counter));
+                                            }, Math.round(ping / 2));
+                                        }
                                         res();
                                         break;
-                                    case 'Error':
+                                    case "Error":
                                         rej();
                                         break;
                                 }
@@ -83,28 +88,8 @@ var ButtplugClient = (function (_super) {
                         }
                     });
                 }); });
-                this._ws.addEventListener('close', function (ev) { rej(ev); });
+                this._ws.addEventListener("close", function (ev) { rej(ev); });
                 return [2 /*return*/, p];
-            });
-        }); };
-        _this.SendMsgExpectOk = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
-            var res, rej, msg, p;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.SendMessage(aMsg)];
-                    case 1:
-                        msg = _a.sent();
-                        p = new Promise(function (resolve, reject) { res = resolve; rej = reject; });
-                        switch (msg.getType()) {
-                            case 'Ok':
-                                res();
-                                break;
-                            default:
-                                rej();
-                                break;
-                        }
-                        return [2 /*return*/, p];
-                }
             });
         }); };
         _this.RequestDeviceList = function () { return __awaiter(_this, void 0, void 0, function () {
@@ -119,7 +104,7 @@ var ButtplugClient = (function (_super) {
                             if (!_this._devices.has(d.DeviceIndex)) {
                                 var device = device_1.Device.fromMsg(d);
                                 _this._devices.set(d.DeviceIndex, device);
-                                _this.emit('deviceadded', device);
+                                _this.emit("deviceadded", device);
                             }
                         });
                         return [2 /*return*/];
@@ -164,40 +149,89 @@ var ButtplugClient = (function (_super) {
                     return;
                 }
                 switch (x.constructor.name) {
-                    case 'Log':
-                        _this.emit('log', x);
+                    case "Log":
+                        _this.emit("log", x);
                         break;
-                    case 'DeviceAdded':
-                        var added_msg = x;
-                        var d = device_1.Device.fromMsg(added_msg);
-                        _this._devices.set(added_msg.DeviceIndex, d);
-                        _this.emit('deviceadded', d);
+                    case "DeviceAdded":
+                        var addedMsg = x;
+                        var addedDevice = device_1.Device.fromMsg(addedMsg);
+                        _this._devices.set(addedMsg.DeviceIndex, addedDevice);
+                        _this.emit("deviceadded", addedDevice);
                         break;
-                    case 'DeviceRemoved':
-                        var removed_msg = x;
-                        if (_this._devices.has(removed_msg.DeviceIndex)) {
-                            var d_1 = _this._devices.get(removed_msg.DeviceIndex);
-                            _this._devices.delete(removed_msg.DeviceIndex);
-                            _this.emit('deviceremoved', d_1);
+                    case "DeviceRemoved":
+                        var removedMsg = x;
+                        if (_this._devices.has(removedMsg.DeviceIndex)) {
+                            var removedDevice = _this._devices.get(removedMsg.DeviceIndex);
+                            _this._devices.delete(removedMsg.DeviceIndex);
+                            _this.emit("deviceremoved", removedDevice);
                         }
                         break;
+                    case "ScanningFinished":
+                        _this.emit("scanningfinished", x);
+                        break;
                 }
-                ;
             });
         };
         _this.ParseIncomingMessage = function (aEvent) {
-            if (typeof (aEvent.data) === 'string') {
+            if (typeof (aEvent.data) === "string") {
                 _this.ParseJSONMessage(aEvent.data);
             }
             else if (aEvent.data instanceof Blob) {
                 var reader = new FileReader();
-                reader.addEventListener('load', function (ev) { _this.OnReaderLoad(ev); });
+                reader.addEventListener("load", function (ev) { _this.OnReaderLoad(ev); });
                 reader.readAsText(aEvent.data);
             }
         };
+        _this.SendMsgExpectOk = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
+            var res, rej, msg, p;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.SendMessage(aMsg)];
+                    case 1:
+                        msg = _a.sent();
+                        p = new Promise(function (resolve, reject) { res = resolve; rej = reject; });
+                        switch (msg.getType()) {
+                            case "Ok":
+                                res();
+                                break;
+                            default:
+                                rej();
+                                break;
+                        }
+                        return [2 /*return*/, p];
+                }
+            });
+        }); };
         _this._clientName = aClientName;
         return _this;
     }
+    ButtplugClient.prototype.getDevices = function () {
+        var devices = [];
+        this._devices.forEach(function (d, i) {
+            devices.push(d);
+        });
+        return devices;
+    };
+    ButtplugClient.prototype.SendDeviceMessage = function (aDevice, aDeviceMsg) {
+        return __awaiter(this, void 0, void 0, function () {
+            var dev;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        dev = this._devices.get(aDevice.Index);
+                        if (dev === undefined) {
+                            return [2 /*return*/, Promise.reject(new Error("Device not available."))];
+                        }
+                        if (dev.AllowedMessages.indexOf(aDeviceMsg.getType()) === -1) {
+                            return [2 /*return*/, Promise.reject(new Error("Device does not accept that message type."))];
+                        }
+                        aDeviceMsg.DeviceIndex = aDevice.Index;
+                        return [4 /*yield*/, this.SendMsgExpectOk(aDeviceMsg)];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
     ButtplugClient.prototype.SendMessage = function (aMsg) {
         return __awaiter(this, void 0, void 0, function () {
             var res, msgPromise;
@@ -215,35 +249,8 @@ var ButtplugClient = (function (_super) {
             });
         });
     };
-    ButtplugClient.prototype.getDevices = function () {
-        var devices = [];
-        this._devices.forEach(function (d, i) {
-            devices.push(d);
-        });
-        return devices;
-    };
     ButtplugClient.prototype.OnReaderLoad = function (aEvent) {
         this.ParseJSONMessage(aEvent.target.result);
-    };
-    ButtplugClient.prototype.SendDeviceMessage = function (aDevice, aDeviceMsg) {
-        return __awaiter(this, void 0, void 0, function () {
-            var dev;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        dev = this._devices.get(aDevice.Index);
-                        if (dev === undefined) {
-                            return [2 /*return*/, Promise.reject(new Error("Device not available."))];
-                        }
-                        if (dev.AllowedMessages.indexOf(aDeviceMsg.getType()) == -1) {
-                            return [2 /*return*/, Promise.reject(new Error("Device does not accept that message type."))];
-                        }
-                        aDeviceMsg.DeviceIndex = aDevice.Index;
-                        return [4 /*yield*/, this.SendMsgExpectOk(aDeviceMsg)];
-                    case 1: return [2 /*return*/, _a.sent()];
-                }
-            });
-        });
     };
     return ButtplugClient;
 }(events_1.EventEmitter));

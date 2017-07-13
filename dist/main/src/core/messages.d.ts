@@ -1,4 +1,4 @@
-import 'reflect-metadata';
+import "reflect-metadata";
 export declare class ButtplugMessage {
     Id: number;
     constructor(Id: number);
@@ -27,27 +27,35 @@ export declare class Test extends ButtplugMessage {
     Id: number;
     constructor(TestString: string, Id?: number);
 }
+export declare enum ErrorClass {
+    ERROR_UNKNOWN = 0,
+    ERROR_INIT = 1,
+    ERROR_PING = 2,
+    ERROR_MSG = 3,
+    ERROR_DEVICE = 4,
+}
 export declare class Error extends ButtplugSystemMessage {
     ErrorMessage: string;
+    ErrorCode: ErrorClass;
     Id: number;
-    constructor(ErrorMessage: string, Id?: number);
+    constructor(ErrorMessage: string, ErrorCode?: ErrorClass, Id?: number);
 }
 export declare class DeviceInfo {
     DeviceIndex: number;
     DeviceName: string;
-    DeviceMessages: Array<string>;
-    constructor(DeviceIndex: number, DeviceName: string, DeviceMessages: Array<string>);
+    DeviceMessages: string[];
+    constructor(DeviceIndex: number, DeviceName: string, DeviceMessages: string[]);
 }
 export declare class DeviceList extends ButtplugSystemMessage {
-    Devices: Array<DeviceInfo>;
+    Devices: DeviceInfo[];
     Id: number;
-    constructor(Devices: Array<DeviceInfo>, Id: number);
+    constructor(Devices: DeviceInfo[], Id: number);
 }
 export declare class DeviceAdded extends ButtplugSystemMessage {
     DeviceIndex: number;
     DeviceName: string;
-    DeviceMessages: Array<string>;
-    constructor(DeviceIndex: number, DeviceName: string, DeviceMessages: Array<string>);
+    DeviceMessages: string[];
+    constructor(DeviceIndex: number, DeviceName: string, DeviceMessages: string[]);
 }
 export declare class DeviceRemoved extends ButtplugSystemMessage {
     DeviceIndex: number;
@@ -64,6 +72,9 @@ export declare class StartScanning extends ButtplugMessage {
 export declare class StopScanning extends ButtplugMessage {
     Id: number;
     constructor(Id?: number);
+}
+export declare class ScanningFinished extends ButtplugSystemMessage {
+    constructor();
 }
 export declare class RequestLog extends ButtplugMessage {
     LogLevel: string;
@@ -124,4 +135,4 @@ export declare class LovenseCmd extends ButtplugDeviceMessage {
     Id: number;
     constructor(Command: string, DeviceIndex?: number, Id?: number);
 }
-export declare function FromJSON(str: any): Array<ButtplugMessage>;
+export declare function FromJSON(str: any): ButtplugMessage[];

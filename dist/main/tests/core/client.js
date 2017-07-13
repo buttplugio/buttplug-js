@@ -36,11 +36,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
-var Messages = require("../../src/core/messages");
-var client_1 = require("../../src/core/client");
-var mock_socket_1 = require("mock-socket");
 var chai_1 = require("chai");
 require("mocha");
+var mock_socket_1 = require("mock-socket");
+var client_1 = require("../../src/core/client");
+var Messages = require("../../src/core/messages");
 describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, function () {
     var _this = this;
     function delaySend(aMsg) {
@@ -63,7 +63,7 @@ describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, f
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        mockServer.on('message', function (jsonmsg) {
+                        mockServer.on("message", function (jsonmsg) {
                             var msg = Messages.FromJSON(jsonmsg)[0];
                             delaySend(new Messages.Ok(msg.Id));
                         });
@@ -78,24 +78,24 @@ describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, f
             });
         }); });
         it("Should emit a log message on requestlog (testing basic event emitters)", function () { return __awaiter(_this, void 0, void 0, function () {
-            var p;
+            var finishTestPromise;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        mockServer.on('message', function (jsonmsg) {
+                        mockServer.on("message", function (jsonmsg) {
                             var msg = Messages.FromJSON(jsonmsg)[0];
                             delaySend(new Messages.Ok(msg.Id));
                             delaySend(new Messages.Log("Trace", "Test"));
                         });
-                        p = new Promise(function (resolve) { res = resolve; });
-                        bp.on('log', function (x) {
+                        finishTestPromise = new Promise(function (resolve) { res = resolve; });
+                        bp.on("log", function (x) {
                             chai_1.expect(x).to.deep.equal(new Messages.Log("Trace", "Test"));
                             res();
                         });
-                        return [4 /*yield*/, bp.RequestLog('Trace')];
+                        return [4 /*yield*/, bp.RequestLog("Trace")];
                     case 1:
                         _a.sent();
-                        return [2 /*return*/, p];
+                        return [2 /*return*/, finishTestPromise];
                 }
             });
         }); });
@@ -103,15 +103,15 @@ describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, f
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        mockServer.on('message', function (jsonmsg) {
+                        mockServer.on("message", function (jsonmsg) {
                             var msg = Messages.FromJSON(jsonmsg)[0];
                             delaySend(new Messages.Ok(msg.Id));
                             delaySend(new Messages.DeviceAdded(0, "Test Device", ["SingleMotorVibrateCmd"]));
                         });
-                        bp.on('deviceadded', function (x) {
+                        bp.on("deviceadded", function (x) {
                             delaySend(new Messages.DeviceRemoved(0));
                         });
-                        bp.on('deviceremoved', function (x) {
+                        bp.on("deviceremoved", function (x) {
                             res();
                         });
                         return [4 /*yield*/, bp.StartScanning()];
@@ -125,14 +125,33 @@ describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, f
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        mockServer.on('message', function (jsonmsg) {
+                        mockServer.on("message", function (jsonmsg) {
                             var msg = Messages.FromJSON(jsonmsg)[0];
                             delaySend(new Messages.DeviceList([new Messages.DeviceInfo(0, "Test Device", ["SingleMotorVibrateCmd"])], msg.Id));
                         });
-                        bp.on('deviceadded', function (x) {
+                        bp.on("deviceadded", function (x) {
                             res();
                         });
                         return [4 /*yield*/, bp.RequestDeviceList()];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/, p];
+                }
+            });
+        }); });
+        it("Should emit when device scanning is over", function () { return __awaiter(_this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        mockServer.on("message", function (jsonmsg) {
+                            var msg = Messages.FromJSON(jsonmsg)[0];
+                            delaySend(new Messages.Ok(msg.Id));
+                            delaySend(new Messages.ScanningFinished());
+                        });
+                        bp.on("scanningfinished", function (x) {
+                            res();
+                        });
+                        return [4 /*yield*/, bp.StartScanning()];
                     case 1:
                         _a.sent();
                         return [2 /*return*/, p];
@@ -145,17 +164,17 @@ describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, f
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        mockServer.on('message', function (jsonmsg) {
+                        mockServer.on("message", function (jsonmsg) {
                             var msg = Messages.FromJSON(jsonmsg)[0];
                             delaySend(new Messages.Ok(msg.Id));
-                            if (msg.getType() == 'StartScanning') {
+                            if (msg.getType() === "StartScanning") {
                                 delaySend(new Messages.DeviceAdded(0, "Test Device", ["SingleMotorVibrateCmd"]));
                             }
                             if (msg instanceof Messages.ButtplugDeviceMessage) {
                                 chai_1.expect(msg.DeviceIndex).to.equal(0);
                             }
                         });
-                        bp.on('deviceadded', function (x) { return __awaiter(_this, void 0, void 0, function () {
+                        bp.on("deviceadded", function (x) { return __awaiter(_this, void 0, void 0, function () {
                             var _1;
                             return __generator(this, function (_a) {
                                 switch (_a.label) {

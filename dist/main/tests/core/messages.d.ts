@@ -1,1 +1,1 @@
-import 'mocha';
+import "mocha";

@@ -1,4 +1,5 @@
-'use strict';
+// tslint:disable:max-classes-per-file
+"use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -10,8 +11,8 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-require("reflect-metadata");
 var class_transformer_1 = require("class-transformer");
+require("reflect-metadata");
 var ButtplugMessage = (function () {
     function ButtplugMessage(Id) {
         this.Id = Id;
@@ -20,10 +21,10 @@ var ButtplugMessage = (function () {
         return this.constructor.name;
     };
     ButtplugMessage.prototype.toJSON = function () {
-        var json_obj = {};
+        var jsonObj = {};
         var instance = this.constructor;
-        json_obj[instance.name] = class_transformer_1.classToPlain(this);
-        return JSON.stringify(json_obj);
+        jsonObj[instance.name] = class_transformer_1.classToPlain(this);
+        return JSON.stringify(jsonObj);
     };
     return ButtplugMessage;
 }());
@@ -82,12 +83,22 @@ var Test = (function (_super) {
     return Test;
 }(ButtplugMessage));
 exports.Test = Test;
+var ErrorClass;
+(function (ErrorClass) {
+    ErrorClass[ErrorClass["ERROR_UNKNOWN"] = 0] = "ERROR_UNKNOWN";
+    ErrorClass[ErrorClass["ERROR_INIT"] = 1] = "ERROR_INIT";
+    ErrorClass[ErrorClass["ERROR_PING"] = 2] = "ERROR_PING";
+    ErrorClass[ErrorClass["ERROR_MSG"] = 3] = "ERROR_MSG";
+    ErrorClass[ErrorClass["ERROR_DEVICE"] = 4] = "ERROR_DEVICE";
+})(ErrorClass = exports.ErrorClass || (exports.ErrorClass = {}));
 var Error = (function (_super) {
     __extends(Error, _super);
-    function Error(ErrorMessage, Id) {
+    function Error(ErrorMessage, ErrorCode, Id) {
+        if (ErrorCode === void 0) { ErrorCode = ErrorClass.ERROR_UNKNOWN; }
         if (Id === void 0) { Id = 1; }
         var _this = _super.call(this, Id) || this;
         _this.ErrorMessage = ErrorMessage;
+        _this.ErrorCode = ErrorCode;
         _this.Id = Id;
         return _this;
     }
@@ -169,6 +180,14 @@ var StopScanning = (function (_super) {
     return StopScanning;
 }(ButtplugMessage));
 exports.StopScanning = StopScanning;
+var ScanningFinished = (function (_super) {
+    __extends(ScanningFinished, _super);
+    function ScanningFinished() {
+        return _super.call(this) || this;
+    }
+    return ScanningFinished;
+}(ButtplugSystemMessage));
+exports.ScanningFinished = ScanningFinished;
 var RequestLog = (function (_super) {
     __extends(RequestLog, _super);
     function RequestLog(LogLevel, Id) {
@@ -303,26 +322,27 @@ var LovenseCmd = (function (_super) {
 }(ButtplugDeviceMessage));
 exports.LovenseCmd = LovenseCmd;
 var Messages = {
-    Ok: Ok,
-    Ping: Ping,
-    Test: Test,
-    Error: Error,
-    DeviceList: DeviceList,
     DeviceAdded: DeviceAdded,
+    DeviceList: DeviceList,
     DeviceRemoved: DeviceRemoved,
-    RequestDeviceList: RequestDeviceList,
-    StartScanning: StartScanning,
-    StopScanning: StopScanning,
-    RequestLog: RequestLog,
-    Log: Log,
-    RequestServerInfo: RequestServerInfo,
-    ServerInfo: ServerInfo,
+    Error: Error,
     FleshlightLaunchFW12Cmd: FleshlightLaunchFW12Cmd,
     KiirooCmd: KiirooCmd,
-    StopDeviceCmd: StopDeviceCmd,
-    StopAllDevices: StopAllDevices,
+    Log: Log,
+    LovenseCmd: LovenseCmd,
+    Ok: Ok,
+    Ping: Ping,
+    RequestDeviceList: RequestDeviceList,
+    RequestLog: RequestLog,
+    RequestServerInfo: RequestServerInfo,
+    ScanningFinished: ScanningFinished,
+    ServerInfo: ServerInfo,
     SingleMotorVibrateCmd: SingleMotorVibrateCmd,
-    LovenseCmd: LovenseCmd
+    StartScanning: StartScanning,
+    StopAllDevices: StopAllDevices,
+    StopDeviceCmd: StopDeviceCmd,
+    StopScanning: StopScanning,
+    Test: Test,
 };
 function FromJSON(str) {
     // TODO We're assuming we'll always get valid json here. While it should pass
@@ -338,7 +358,7 @@ function FromJSON(str) {
         var msg = class_transformer_1.plainToClass(Messages[Object.getOwnPropertyNames(x)[0]], x[Object.getOwnPropertyNames(x)[0]]);
         msgs.push(msg);
     }
-    if (msgs.length == 0) {
+    if (msgs.length === 0) {
         // Backup in case the server sent us a single object outside of an array.
         // Accoring to the schema, this should be illegal, so once schema checking
         // is added this should become dead code.

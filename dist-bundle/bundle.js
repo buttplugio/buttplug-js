@@ -81,6 +81,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+// tslint:disable:max-classes-per-file
 
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -93,8 +94,8 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-__webpack_require__(15);
 var class_transformer_1 = __webpack_require__(8);
+__webpack_require__(15);
 var ButtplugMessage = (function () {
     function ButtplugMessage(Id) {
         this.Id = Id;
@@ -103,10 +104,10 @@ var ButtplugMessage = (function () {
         return this.constructor.name;
     };
     ButtplugMessage.prototype.toJSON = function () {
-        var json_obj = {};
+        var jsonObj = {};
         var instance = this.constructor;
-        json_obj[instance.name] = class_transformer_1.classToPlain(this);
-        return JSON.stringify(json_obj);
+        jsonObj[instance.name] = class_transformer_1.classToPlain(this);
+        return JSON.stringify(jsonObj);
     };
     return ButtplugMessage;
 }());
@@ -165,12 +166,22 @@ var Test = (function (_super) {
     return Test;
 }(ButtplugMessage));
 exports.Test = Test;
+var ErrorClass;
+(function (ErrorClass) {
+    ErrorClass[ErrorClass["ERROR_UNKNOWN"] = 0] = "ERROR_UNKNOWN";
+    ErrorClass[ErrorClass["ERROR_INIT"] = 1] = "ERROR_INIT";
+    ErrorClass[ErrorClass["ERROR_PING"] = 2] = "ERROR_PING";
+    ErrorClass[ErrorClass["ERROR_MSG"] = 3] = "ERROR_MSG";
+    ErrorClass[ErrorClass["ERROR_DEVICE"] = 4] = "ERROR_DEVICE";
+})(ErrorClass = exports.ErrorClass || (exports.ErrorClass = {}));
 var Error = (function (_super) {
     __extends(Error, _super);
-    function Error(ErrorMessage, Id) {
+    function Error(ErrorMessage, ErrorCode, Id) {
+        if (ErrorCode === void 0) { ErrorCode = ErrorClass.ERROR_UNKNOWN; }
         if (Id === void 0) { Id = 1; }
         var _this = _super.call(this, Id) || this;
         _this.ErrorMessage = ErrorMessage;
+        _this.ErrorCode = ErrorCode;
         _this.Id = Id;
         return _this;
     }
@@ -252,6 +263,14 @@ var StopScanning = (function (_super) {
     return StopScanning;
 }(ButtplugMessage));
 exports.StopScanning = StopScanning;
+var ScanningFinished = (function (_super) {
+    __extends(ScanningFinished, _super);
+    function ScanningFinished() {
+        return _super.call(this) || this;
+    }
+    return ScanningFinished;
+}(ButtplugSystemMessage));
+exports.ScanningFinished = ScanningFinished;
 var RequestLog = (function (_super) {
     __extends(RequestLog, _super);
     function RequestLog(LogLevel, Id) {
@@ -386,26 +405,27 @@ var LovenseCmd = (function (_super) {
 }(ButtplugDeviceMessage));
 exports.LovenseCmd = LovenseCmd;
 var Messages = {
-    Ok: Ok,
-    Ping: Ping,
-    Test: Test,
-    Error: Error,
-    DeviceList: DeviceList,
     DeviceAdded: DeviceAdded,
+    DeviceList: DeviceList,
     DeviceRemoved: DeviceRemoved,
-    RequestDeviceList: RequestDeviceList,
-    StartScanning: StartScanning,
-    StopScanning: StopScanning,
-    RequestLog: RequestLog,
-    Log: Log,
-    RequestServerInfo: RequestServerInfo,
-    ServerInfo: ServerInfo,
+    Error: Error,
     FleshlightLaunchFW12Cmd: FleshlightLaunchFW12Cmd,
     KiirooCmd: KiirooCmd,
-    StopDeviceCmd: StopDeviceCmd,
-    StopAllDevices: StopAllDevices,
+    Log: Log,
+    LovenseCmd: LovenseCmd,
+    Ok: Ok,
+    Ping: Ping,
+    RequestDeviceList: RequestDeviceList,
+    RequestLog: RequestLog,
+    RequestServerInfo: RequestServerInfo,
+    ScanningFinished: ScanningFinished,
+    ServerInfo: ServerInfo,
     SingleMotorVibrateCmd: SingleMotorVibrateCmd,
-    LovenseCmd: LovenseCmd
+    StartScanning: StartScanning,
+    StopAllDevices: StopAllDevices,
+    StopDeviceCmd: StopDeviceCmd,
+    StopScanning: StopScanning,
+    Test: Test,
 };
 function FromJSON(str) {
     // TODO We're assuming we'll always get valid json here. While it should pass
@@ -421,7 +441,7 @@ function FromJSON(str) {
         var msg = class_transformer_1.plainToClass(Messages[Object.getOwnPropertyNames(x)[0]], x[Object.getOwnPropertyNames(x)[0]]);
         msgs.push(msg);
     }
-    if (msgs.length == 0) {
+    if (msgs.length === 0) {
         // Backup in case the server sent us a single object outside of an array.
         // Accoring to the schema, this should be illegal, so once schema checking
         // is added this should become dead code.
@@ -439,6 +459,7 @@ exports.FromJSON = FromJSON;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var TransformOperationExecutor_1 = __webpack_require__(6);
 var ClassTransformer = (function () {
     function ClassTransformer() {
@@ -497,6 +518,7 @@ exports.ClassTransformer = ClassTransformer;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var MetadataStorage_1 = __webpack_require__(11);
 /**
  * Default metadata storage is used as singleton and can be used to storage all metadatas.
@@ -559,8 +581,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var events_1 = __webpack_require__(5);
-var Messages = __webpack_require__(0);
 var device_1 = __webpack_require__(4);
+var Messages = __webpack_require__(0);
 var ButtplugClient = (function (_super) {
     __extends(ButtplugClient, _super);
     function ButtplugClient(aClientName) {
@@ -573,22 +595,27 @@ var ButtplugClient = (function (_super) {
             var res, rej, p;
             return __generator(this, function (_a) {
                 this._ws = new WebSocket(aUrl);
-                this._ws.addEventListener('message', function (ev) { _this.ParseIncomingMessage(ev); });
+                this._ws.addEventListener("message", function (ev) { _this.ParseIncomingMessage(ev); });
                 p = new Promise(function (resolve, reject) { res = resolve; rej = reject; });
-                this._ws.addEventListener('open', function (ev) { return __awaiter(_this, void 0, void 0, function () {
-                    var msg;
+                this._ws.addEventListener("open", function (ev) { return __awaiter(_this, void 0, void 0, function () {
+                    var _this = this;
+                    var msg, ping;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0: return [4 /*yield*/, this.SendMessage(new Messages.RequestServerInfo(this._clientName))];
                             case 1:
                                 msg = _a.sent();
                                 switch (msg.getType()) {
-                                    case 'ServerInfo':
-                                        // TODO: Actually deal with ping timing, maybe store server name, do
-                                        // something with message template version?
+                                    case "ServerInfo":
+                                        ping = msg.MaxPingTime;
+                                        if (ping > 0) {
+                                            this._pingTimer = setInterval(function () {
+                                                return _this.SendMessage(new Messages.Ping(_this._counter));
+                                            }, Math.round(ping / 2));
+                                        }
                                         res();
                                         break;
-                                    case 'Error':
+                                    case "Error":
                                         rej();
                                         break;
                                 }
@@ -596,28 +623,8 @@ var ButtplugClient = (function (_super) {
                         }
                     });
                 }); });
-                this._ws.addEventListener('close', function (ev) { rej(ev); });
+                this._ws.addEventListener("close", function (ev) { rej(ev); });
                 return [2 /*return*/, p];
-            });
-        }); };
-        _this.SendMsgExpectOk = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
-            var res, rej, msg, p;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.SendMessage(aMsg)];
-                    case 1:
-                        msg = _a.sent();
-                        p = new Promise(function (resolve, reject) { res = resolve; rej = reject; });
-                        switch (msg.getType()) {
-                            case 'Ok':
-                                res();
-                                break;
-                            default:
-                                rej();
-                                break;
-                        }
-                        return [2 /*return*/, p];
-                }
             });
         }); };
         _this.RequestDeviceList = function () { return __awaiter(_this, void 0, void 0, function () {
@@ -632,7 +639,7 @@ var ButtplugClient = (function (_super) {
                             if (!_this._devices.has(d.DeviceIndex)) {
                                 var device = device_1.Device.fromMsg(d);
                                 _this._devices.set(d.DeviceIndex, device);
-                                _this.emit('deviceadded', device);
+                                _this.emit("deviceadded", device);
                             }
                         });
                         return [2 /*return*/];
@@ -677,40 +684,89 @@ var ButtplugClient = (function (_super) {
                     return;
                 }
                 switch (x.constructor.name) {
-                    case 'Log':
-                        _this.emit('log', x);
+                    case "Log":
+                        _this.emit("log", x);
                         break;
-                    case 'DeviceAdded':
-                        var added_msg = x;
-                        var d = device_1.Device.fromMsg(added_msg);
-                        _this._devices.set(added_msg.DeviceIndex, d);
-                        _this.emit('deviceadded', d);
+                    case "DeviceAdded":
+                        var addedMsg = x;
+                        var addedDevice = device_1.Device.fromMsg(addedMsg);
+                        _this._devices.set(addedMsg.DeviceIndex, addedDevice);
+                        _this.emit("deviceadded", addedDevice);
                         break;
-                    case 'DeviceRemoved':
-                        var removed_msg = x;
-                        if (_this._devices.has(removed_msg.DeviceIndex)) {
-                            var d_1 = _this._devices.get(removed_msg.DeviceIndex);
-                            _this._devices.delete(removed_msg.DeviceIndex);
-                            _this.emit('deviceremoved', d_1);
+                    case "DeviceRemoved":
+                        var removedMsg = x;
+                        if (_this._devices.has(removedMsg.DeviceIndex)) {
+                            var removedDevice = _this._devices.get(removedMsg.DeviceIndex);
+                            _this._devices.delete(removedMsg.DeviceIndex);
+                            _this.emit("deviceremoved", removedDevice);
                         }
                         break;
+                    case "ScanningFinished":
+                        _this.emit("scanningfinished", x);
+                        break;
                 }
-                ;
             });
         };
         _this.ParseIncomingMessage = function (aEvent) {
-            if (typeof (aEvent.data) === 'string') {
+            if (typeof (aEvent.data) === "string") {
                 _this.ParseJSONMessage(aEvent.data);
             }
             else if (aEvent.data instanceof Blob) {
                 var reader = new FileReader();
-                reader.addEventListener('load', function (ev) { _this.OnReaderLoad(ev); });
+                reader.addEventListener("load", function (ev) { _this.OnReaderLoad(ev); });
                 reader.readAsText(aEvent.data);
             }
         };
+        _this.SendMsgExpectOk = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
+            var res, rej, msg, p;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.SendMessage(aMsg)];
+                    case 1:
+                        msg = _a.sent();
+                        p = new Promise(function (resolve, reject) { res = resolve; rej = reject; });
+                        switch (msg.getType()) {
+                            case "Ok":
+                                res();
+                                break;
+                            default:
+                                rej();
+                                break;
+                        }
+                        return [2 /*return*/, p];
+                }
+            });
+        }); };
         _this._clientName = aClientName;
         return _this;
     }
+    ButtplugClient.prototype.getDevices = function () {
+        var devices = [];
+        this._devices.forEach(function (d, i) {
+            devices.push(d);
+        });
+        return devices;
+    };
+    ButtplugClient.prototype.SendDeviceMessage = function (aDevice, aDeviceMsg) {
+        return __awaiter(this, void 0, void 0, function () {
+            var dev;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        dev = this._devices.get(aDevice.Index);
+                        if (dev === undefined) {
+                            return [2 /*return*/, Promise.reject(new Error("Device not available."))];
+                        }
+                        if (dev.AllowedMessages.indexOf(aDeviceMsg.getType()) === -1) {
+                            return [2 /*return*/, Promise.reject(new Error("Device does not accept that message type."))];
+                        }
+                        aDeviceMsg.DeviceIndex = aDevice.Index;
+                        return [4 /*yield*/, this.SendMsgExpectOk(aDeviceMsg)];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
     ButtplugClient.prototype.SendMessage = function (aMsg) {
         return __awaiter(this, void 0, void 0, function () {
             var res, msgPromise;
@@ -728,35 +784,8 @@ var ButtplugClient = (function (_super) {
             });
         });
     };
-    ButtplugClient.prototype.getDevices = function () {
-        var devices = [];
-        this._devices.forEach(function (d, i) {
-            devices.push(d);
-        });
-        return devices;
-    };
     ButtplugClient.prototype.OnReaderLoad = function (aEvent) {
         this.ParseJSONMessage(aEvent.target.result);
-    };
-    ButtplugClient.prototype.SendDeviceMessage = function (aDevice, aDeviceMsg) {
-        return __awaiter(this, void 0, void 0, function () {
-            var dev;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        dev = this._devices.get(aDevice.Index);
-                        if (dev === undefined) {
-                            return [2 /*return*/, Promise.reject(new Error("Device not available."))];
-                        }
-                        if (dev.AllowedMessages.indexOf(aDeviceMsg.getType()) == -1) {
-                            return [2 /*return*/, Promise.reject(new Error("Device does not accept that message type."))];
-                        }
-                        aDeviceMsg.DeviceIndex = aDevice.Index;
-                        return [4 /*yield*/, this.SendMsgExpectOk(aDeviceMsg)];
-                    case 1: return [2 /*return*/, _a.sent()];
-                }
-            });
-        });
     };
     return ButtplugClient;
 }(events_1.EventEmitter));
@@ -1124,6 +1153,7 @@ function isUndefined(arg) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var storage_1 = __webpack_require__(2);
 var TransformOperationExecutor = (function () {
     // -------------------------------------------------------------------------
@@ -1135,7 +1165,7 @@ var TransformOperationExecutor = (function () {
         // -------------------------------------------------------------------------
         // Private Properties
         // -------------------------------------------------------------------------
-        this.transformedTypes = [];
+        this.transformedTypesMap = new Map();
     }
     // -------------------------------------------------------------------------
     // Public Methods
@@ -1147,7 +1177,7 @@ var TransformOperationExecutor = (function () {
             var newValue_1 = arrayType && this.transformationType === "plainToClass" ? new arrayType() : [];
             value.forEach(function (subValue, index) {
                 var subSource = source ? source[index] : undefined;
-                if (!_this.isCircular(subValue, level)) {
+                if (!_this.options.enableCircularCheck || !_this.isCircular(subValue, level)) {
                     var value_1 = _this.transform(subSource, subValue, targetType, undefined, subValue instanceof Map, level + 1);
                     if (newValue_1 instanceof Set) {
                         newValue_1.add(value_1);
@@ -1190,8 +1220,10 @@ var TransformOperationExecutor = (function () {
                 targetType = value.constructor;
             if (!targetType && source)
                 targetType = source.constructor;
-            // add transformed type to prevent circular references
-            this.transformedTypes.push({ level: level, object: value });
+            if (this.options.enableCircularCheck) {
+                // add transformed type to prevent circular references
+                this.transformedTypesMap.set(value, { level: level, object: value });
+            }
             var keys = this.getKeys(targetType, value);
             var newValue = source ? source : {};
             if (!source && (this.transformationType === "plainToClass" || this.transformationType === "classToClass")) {
@@ -1205,8 +1237,7 @@ var TransformOperationExecutor = (function () {
                     newValue = {};
                 }
             }
-            // traverse over keys
-            var _loop_1 = function(key) {
+            var _loop_1 = function (key) {
                 var valueKey = key, newValueKey = key, propertyName = key;
                 if (!this_1.options.ignoreDecorators && targetType) {
                     if (this_1.transformationType === "plainToClass") {
@@ -1266,7 +1297,7 @@ var TransformOperationExecutor = (function () {
                         && (newValue[newValueKey] instanceof Function || (descriptor && !descriptor.set)))
                         return "continue";
                 }
-                if (!this_1.isCircular(subValue, level)) {
+                if (!this_1.options.enableCircularCheck || !this_1.isCircular(subValue, level)) {
                     var transformKey = this_1.transformationType === "plainToClass" ? newValueKey : key;
                     var finalValue = this_1.transform(subSource, subValue, type, arrayType_1, isSubValueMap, level + 1);
                     finalValue = this_1.applyCustomTransformations(finalValue, targetType, transformKey);
@@ -1289,6 +1320,7 @@ var TransformOperationExecutor = (function () {
                 }
             };
             var this_1 = this;
+            // traverse over keys
             for (var _i = 0, keys_1 = keys; _i < keys_1.length; _i++) {
                 var key = keys_1[_i];
                 _loop_1(key);
@@ -1332,7 +1364,8 @@ var TransformOperationExecutor = (function () {
     };
     // preventing circular references
     TransformOperationExecutor.prototype.isCircular = function (object, level) {
-        return !!this.transformedTypes.find(function (transformed) { return transformed.object === object && transformed.level < level; });
+        var transformed = this.transformedTypesMap.get(object);
+        return transformed !== undefined && transformed.level < level;
     };
     TransformOperationExecutor.prototype.getReflectedType = function (target, propertyName) {
         if (!target)
@@ -1442,6 +1475,7 @@ exports.TransformOperationExecutor = TransformOperationExecutor;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var ClassTransformer_1 = __webpack_require__(1);
 var storage_1 = __webpack_require__(2);
 var TypeMetadata_1 = __webpack_require__(13);
@@ -1503,7 +1537,7 @@ function TransformClassToPlain(params) {
         descriptor.value = function () {
             var args = [];
             for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i - 0] = arguments[_i];
+                args[_i] = arguments[_i];
             }
             var result = originalMethod.apply(this, args);
             var isPromise = !!result && (typeof result === "object" || typeof result === "function") && typeof result.then === "function";
@@ -1522,7 +1556,7 @@ function TransformClassToClass(params) {
         descriptor.value = function () {
             var args = [];
             for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i - 0] = arguments[_i];
+                args[_i] = arguments[_i];
             }
             var result = originalMethod.apply(this, args);
             var isPromise = !!result && (typeof result === "object" || typeof result === "function") && typeof result.then === "function";
@@ -1544,6 +1578,7 @@ exports.TransformClassToClass = TransformClassToClass;
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
+Object.defineProperty(exports, "__esModule", { value: true });
 var ClassTransformer_1 = __webpack_require__(1);
 var ClassTransformer_2 = __webpack_require__(1);
 exports.ClassTransformer = ClassTransformer_2.ClassTransformer;
@@ -1601,6 +1636,7 @@ exports.deserializeArray = deserializeArray;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var ExcludeMetadata = (function () {
     function ExcludeMetadata(target, propertyName, options) {
         this.target = target;
@@ -1620,6 +1656,7 @@ exports.ExcludeMetadata = ExcludeMetadata;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var ExposeMetadata = (function () {
     function ExposeMetadata(target, propertyName, options) {
         this.target = target;
@@ -1639,6 +1676,7 @@ exports.ExposeMetadata = ExposeMetadata;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Storage all library metadata.
  */
@@ -1693,8 +1731,8 @@ var MetadataStorage = (function () {
         return this.findMetadata(this._exposeMetadatas, target, propertyName);
     };
     MetadataStorage.prototype.findExposeMetadataByCustomName = function (target, name) {
-        return this._exposeMetadatas.find(function (metadata) {
-            return metadata.target === target && metadata.options && metadata.options.name === name;
+        return this.getExposedMetadatas(target).find(function (metadata) {
+            return metadata.options && metadata.options.name === name;
         });
     };
     MetadataStorage.prototype.findTypeMetadata = function (target, propertyName) {
@@ -1783,6 +1821,7 @@ exports.MetadataStorage = MetadataStorage;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var TransformMetadata = (function () {
     function TransformMetadata(target, propertyName, transformFn, options) {
         this.target = target;
@@ -1803,6 +1842,7 @@ exports.TransformMetadata = TransformMetadata;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var TypeMetadata = (function () {
     function TypeMetadata(target, propertyName, reflectedType, typeFunction) {
         this.target = target;
