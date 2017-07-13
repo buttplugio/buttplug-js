@@ -4,7 +4,7 @@ import * as Messages from "../src/core/messages";
 
 let devices: Device[] = [];
 let client = new ButtplugClient("Example Typescript Client");
-client.Connect("ws://192.168.123.2:12345/buttplug").then(
+client.Connect("wss://localhost:12345/buttplug").then(
     function (result) {
         console.log(result); // "Stuff worked!"
         return client.StartScanning();
@@ -27,7 +27,11 @@ client.Connect("ws://192.168.123.2:12345/buttplug").then(
         console.log(err); // Error: "It broke"
       }
   );
-
+  
+client.on("deviceadded", function() {
+        devices = client.getDevices();
+});
+  
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }

@@ -1,35 +1,36 @@
-'use strict';
+// tslint:disable:max-classes-per-file
+"use strict";
 
-import 'reflect-metadata';
-import {plainToClass, classToPlain} from 'class-transformer';
+import {classToPlain, plainToClass} from "class-transformer";
+import "reflect-metadata";
 
 export class ButtplugMessage {
 
   constructor(public Id: number) {
   }
 
-  public getType() : string {
+  public getType(): string {
     return this.constructor.name;
   }
 
-  public toJSON() : string {
-    let json_obj = {};
-    let instance: any = this.constructor;
-    json_obj[instance.name] = classToPlain(this);
-    return JSON.stringify(json_obj);
+  public toJSON(): string {
+    const jsonObj = {};
+    const instance: any = this.constructor;
+    jsonObj[instance.name] = classToPlain(this);
+    return JSON.stringify(jsonObj);
   }
 }
 
 export class ButtplugDeviceMessage extends ButtplugMessage {
   constructor(public DeviceIndex: number,
               public Id: number) {
-    super(Id)
+    super(Id);
   }
 }
 
 export class ButtplugSystemMessage extends ButtplugMessage {
   constructor(public Id: number = 0) {
-    super(Id)
+    super(Id);
   }
 }
 
@@ -52,24 +53,32 @@ export class Test extends ButtplugMessage {
   }
 }
 
+export enum ErrorClass {
+    ERROR_UNKNOWN,
+    ERROR_INIT,
+    ERROR_PING,
+    ERROR_MSG,
+    ERROR_DEVICE,
+}
+
 export class Error extends ButtplugSystemMessage {
-  constructor(public ErrorMessage: string,
-              public Id: number = 1) {
+
+    constructor(public ErrorMessage: string,
+                public ErrorCode: ErrorClass = ErrorClass.ERROR_UNKNOWN,
+                public Id: number = 1) {
     super(Id);
   }
 }
 
-export class DeviceInfo
-{
+export class DeviceInfo {
   constructor(public DeviceIndex: number,
               public DeviceName: string,
-              public DeviceMessages: Array<string>) {
+              public DeviceMessages: string[]) {
   }
 }
 
-
 export class DeviceList extends ButtplugSystemMessage {
-  constructor(public Devices: Array<DeviceInfo>,
+  constructor(public Devices: DeviceInfo[],
               public Id: number) {
     super();
   }
@@ -78,7 +87,7 @@ export class DeviceList extends ButtplugSystemMessage {
 export class DeviceAdded extends ButtplugSystemMessage {
   constructor(public DeviceIndex: number,
               public DeviceName: string,
-              public DeviceMessages: Array<string>) {
+              public DeviceMessages: string[]) {
     super();
   }
 }
@@ -102,9 +111,15 @@ export class StartScanning extends ButtplugMessage {
 }
 
 export class StopScanning extends ButtplugMessage {
-  constructor(public Id: number = 1) {
-    super(Id);
-  }
+    constructor(public Id: number = 1) {
+        super(Id);
+    }
+}
+
+export class ScanningFinished extends ButtplugSystemMessage {
+    constructor() {
+        super();
+    }
 }
 
 export class RequestLog extends ButtplugMessage {
@@ -185,48 +200,49 @@ export class LovenseCmd extends ButtplugDeviceMessage {
   }
 }
 
-let Messages = {
-  Ok: Ok,
-  Ping: Ping,
-  Test: Test,
-  Error: Error,
-  DeviceList: DeviceList,
-  DeviceAdded: DeviceAdded,
-  DeviceRemoved: DeviceRemoved,
-  RequestDeviceList: RequestDeviceList,
-  StartScanning: StartScanning,
-  StopScanning: StopScanning,
-  RequestLog: RequestLog,
-  Log: Log,
-  RequestServerInfo: RequestServerInfo,
-  ServerInfo: ServerInfo,
-  FleshlightLaunchFW12Cmd: FleshlightLaunchFW12Cmd,
-  KiirooCmd: KiirooCmd,
-  StopDeviceCmd: StopDeviceCmd,
-  StopAllDevices: StopAllDevices,
-  SingleMotorVibrateCmd: SingleMotorVibrateCmd,
-  LovenseCmd: LovenseCmd
+const Messages = {
+  DeviceAdded,
+  DeviceList,
+  DeviceRemoved,
+  Error,
+  FleshlightLaunchFW12Cmd,
+  KiirooCmd,
+  Log,
+  LovenseCmd,
+  Ok,
+  Ping,
+  RequestDeviceList,
+  RequestLog,
+  RequestServerInfo,
+  ScanningFinished,
+  ServerInfo,
+  SingleMotorVibrateCmd,
+  StartScanning,
+  StopAllDevices,
+  StopDeviceCmd,
+  StopScanning,
+  Test,
 };
 
-export function FromJSON(str) : Array<ButtplugMessage> {
+export function FromJSON(str): ButtplugMessage[] {
   // TODO We're assuming we'll always get valid json here. While it should pass
   // through the schema parser first, it'd probably be good to make sure it
   // deals with parse failures too.
-  let msgarray = JSON.parse(str);
-  let msgs : Array<ButtplugMessage> = [];
-  for (let x of Array.from(msgarray)) {
+  const msgarray = JSON.parse(str);
+  const msgs: ButtplugMessage[] = [];
+  for (const x of Array.from(msgarray)) {
     // Can't get this to resolve nicely as a type, so just start from any and cast
     // after. Not sure how to resolve plainToClass to a type since this is
     // dynamic.
-    let msg : any = plainToClass(Messages[Object.getOwnPropertyNames(x)[0]],
+    const msg: any = plainToClass(Messages[Object.getOwnPropertyNames(x)[0]],
                                  x[Object.getOwnPropertyNames(x)[0]]);
     msgs.push(msg as ButtplugMessage);
   }
-  if (msgs.length == 0) {
+  if (msgs.length === 0) {
     // Backup in case the server sent us a single object outside of an array.
     // Accoring to the schema, this should be illegal, so once schema checking
     // is added this should become dead code.
-    let msg: any = plainToClass(Messages[Object.getOwnPropertyNames(msgarray)[0]],
+    const msg: any = plainToClass(Messages[Object.getOwnPropertyNames(msgarray)[0]],
                                 msgarray[Object.getOwnPropertyNames(msgarray)[0]]);
     msgs.push(msg as ButtplugMessage);
   }

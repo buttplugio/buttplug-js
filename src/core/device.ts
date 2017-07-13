@@ -1,16 +1,16 @@
-'use strict'
-import * as Messages from './messages';
+"use strict";
+import * as Messages from "./messages";
 
 export class Device {
-  constructor(private _index: number,
-    private _name: string,
-    private _allowedMessages: Array<string>) {
-  }
-
-  static fromMsg(aMsg: Messages.DeviceAdded | Messages.DeviceInfo): Device {
+  public static fromMsg(aMsg: Messages.DeviceAdded | Messages.DeviceInfo): Device {
     return new Device(aMsg.DeviceIndex,
                       aMsg.DeviceName,
                       aMsg.DeviceMessages);
+  }
+
+  constructor(private _index: number,
+              private _name: string,
+              private _allowedMessages: string[]) {
   }
 
   public get Name(): string {
@@ -21,12 +21,12 @@ export class Device {
     return this._index;
   }
 
-  public get AllowedMessages(): Array<string> {
+  public get AllowedMessages(): string[] {
     return this._allowedMessages;
   }
 
   public newMessage(allowedMsg: number): Messages.ButtplugMessage {
-    let msg = this._allowedMessages[allowedMsg];
+    const msg = this._allowedMessages[allowedMsg];
     return Messages[msg];
   }
 }
