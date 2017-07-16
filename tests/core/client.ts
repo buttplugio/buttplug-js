@@ -9,8 +9,15 @@ describe("Client Tests", async () => {
   let bp: ButtplugClient;
   let p;
   let res;
-  beforeEach(function() {
+  beforeEach(function(done) {
     mockServer = new Server("ws://localhost:6868");
+    const serverInfo = (jsonmsg: string) => {
+      const msg: Messages.ButtplugMessage = Messages.FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
+      delaySend(new Messages.ServerInfo(0, 0, 0, 0, 0, "Test Server", msg.Id));
+      mockServer.removeEventListener("message", serverInfo);
+      done();
+    };
+    mockServer.on("message", serverInfo);
     bp = new ButtplugClient("Test Buttplug Client");
     bp.Connect("ws://localhost:6868");
     p = new Promise((resolve) => { res = resolve; });
