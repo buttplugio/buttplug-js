@@ -3,8 +3,9 @@ sudo: false
 node_js:
   - 7
 install:
-  - npm install
+  - yarn
 script:
   - yarn tslint
   - yarn test
 
+cache: yarn
