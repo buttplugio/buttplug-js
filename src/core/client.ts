@@ -6,45 +6,71 @@ import * as Messages from "./messages";
 
 export class ButtplugClient extends EventEmitter {
   private _devices: Map<number, Device> = new Map();
-  private _ws: WebSocket;
+  private _ws: WebSocket | undefined;
   private _counter: number = 1;
   private _waitingMsgs: Map<number, (val: Messages.ButtplugMessage) => void> = new Map();
   private _clientName: string;
-  private _pingTimer;
+  private _pingTimer: NodeJS.Timer;
 
   constructor(aClientName: string) {
     super();
     this._clientName = aClientName;
   }
 
+  get Connected(): boolean {
+    return this._ws !== undefined;
+  }
+
   public Connect = async (aUrl: string): Promise<void> => {
-    this._ws = new WebSocket(aUrl);
-    this._ws.addEventListener("message", (ev) => { this.ParseIncomingMessage(ev); });
+    const ws = new WebSocket(aUrl);
+    ws.addEventListener("message", (ev) => { this.ParseIncomingMessage(ev); });
     let res;
     let rej;
     const p = new Promise<void>((resolve, reject) => { res = resolve; rej = reject; });
-    this._ws.addEventListener("open", async (ev) => {
+    const conErrorCallback = (ev) => { rej(ev); };
+    ws.addEventListener("open", async (ev) => {
+      this._ws = ws;
       const msg = await this.SendMessage(new Messages.RequestServerInfo(this._clientName));
       switch (msg.getType()) {
-        case "ServerInfo":
+        case "ServerInfo": {
           // TODO: maybe store server name, do something with message template version?
           const ping = (msg as Messages.ServerInfo).MaxPingTime;
           if (ping > 0) {
             this._pingTimer = setInterval(() =>
               this.SendMessage(new Messages.Ping(this._counter)), Math.round(ping / 2));
           }
+          this._ws.removeEventListener("close", conErrorCallback);
+          this._ws.addEventListener("close", this.Disconnect);
           res();
           break;
-        case "Error":
+        }
+        case "Error": {
+          this.Disconnect();
           rej();
           break;
+        }
       }
     });
-    this._ws.addEventListener("close", (ev) => { rej(ev); });
+    ws.addEventListener("close", conErrorCallback);
     return p;
   }
 
+  public Disconnect = () => {
+    if (this._pingTimer) {
+      clearInterval(this._pingTimer);
+    }
+    if (this._ws === undefined) {
+      return;
+    }
+    this._ws.close();
+    this._ws = undefined;
+    this.emit("close");
+  }
+
   public RequestDeviceList = async () => {
+    if (this._ws === undefined) {
+      throw new Error("ButtplugClient not connected");
+    }
     const deviceList = (await this.SendMessage(new Messages.RequestDeviceList())) as Messages.DeviceList;
     deviceList.Devices.forEach((d) => {
       if (!this._devices.has(d.DeviceIndex)) {
@@ -56,6 +82,9 @@ export class ButtplugClient extends EventEmitter {
   }
 
   public getDevices(): Device[] {
+    if (this._ws === undefined) {
+      throw new Error("ButtplugClient not connected");
+    }
     const devices: Device[] = [];
     this._devices.forEach((d, i) => {
       devices.push(d);
@@ -75,7 +104,10 @@ export class ButtplugClient extends EventEmitter {
     return await this.SendMsgExpectOk(new Messages.RequestLog(aLogLevel));
   }
 
-    public async SendDeviceMessage(aDevice: Device, aDeviceMsg: Messages.ButtplugDeviceMessage): Promise<void> {
+  public async SendDeviceMessage(aDevice: Device, aDeviceMsg: Messages.ButtplugDeviceMessage): Promise<void> {
+    if (this._ws === undefined) {
+      throw new Error("ButtplugClient not connected");
+    }
     const dev = this._devices.get(aDevice.Index);
     if (dev === undefined) {
       return Promise.reject(new Error("Device not available."));
@@ -135,7 +167,14 @@ export class ButtplugClient extends EventEmitter {
     }
   }
 
+  private onWebsocketClose = (ev: Event) => {
+    const a = 1;
+  }
+
   private async SendMessage(aMsg: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage> {
+    if (this._ws === undefined) {
+      throw new Error("ButtplugClient not connected");
+    }
     let res;
     aMsg.Id = this._counter;
     const msgPromise = new Promise<Messages.ButtplugMessage>((resolve) => { res = resolve; });
