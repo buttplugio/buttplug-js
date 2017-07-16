@@ -10,7 +10,9 @@ export declare class ButtplugClient extends EventEmitter {
     private _clientName;
     private _pingTimer;
     constructor(aClientName: string);
+    readonly Connected: boolean;
     Connect: (aUrl: string) => Promise<void>;
+    Disconnect: () => void;
     RequestDeviceList: () => Promise<void>;
     getDevices(): Device[];
     StartScanning: () => Promise<void>;
@@ -19,6 +21,7 @@ export declare class ButtplugClient extends EventEmitter {
     SendDeviceMessage(aDevice: Device, aDeviceMsg: Messages.ButtplugDeviceMessage): Promise<void>;
     ParseJSONMessage: (aJSONMsg: string) => void;
     ParseIncomingMessage: (aEvent: MessageEvent) => void;
+    private onWebsocketClose;
     private SendMessage(aMsg);
     private SendMsgExpectOk;
     private OnReaderLoad(aEvent);

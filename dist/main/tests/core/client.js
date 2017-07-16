@@ -50,8 +50,15 @@ describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, f
     }
     var mockServer, bp, p, res;
     return __generator(this, function (_a) {
-        beforeEach(function () {
+        beforeEach(function (done) {
             mockServer = new mock_socket_1.Server("ws://localhost:6868");
+            var serverInfo = function (jsonmsg) {
+                var msg = Messages.FromJSON(jsonmsg)[0];
+                delaySend(new Messages.ServerInfo(0, 0, 0, 0, 0, "Test Server", msg.Id));
+                mockServer.removeEventListener("message", serverInfo);
+                done();
+            };
+            mockServer.on("message", serverInfo);
             bp = new client_1.ButtplugClient("Test Buttplug Client");
             bp.Connect("ws://localhost:6868");
             p = new Promise(function (resolve) { res = resolve; });

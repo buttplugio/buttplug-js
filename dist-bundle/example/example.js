@@ -592,47 +592,70 @@ var ButtplugClient = (function (_super) {
         _this._waitingMsgs = new Map();
         _this.Connect = function (aUrl) { return __awaiter(_this, void 0, void 0, function () {
             var _this = this;
-            var res, rej, p;
+            var ws, res, rej, p, conErrorCallback;
             return __generator(this, function (_a) {
-                this._ws = new WebSocket(aUrl);
-                this._ws.addEventListener("message", function (ev) { _this.ParseIncomingMessage(ev); });
+                ws = new WebSocket(aUrl);
+                ws.addEventListener("message", function (ev) { _this.ParseIncomingMessage(ev); });
                 p = new Promise(function (resolve, reject) { res = resolve; rej = reject; });
-                this._ws.addEventListener("open", function (ev) { return __awaiter(_this, void 0, void 0, function () {
+                conErrorCallback = function (ev) { rej(ev); };
+                ws.addEventListener("open", function (ev) { return __awaiter(_this, void 0, void 0, function () {
                     var _this = this;
                     var msg, ping;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, this.SendMessage(new Messages.RequestServerInfo(this._clientName))];
+                            case 0:
+                                this._ws = ws;
+                                return [4 /*yield*/, this.SendMessage(new Messages.RequestServerInfo(this._clientName))];
                             case 1:
                                 msg = _a.sent();
                                 switch (msg.getType()) {
-                                    case "ServerInfo":
+                                    case "ServerInfo": {
                                         ping = msg.MaxPingTime;
                                         if (ping > 0) {
                                             this._pingTimer = setInterval(function () {
                                                 return _this.SendMessage(new Messages.Ping(_this._counter));
                                             }, Math.round(ping / 2));
                                         }
+                                        this._ws.removeEventListener("close", conErrorCallback);
+                                        this._ws.addEventListener("close", this.Disconnect);
                                         res();
                                         break;
-                                    case "Error":
+                                    }
+                                    case "Error": {
+                                        this.Disconnect();
                                         rej();
                                         break;
+                                    }
                                 }
                                 return [2 /*return*/];
                         }
                     });
                 }); });
-                this._ws.addEventListener("close", function (ev) { rej(ev); });
+                ws.addEventListener("close", conErrorCallback);
                 return [2 /*return*/, p];
             });
         }); };
+        _this.Disconnect = function () {
+            if (_this._pingTimer) {
+                clearInterval(_this._pingTimer);
+            }
+            if (_this._ws === undefined) {
+                return;
+            }
+            _this._ws.close();
+            _this._ws = undefined;
+            _this.emit("close");
+        };
         _this.RequestDeviceList = function () { return __awaiter(_this, void 0, void 0, function () {
             var _this = this;
             var deviceList;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.SendMessage(new Messages.RequestDeviceList())];
+                    case 0:
+                        if (this._ws === undefined) {
+                            throw new Error("ButtplugClient not connected");
+                        }
+                        return [4 /*yield*/, this.SendMessage(new Messages.RequestDeviceList())];
                     case 1:
                         deviceList = (_a.sent());
                         deviceList.Devices.forEach(function (d) {
@@ -717,6 +740,9 @@ var ButtplugClient = (function (_super) {
                 reader.readAsText(aEvent.data);
             }
         };
+        _this.onWebsocketClose = function (ev) {
+            var a = 1;
+        };
         _this.SendMsgExpectOk = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
             var res, rej, msg, p;
             return __generator(this, function (_a) {
@@ -740,7 +766,17 @@ var ButtplugClient = (function (_super) {
         _this._clientName = aClientName;
         return _this;
     }
+    Object.defineProperty(ButtplugClient.prototype, "Connected", {
+        get: function () {
+            return this._ws !== undefined;
+        },
+        enumerable: true,
+        configurable: true
+    });
     ButtplugClient.prototype.getDevices = function () {
+        if (this._ws === undefined) {
+            throw new Error("ButtplugClient not connected");
+        }
         var devices = [];
         this._devices.forEach(function (d, i) {
             devices.push(d);
@@ -753,6 +789,9 @@ var ButtplugClient = (function (_super) {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        if (this._ws === undefined) {
+                            throw new Error("ButtplugClient not connected");
+                        }
                         dev = this._devices.get(aDevice.Index);
                         if (dev === undefined) {
                             return [2 /*return*/, Promise.reject(new Error("Device not available."))];
@@ -773,6 +812,9 @@ var ButtplugClient = (function (_super) {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        if (this._ws === undefined) {
+                            throw new Error("ButtplugClient not connected");
+                        }
                         aMsg.Id = this._counter;
                         msgPromise = new Promise(function (resolve) { res = resolve; });
                         this._waitingMsgs.set(this._counter, res);
