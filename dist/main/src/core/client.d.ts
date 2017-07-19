@@ -18,6 +18,7 @@ export declare class ButtplugClient extends EventEmitter {
     StartScanning: () => Promise<void>;
     StopScanning: () => Promise<void>;
     RequestLog: (aLogLevel: string) => Promise<void>;
+    StopAllDevices: () => Promise<void>;
     SendDeviceMessage(aDevice: Device, aDeviceMsg: Messages.ButtplugDeviceMessage): Promise<void>;
     ParseJSONMessage: (aJSONMsg: string) => void;
     ParseIncomingMessage: (aEvent: MessageEvent) => void;

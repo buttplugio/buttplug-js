@@ -158,6 +158,14 @@ var ButtplugClient = (function (_super) {
                 }
             });
         }); };
+        _this.StopAllDevices = function () { return __awaiter(_this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.SendMsgExpectOk(new Messages.StopAllDevices())];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        }); };
         _this.ParseJSONMessage = function (aJSONMsg) {
             var msgs = Messages.FromJSON(aJSONMsg);
             msgs.forEach(function (x) {
