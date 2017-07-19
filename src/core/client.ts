@@ -104,6 +104,10 @@ export class ButtplugClient extends EventEmitter {
     return await this.SendMsgExpectOk(new Messages.RequestLog(aLogLevel));
   }
 
+  public StopAllDevices = async (): Promise<void> => {
+    return await this.SendMsgExpectOk(new Messages.StopAllDevices());
+  }
+
   public async SendDeviceMessage(aDevice: Device, aDeviceMsg: Messages.ButtplugDeviceMessage): Promise<void> {
     if (this._ws === undefined) {
       throw new Error("ButtplugClient not connected");
