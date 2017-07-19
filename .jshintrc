@@ -1,6 +1,0 @@
-{
-  "node":true,
-  "browser":true,
-  "noyield":true,
-  "esversion": 6
-}

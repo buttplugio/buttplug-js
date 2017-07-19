@@ -1,10 +1,4 @@
 language: node_js
-sudo: false
 node_js:
-  - 7
-install:
-  - npm install
-script:
-  - yarn tslint
-  - yarn test
-
+  - "7"
+script: "npm run test"
