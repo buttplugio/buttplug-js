@@ -27,9 +27,7 @@ describe("Client Tests", async () => {
   });
 
   function delaySend(aMsg: Messages.ButtplugMessage) {
-    setTimeout(() => {
-      mockServer.send("[" + aMsg.toJSON() + "]");
-    }, 0);
+    process.nextTick(() => mockServer.send("[" + aMsg.toJSON() + "]"));
   }
 
   it("Should deal with request/reply correctly", async () => {
@@ -59,6 +57,7 @@ describe("Client Tests", async () => {
   it("Should emit a device on addition", async () => {
     mockServer.on("message", (jsonmsg: string) => {
       const msg: Messages.ButtplugMessage = Messages.FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
+      expect(msg.constructor.name).to.equal("StartScanning");
       delaySend(new Messages.Ok(msg.Id));
       delaySend(new Messages.DeviceAdded(0, "Test Device", ["SingleMotorVibrateCmd"]));
     });
@@ -88,16 +87,16 @@ describe("Client Tests", async () => {
   });
 
   it("Should emit when device scanning is over", async () => {
-      mockServer.on("message", (jsonmsg: string) => {
-          const msg: Messages.ButtplugMessage = Messages.FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
-          delaySend(new Messages.Ok(msg.Id));
-          delaySend(new Messages.ScanningFinished());
-      });
-      bp.on("scanningfinished", (x) => {
-          res();
-      });
-      await bp.StartScanning();
-      return p;
+    mockServer.on("message", (jsonmsg: string) => {
+      const msg: Messages.ButtplugMessage = Messages.FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
+      delaySend(new Messages.Ok(msg.Id));
+      delaySend(new Messages.ScanningFinished());
+    });
+    bp.on("scanningfinished", (x) => {
+      res();
+    });
+    await bp.StartScanning();
+    return p;
   });
 
   it("Should allow correct device messages and reject unauthorized", async () => {
