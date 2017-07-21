@@ -454,7 +454,7 @@
       "type": "object",
       "description": "Stops the all actions currently being taken by a device.",
       "properties": {
-        "Id": {"$ref": "#/components/SystemId"},
+        "Id": {"$ref": "#/components/Id"},
         "DeviceIndex":  { "$ref" : "#/components/DeviceIndex" }
       },
       "minProperties": 2,
@@ -482,6 +482,7 @@
       "Test": {"$ref": "#/messages/Test"},
       "DeviceList": {"$ref": "#/messages/DeviceList"},
       "DeviceAdded": {"$ref": "#/messages/DeviceAdded"},
+      "DeviceRemoved": {"$ref": "#/messages/DeviceRemoved"},
       "RequestDeviceList": {"$ref": "#/messages/RequestDeviceList"},
       "StopDeviceCmd": {"$ref": "#/messages/StopDeviceCmd"},
       "StopAllDevices": {"$ref": "#/messages/StopAllDevices"},

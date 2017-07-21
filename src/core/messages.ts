@@ -2,7 +2,9 @@
 "use strict";
 
 import {classToPlain, plainToClass} from "class-transformer";
+import * as ajv from "ajv";
 import "reflect-metadata";
+const buttplugSchema = require("../../dependencies/buttplug-schema/schema/buttplug-schema.json");
 
 export class ButtplugMessage {
 
@@ -224,11 +226,15 @@ const Messages = {
   Test,
 };
 
+const jsonValidator = ajv().compile(buttplugSchema);
+
 export function FromJSON(str): ButtplugMessage[] {
-  // TODO We're assuming we'll always get valid json here. While it should pass
-  // through the schema parser first, it'd probably be good to make sure it
-  // deals with parse failures too.
   const msgarray = JSON.parse(str);
+  if (!jsonValidator(msgarray)) {
+    // Relay validator errors as an error message locally.
+    const errorString = jsonValidator.errors!.map((error) => error.message).join("; ");
+    return [new Error(errorString, ErrorClass.ERROR_MSG, 0)];
+  }
   const msgs: ButtplugMessage[] = [];
   for (const x of Array.from(msgarray)) {
     // Can't get this to resolve nicely as a type, so just start from any and cast
@@ -236,14 +242,6 @@ export function FromJSON(str): ButtplugMessage[] {
     // dynamic.
     const msg: any = plainToClass(Messages[Object.getOwnPropertyNames(x)[0]],
                                  x[Object.getOwnPropertyNames(x)[0]]);
-    msgs.push(msg as ButtplugMessage);
-  }
-  if (msgs.length === 0) {
-    // Backup in case the server sent us a single object outside of an array.
-    // Accoring to the schema, this should be illegal, so once schema checking
-    // is added this should become dead code.
-    const msg: any = plainToClass(Messages[Object.getOwnPropertyNames(msgarray)[0]],
-                                msgarray[Object.getOwnPropertyNames(msgarray)[0]]);
     msgs.push(msg as ButtplugMessage);
   }
   return msgs;

@@ -128,12 +128,7 @@ export class ButtplugClient extends EventEmitter {
     msgs.forEach((x: Messages.ButtplugMessage) => {
       if (x.Id > 0 && this._waitingMsgs.has(x.Id)) {
         const res = this._waitingMsgs.get(x.Id);
-        // We already checked for this via has, but typescript is bitching if I
-        // don't do it again.
-        if (res === undefined) {
-          return;
-        }
-        res(x);
+        res!(x);
         return;
       }
       switch (x.constructor.name) {

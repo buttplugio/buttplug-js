@@ -6,7 +6,8 @@
   "types": "./dist/main/src/index.d.ts",
   "scripts": {
     "build": "trash dist dist-bundle && yarn build:main",
-    "build:main": "tsc -p tsconfig.json && webpack",
+    "build:copy-schema": "mkdir -p dist/main/dependencies/buttplug-schema/schema/ && cp dependencies/buttplug-schema/schema/buttplug-schema.json dist/main/dependencies/buttplug-schema/schema/buttplug-schema.json",
+    "build:main": "tsc -p tsconfig.json && yarn build:copy-schema && webpack",
     "tslint": "tslint -c tslint.json 'src/**/*.ts' 'tests/**/*.ts'",
     "tslint:fix": "tslint -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports 'src/**/*.ts' 'tests/**/*.ts'",
     "pretest": "yarn build:main",
