@@ -171,11 +171,6 @@ var ButtplugClient = (function (_super) {
             msgs.forEach(function (x) {
                 if (x.Id > 0 && _this._waitingMsgs.has(x.Id)) {
                     var res = _this._waitingMsgs.get(x.Id);
-                    // We already checked for this via has, but typescript is bitching if I
-                    // don't do it again.
-                    if (res === undefined) {
-                        return;
-                    }
                     res(x);
                     return;
                 }

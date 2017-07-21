@@ -44,9 +44,7 @@ var Messages = require("../../src/core/messages");
 describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, function () {
     var _this = this;
     function delaySend(aMsg) {
-        setTimeout(function () {
-            mockServer.send("[" + aMsg.toJSON() + "]");
-        }, 0);
+        process.nextTick(function () { return mockServer.send("[" + aMsg.toJSON() + "]"); });
     }
     var mockServer, bp, p, res;
     return __generator(this, function (_a) {
@@ -112,6 +110,7 @@ describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, f
                     case 0:
                         mockServer.on("message", function (jsonmsg) {
                             var msg = Messages.FromJSON(jsonmsg)[0];
+                            chai_1.expect(msg.constructor.name).to.equal("StartScanning");
                             delaySend(new Messages.Ok(msg.Id));
                             delaySend(new Messages.DeviceAdded(0, "Test Device", ["SingleMotorVibrateCmd"]));
                         });
