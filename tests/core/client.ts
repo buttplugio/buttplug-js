@@ -1,12 +1,12 @@
 import { expect } from "chai";
 import "mocha";
 import { Server } from "mock-socket";
-import { ButtplugClient } from "../../src/core/client";
-import * as Messages from "../../src/core/messages";
+import { ButtplugWebsocketClient } from "../../src/core/WebsocketClient";
+import * as Messages from "../../src/core/Messages";
 
 describe("Client Tests", async () => {
   let mockServer: Server;
-  let bp: ButtplugClient;
+  let bp: ButtplugWebsocketClient;
   let p;
   let res;
   beforeEach(function(done) {
@@ -18,7 +18,7 @@ describe("Client Tests", async () => {
       done();
     };
     mockServer.on("message", serverInfo);
-    bp = new ButtplugClient("Test Buttplug Client");
+    bp = new ButtplugWebsocketClient("Test Buttplug Client");
     bp.Connect("ws://localhost:6868");
     p = new Promise((resolve) => { res = resolve; });
   });

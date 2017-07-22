@@ -1,5 +1,5 @@
 "use strict";
-import * as Messages from "./messages";
+import * as Messages from "./Messages";
 
 export class Device {
   public static fromMsg(aMsg: Messages.DeviceAdded | Messages.DeviceInfo): Device {
