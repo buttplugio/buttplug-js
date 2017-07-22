@@ -1,13 +1,13 @@
 {
   "name": "buttplug",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Javascript library for accessing buttplug servers via node.js or web sockets",
   "main": "./dist/main/src/index.js",
   "types": "./dist/main/src/index.d.ts",
   "scripts": {
     "build": "trash dist dist-bundle && yarn build:main",
     "build:copy-schema": "mkdir -p dist/main/dependencies/buttplug-schema/schema/ && cp dependencies/buttplug-schema/schema/buttplug-schema.json dist/main/dependencies/buttplug-schema/schema/buttplug-schema.json",
-    "build:main": "tsc -p tsconfig.json && yarn build:copy-schema && webpack",
+    "build:main": "tsc -p tsconfig.json && yarn build:copy-schema",
     "tslint": "tslint -c tslint.json 'src/**/*.ts' 'tests/**/*.ts'",
     "tslint:fix": "tslint -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports 'src/**/*.ts' 'tests/**/*.ts'",
     "pretest": "yarn build:main",
@@ -40,16 +40,13 @@
     "@types/node": "^7.0.35",
     "chai": "^3.5.0",
     "codecov": "^2.2.0",
-    "html-webpack-plugin": "^2.29.0",
     "mocha": "^3.4.1",
     "mock-socket": "^6.1.0",
     "nyc": "^10.3.2",
     "trash-cli": "^1.4.0",
-    "ts-loader": "^2.2.2",
     "ts-node": "^3.2.0",
     "tslint": "^5.5.0",
     "typescript": "^2.4.1",
-    "webpack": "^2.7.0",
     "yarn": "^0.24.6"
   },
   "nyc": {

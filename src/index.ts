@@ -1,3 +1,4 @@
-export * from "./core/client";
-export * from "./core/messages";
-export * from "./core/device";
+export * from "./client/Client";
+export * from "./client/WebsocketClient";
+export * from "./core/Messages";
+export * from "./core/Device";

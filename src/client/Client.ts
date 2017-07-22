@@ -1,74 +1,28 @@
 "use strict";
 
 import { EventEmitter } from "events";
-import { Device } from "./device";
-import * as Messages from "./messages";
+import { Device } from "../core/Device";
+import * as Messages from "../core/Messages";
 
-export class ButtplugClient extends EventEmitter {
+export abstract class ButtplugClient extends EventEmitter {
+  public abstract Connect: (aUrl: string) => Promise<void>;
+  public abstract Disconnect: () => void;
+  protected abstract Send: (aMsg: string) => void;
+  public abstract get Connected(): boolean;
+
+  protected _pingTimer: NodeJS.Timer;
   private _devices: Map<number, Device> = new Map();
-  private _ws: WebSocket | undefined;
   private _counter: number = 1;
   private _waitingMsgs: Map<number, (val: Messages.ButtplugMessage) => void> = new Map();
   private _clientName: string;
-  private _pingTimer: NodeJS.Timer;
 
   constructor(aClientName: string) {
     super();
     this._clientName = aClientName;
   }
 
-  get Connected(): boolean {
-    return this._ws !== undefined;
-  }
-
-  public Connect = async (aUrl: string): Promise<void> => {
-    const ws = new WebSocket(aUrl);
-    ws.addEventListener("message", (ev) => { this.ParseIncomingMessage(ev); });
-    let res;
-    let rej;
-    const p = new Promise<void>((resolve, reject) => { res = resolve; rej = reject; });
-    const conErrorCallback = (ev) => { rej(ev); };
-    ws.addEventListener("open", async (ev) => {
-      this._ws = ws;
-      const msg = await this.SendMessage(new Messages.RequestServerInfo(this._clientName));
-      switch (msg.getType()) {
-        case "ServerInfo": {
-          // TODO: maybe store server name, do something with message template version?
-          const ping = (msg as Messages.ServerInfo).MaxPingTime;
-          if (ping > 0) {
-            this._pingTimer = setInterval(() =>
-              this.SendMessage(new Messages.Ping(this._counter)), Math.round(ping / 2));
-          }
-          this._ws.removeEventListener("close", conErrorCallback);
-          this._ws.addEventListener("close", this.Disconnect);
-          res();
-          break;
-        }
-        case "Error": {
-          this.Disconnect();
-          rej();
-          break;
-        }
-      }
-    });
-    ws.addEventListener("close", conErrorCallback);
-    return p;
-  }
-
-  public Disconnect = () => {
-    if (this._pingTimer) {
-      clearInterval(this._pingTimer);
-    }
-    if (this._ws === undefined) {
-      return;
-    }
-    this._ws.close();
-    this._ws = undefined;
-    this.emit("close");
-  }
-
   public RequestDeviceList = async () => {
-    if (this._ws === undefined) {
+    if (!this.Connected) {
       throw new Error("ButtplugClient not connected");
     }
     const deviceList = (await this.SendMessage(new Messages.RequestDeviceList())) as Messages.DeviceList;
@@ -82,7 +36,7 @@ export class ButtplugClient extends EventEmitter {
   }
 
   public getDevices(): Device[] {
-    if (this._ws === undefined) {
+    if (!this.Connected) {
       throw new Error("ButtplugClient not connected");
     }
     const devices: Device[] = [];
@@ -109,7 +63,7 @@ export class ButtplugClient extends EventEmitter {
   }
 
   public async SendDeviceMessage(aDevice: Device, aDeviceMsg: Messages.ButtplugDeviceMessage): Promise<void> {
-    if (this._ws === undefined) {
+    if (!this.Connected) {
       throw new Error("ButtplugClient not connected");
     }
     const dev = this._devices.get(aDevice.Index);
@@ -132,26 +86,26 @@ export class ButtplugClient extends EventEmitter {
         return;
       }
       switch (x.constructor.name) {
-        case "Log":
-          this.emit("log", x);
-          break;
-        case "DeviceAdded":
-          const addedMsg = x as Messages.DeviceAdded;
-          const addedDevice = Device.fromMsg(addedMsg);
-          this._devices.set(addedMsg.DeviceIndex, addedDevice);
-          this.emit("deviceadded", addedDevice);
-          break;
-        case "DeviceRemoved":
-          const removedMsg = x as Messages.DeviceRemoved;
-          if (this._devices.has(removedMsg.DeviceIndex)) {
-            const removedDevice = this._devices.get(removedMsg.DeviceIndex);
-            this._devices.delete(removedMsg.DeviceIndex);
-            this.emit("deviceremoved", removedDevice);
-          }
-          break;
-        case "ScanningFinished":
-          this.emit("scanningfinished", x);
-          break;
+      case "Log":
+        this.emit("log", x);
+        break;
+      case "DeviceAdded":
+        const addedMsg = x as Messages.DeviceAdded;
+        const addedDevice = Device.fromMsg(addedMsg);
+        this._devices.set(addedMsg.DeviceIndex, addedDevice);
+        this.emit("deviceadded", addedDevice);
+        break;
+      case "DeviceRemoved":
+        const removedMsg = x as Messages.DeviceRemoved;
+        if (this._devices.has(removedMsg.DeviceIndex)) {
+          const removedDevice = this._devices.get(removedMsg.DeviceIndex);
+          this._devices.delete(removedMsg.DeviceIndex);
+          this.emit("deviceremoved", removedDevice);
+        }
+        break;
+      case "ScanningFinished":
+        this.emit("scanningfinished", x);
+        break;
       }
     });
   }
@@ -166,12 +120,33 @@ export class ButtplugClient extends EventEmitter {
     }
   }
 
-  private onWebsocketClose = (ev: Event) => {
-    const a = 1;
+  protected InitializeConnection = async (): Promise<boolean> => {
+    const msg = await this.SendMessage(new Messages.RequestServerInfo(this._clientName));
+    switch (msg.getType()) {
+    case "ServerInfo": {
+      // TODO: maybe store server name, do something with message template version?
+      const ping = (msg as Messages.ServerInfo).MaxPingTime;
+      if (ping > 0) {
+        this._pingTimer = setInterval(() =>
+                                      this.SendMessage(new Messages.Ping(this._counter)), Math.round(ping / 2));
+      }
+      return true;
+    }
+    case "Error": {
+      this.Disconnect();
+    }
+    }
+    return false;
+  }
+
+  protected ShutdownConnection = () => {
+    if (this._pingTimer) {
+      clearInterval(this._pingTimer);
+    }
   }
 
   private async SendMessage(aMsg: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage> {
-    if (this._ws === undefined) {
+    if (!this.Connected) {
       throw new Error("ButtplugClient not connected");
     }
     let res;
@@ -179,7 +154,7 @@ export class ButtplugClient extends EventEmitter {
     const msgPromise = new Promise<Messages.ButtplugMessage>((resolve) => { res = resolve; });
     this._waitingMsgs.set(this._counter, res);
     this._counter += 1;
-    this._ws.send("[" + aMsg.toJSON() + "]");
+    this.Send("[" + aMsg.toJSON() + "]");
     return await msgPromise;
   }
 
@@ -189,12 +164,12 @@ export class ButtplugClient extends EventEmitter {
     const msg = await this.SendMessage(aMsg);
     const p = new Promise<void>((resolve, reject) => { res = resolve; rej = reject; });
     switch (msg.getType()) {
-      case "Ok":
-        res();
-        break;
-      default:
-        rej();
-        break;
+    case "Ok":
+      res();
+      break;
+    default:
+      rej();
+      break;
     }
     return p;
   }
