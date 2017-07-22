@@ -202,6 +202,15 @@ export class LovenseCmd extends ButtplugDeviceMessage {
   }
 }
 
+export class VorzeA10CycloneCmd extends ButtplugDeviceMessage {
+  constructor(public Speed: string,
+              public Clockwise: boolean,
+              public DeviceIndex: number = -1,
+              public Id: number = 1) {
+    super(DeviceIndex, Id);
+  }
+}
+
 const Messages = {
   DeviceAdded,
   DeviceList,
@@ -224,6 +233,7 @@ const Messages = {
   StopDeviceCmd,
   StopScanning,
   Test,
+  VorzeA10CycloneCmd,
 };
 
 const jsonValidator = ajv().compile(buttplugSchema);
