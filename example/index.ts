@@ -1,4 +1,4 @@
-import { ButtplugWebsocketClient } from "../src/core/WebsocketClient";
+import { ButtplugWebsocketClient } from "../src/client/WebsocketClient";
 import { Device } from "../src/core/Device";
 import * as Messages from "../src/core/Messages";
 

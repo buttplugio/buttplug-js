@@ -1,8 +1,8 @@
 "use strict";
 
 import { EventEmitter } from "events";
-import { Device } from "./Device";
-import * as Messages from "./Messages";
+import { Device } from "../core/Device";
+import * as Messages from "../core/Messages";
 
 export abstract class ButtplugClient extends EventEmitter {
   public abstract Connect: (aUrl: string) => Promise<void>;

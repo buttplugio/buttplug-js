@@ -1,9 +1,7 @@
 "use strict";
 
 import { EventEmitter } from "events";
-import { Device } from "./Device";
 import { ButtplugClient } from "./Client";
-import * as Messages from "./Messages";
 
 export class ButtplugWebsocketClient extends ButtplugClient {
   private _ws: WebSocket | undefined;

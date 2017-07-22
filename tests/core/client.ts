@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import "mocha";
 import { Server } from "mock-socket";
-import { ButtplugWebsocketClient } from "../../src/core/WebsocketClient";
+import { ButtplugWebsocketClient } from "../../src/client/WebsocketClient";
 import * as Messages from "../../src/core/Messages";
 
 describe("Client Tests", async () => {
