@@ -323,6 +323,21 @@ var LovenseCmd = (function (_super) {
     return LovenseCmd;
 }(ButtplugDeviceMessage));
 exports.LovenseCmd = LovenseCmd;
+var VorzeA10CycloneCmd = (function (_super) {
+    __extends(VorzeA10CycloneCmd, _super);
+    function VorzeA10CycloneCmd(Speed, Clockwise, DeviceIndex, Id) {
+        if (DeviceIndex === void 0) { DeviceIndex = -1; }
+        if (Id === void 0) { Id = 1; }
+        var _this = _super.call(this, DeviceIndex, Id) || this;
+        _this.Speed = Speed;
+        _this.Clockwise = Clockwise;
+        _this.DeviceIndex = DeviceIndex;
+        _this.Id = Id;
+        return _this;
+    }
+    return VorzeA10CycloneCmd;
+}(ButtplugDeviceMessage));
+exports.VorzeA10CycloneCmd = VorzeA10CycloneCmd;
 var Messages = {
     DeviceAdded: DeviceAdded,
     DeviceList: DeviceList,
@@ -345,6 +360,7 @@ var Messages = {
     StopDeviceCmd: StopDeviceCmd,
     StopScanning: StopScanning,
     Test: Test,
+    VorzeA10CycloneCmd: VorzeA10CycloneCmd,
 };
 var jsonValidator = ajv().compile(buttplugSchema);
 function FromJSON(str) {
@@ -366,4 +382,4 @@ function FromJSON(str) {
     return msgs;
 }
 exports.FromJSON = FromJSON;
-//# sourceMappingURL=messages.js.map
+//# sourceMappingURL=Messages.js.map

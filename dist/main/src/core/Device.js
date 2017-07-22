@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var Messages = require("./messages");
+var Messages = require("./Messages");
 var Device = (function () {
     function Device(_index, _name, _allowedMessages) {
         this._index = _index;
@@ -38,4 +38,4 @@ var Device = (function () {
     return Device;
 }());
 exports.Device = Device;
-//# sourceMappingURL=device.js.map
+//# sourceMappingURL=Device.js.map

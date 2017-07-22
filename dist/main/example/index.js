@@ -35,20 +35,22 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var client_1 = require("../src/core/client");
-var Messages = require("../src/core/messages");
+var WebsocketClient_1 = require("../src/client/WebsocketClient");
+var Messages = require("../src/core/Messages");
 var devices = [];
-var client = new client_1.ButtplugClient("Example Typescript Client");
+var client = new WebsocketClient_1.ButtplugWebsocketClient("Example Typescript Client");
 client.Connect("wss://localhost:12345/buttplug").then(function (result) {
     console.log(result); // "Stuff worked!"
     return client.StartScanning();
 }, function (err) {
     console.log(err); // Error: "It broke"
-}).then(function () {
+})
+    .then(function () {
     return client.RequestDeviceList();
 }, function (err) {
     console.log(err); // Error: "It broke"
-}).then(function () {
+})
+    .then(function () {
     devices = client.getDevices();
 }, function (err) {
     console.log(err); // Error: "It broke"

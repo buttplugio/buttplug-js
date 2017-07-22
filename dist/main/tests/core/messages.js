@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var chai_1 = require("chai");
 require("mocha");
-var Messages = require("../../src/core/messages");
+var Messages = require("../../src/core/Messages");
 describe("Message", function () {
     it("Converts ok message to json correctly", function () {
         var ok = new Messages.Ok(2);

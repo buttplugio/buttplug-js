@@ -39,8 +39,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var chai_1 = require("chai");
 require("mocha");
 var mock_socket_1 = require("mock-socket");
-var client_1 = require("../../src/core/client");
-var Messages = require("../../src/core/messages");
+var WebsocketClient_1 = require("../../src/client/WebsocketClient");
+var Messages = require("../../src/core/Messages");
 describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, function () {
     var _this = this;
     function delaySend(aMsg) {
@@ -57,7 +57,7 @@ describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, f
                 done();
             };
             mockServer.on("message", serverInfo);
-            bp = new client_1.ButtplugClient("Test Buttplug Client");
+            bp = new WebsocketClient_1.ButtplugWebsocketClient("Test Buttplug Client");
             bp.Connect("ws://localhost:6868");
             p = new Promise(function (resolve) { res = resolve; });
         });

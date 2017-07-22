@@ -1,4 +1,4 @@
-import * as Messages from "./messages";
+import * as Messages from "./Messages";
 export declare class Device {
     private _index;
     private _name;

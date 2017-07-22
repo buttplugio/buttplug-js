@@ -135,4 +135,11 @@ export declare class LovenseCmd extends ButtplugDeviceMessage {
     Id: number;
     constructor(Command: string, DeviceIndex?: number, Id?: number);
 }
+export declare class VorzeA10CycloneCmd extends ButtplugDeviceMessage {
+    Speed: string;
+    Clockwise: boolean;
+    DeviceIndex: number;
+    Id: number;
+    constructor(Speed: string, Clockwise: boolean, DeviceIndex?: number, Id?: number);
+}
 export declare function FromJSON(str: any): ButtplugMessage[];

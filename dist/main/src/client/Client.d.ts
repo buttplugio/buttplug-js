@@ -1,18 +1,18 @@
 /// <reference types="node" />
 import { EventEmitter } from "events";
-import { Device } from "./device";
-import * as Messages from "./messages";
-export declare class ButtplugClient extends EventEmitter {
+import { Device } from "../core/Device";
+import * as Messages from "../core/Messages";
+export declare abstract class ButtplugClient extends EventEmitter {
+    abstract Connect: (aUrl: string) => Promise<void>;
+    abstract Disconnect: () => void;
+    protected abstract Send: (aMsg: string) => void;
+    readonly abstract Connected: boolean;
+    protected _pingTimer: NodeJS.Timer;
     private _devices;
-    private _ws;
     private _counter;
     private _waitingMsgs;
     private _clientName;
-    private _pingTimer;
     constructor(aClientName: string);
-    readonly Connected: boolean;
-    Connect: (aUrl: string) => Promise<void>;
-    Disconnect: () => void;
     RequestDeviceList: () => Promise<void>;
     getDevices(): Device[];
     StartScanning: () => Promise<void>;
@@ -22,7 +22,8 @@ export declare class ButtplugClient extends EventEmitter {
     SendDeviceMessage(aDevice: Device, aDeviceMsg: Messages.ButtplugDeviceMessage): Promise<void>;
     ParseJSONMessage: (aJSONMsg: string) => void;
     ParseIncomingMessage: (aEvent: MessageEvent) => void;
-    private onWebsocketClose;
+    protected InitializeConnection: () => Promise<boolean>;
+    protected ShutdownConnection: () => void;
     private SendMessage(aMsg);
     private SendMsgExpectOk;
     private OnReaderLoad(aEvent);
