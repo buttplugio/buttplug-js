@@ -8,8 +8,8 @@
     "build": "trash dist dist-bundle && yarn build:main",
     "build:copy-schema": "copyfiles dependencies/buttplug-schema/schema/buttplug-schema.json dist/main/dependencies/buttplug-schema/schema/",
     "build:main": "tsc -p tsconfig.json && yarn build:copy-schema",
-    "tslint": "tslint -c tslint.json 'src/**/*.ts' 'tests/**/*.ts'",
-    "tslint:fix": "tslint -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports 'src/**/*.ts' 'tests/**/*.ts'",
+    "tslint": "tslint -c tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "tslint:fix": "tslint -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\"",
     "pretest": "yarn build:main",
     "test": "nyc mocha \"tests/**/*.ts\"",
     "posttest": "nyc report && codecov -f coverage/*.json"
