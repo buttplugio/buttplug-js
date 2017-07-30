@@ -173,16 +173,16 @@ export class KiirooCmd extends ButtplugDeviceMessage {
   }
 
   public SetPosition(aPos: number) {
-    if(aPos >=0 && aPos <= 4) {
+    if (aPos >= 0 && aPos <= 4) {
       this.Command = String(Math.round(aPos));
     } else {
       this.Command = "0";
-    } 
+    }
   }
 
   public GetPosition(): number {
-    let pos: number = Number(this.Command);
-    if(pos == NaN || pos < 0 || pos > 4) {
+    const pos: number = Number(this.Command) ? Number(this.Command) : 0;
+    if (pos < 0 || pos > 4 ) {
       return 0;
     } else {
       return Math.round(pos);

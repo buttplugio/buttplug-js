@@ -43,18 +43,22 @@ describe("Message", () => {
      () => {
        const jsonStr = '[{"KiirooCmd":{"Id":1,"DeviceIndex":0,"Command":"3"}}]';
        expect(Messages.FromJSON(jsonStr)[0].constructor.name).to.equal("KiirooCmd");
-       let msg = Messages.FromJSON(jsonStr)[0];
+       const msg = Messages.FromJSON(jsonStr)[0];
        expect((msg as Messages.KiirooCmd).Command).to.equal("3");
        expect((msg as Messages.KiirooCmd).GetPosition()).to.equal(3);
-       
-       let msg2 = new Messages.KiirooCmd();
+
+       const msg2 = new Messages.KiirooCmd();
        msg2.Id = 2;
        msg2.DeviceIndex = 3;
+
+       msg2.Command = "foo";
+       expect(msg2.Command).to.equal("foo");
+       expect(msg2.GetPosition()).to.equal(0);
+
        msg2.SetPosition(4);
-       
        expect(msg2.Command).to.equal("4");
        expect(msg2.GetPosition()).to.equal(4);
-       
+
        expect(msg2.toJSON()).to.equal('{"KiirooCmd":{"Id":2,"DeviceIndex":3,"Command":"4"}}');
-     }); 
+     });
 });
