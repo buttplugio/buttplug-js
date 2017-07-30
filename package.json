@@ -6,12 +6,12 @@
   "types": "./dist/main/src/index.d.ts",
   "scripts": {
     "build": "trash dist dist-bundle && yarn build:main",
-    "build:copy-schema": "mkdir -p dist/main/dependencies/buttplug-schema/schema/ && cp dependencies/buttplug-schema/schema/buttplug-schema.json dist/main/dependencies/buttplug-schema/schema/buttplug-schema.json",
+    "build:copy-schema": "copyfiles dependencies/buttplug-schema/schema/buttplug-schema.json dist/main/dependencies/buttplug-schema/schema/",
     "build:main": "tsc -p tsconfig.json && yarn build:copy-schema",
     "tslint": "tslint -c tslint.json 'src/**/*.ts' 'tests/**/*.ts'",
     "tslint:fix": "tslint -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports 'src/**/*.ts' 'tests/**/*.ts'",
     "pretest": "yarn build:main",
-    "test": "nyc mocha 'tests/**/*.ts'",
+    "test": "nyc mocha \"tests/**/*.ts\"",
     "posttest": "nyc report && codecov -f coverage/*.json"
   },
   "repository": {
@@ -40,6 +40,7 @@
     "@types/node": "^7.0.35",
     "chai": "^3.5.0",
     "codecov": "^2.2.0",
+    "copyfiles": "^1.2.0",
     "mocha": "^3.4.1",
     "mock-socket": "^6.1.0",
     "nyc": "^10.3.2",
