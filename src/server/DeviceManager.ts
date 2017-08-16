@@ -24,21 +24,21 @@ export default class DeviceManager {
           manager.StartScanning();
         }
       }
-      break;
+      return new Messages.Ok(id);
     case "StopScanning":
       for (const manager of this._subtypeManagers) {
         if (manager.IsScanning()) {
           manager.StopScanning();
         }
       }
-      break;
+      return new Messages.Ok(id);
     case "StopAllDevices":
       for (const device of this._devices) {
         device.ParseMessage(new Messages.StopDeviceCmd());
       }
       return new Messages.Ok(id);
     case "RequestDeviceList":
-      break;
+      return new Messages.DeviceList([], id);
     default:
       // TODO: Figure out how we're gonna deal with device messages here.
       break;
