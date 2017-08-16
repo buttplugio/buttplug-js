@@ -7,7 +7,7 @@ import * as Messages from "../core/Messages";
 export abstract class ButtplugClient extends EventEmitter {
   public abstract Connect: (aUrl: string) => Promise<void>;
   public abstract Disconnect: () => void;
-  protected abstract Send: (aMsg: string) => void;
+  protected abstract Send: (aMsg: Messages.ButtplugMessage) => void;
   public abstract get Connected(): boolean;
 
   protected _pingTimer: NodeJS.Timer;
@@ -77,15 +77,14 @@ export abstract class ButtplugClient extends EventEmitter {
     return await this.SendMsgExpectOk(aDeviceMsg);
   }
 
-  public ParseJSONMessage = (aJSONMsg: string) => {
-    const msgs = Messages.FromJSON(aJSONMsg);
-    msgs.forEach((x: Messages.ButtplugMessage) => {
+  public ParseMessages = (aMsgs: Messages.ButtplugMessage[]) => {
+    aMsgs.forEach((x: Messages.ButtplugMessage) => {
       if (x.Id > 0 && this._waitingMsgs.has(x.Id)) {
         const res = this._waitingMsgs.get(x.Id);
         res!(x);
         return;
       }
-      switch (x.constructor.name) {
+      switch (x.getType()) {
       case "Log":
         this.emit("log", x);
         break;
@@ -108,16 +107,6 @@ export abstract class ButtplugClient extends EventEmitter {
         break;
       }
     });
-  }
-
-  public ParseIncomingMessage = (aEvent: MessageEvent) => {
-    if (typeof (aEvent.data) === "string") {
-      this.ParseJSONMessage(aEvent.data);
-    } else if (aEvent.data instanceof Blob) {
-      const reader = new FileReader();
-      reader.addEventListener("load", (ev) => { this.OnReaderLoad(ev); });
-      reader.readAsText(aEvent.data);
-    }
   }
 
   protected InitializeConnection = async (): Promise<boolean> => {
@@ -154,7 +143,7 @@ export abstract class ButtplugClient extends EventEmitter {
     const msgPromise = new Promise<Messages.ButtplugMessage>((resolve) => { res = resolve; });
     this._waitingMsgs.set(this._counter, res);
     this._counter += 1;
-    this.Send("[" + aMsg.toJSON() + "]");
+    this.Send(aMsg);
     return await msgPromise;
   }
 
@@ -172,9 +161,5 @@ export abstract class ButtplugClient extends EventEmitter {
       break;
     }
     return p;
-  }
-
-  private OnReaderLoad(aEvent: Event) {
-    this.ParseJSONMessage((aEvent.target as FileReader).result);
   }
 }
