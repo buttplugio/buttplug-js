@@ -6,7 +6,7 @@
   "types": "./dist/main/src/index.d.ts",
   "scripts": {
     "build": "trash dist dist-bundle && yarn build:main",
-    "build:copy-schema": "copyfiles dependencies/buttplug-schema/schema/buttplug-schema.json dist/main/dependencies/buttplug-schema/schema/",
+    "build:copy-schema": "copyfiles ./dependencies/buttplug-schema/schema/buttplug-schema.json ./dist/main/",
     "build:main": "tsc -p tsconfig.json && yarn build:copy-schema",
     "tslint": "tslint -c tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
     "tslint:fix": "tslint -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\"",
