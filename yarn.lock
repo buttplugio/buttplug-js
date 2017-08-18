@@ -18,6 +18,14 @@
   version "7.0.39"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.39.tgz#8aced4196387038113f6f9aa4014ab4c51edab3c"
 
+"@types/text-encoding@^0.0.31":
+  version "0.0.31"
+  resolved "https://registry.yarnpkg.com/@types/text-encoding/-/text-encoding-0.0.31.tgz#b120815cda47b8f24100ecdc6564836c523316bc"
+
+"@types/web-bluetooth@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@types/web-bluetooth/-/web-bluetooth-0.0.2.tgz#5cf081c320323543712c49c49ed520bf65eead1a"
+
 ajv@^4.9.1:
   version "4.11.8"
   resolved "https://registry.yarnpkg.com/ajv/-/ajv-4.11.8.tgz#82ffb02b29e662ae53bdc20af15947706739c536"

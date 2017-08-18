@@ -1,10 +1,8 @@
 import * as Messages from "../core/Messages";
+import { EventEmitter } from "events";
 
-export default interface IButtplugDevice {
+export default interface IButtplugDevice extends EventEmitter {
   Name: string;
-  Identifier: string;
   GetAllowedMessageTypes(): string[];
   ParseMessage(aMsg: Messages.ButtplugDeviceMessage): Promise<Messages.ButtplugMessage>;
-  Initialize(): Promise<Messages.ButtplugMessage>;
-  Disconnect();
 }

@@ -9,7 +9,9 @@
     "indent": [true, "spaces", 2],
     "no-var-requires": [false],
     "ordered-imports": [false],
-    "no-console": [false]
+    "no-console": [false],
+    "object-literal-sort-keys": [false],
+    "max-classes-per-file": [false]
   },
   "rulesDirectory": []
 }

@@ -20,6 +20,7 @@ export class ButtplugBrowserClient extends ButtplugClient {
   public Connect = async (aUrl: string): Promise<void> => {
     this._connected = true;
     this._server = new ButtplugServer();
+    this._server.addListener("message", this.OnMessageReceived);
     // We'll never fail this.
     await this.InitializeConnection();
     return Promise.resolve();
@@ -40,5 +41,9 @@ export class ButtplugBrowserClient extends ButtplugClient {
     }
     const returnMsg = await this._server!.SendMessage(aMsg);
     this.ParseMessages([returnMsg]);
+  }
+
+  private OnMessageReceived = (aMsg: ButtplugMessage) => {
+    this.ParseMessages([aMsg]);
   }
 }

@@ -38,6 +38,8 @@
     "@types/chai": "^3.5.2",
     "@types/mocha": "^2.2.41",
     "@types/node": "^7.0.35",
+    "@types/text-encoding": "^0.0.31",
+    "@types/web-bluetooth": "^0.0.2",
     "chai": "^3.5.0",
     "codecov": "^2.2.0",
     "copyfiles": "^1.2.0",
