@@ -1,12 +1,12 @@
 import { ButtplugClient } from "./Client";
 import { ButtplugMessage } from "../core/Messages";
-export declare class ButtplugWebsocketClient extends ButtplugClient {
-    private _ws;
+export declare class ButtplugBrowserClient extends ButtplugClient {
+    private _connected;
+    private _server;
     constructor(aClientName: string);
     readonly Connected: boolean;
-    ParseIncomingMessage: (aEvent: MessageEvent) => void;
     Connect: (aUrl: string) => Promise<void>;
     Disconnect: () => void;
-    protected Send: (aMsg: ButtplugMessage) => void;
-    private OnReaderLoad(aEvent);
+    protected Send: (aMsg: ButtplugMessage) => Promise<void>;
+    private OnMessageReceived;
 }

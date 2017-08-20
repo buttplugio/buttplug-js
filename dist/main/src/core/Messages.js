@@ -259,15 +259,33 @@ var FleshlightLaunchFW12Cmd = (function (_super) {
 exports.FleshlightLaunchFW12Cmd = FleshlightLaunchFW12Cmd;
 var KiirooCmd = (function (_super) {
     __extends(KiirooCmd, _super);
-    function KiirooCmd(Position, DeviceIndex, Id) {
+    function KiirooCmd(Command, DeviceIndex, Id) {
+        if (Command === void 0) { Command = "0"; }
         if (DeviceIndex === void 0) { DeviceIndex = -1; }
         if (Id === void 0) { Id = 1; }
         var _this = _super.call(this, DeviceIndex, Id) || this;
-        _this.Position = Position;
+        _this.Command = Command;
         _this.DeviceIndex = DeviceIndex;
         _this.Id = Id;
         return _this;
     }
+    KiirooCmd.prototype.SetPosition = function (aPos) {
+        if (aPos >= 0 && aPos <= 4) {
+            this.Command = String(Math.round(aPos));
+        }
+        else {
+            this.Command = "0";
+        }
+    };
+    KiirooCmd.prototype.GetPosition = function () {
+        var pos = Number(this.Command) ? Number(this.Command) : 0;
+        if (pos < 0 || pos > 4) {
+            return 0;
+        }
+        else {
+            return Math.round(pos);
+        }
+    };
     return KiirooCmd;
 }(ButtplugDeviceMessage));
 exports.KiirooCmd = KiirooCmd;

@@ -110,15 +110,14 @@ var ButtplugClient = (function (_super) {
                 }
             });
         }); };
-        _this.ParseJSONMessage = function (aJSONMsg) {
-            var msgs = Messages.FromJSON(aJSONMsg);
-            msgs.forEach(function (x) {
+        _this.ParseMessages = function (aMsgs) {
+            aMsgs.forEach(function (x) {
                 if (x.Id > 0 && _this._waitingMsgs.has(x.Id)) {
                     var res = _this._waitingMsgs.get(x.Id);
                     res(x);
                     return;
                 }
-                switch (x.constructor.name) {
+                switch (x.getType()) {
                     case "Log":
                         _this.emit("log", x);
                         break;
@@ -141,16 +140,6 @@ var ButtplugClient = (function (_super) {
                         break;
                 }
             });
-        };
-        _this.ParseIncomingMessage = function (aEvent) {
-            if (typeof (aEvent.data) === "string") {
-                _this.ParseJSONMessage(aEvent.data);
-            }
-            else if (aEvent.data instanceof Blob) {
-                var reader = new FileReader();
-                reader.addEventListener("load", function (ev) { _this.OnReaderLoad(ev); });
-                reader.readAsText(aEvent.data);
-            }
         };
         _this.InitializeConnection = function () { return __awaiter(_this, void 0, void 0, function () {
             var _this = this;
@@ -252,15 +241,12 @@ var ButtplugClient = (function (_super) {
                         msgPromise = new Promise(function (resolve) { res = resolve; });
                         this._waitingMsgs.set(this._counter, res);
                         this._counter += 1;
-                        this.Send("[" + aMsg.toJSON() + "]");
+                        this.Send(aMsg);
                         return [4 /*yield*/, msgPromise];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });
         });
-    };
-    ButtplugClient.prototype.OnReaderLoad = function (aEvent) {
-        this.ParseJSONMessage(aEvent.target.result);
     };
     return ButtplugClient;
 }(events_1.EventEmitter));

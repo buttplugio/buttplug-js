@@ -109,10 +109,12 @@ export declare class FleshlightLaunchFW12Cmd extends ButtplugDeviceMessage {
     constructor(Speed: number, Position: number, DeviceIndex?: number, Id?: number);
 }
 export declare class KiirooCmd extends ButtplugDeviceMessage {
-    Position: number;
+    Command: string;
     DeviceIndex: number;
     Id: number;
-    constructor(Position: number, DeviceIndex?: number, Id?: number);
+    constructor(Command?: string, DeviceIndex?: number, Id?: number);
+    SetPosition(aPos: number): void;
+    GetPosition(): number;
 }
 export declare class SingleMotorVibrateCmd extends ButtplugDeviceMessage {
     Speed: number;

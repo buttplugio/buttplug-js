@@ -46,82 +46,66 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Client_1 = require("./Client");
-var Messages_1 = require("../core/Messages");
-var ButtplugWebsocketClient = (function (_super) {
-    __extends(ButtplugWebsocketClient, _super);
-    function ButtplugWebsocketClient(aClientName) {
+var ButtplugServer_1 = require("../server/ButtplugServer");
+var ButtplugBrowserClient = (function (_super) {
+    __extends(ButtplugBrowserClient, _super);
+    function ButtplugBrowserClient(aClientName) {
         var _this = _super.call(this, aClientName) || this;
-        _this.ParseIncomingMessage = function (aEvent) {
-            if (typeof (aEvent.data) === "string") {
-                var msgs = Messages_1.FromJSON(aEvent.data);
-                _this.ParseMessages(msgs);
-            }
-            else if (aEvent.data instanceof Blob) {
-                var reader = new FileReader();
-                reader.addEventListener("load", function (ev) { _this.OnReaderLoad(ev); });
-                reader.readAsText(aEvent.data);
-            }
-        };
+        _this._connected = false;
+        _this._server = null;
         _this.Connect = function (aUrl) { return __awaiter(_this, void 0, void 0, function () {
-            var _this = this;
-            var ws, res, rej, p, conErrorCallback;
             return __generator(this, function (_a) {
-                ws = new WebSocket(aUrl);
-                p = new Promise(function (resolve, reject) { res = resolve; rej = reject; });
-                conErrorCallback = function (ev) { rej(ev); };
-                ws.addEventListener("open", function (ev) { return __awaiter(_this, void 0, void 0, function () {
-                    var _this = this;
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0:
-                                this._ws = ws;
-                                this._ws.addEventListener("message", function (aMsg) { _this.ParseIncomingMessage(aMsg); });
-                                this._ws.removeEventListener("close", conErrorCallback);
-                                this._ws.addEventListener("close", this.Disconnect);
-                                return [4 /*yield*/, this.InitializeConnection()];
-                            case 1:
-                                if (!(_a.sent())) {
-                                    rej();
-                                    return [2 /*return*/];
-                                }
-                                res();
-                                return [2 /*return*/];
-                        }
-                    });
-                }); });
-                ws.addEventListener("close", conErrorCallback);
-                return [2 /*return*/, p];
+                switch (_a.label) {
+                    case 0:
+                        this._connected = true;
+                        this._server = new ButtplugServer_1.default();
+                        this._server.addListener("message", this.OnMessageReceived);
+                        // We'll never fail this.
+                        return [4 /*yield*/, this.InitializeConnection()];
+                    case 1:
+                        // We'll never fail this.
+                        _a.sent();
+                        return [2 /*return*/, Promise.resolve()];
+                }
             });
         }); };
         _this.Disconnect = function () {
             if (!_this.Connected) {
                 return;
             }
-            _this.ShutdownConnection();
-            _this._ws.close();
-            _this._ws = undefined;
+            _this._connected = false;
+            _this._server = null;
             _this.emit("close");
         };
-        _this.Send = function (aMsg) {
-            if (!_this.Connected) {
-                throw new Error("ButtplugClient not connected");
-            }
-            _this._ws.send("[" + aMsg.toJSON() + "]");
+        _this.Send = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
+            var returnMsg;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!this.Connected) {
+                            throw new Error("ButtplugClient not connected");
+                        }
+                        return [4 /*yield*/, this._server.SendMessage(aMsg)];
+                    case 1:
+                        returnMsg = _a.sent();
+                        this.ParseMessages([returnMsg]);
+                        return [2 /*return*/];
+                }
+            });
+        }); };
+        _this.OnMessageReceived = function (aMsg) {
+            _this.ParseMessages([aMsg]);
         };
         return _this;
     }
-    Object.defineProperty(ButtplugWebsocketClient.prototype, "Connected", {
+    Object.defineProperty(ButtplugBrowserClient.prototype, "Connected", {
         get: function () {
-            return this._ws !== undefined;
+            return this._connected;
         },
         enumerable: true,
         configurable: true
     });
-    ButtplugWebsocketClient.prototype.OnReaderLoad = function (aEvent) {
-        var msgs = Messages_1.FromJSON(aEvent.target.result);
-        this.ParseMessages(msgs);
-    };
-    return ButtplugWebsocketClient;
+    return ButtplugBrowserClient;
 }(Client_1.ButtplugClient));
-exports.ButtplugWebsocketClient = ButtplugWebsocketClient;
-//# sourceMappingURL=WebsocketClient.js.map
+exports.ButtplugBrowserClient = ButtplugBrowserClient;
+//# sourceMappingURL=BrowserClient.js.map

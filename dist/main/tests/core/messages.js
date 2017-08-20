@@ -31,5 +31,22 @@ describe("Message", function () {
         var jsonStr = '[{"DeviceAdded":{"Id":1,"DeviceIndex":0,"DeviceName":"Test","DeviceMessages":["Ok","Ping"]}}]';
         chai_1.expect(Messages.FromJSON(jsonStr)[0].constructor.name).to.equal("Error");
     });
+    it("Handles KiirooCmd messages correctly", function () {
+        var jsonStr = '[{"KiirooCmd":{"Id":1,"DeviceIndex":0,"Command":"3"}}]';
+        chai_1.expect(Messages.FromJSON(jsonStr)[0].constructor.name).to.equal("KiirooCmd");
+        var msg = Messages.FromJSON(jsonStr)[0];
+        chai_1.expect(msg.Command).to.equal("3");
+        chai_1.expect(msg.GetPosition()).to.equal(3);
+        var msg2 = new Messages.KiirooCmd();
+        msg2.Id = 2;
+        msg2.DeviceIndex = 3;
+        msg2.Command = "foo";
+        chai_1.expect(msg2.Command).to.equal("foo");
+        chai_1.expect(msg2.GetPosition()).to.equal(0);
+        msg2.SetPosition(4);
+        chai_1.expect(msg2.Command).to.equal("4");
+        chai_1.expect(msg2.GetPosition()).to.equal(4);
+        chai_1.expect(msg2.toJSON()).to.equal('{"KiirooCmd":{"Id":2,"DeviceIndex":3,"Command":"4"}}');
+    });
 });
 //# sourceMappingURL=messages.js.map

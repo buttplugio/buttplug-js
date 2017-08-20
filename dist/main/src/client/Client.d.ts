@@ -5,7 +5,7 @@ import * as Messages from "../core/Messages";
 export declare abstract class ButtplugClient extends EventEmitter {
     abstract Connect: (aUrl: string) => Promise<void>;
     abstract Disconnect: () => void;
-    protected abstract Send: (aMsg: string) => void;
+    protected abstract Send: (aMsg: Messages.ButtplugMessage) => void;
     readonly abstract Connected: boolean;
     protected _pingTimer: NodeJS.Timer;
     private _devices;
@@ -20,11 +20,9 @@ export declare abstract class ButtplugClient extends EventEmitter {
     RequestLog: (aLogLevel: string) => Promise<void>;
     StopAllDevices: () => Promise<void>;
     SendDeviceMessage(aDevice: Device, aDeviceMsg: Messages.ButtplugDeviceMessage): Promise<void>;
-    ParseJSONMessage: (aJSONMsg: string) => void;
-    ParseIncomingMessage: (aEvent: MessageEvent) => void;
+    ParseMessages: (aMsgs: Messages.ButtplugMessage[]) => void;
     protected InitializeConnection: () => Promise<boolean>;
     protected ShutdownConnection: () => void;
     private SendMessage(aMsg);
     private SendMsgExpectOk;
-    private OnReaderLoad(aEvent);
 }
