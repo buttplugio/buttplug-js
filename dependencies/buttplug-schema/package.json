@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/metafetish/buttplug.git"
+    "url": "git+https://github.com/metafetish/buttplug-schema.git"
   },
   "author": "Kyle Machulis <kyle@machul.is>",
   "license": "BSD-3-Clause",
   "bugs": {
-    "url": "https://github.com/metafetish/buttplug/issues"
+    "url": "https://github.com/metafetish/buttplug-schema/issues"
   },
-  "homepage": "https://github.com/metafetish/buttplug#readme",
+  "homepage": "https://github.com/metafetish/buttplug-schema#readme",
   "devDependencies": {
     "ajv-cli": "^2.1.0"
   }

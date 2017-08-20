@@ -166,10 +166,27 @@ export class FleshlightLaunchFW12Cmd extends ButtplugDeviceMessage {
 }
 
 export class KiirooCmd extends ButtplugDeviceMessage {
-  constructor(public Position: number,
+  constructor(public Command: string = "0",
               public DeviceIndex: number = -1,
               public Id: number = 1) {
     super(DeviceIndex, Id);
+  }
+
+  public SetPosition(aPos: number) {
+    if (aPos >= 0 && aPos <= 4) {
+      this.Command = String(Math.round(aPos));
+    } else {
+      this.Command = "0";
+    }
+  }
+
+  public GetPosition(): number {
+    const pos: number = Number(this.Command) ? Number(this.Command) : 0;
+    if (pos < 0 || pos > 4 ) {
+      return 0;
+    } else {
+      return Math.round(pos);
+    }
   }
 }
 
