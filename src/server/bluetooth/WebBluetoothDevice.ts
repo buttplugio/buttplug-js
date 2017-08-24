@@ -28,6 +28,10 @@ export default class WebBluetoothDevice extends EventEmitter implements IBluetoo
     super();
   }
 
+  public get Name(): string {
+    return this._device.name!;
+  }
+
   public Connect = async (): Promise<void> => {
     this._device.addEventListener("gattserverdisconnected", this.OnDisconnect);
     this._server = await this._device.gatt!.connect();

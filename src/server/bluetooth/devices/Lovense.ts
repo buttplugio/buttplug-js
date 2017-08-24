@@ -17,7 +17,7 @@ export default class Lovense extends ButtplugBluetoothDevice {
                                   "LVS-P36": "Edge"};
 
   public constructor(aDeviceImpl: IBluetoothDeviceImpl) {
-    super("Lovense", aDeviceImpl);
+    super(`Lovense ${aDeviceImpl.Name}`, aDeviceImpl);
     this.MsgFuncs.set(Messages.StopDeviceCmd.name, this.HandleStopDeviceCmd);
     this.MsgFuncs.set(Messages.SingleMotorVibrateCmd.name, this.HandleSingleMotorVibrateCmd);
   }
