@@ -60,3 +60,12 @@ export class LovenseRev3 {
                                                               },
                                                               Lovense.CreateInstance);
 }
+
+export class LovenseRev4 {
+  public static readonly DeviceInfo = new BluetoothDeviceInfo(["LVS-Domi37"],
+                                                              ["57300001-0023-4bd4-bbd5-a6920e4c5653"],
+                                                              {tx: "57300002-0023-4bd4-bbd5-a6920e4c5653",
+                                                               // rx: "57300003-0023-4bd4-bbd5-a6920e4c5653"
+                                                              },
+                                                              Lovense.CreateInstance);
+}
