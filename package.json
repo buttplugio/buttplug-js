@@ -1,6 +1,6 @@
 {
   "name": "buttplug",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Javascript library for accessing buttplug servers via node.js or web sockets",
   "main": "./dist/main/src/index.js",
   "types": "./dist/main/src/index.d.ts",
@@ -29,27 +29,27 @@
   },
   "homepage": "https://github.com/metafetish/buttplug-js#readme",
   "dependencies": {
-    "ajv": "^5.2.2",
-    "class-transformer": "^0.1.7",
+    "ajv": "^5.2.3",
+    "class-transformer": "^0.1.8",
     "reflect-metadata": "^0.1.10",
-    "ws": "^3.0.0"
+    "ws": "^3.2.0"
   },
   "devDependencies": {
     "@types/chai": "^3.5.2",
-    "@types/mocha": "^2.2.41",
-    "@types/node": "^7.0.35",
+    "@types/mocha": "^2.2.43",
+    "@types/node": "^7.0.43",
     "@types/text-encoding": "^0.0.31",
     "@types/web-bluetooth": "^0.0.2",
     "chai": "^3.5.0",
     "codecov": "^2.2.0",
     "copyfiles": "^1.2.0",
-    "mocha": "^3.4.1",
+    "mocha": "^3.5.3",
     "mock-socket": "^6.1.0",
     "nyc": "^10.3.2",
     "trash-cli": "^1.4.0",
     "ts-node": "^3.2.0",
-    "tslint": "^5.5.0",
-    "typescript": "^2.4.1",
+    "tslint": "^5.7.0",
+    "typescript": "^2.5.3",
     "yarn": "^0.24.6"
   },
   "nyc": {
