@@ -15,7 +15,7 @@ var class_transformer_1 = require("class-transformer");
 var ajv = require("ajv");
 require("reflect-metadata");
 var buttplugSchema = require("../../dependencies/buttplug-schema/schema/buttplug-schema.json");
-var ButtplugMessage = (function () {
+var ButtplugMessage = /** @class */ (function () {
     function ButtplugMessage(Id) {
         this.Id = Id;
     }
@@ -31,7 +31,7 @@ var ButtplugMessage = (function () {
     return ButtplugMessage;
 }());
 exports.ButtplugMessage = ButtplugMessage;
-var ButtplugDeviceMessage = (function (_super) {
+var ButtplugDeviceMessage = /** @class */ (function (_super) {
     __extends(ButtplugDeviceMessage, _super);
     function ButtplugDeviceMessage(DeviceIndex, Id) {
         var _this = _super.call(this, Id) || this;
@@ -42,7 +42,7 @@ var ButtplugDeviceMessage = (function (_super) {
     return ButtplugDeviceMessage;
 }(ButtplugMessage));
 exports.ButtplugDeviceMessage = ButtplugDeviceMessage;
-var ButtplugSystemMessage = (function (_super) {
+var ButtplugSystemMessage = /** @class */ (function (_super) {
     __extends(ButtplugSystemMessage, _super);
     function ButtplugSystemMessage(Id) {
         if (Id === void 0) { Id = 0; }
@@ -53,7 +53,7 @@ var ButtplugSystemMessage = (function (_super) {
     return ButtplugSystemMessage;
 }(ButtplugMessage));
 exports.ButtplugSystemMessage = ButtplugSystemMessage;
-var Ok = (function (_super) {
+var Ok = /** @class */ (function (_super) {
     __extends(Ok, _super);
     function Ok(Id) {
         var _this = _super.call(this, Id) || this;
@@ -63,7 +63,7 @@ var Ok = (function (_super) {
     return Ok;
 }(ButtplugSystemMessage));
 exports.Ok = Ok;
-var Ping = (function (_super) {
+var Ping = /** @class */ (function (_super) {
     __extends(Ping, _super);
     function Ping(Id) {
         var _this = _super.call(this, Id) || this;
@@ -73,7 +73,7 @@ var Ping = (function (_super) {
     return Ping;
 }(ButtplugMessage));
 exports.Ping = Ping;
-var Test = (function (_super) {
+var Test = /** @class */ (function (_super) {
     __extends(Test, _super);
     function Test(TestString, Id) {
         if (Id === void 0) { Id = 1; }
@@ -93,7 +93,7 @@ var ErrorClass;
     ErrorClass[ErrorClass["ERROR_MSG"] = 3] = "ERROR_MSG";
     ErrorClass[ErrorClass["ERROR_DEVICE"] = 4] = "ERROR_DEVICE";
 })(ErrorClass = exports.ErrorClass || (exports.ErrorClass = {}));
-var Error = (function (_super) {
+var Error = /** @class */ (function (_super) {
     __extends(Error, _super);
     function Error(ErrorMessage, ErrorCode, Id) {
         if (ErrorCode === void 0) { ErrorCode = ErrorClass.ERROR_UNKNOWN; }
@@ -107,7 +107,7 @@ var Error = (function (_super) {
     return Error;
 }(ButtplugSystemMessage));
 exports.Error = Error;
-var DeviceInfo = (function () {
+var DeviceInfo = /** @class */ (function () {
     function DeviceInfo(DeviceIndex, DeviceName, DeviceMessages) {
         this.DeviceIndex = DeviceIndex;
         this.DeviceName = DeviceName;
@@ -116,7 +116,7 @@ var DeviceInfo = (function () {
     return DeviceInfo;
 }());
 exports.DeviceInfo = DeviceInfo;
-var DeviceList = (function (_super) {
+var DeviceList = /** @class */ (function (_super) {
     __extends(DeviceList, _super);
     function DeviceList(Devices, Id) {
         var _this = _super.call(this) || this;
@@ -127,7 +127,7 @@ var DeviceList = (function (_super) {
     return DeviceList;
 }(ButtplugSystemMessage));
 exports.DeviceList = DeviceList;
-var DeviceAdded = (function (_super) {
+var DeviceAdded = /** @class */ (function (_super) {
     __extends(DeviceAdded, _super);
     function DeviceAdded(DeviceIndex, DeviceName, DeviceMessages) {
         var _this = _super.call(this) || this;
@@ -139,7 +139,7 @@ var DeviceAdded = (function (_super) {
     return DeviceAdded;
 }(ButtplugSystemMessage));
 exports.DeviceAdded = DeviceAdded;
-var DeviceRemoved = (function (_super) {
+var DeviceRemoved = /** @class */ (function (_super) {
     __extends(DeviceRemoved, _super);
     function DeviceRemoved(DeviceIndex) {
         var _this = _super.call(this) || this;
@@ -149,7 +149,7 @@ var DeviceRemoved = (function (_super) {
     return DeviceRemoved;
 }(ButtplugSystemMessage));
 exports.DeviceRemoved = DeviceRemoved;
-var RequestDeviceList = (function (_super) {
+var RequestDeviceList = /** @class */ (function (_super) {
     __extends(RequestDeviceList, _super);
     function RequestDeviceList(Id) {
         if (Id === void 0) { Id = 1; }
@@ -160,7 +160,7 @@ var RequestDeviceList = (function (_super) {
     return RequestDeviceList;
 }(ButtplugMessage));
 exports.RequestDeviceList = RequestDeviceList;
-var StartScanning = (function (_super) {
+var StartScanning = /** @class */ (function (_super) {
     __extends(StartScanning, _super);
     function StartScanning(Id) {
         if (Id === void 0) { Id = 1; }
@@ -171,7 +171,7 @@ var StartScanning = (function (_super) {
     return StartScanning;
 }(ButtplugMessage));
 exports.StartScanning = StartScanning;
-var StopScanning = (function (_super) {
+var StopScanning = /** @class */ (function (_super) {
     __extends(StopScanning, _super);
     function StopScanning(Id) {
         if (Id === void 0) { Id = 1; }
@@ -182,7 +182,7 @@ var StopScanning = (function (_super) {
     return StopScanning;
 }(ButtplugMessage));
 exports.StopScanning = StopScanning;
-var ScanningFinished = (function (_super) {
+var ScanningFinished = /** @class */ (function (_super) {
     __extends(ScanningFinished, _super);
     function ScanningFinished() {
         return _super.call(this) || this;
@@ -190,7 +190,7 @@ var ScanningFinished = (function (_super) {
     return ScanningFinished;
 }(ButtplugSystemMessage));
 exports.ScanningFinished = ScanningFinished;
-var RequestLog = (function (_super) {
+var RequestLog = /** @class */ (function (_super) {
     __extends(RequestLog, _super);
     function RequestLog(LogLevel, Id) {
         if (Id === void 0) { Id = 1; }
@@ -202,7 +202,7 @@ var RequestLog = (function (_super) {
     return RequestLog;
 }(ButtplugMessage));
 exports.RequestLog = RequestLog;
-var Log = (function (_super) {
+var Log = /** @class */ (function (_super) {
     __extends(Log, _super);
     function Log(LogLevel, LogMessage) {
         var _this = _super.call(this) || this;
@@ -213,7 +213,7 @@ var Log = (function (_super) {
     return Log;
 }(ButtplugSystemMessage));
 exports.Log = Log;
-var RequestServerInfo = (function (_super) {
+var RequestServerInfo = /** @class */ (function (_super) {
     __extends(RequestServerInfo, _super);
     function RequestServerInfo(ClientName, Id) {
         if (Id === void 0) { Id = 1; }
@@ -225,7 +225,7 @@ var RequestServerInfo = (function (_super) {
     return RequestServerInfo;
 }(ButtplugMessage));
 exports.RequestServerInfo = RequestServerInfo;
-var ServerInfo = (function (_super) {
+var ServerInfo = /** @class */ (function (_super) {
     __extends(ServerInfo, _super);
     function ServerInfo(MajorVersion, MinorVersion, BuildVersion, MessageVersion, MaxPingTime, ServerName, Id) {
         if (Id === void 0) { Id = 1; }
@@ -242,7 +242,7 @@ var ServerInfo = (function (_super) {
     return ServerInfo;
 }(ButtplugSystemMessage));
 exports.ServerInfo = ServerInfo;
-var FleshlightLaunchFW12Cmd = (function (_super) {
+var FleshlightLaunchFW12Cmd = /** @class */ (function (_super) {
     __extends(FleshlightLaunchFW12Cmd, _super);
     function FleshlightLaunchFW12Cmd(Speed, Position, DeviceIndex, Id) {
         if (DeviceIndex === void 0) { DeviceIndex = -1; }
@@ -257,7 +257,7 @@ var FleshlightLaunchFW12Cmd = (function (_super) {
     return FleshlightLaunchFW12Cmd;
 }(ButtplugDeviceMessage));
 exports.FleshlightLaunchFW12Cmd = FleshlightLaunchFW12Cmd;
-var KiirooCmd = (function (_super) {
+var KiirooCmd = /** @class */ (function (_super) {
     __extends(KiirooCmd, _super);
     function KiirooCmd(Command, DeviceIndex, Id) {
         if (Command === void 0) { Command = "0"; }
@@ -289,7 +289,7 @@ var KiirooCmd = (function (_super) {
     return KiirooCmd;
 }(ButtplugDeviceMessage));
 exports.KiirooCmd = KiirooCmd;
-var SingleMotorVibrateCmd = (function (_super) {
+var SingleMotorVibrateCmd = /** @class */ (function (_super) {
     __extends(SingleMotorVibrateCmd, _super);
     function SingleMotorVibrateCmd(Speed, DeviceIndex, Id) {
         if (DeviceIndex === void 0) { DeviceIndex = -1; }
@@ -303,7 +303,7 @@ var SingleMotorVibrateCmd = (function (_super) {
     return SingleMotorVibrateCmd;
 }(ButtplugDeviceMessage));
 exports.SingleMotorVibrateCmd = SingleMotorVibrateCmd;
-var StopDeviceCmd = (function (_super) {
+var StopDeviceCmd = /** @class */ (function (_super) {
     __extends(StopDeviceCmd, _super);
     function StopDeviceCmd(DeviceIndex, Id) {
         if (DeviceIndex === void 0) { DeviceIndex = -1; }
@@ -316,7 +316,7 @@ var StopDeviceCmd = (function (_super) {
     return StopDeviceCmd;
 }(ButtplugDeviceMessage));
 exports.StopDeviceCmd = StopDeviceCmd;
-var StopAllDevices = (function (_super) {
+var StopAllDevices = /** @class */ (function (_super) {
     __extends(StopAllDevices, _super);
     function StopAllDevices(Id) {
         if (Id === void 0) { Id = 1; }
@@ -327,7 +327,7 @@ var StopAllDevices = (function (_super) {
     return StopAllDevices;
 }(ButtplugMessage));
 exports.StopAllDevices = StopAllDevices;
-var LovenseCmd = (function (_super) {
+var LovenseCmd = /** @class */ (function (_super) {
     __extends(LovenseCmd, _super);
     function LovenseCmd(Command, DeviceIndex, Id) {
         if (DeviceIndex === void 0) { DeviceIndex = -1; }
@@ -341,7 +341,7 @@ var LovenseCmd = (function (_super) {
     return LovenseCmd;
 }(ButtplugDeviceMessage));
 exports.LovenseCmd = LovenseCmd;
-var VorzeA10CycloneCmd = (function (_super) {
+var VorzeA10CycloneCmd = /** @class */ (function (_super) {
     __extends(VorzeA10CycloneCmd, _super);
     function VorzeA10CycloneCmd(Speed, Clockwise, DeviceIndex, Id) {
         if (DeviceIndex === void 0) { DeviceIndex = -1; }

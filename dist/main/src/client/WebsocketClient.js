@@ -47,7 +47,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var Client_1 = require("./Client");
 var Messages_1 = require("../core/Messages");
-var ButtplugWebsocketClient = (function (_super) {
+var ButtplugWebsocketClient = /** @class */ (function (_super) {
     __extends(ButtplugWebsocketClient, _super);
     function ButtplugWebsocketClient(aClientName) {
         var _this = _super.call(this, aClientName) || this;

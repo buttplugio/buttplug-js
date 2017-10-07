@@ -47,7 +47,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var Messages = require("../core/Messages");
 var events_1 = require("events");
-var ButtplugDevice = (function (_super) {
+var ButtplugDevice = /** @class */ (function (_super) {
     __extends(ButtplugDevice, _super);
     function ButtplugDevice(_name) {
         var _this = _super.call(this) || this;

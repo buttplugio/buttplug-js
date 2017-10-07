@@ -48,7 +48,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var BluetoothDeviceInfo_1 = require("../BluetoothDeviceInfo");
 var ButtplugBluetoothDevice_1 = require("../ButtplugBluetoothDevice");
 var Messages = require("../../../core/Messages");
-var FleshlightLaunch = (function (_super) {
+var FleshlightLaunch = /** @class */ (function (_super) {
     __extends(FleshlightLaunch, _super);
     function FleshlightLaunch(aDeviceImpl) {
         var _this = _super.call(this, "Fleshlight Launch", aDeviceImpl) || this;

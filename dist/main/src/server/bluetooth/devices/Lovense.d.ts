@@ -17,3 +17,6 @@ export declare class LovenseRev2 {
 export declare class LovenseRev3 {
     static readonly DeviceInfo: BluetoothDeviceInfo;
 }
+export declare class LovenseRev4 {
+    static readonly DeviceInfo: BluetoothDeviceInfo;
+}

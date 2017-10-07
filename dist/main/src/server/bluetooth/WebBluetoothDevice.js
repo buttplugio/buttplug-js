@@ -46,7 +46,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var events_1 = require("events");
-var WebBluetoothDevice = (function (_super) {
+var WebBluetoothDevice = /** @class */ (function (_super) {
     __extends(WebBluetoothDevice, _super);
     function WebBluetoothDevice(_deviceInfo, _device) {
         var _this = _super.call(this) || this;
@@ -143,6 +143,13 @@ var WebBluetoothDevice = (function (_super) {
             });
         });
     };
+    Object.defineProperty(WebBluetoothDevice.prototype, "Name", {
+        get: function () {
+            return this._device.name;
+        },
+        enumerable: true,
+        configurable: true
+    });
     return WebBluetoothDevice;
 }(events_1.EventEmitter));
 exports.default = WebBluetoothDevice;

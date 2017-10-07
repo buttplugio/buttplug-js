@@ -48,7 +48,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var events_1 = require("events");
 var Device_1 = require("../core/Device");
 var Messages = require("../core/Messages");
-var ButtplugClient = (function (_super) {
+var ButtplugClient = /** @class */ (function (_super) {
     __extends(ButtplugClient, _super);
     function ButtplugClient(aClientName) {
         var _this = _super.call(this) || this;

@@ -11,7 +11,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var ButtplugDevice_1 = require("../ButtplugDevice");
-var ButtplugBluetoothDevice = (function (_super) {
+var ButtplugBluetoothDevice = /** @class */ (function (_super) {
     __extends(ButtplugBluetoothDevice, _super);
     function ButtplugBluetoothDevice(aName, _deviceImpl) {
         var _this = _super.call(this, aName) || this;

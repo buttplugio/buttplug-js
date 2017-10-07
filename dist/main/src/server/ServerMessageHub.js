@@ -11,7 +11,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var events_1 = require("events");
-var ServerMessageHub = (function (_super) {
+var ServerMessageHub = /** @class */ (function (_super) {
     __extends(ServerMessageHub, _super);
     function ServerMessageHub() {
         return _super !== null && _super.apply(this, arguments) || this;

@@ -4,6 +4,7 @@ import { EventEmitter } from "events";
 export default class ButtplugServer extends EventEmitter {
     private _serverName;
     private _maxPingTime;
+    static CanUseBluetooth: () => Promise<boolean>;
     private _deviceManager;
     private _pingTimedOut;
     private _receivedRequestServerInfo;

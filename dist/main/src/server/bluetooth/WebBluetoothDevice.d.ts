@@ -12,6 +12,7 @@ export default class WebBluetoothDevice extends EventEmitter implements IBluetoo
     private _service;
     private _characteristics;
     constructor(_deviceInfo: BluetoothDeviceInfo, _device: BluetoothDevice);
+    readonly Name: string;
     Connect: () => Promise<void>;
     OnDisconnect: () => void;
     WriteValue: (aCharacteristic: string, aValue: Uint8Array) => Promise<void>;

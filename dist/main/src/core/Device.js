@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Messages = require("./Messages");
-var Device = (function () {
+var Device = /** @class */ (function () {
     function Device(_index, _name, _allowedMessages) {
         this._index = _index;
         this._name = _name;

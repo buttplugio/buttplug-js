@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var BluetoothDeviceInfo = (function () {
+var BluetoothDeviceInfo = /** @class */ (function () {
     function BluetoothDeviceInfo(_names, _services, _characteristics, _createFunc) {
         this._names = _names;
         this._services = _services;

@@ -48,7 +48,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var BluetoothDevices_1 = require("./BluetoothDevices");
 var events_1 = require("events");
 var WebBluetoothDevice_1 = require("./WebBluetoothDevice");
-var WebBluetoothDeviceManager = (function (_super) {
+var WebBluetoothDeviceManager = /** @class */ (function (_super) {
     __extends(WebBluetoothDeviceManager, _super);
     function WebBluetoothDeviceManager() {
         var _this = _super !== null && _super.apply(this, arguments) || this;

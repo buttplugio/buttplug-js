@@ -50,7 +50,7 @@ var WebBluetoothDeviceManager_1 = require("./bluetooth/WebBluetoothDeviceManager
 var events_1 = require("events");
 var ServerMessageHub_1 = require("./ServerMessageHub");
 var Logging_1 = require("../core/Logging");
-var DeviceManager = (function (_super) {
+var DeviceManager = /** @class */ (function (_super) {
     __extends(DeviceManager, _super);
     function DeviceManager() {
         var _this = _super.call(this) || this;

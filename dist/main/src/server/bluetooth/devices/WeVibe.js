@@ -48,10 +48,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var BluetoothDeviceInfo_1 = require("../BluetoothDeviceInfo");
 var ButtplugBluetoothDevice_1 = require("../ButtplugBluetoothDevice");
 var Messages = require("../../../core/Messages");
-var Lovense = /** @class */ (function (_super) {
-    __extends(Lovense, _super);
-    function Lovense(aDeviceImpl) {
-        var _this = _super.call(this, "Lovense " + aDeviceImpl.Name, aDeviceImpl) || this;
+var WeVibe = /** @class */ (function (_super) {
+    __extends(WeVibe, _super);
+    function WeVibe(aDeviceImpl) {
+        var _this = _super.call(this, "WeVibe " + aDeviceImpl.Name, aDeviceImpl) || this;
         _this.HandleStopDeviceCmd = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -61,12 +61,13 @@ var Lovense = /** @class */ (function (_super) {
             });
         }); };
         _this.HandleSingleMotorVibrateCmd = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
-            var speed;
+            var speed, data;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        speed = Math.floor(20 * aMsg.Speed);
-                        return [4 /*yield*/, this._deviceImpl.WriteValue("tx", new TextEncoder().encode("Vibrate:" + speed + ";"))];
+                        speed = Math.floor(aMsg.Speed * 15);
+                        data = new Uint8Array([0x0f, 0x03, 0x00, (speed << 4) || (speed), 0x00, 0x03, 0x00, 0x00]);
+                        return [4 /*yield*/, this._deviceImpl.WriteValue("tx", data)];
                     case 1:
                         _a.sent();
                         return [2 /*return*/, new Messages.Ok(aMsg.Id)];
@@ -77,49 +78,16 @@ var Lovense = /** @class */ (function (_super) {
         _this.MsgFuncs.set(Messages.SingleMotorVibrateCmd.name, _this.HandleSingleMotorVibrateCmd);
         return _this;
     }
-    Lovense.CreateInstance = function (aDeviceImpl) {
-        return Promise.resolve(new Lovense(aDeviceImpl));
+    WeVibe.CreateInstance = function (aDeviceImpl) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new WeVibe(aDeviceImpl)];
+            });
+        });
     };
-    Lovense._deviceNames = { "LVS-A011": "Nora",
-        "LVS-C011": "Nora",
-        "LVS-B011": "Max",
-        "LVS-L009": "Ambi",
-        "LVS-S001": "Lush",
-        "LVS-Z001": "Hush",
-        "LVS-P36": "Edge" };
-    return Lovense;
+    WeVibe.DeviceInfo = new BluetoothDeviceInfo_1.default(["4 Plus", "Ditto", "Nova", "Wish", "Pivot", "Verge"], ["f000bb03-0451-4000-b000-000000000000"], { tx: "f000c000-0451-4000-b000-000000000000",
+        rx: "f000b000-0451-4000-b000-000000000000" }, WeVibe.CreateInstance);
+    return WeVibe;
 }(ButtplugBluetoothDevice_1.default));
-exports.default = Lovense;
-var LovenseRev1 = /** @class */ (function () {
-    function LovenseRev1() {
-    }
-    LovenseRev1.DeviceInfo = new BluetoothDeviceInfo_1.default(["LVS-A011", "LVS-C011", "LVS-B011", "LVS-L009"], ["0000fff0-0000-1000-8000-00805f9b34fb"], { tx: "0000fff2-0000-1000-8000-00805f9b34fb",
-    }, Lovense.CreateInstance);
-    return LovenseRev1;
-}());
-exports.LovenseRev1 = LovenseRev1;
-var LovenseRev2 = /** @class */ (function () {
-    function LovenseRev2() {
-    }
-    LovenseRev2.DeviceInfo = new BluetoothDeviceInfo_1.default(["LVS-S001", "LVS-Z001"], ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"], { tx: "6e400002-b5a3-f393-e0a9-e50e24dcca9e",
-    }, Lovense.CreateInstance);
-    return LovenseRev2;
-}());
-exports.LovenseRev2 = LovenseRev2;
-var LovenseRev3 = /** @class */ (function () {
-    function LovenseRev3() {
-    }
-    LovenseRev3.DeviceInfo = new BluetoothDeviceInfo_1.default(["LVS-P36"], ["50300001-0024-4bd4-bbd5-a6920e4c5653"], { tx: "50300002-0024-4bd4-bbd5-a6920e4c5653",
-    }, Lovense.CreateInstance);
-    return LovenseRev3;
-}());
-exports.LovenseRev3 = LovenseRev3;
-var LovenseRev4 = /** @class */ (function () {
-    function LovenseRev4() {
-    }
-    LovenseRev4.DeviceInfo = new BluetoothDeviceInfo_1.default(["LVS-Domi37"], ["57300001-0023-4bd4-bbd5-a6920e4c5653"], { tx: "57300002-0023-4bd4-bbd5-a6920e4c5653",
-    }, Lovense.CreateInstance);
-    return LovenseRev4;
-}());
-exports.LovenseRev4 = LovenseRev4;
-//# sourceMappingURL=Lovense.js.map
+exports.default = WeVibe;
+//# sourceMappingURL=WeVibe.js.map

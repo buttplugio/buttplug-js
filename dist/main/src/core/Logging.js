@@ -23,7 +23,7 @@ var LogLevel;
     LogLevel[LogLevel["Debug"] = 5] = "Debug";
     LogLevel[LogLevel["Trace"] = 6] = "Trace";
 })(LogLevel = exports.LogLevel || (exports.LogLevel = {}));
-var LogMessage = (function () {
+var LogMessage = /** @class */ (function () {
     function LogMessage(_logMessage, _logLevel) {
         this._logMessage = _logMessage;
         this._logLevel = _logLevel;
@@ -64,7 +64,7 @@ var LogMessage = (function () {
     return LogMessage;
 }());
 exports.LogMessage = LogMessage;
-var ButtplugLogger = (function (_super) {
+var ButtplugLogger = /** @class */ (function (_super) {
     __extends(ButtplugLogger, _super);
     function ButtplugLogger() {
         var _this = _super.call(this) || this;
