@@ -1,10 +1,10 @@
-import { ButtplugWebsocketClient } from "../src/client/WebsocketClient";
+import { ButtplugClient } from "../src/client/Client";
 import { Device } from "../src/core/Device";
 import * as Messages from "../src/core/Messages";
 
 let devices: Device[] = [];
-const client = new ButtplugWebsocketClient("Example Typescript Client");
-client.Connect("wss://localhost:12345/buttplug").then(
+const client = new ButtplugClient("Example Typescript Client");
+client.ConnectWebsocket("wss://localhost:12345/buttplug").then(
   function(result) {
     console.log(result); // "Stuff worked!"
     return client.StartScanning();

@@ -1,27 +1,27 @@
 import { expect } from "chai";
 import "mocha";
 import { Server } from "mock-socket";
-import { ButtplugWebsocketClient } from "../../src/client/WebsocketClient";
+import { ButtplugClient } from "../../src/client/Client";
 import * as Messages from "../../src/core/Messages";
 
 describe("Client Tests", async () => {
   let mockServer: Server;
-  let bp: ButtplugWebsocketClient;
+  let bp: ButtplugClient;
   let p;
   let res;
-  beforeEach(function(done) {
+  beforeEach(async () => {
     mockServer = new Server("ws://localhost:6868");
+    p = new Promise((resolve) => { res = resolve; });
     const serverInfo = (jsonmsg: string) => {
       const msg: Messages.ButtplugMessage = Messages.FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
       delaySend(new Messages.ServerInfo(0, 0, 0, 0, 0, "Test Server", msg.Id));
       mockServer.removeEventListener("message", serverInfo);
-      done();
     };
     mockServer.on("message", serverInfo);
-    bp = new ButtplugWebsocketClient("Test Buttplug Client");
-    bp.Connect("ws://localhost:6868");
-    p = new Promise((resolve) => { res = resolve; });
+    bp = new ButtplugClient("Test Buttplug Client");
+    await bp.ConnectWebsocket("ws://localhost:6868");
   });
+
   afterEach(function(done) {
     mockServer.stop(done);
   });

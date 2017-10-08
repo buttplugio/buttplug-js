@@ -1,33 +1,27 @@
 "use strict";
 
 import { EventEmitter } from "events";
-import { ButtplugClient } from "./Client";
 import { ButtplugMessage } from "../core/Messages";
+import { IButtplugConnector } from "./IButtplugConnector";
 import ButtplugServer from "../server/ButtplugServer";
 
-export class ButtplugBrowserClient extends ButtplugClient {
+export class ButtplugBrowserConnector extends EventEmitter implements IButtplugConnector {
   private _connected: boolean = false;
   private _server: ButtplugServer | null = null;
 
-  constructor(aClientName: string) {
-    super(aClientName);
-  }
-
-  public get Connected(): boolean {
+  public IsConnected(): boolean {
     return this._connected;
   }
 
-  public Connect = async (aUrl: string): Promise<void> => {
+  public Connect = async (): Promise<void> => {
     this._connected = true;
     this._server = new ButtplugServer();
     this._server.addListener("message", this.OnMessageReceived);
-    // We'll never fail this.
-    await this.InitializeConnection();
     return Promise.resolve();
   }
 
   public Disconnect = () => {
-    if (!this.Connected) {
+    if (!this._connected) {
       return;
     }
     this._connected = false;
@@ -35,15 +29,15 @@ export class ButtplugBrowserClient extends ButtplugClient {
     this.emit("close");
   }
 
-  protected Send = async (aMsg: ButtplugMessage) => {
-    if (!this.Connected) {
+  public Send = async (aMsg: ButtplugMessage) => {
+    if (!this._connected) {
       throw new Error("ButtplugClient not connected");
     }
     const returnMsg = await this._server!.SendMessage(aMsg);
-    this.ParseMessages([returnMsg]);
+    this.emit("message", [returnMsg]);
   }
 
   private OnMessageReceived = (aMsg: ButtplugMessage) => {
-    this.ParseMessages([aMsg]);
+    this.emit("message", [aMsg]);
   }
 }
