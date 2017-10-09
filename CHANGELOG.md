@@ -1,3 +1,8 @@
+# Version 0.2.0 - 2017/10/08
+
+- Simplified Client types. Now one client type with Websocket and Local connection functions.
+- Fixed bug where outbound messages were not checked against the message schema.
+
 # Version 0.1.1 - 2017/10/06
 
 - Add Lovense Domi, WeVibe toy support to server
