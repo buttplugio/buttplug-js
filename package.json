@@ -1,6 +1,6 @@
 {
   "name": "buttplug",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Javascript library for accessing buttplug servers via node.js or web sockets",
   "main": "./dist/main/src/index.js",
   "types": "./dist/main/src/index.d.ts",
@@ -50,7 +50,7 @@
     "ts-node": "^3.2.0",
     "tslint": "^5.7.0",
     "typescript": "^2.5.3",
-    "yarn": "^0.24.6"
+    "yarn": "^1.1.0"
   },
   "nyc": {
     "extension": [

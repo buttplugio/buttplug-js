@@ -1,24 +1,21 @@
 "use strict";
 
 import { EventEmitter } from "events";
-import { ButtplugClient } from "./Client";
-import { ButtplugMessage, FromJSON } from "../core/Messages";
+import { IButtplugConnector } from "./IButtplugConnector";
+import { ButtplugMessage } from "../core/Messages";
+import { FromJSON } from "../core/MessageUtils";
 
-export class ButtplugWebsocketClient extends ButtplugClient {
+export class ButtplugWebsocketConnector extends EventEmitter implements IButtplugConnector {
   private _ws: WebSocket | undefined;
 
-  constructor(aClientName: string) {
-    super(aClientName);
-  }
-
-  public get Connected(): boolean {
+  public IsConnected(): boolean {
     return this._ws !== undefined;
   }
 
   public ParseIncomingMessage = (aEvent: MessageEvent) => {
     if (typeof (aEvent.data) === "string") {
       const msgs = FromJSON(aEvent.data);
-      this.ParseMessages(msgs);
+      this.emit("message", msgs);
     } else if (aEvent.data instanceof Blob) {
       const reader = new FileReader();
       reader.addEventListener("load", (ev) => { this.OnReaderLoad(ev); });
@@ -37,10 +34,6 @@ export class ButtplugWebsocketClient extends ButtplugClient {
       this._ws.addEventListener("message", (aMsg) => { this.ParseIncomingMessage(aMsg); });
       this._ws.removeEventListener("close", conErrorCallback);
       this._ws.addEventListener("close", this.Disconnect);
-      if (!(await this.InitializeConnection())) {
-        rej();
-        return;
-      }
       res();
     });
     ws.addEventListener("close", conErrorCallback);
@@ -48,17 +41,16 @@ export class ButtplugWebsocketClient extends ButtplugClient {
   }
 
   public Disconnect = () => {
-    if (!this.Connected) {
+    if (!this.IsConnected()) {
       return;
     }
-    this.ShutdownConnection();
     this._ws!.close();
     this._ws = undefined;
     this.emit("close");
   }
 
-  protected Send = (aMsg: ButtplugMessage) => {
-    if (!this.Connected) {
+  public Send = (aMsg: ButtplugMessage) => {
+    if (!this.IsConnected()) {
       throw new Error("ButtplugClient not connected");
     }
     this._ws!.send("[" + aMsg.toJSON() + "]");
@@ -66,6 +58,6 @@ export class ButtplugWebsocketClient extends ButtplugClient {
 
   private OnReaderLoad(aEvent: Event) {
     const msgs = FromJSON((aEvent.target as FileReader).result);
-    this.ParseMessages(msgs);
+    this.emit("message", msgs);
   }
 }
