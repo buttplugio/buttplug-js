@@ -12,9 +12,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var class_transformer_1 = require("class-transformer");
-var ajv = require("ajv");
 require("reflect-metadata");
-var buttplugSchema = require("../../dependencies/buttplug-schema/schema/buttplug-schema.json");
 var ButtplugMessage = /** @class */ (function () {
     function ButtplugMessage(Id) {
         this.Id = Id;
@@ -23,10 +21,13 @@ var ButtplugMessage = /** @class */ (function () {
         return this.constructor.name;
     };
     ButtplugMessage.prototype.toJSON = function () {
+        return JSON.stringify(this.toProtocolFormat());
+    };
+    ButtplugMessage.prototype.toProtocolFormat = function () {
         var jsonObj = {};
         var instance = this.constructor;
         jsonObj[instance.name] = class_transformer_1.classToPlain(this);
-        return JSON.stringify(jsonObj);
+        return jsonObj;
     };
     return ButtplugMessage;
 }());
@@ -356,7 +357,7 @@ var VorzeA10CycloneCmd = /** @class */ (function (_super) {
     return VorzeA10CycloneCmd;
 }(ButtplugDeviceMessage));
 exports.VorzeA10CycloneCmd = VorzeA10CycloneCmd;
-var Messages = {
+exports.Messages = {
     DeviceAdded: DeviceAdded,
     DeviceList: DeviceList,
     DeviceRemoved: DeviceRemoved,
@@ -380,24 +381,4 @@ var Messages = {
     Test: Test,
     VorzeA10CycloneCmd: VorzeA10CycloneCmd,
 };
-var jsonValidator = ajv().compile(buttplugSchema);
-function FromJSON(str) {
-    var msgarray = JSON.parse(str);
-    if (!jsonValidator(msgarray)) {
-        // Relay validator errors as an error message locally.
-        var errorString = jsonValidator.errors.map(function (error) { return error.message; }).join("; ");
-        return [new Error(errorString, ErrorClass.ERROR_MSG, 0)];
-    }
-    var msgs = [];
-    for (var _i = 0, _a = Array.from(msgarray); _i < _a.length; _i++) {
-        var x = _a[_i];
-        // Can't get this to resolve nicely as a type, so just start from any and cast
-        // after. Not sure how to resolve plainToClass to a type since this is
-        // dynamic.
-        var msg = class_transformer_1.plainToClass(Messages[Object.getOwnPropertyNames(x)[0]], x[Object.getOwnPropertyNames(x)[0]]);
-        msgs.push(msg);
-    }
-    return msgs;
-}
-exports.FromJSON = FromJSON;
 //# sourceMappingURL=Messages.js.map

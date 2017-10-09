@@ -47,23 +47,61 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var events_1 = require("events");
 var Device_1 = require("../core/Device");
+var ButtplugWebsocketConnector_1 = require("./ButtplugWebsocketConnector");
+var ButtplugBrowserConnector_1 = require("./ButtplugBrowserConnector");
 var Messages = require("../core/Messages");
+var MessageUtils_1 = require("../core/MessageUtils");
 var ButtplugClient = /** @class */ (function (_super) {
     __extends(ButtplugClient, _super);
     function ButtplugClient(aClientName) {
         var _this = _super.call(this) || this;
+        _this._connector = null;
         _this._devices = new Map();
         _this._counter = 1;
         _this._waitingMsgs = new Map();
+        _this.ConnectWebsocket = function (aAddress) { return __awaiter(_this, void 0, void 0, function () {
+            var connector;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        connector = new ButtplugWebsocketConnector_1.ButtplugWebsocketConnector();
+                        return [4 /*yield*/, connector.Connect(aAddress)];
+                    case 1:
+                        _a.sent();
+                        this._connector = connector;
+                        this._connector.addListener("message", this.ParseMessages);
+                        return [4 /*yield*/, this.InitializeConnection()];
+                    case 2:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        }); };
+        _this.ConnectLocal = function () { return __awaiter(_this, void 0, void 0, function () {
+            var connector;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        connector = new ButtplugBrowserConnector_1.ButtplugBrowserConnector();
+                        return [4 /*yield*/, connector.Connect()];
+                    case 1:
+                        _a.sent();
+                        this._connector = connector;
+                        this._connector.addListener("message", this.ParseMessages);
+                        return [4 /*yield*/, this.InitializeConnection()];
+                    case 2:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        }); };
         _this.RequestDeviceList = function () { return __awaiter(_this, void 0, void 0, function () {
             var _this = this;
             var deviceList;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!this.Connected) {
-                            throw new Error("ButtplugClient not connected");
-                        }
+                        this.CheckConnector();
                         return [4 /*yield*/, this.SendMessage(new Messages.RequestDeviceList())];
                     case 1:
                         deviceList = (_a.sent());
@@ -146,7 +184,9 @@ var ButtplugClient = /** @class */ (function (_super) {
             var msg, ping;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.SendMessage(new Messages.RequestServerInfo(this._clientName))];
+                    case 0:
+                        this.CheckConnector();
+                        return [4 /*yield*/, this.SendMessage(new Messages.RequestServerInfo(this._clientName))];
                     case 1:
                         msg = _a.sent();
                         switch (msg.getType()) {
@@ -160,7 +200,7 @@ var ButtplugClient = /** @class */ (function (_super) {
                                 return [2 /*return*/, true];
                             }
                             case "Error": {
-                                this.Disconnect();
+                                this._connector.Disconnect();
                             }
                         }
                         return [2 /*return*/, false];
@@ -185,7 +225,7 @@ var ButtplugClient = /** @class */ (function (_super) {
                                 res();
                                 break;
                             default:
-                                rej();
+                                rej(msg);
                                 break;
                         }
                         return [2 /*return*/, p];
@@ -195,10 +235,21 @@ var ButtplugClient = /** @class */ (function (_super) {
         _this._clientName = aClientName;
         return _this;
     }
+    Object.defineProperty(ButtplugClient.prototype, "Connected", {
+        get: function () {
+            return this._connector !== null && this._connector.IsConnected();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ButtplugClient.prototype.Disconnect = function () {
+        this.CheckConnector();
+        this._connector.Disconnect();
+    };
     ButtplugClient.prototype.getDevices = function () {
-        if (!this.Connected) {
-            throw new Error("ButtplugClient not connected");
-        }
+        // While this function doesn't actually send a message, if we don't have a
+        // connector, we shouldn't have devices.
+        this.CheckConnector();
         var devices = [];
         this._devices.forEach(function (d, i) {
             devices.push(d);
@@ -211,9 +262,7 @@ var ButtplugClient = /** @class */ (function (_super) {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!this.Connected) {
-                            throw new Error("ButtplugClient not connected");
-                        }
+                        this.CheckConnector();
                         dev = this._devices.get(aDevice.Index);
                         if (dev === undefined) {
                             return [2 /*return*/, Promise.reject(new Error("Device not available."))];
@@ -228,20 +277,25 @@ var ButtplugClient = /** @class */ (function (_super) {
             });
         });
     };
+    ButtplugClient.prototype.CheckConnector = function () {
+        if (!this.Connected) {
+            throw new Error("ButtplugClient not connected");
+        }
+    };
     ButtplugClient.prototype.SendMessage = function (aMsg) {
         return __awaiter(this, void 0, void 0, function () {
             var res, msgPromise;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!this.Connected) {
-                            throw new Error("ButtplugClient not connected");
-                        }
+                        this.CheckConnector();
+                        // This will throw if our message is invalid
+                        MessageUtils_1.CheckMessage(aMsg);
                         aMsg.Id = this._counter;
                         msgPromise = new Promise(function (resolve) { res = resolve; });
                         this._waitingMsgs.set(this._counter, res);
                         this._counter += 1;
-                        this.Send(aMsg);
+                        this._connector.Send(aMsg);
                         return [4 /*yield*/, msgPromise];
                     case 1: return [2 /*return*/, _a.sent()];
                 }

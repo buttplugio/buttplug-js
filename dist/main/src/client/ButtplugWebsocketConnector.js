@@ -45,16 +45,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var Client_1 = require("./Client");
-var Messages_1 = require("../core/Messages");
-var ButtplugWebsocketClient = /** @class */ (function (_super) {
-    __extends(ButtplugWebsocketClient, _super);
-    function ButtplugWebsocketClient(aClientName) {
-        var _this = _super.call(this, aClientName) || this;
+var events_1 = require("events");
+var MessageUtils_1 = require("../core/MessageUtils");
+var ButtplugWebsocketConnector = /** @class */ (function (_super) {
+    __extends(ButtplugWebsocketConnector, _super);
+    function ButtplugWebsocketConnector() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.ParseIncomingMessage = function (aEvent) {
             if (typeof (aEvent.data) === "string") {
-                var msgs = Messages_1.FromJSON(aEvent.data);
-                _this.ParseMessages(msgs);
+                var msgs = MessageUtils_1.FromJSON(aEvent.data);
+                _this.emit("message", msgs);
             }
             else if (aEvent.data instanceof Blob) {
                 var reader = new FileReader();
@@ -72,21 +72,12 @@ var ButtplugWebsocketClient = /** @class */ (function (_super) {
                 ws.addEventListener("open", function (ev) { return __awaiter(_this, void 0, void 0, function () {
                     var _this = this;
                     return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0:
-                                this._ws = ws;
-                                this._ws.addEventListener("message", function (aMsg) { _this.ParseIncomingMessage(aMsg); });
-                                this._ws.removeEventListener("close", conErrorCallback);
-                                this._ws.addEventListener("close", this.Disconnect);
-                                return [4 /*yield*/, this.InitializeConnection()];
-                            case 1:
-                                if (!(_a.sent())) {
-                                    rej();
-                                    return [2 /*return*/];
-                                }
-                                res();
-                                return [2 /*return*/];
-                        }
+                        this._ws = ws;
+                        this._ws.addEventListener("message", function (aMsg) { _this.ParseIncomingMessage(aMsg); });
+                        this._ws.removeEventListener("close", conErrorCallback);
+                        this._ws.addEventListener("close", this.Disconnect);
+                        res();
+                        return [2 /*return*/];
                     });
                 }); });
                 ws.addEventListener("close", conErrorCallback);
@@ -94,34 +85,29 @@ var ButtplugWebsocketClient = /** @class */ (function (_super) {
             });
         }); };
         _this.Disconnect = function () {
-            if (!_this.Connected) {
+            if (!_this.IsConnected()) {
                 return;
             }
-            _this.ShutdownConnection();
             _this._ws.close();
             _this._ws = undefined;
             _this.emit("close");
         };
         _this.Send = function (aMsg) {
-            if (!_this.Connected) {
+            if (!_this.IsConnected()) {
                 throw new Error("ButtplugClient not connected");
             }
             _this._ws.send("[" + aMsg.toJSON() + "]");
         };
         return _this;
     }
-    Object.defineProperty(ButtplugWebsocketClient.prototype, "Connected", {
-        get: function () {
-            return this._ws !== undefined;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ButtplugWebsocketClient.prototype.OnReaderLoad = function (aEvent) {
-        var msgs = Messages_1.FromJSON(aEvent.target.result);
-        this.ParseMessages(msgs);
+    ButtplugWebsocketConnector.prototype.IsConnected = function () {
+        return this._ws !== undefined;
     };
-    return ButtplugWebsocketClient;
-}(Client_1.ButtplugClient));
-exports.ButtplugWebsocketClient = ButtplugWebsocketClient;
-//# sourceMappingURL=WebsocketClient.js.map
+    ButtplugWebsocketConnector.prototype.OnReaderLoad = function (aEvent) {
+        var msgs = MessageUtils_1.FromJSON(aEvent.target.result);
+        this.emit("message", msgs);
+    };
+    return ButtplugWebsocketConnector;
+}(events_1.EventEmitter));
+exports.ButtplugWebsocketConnector = ButtplugWebsocketConnector;
+//# sourceMappingURL=ButtplugWebsocketConnector.js.map

@@ -39,28 +39,37 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var chai_1 = require("chai");
 require("mocha");
 var mock_socket_1 = require("mock-socket");
-var WebsocketClient_1 = require("../../src/client/WebsocketClient");
+var Client_1 = require("../../src/client/Client");
 var Messages = require("../../src/core/Messages");
+var MessageUtils_1 = require("../../src/core/MessageUtils");
 describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, function () {
     var _this = this;
     function delaySend(aMsg) {
         process.nextTick(function () { return mockServer.send("[" + aMsg.toJSON() + "]"); });
     }
-    var mockServer, bp, p, res;
+    var mockServer, bp, p, res, rej;
     return __generator(this, function (_a) {
-        beforeEach(function (done) {
-            mockServer = new mock_socket_1.Server("ws://localhost:6868");
-            var serverInfo = function (jsonmsg) {
-                var msg = Messages.FromJSON(jsonmsg)[0];
-                delaySend(new Messages.ServerInfo(0, 0, 0, 0, 0, "Test Server", msg.Id));
-                mockServer.removeEventListener("message", serverInfo);
-                done();
-            };
-            mockServer.on("message", serverInfo);
-            bp = new WebsocketClient_1.ButtplugWebsocketClient("Test Buttplug Client");
-            bp.Connect("ws://localhost:6868");
-            p = new Promise(function (resolve) { res = resolve; });
-        });
+        beforeEach(function () { return __awaiter(_this, void 0, void 0, function () {
+            var serverInfo;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        mockServer = new mock_socket_1.Server("ws://localhost:6868");
+                        p = new Promise(function (resolve, reject) { res = resolve; rej = reject; });
+                        serverInfo = function (jsonmsg) {
+                            var msg = MessageUtils_1.FromJSON(jsonmsg)[0];
+                            delaySend(new Messages.ServerInfo(0, 0, 0, 0, 0, "Test Server", msg.Id));
+                            mockServer.removeEventListener("message", serverInfo);
+                        };
+                        mockServer.on("message", serverInfo);
+                        bp = new Client_1.ButtplugClient("Test Buttplug Client");
+                        return [4 /*yield*/, bp.ConnectWebsocket("ws://localhost:6868")];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        }); });
         afterEach(function (done) {
             mockServer.stop(done);
         });
@@ -69,7 +78,7 @@ describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, f
                 switch (_a.label) {
                     case 0:
                         mockServer.on("message", function (jsonmsg) {
-                            var msg = Messages.FromJSON(jsonmsg)[0];
+                            var msg = MessageUtils_1.FromJSON(jsonmsg)[0];
                             delaySend(new Messages.Ok(msg.Id));
                         });
                         return [4 /*yield*/, bp.StartScanning()];
@@ -88,7 +97,7 @@ describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, f
                 switch (_a.label) {
                     case 0:
                         mockServer.on("message", function (jsonmsg) {
-                            var msg = Messages.FromJSON(jsonmsg)[0];
+                            var msg = MessageUtils_1.FromJSON(jsonmsg)[0];
                             delaySend(new Messages.Ok(msg.Id));
                             delaySend(new Messages.Log("Trace", "Test"));
                         });
@@ -109,7 +118,7 @@ describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, f
                 switch (_a.label) {
                     case 0:
                         mockServer.on("message", function (jsonmsg) {
-                            var msg = Messages.FromJSON(jsonmsg)[0];
+                            var msg = MessageUtils_1.FromJSON(jsonmsg)[0];
                             chai_1.expect(msg.constructor.name).to.equal("StartScanning");
                             delaySend(new Messages.Ok(msg.Id));
                             delaySend(new Messages.DeviceAdded(0, "Test Device", ["SingleMotorVibrateCmd"]));
@@ -132,7 +141,7 @@ describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, f
                 switch (_a.label) {
                     case 0:
                         mockServer.on("message", function (jsonmsg) {
-                            var msg = Messages.FromJSON(jsonmsg)[0];
+                            var msg = MessageUtils_1.FromJSON(jsonmsg)[0];
                             delaySend(new Messages.DeviceList([new Messages.DeviceInfo(0, "Test Device", ["SingleMotorVibrateCmd"])], msg.Id));
                         });
                         bp.on("deviceadded", function (x) {
@@ -150,7 +159,7 @@ describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, f
                 switch (_a.label) {
                     case 0:
                         mockServer.on("message", function (jsonmsg) {
-                            var msg = Messages.FromJSON(jsonmsg)[0];
+                            var msg = MessageUtils_1.FromJSON(jsonmsg)[0];
                             delaySend(new Messages.Ok(msg.Id));
                             delaySend(new Messages.ScanningFinished());
                         });
@@ -171,7 +180,7 @@ describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, f
                 switch (_a.label) {
                     case 0:
                         mockServer.on("message", function (jsonmsg) {
-                            var msg = Messages.FromJSON(jsonmsg)[0];
+                            var msg = MessageUtils_1.FromJSON(jsonmsg)[0];
                             delaySend(new Messages.Ok(msg.Id));
                             if (msg.getType() === "StartScanning") {
                                 delaySend(new Messages.DeviceAdded(0, "Test Device", ["SingleMotorVibrateCmd"]));
@@ -201,6 +210,51 @@ describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, f
                                         res();
                                         return [3 /*break*/, 5];
                                     case 5: return [2 /*return*/];
+                                }
+                            });
+                        }); });
+                        return [4 /*yield*/, bp.StartScanning()];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/, p];
+                }
+            });
+        }); });
+        it("Should reject schema violating message", function () { return __awaiter(_this, void 0, void 0, function () {
+            var _this = this;
+            var device;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        mockServer.on("message", function (jsonmsg) {
+                            var msg = MessageUtils_1.FromJSON(jsonmsg)[0];
+                            delaySend(new Messages.Ok(msg.Id));
+                            if (msg.getType() === "StartScanning") {
+                                delaySend(new Messages.DeviceAdded(0, "Test Device", ["SingleMotorVibrateCmd"]));
+                            }
+                            if (msg instanceof Messages.ButtplugDeviceMessage) {
+                                chai_1.expect(msg.DeviceIndex).to.equal(0);
+                            }
+                        });
+                        bp.on("deviceadded", function (x) { return __awaiter(_this, void 0, void 0, function () {
+                            var _2;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0:
+                                        device = x;
+                                        _a.label = 1;
+                                    case 1:
+                                        _a.trys.push([1, 3, , 4]);
+                                        return [4 /*yield*/, bp.SendDeviceMessage(x, new Messages.SingleMotorVibrateCmd(50))];
+                                    case 2:
+                                        _a.sent();
+                                        rej(new Error("Should've thrown!"));
+                                        return [3 /*break*/, 4];
+                                    case 3:
+                                        _2 = _a.sent();
+                                        res();
+                                        return [3 /*break*/, 4];
+                                    case 4: return [2 /*return*/];
                                 }
                             });
                         }); });

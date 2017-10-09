@@ -35,11 +35,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var WebsocketClient_1 = require("../src/client/WebsocketClient");
+var Client_1 = require("../src/client/Client");
 var Messages = require("../src/core/Messages");
 var devices = [];
-var client = new WebsocketClient_1.ButtplugWebsocketClient("Example Typescript Client");
-client.Connect("wss://localhost:12345/buttplug").then(function (result) {
+var client = new Client_1.ButtplugClient("Example Typescript Client");
+client.ConnectWebsocket("wss://localhost:12345/buttplug").then(function (result) {
     console.log(result); // "Stuff worked!"
     return client.StartScanning();
 }, function (err) {

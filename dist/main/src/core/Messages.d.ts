@@ -4,6 +4,7 @@ export declare class ButtplugMessage {
     constructor(Id: number);
     getType(): string;
     toJSON(): string;
+    toProtocolFormat(): object;
 }
 export declare class ButtplugDeviceMessage extends ButtplugMessage {
     DeviceIndex: number;
@@ -144,4 +145,27 @@ export declare class VorzeA10CycloneCmd extends ButtplugDeviceMessage {
     Id: number;
     constructor(Speed: string, Clockwise: boolean, DeviceIndex?: number, Id?: number);
 }
-export declare function FromJSON(str: any): ButtplugMessage[];
+export declare const Messages: {
+    DeviceAdded: typeof DeviceAdded;
+    DeviceList: typeof DeviceList;
+    DeviceRemoved: typeof DeviceRemoved;
+    Error: typeof Error;
+    FleshlightLaunchFW12Cmd: typeof FleshlightLaunchFW12Cmd;
+    KiirooCmd: typeof KiirooCmd;
+    Log: typeof Log;
+    LovenseCmd: typeof LovenseCmd;
+    Ok: typeof Ok;
+    Ping: typeof Ping;
+    RequestDeviceList: typeof RequestDeviceList;
+    RequestLog: typeof RequestLog;
+    RequestServerInfo: typeof RequestServerInfo;
+    ScanningFinished: typeof ScanningFinished;
+    ServerInfo: typeof ServerInfo;
+    SingleMotorVibrateCmd: typeof SingleMotorVibrateCmd;
+    StartScanning: typeof StartScanning;
+    StopAllDevices: typeof StopAllDevices;
+    StopDeviceCmd: typeof StopDeviceCmd;
+    StopScanning: typeof StopScanning;
+    Test: typeof Test;
+    VorzeA10CycloneCmd: typeof VorzeA10CycloneCmd;
+};

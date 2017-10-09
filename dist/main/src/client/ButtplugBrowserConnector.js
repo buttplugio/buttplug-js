@@ -45,32 +45,24 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var Client_1 = require("./Client");
+var events_1 = require("events");
 var ButtplugServer_1 = require("../server/ButtplugServer");
-var ButtplugBrowserClient = /** @class */ (function (_super) {
-    __extends(ButtplugBrowserClient, _super);
-    function ButtplugBrowserClient(aClientName) {
-        var _this = _super.call(this, aClientName) || this;
+var ButtplugBrowserConnector = /** @class */ (function (_super) {
+    __extends(ButtplugBrowserConnector, _super);
+    function ButtplugBrowserConnector() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
         _this._connected = false;
         _this._server = null;
-        _this.Connect = function (aUrl) { return __awaiter(_this, void 0, void 0, function () {
+        _this.Connect = function () { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        this._connected = true;
-                        this._server = new ButtplugServer_1.default();
-                        this._server.addListener("message", this.OnMessageReceived);
-                        // We'll never fail this.
-                        return [4 /*yield*/, this.InitializeConnection()];
-                    case 1:
-                        // We'll never fail this.
-                        _a.sent();
-                        return [2 /*return*/, Promise.resolve()];
-                }
+                this._connected = true;
+                this._server = new ButtplugServer_1.default();
+                this._server.addListener("message", this.OnMessageReceived);
+                return [2 /*return*/, Promise.resolve()];
             });
         }); };
         _this.Disconnect = function () {
-            if (!_this.Connected) {
+            if (!_this._connected) {
                 return;
             }
             _this._connected = false;
@@ -82,30 +74,26 @@ var ButtplugBrowserClient = /** @class */ (function (_super) {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!this.Connected) {
+                        if (!this._connected) {
                             throw new Error("ButtplugClient not connected");
                         }
                         return [4 /*yield*/, this._server.SendMessage(aMsg)];
                     case 1:
                         returnMsg = _a.sent();
-                        this.ParseMessages([returnMsg]);
+                        this.emit("message", [returnMsg]);
                         return [2 /*return*/];
                 }
             });
         }); };
         _this.OnMessageReceived = function (aMsg) {
-            _this.ParseMessages([aMsg]);
+            _this.emit("message", [aMsg]);
         };
         return _this;
     }
-    Object.defineProperty(ButtplugBrowserClient.prototype, "Connected", {
-        get: function () {
-            return this._connected;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return ButtplugBrowserClient;
-}(Client_1.ButtplugClient));
-exports.ButtplugBrowserClient = ButtplugBrowserClient;
-//# sourceMappingURL=BrowserClient.js.map
+    ButtplugBrowserConnector.prototype.IsConnected = function () {
+        return this._connected;
+    };
+    return ButtplugBrowserConnector;
+}(events_1.EventEmitter));
+exports.ButtplugBrowserConnector = ButtplugBrowserConnector;
+//# sourceMappingURL=ButtplugBrowserConnector.js.map

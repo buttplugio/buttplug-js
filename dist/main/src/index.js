@@ -4,8 +4,6 @@ function __export(m) {
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./client/Client"));
-__export(require("./client/WebsocketClient"));
-__export(require("./client/BrowserClient"));
 __export(require("./core/Messages"));
 __export(require("./core/Device"));
 __export(require("./server/ButtplugServer"));
