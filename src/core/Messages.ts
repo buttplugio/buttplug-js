@@ -2,9 +2,7 @@
 "use strict";
 
 import {classToPlain, plainToClass} from "class-transformer";
-import * as ajv from "ajv";
 import "reflect-metadata";
-const buttplugSchema = require("../../dependencies/buttplug-schema/schema/buttplug-schema.json");
 
 export class ButtplugMessage {
 
@@ -16,10 +14,14 @@ export class ButtplugMessage {
   }
 
   public toJSON(): string {
+    return JSON.stringify(this.toProtocolFormat());
+  }
+
+  public toProtocolFormat(): object {
     const jsonObj = {};
     const instance: any = this.constructor;
     jsonObj[instance.name] = classToPlain(this);
-    return JSON.stringify(jsonObj);
+    return jsonObj;
   }
 }
 
@@ -228,7 +230,7 @@ export class VorzeA10CycloneCmd extends ButtplugDeviceMessage {
   }
 }
 
-const Messages = {
+export const Messages = {
   DeviceAdded,
   DeviceList,
   DeviceRemoved,
@@ -252,24 +254,3 @@ const Messages = {
   Test,
   VorzeA10CycloneCmd,
 };
-
-const jsonValidator = ajv().compile(buttplugSchema);
-
-export function FromJSON(str): ButtplugMessage[] {
-  const msgarray = JSON.parse(str);
-  if (!jsonValidator(msgarray)) {
-    // Relay validator errors as an error message locally.
-    const errorString = jsonValidator.errors!.map((error) => error.message).join("; ");
-    return [new Error(errorString, ErrorClass.ERROR_MSG, 0)];
-  }
-  const msgs: ButtplugMessage[] = [];
-  for (const x of Array.from(msgarray)) {
-    // Can't get this to resolve nicely as a type, so just start from any and cast
-    // after. Not sure how to resolve plainToClass to a type since this is
-    // dynamic.
-    const msg: any = plainToClass(Messages[Object.getOwnPropertyNames(x)[0]],
-                                 x[Object.getOwnPropertyNames(x)[0]]);
-    msgs.push(msg as ButtplugMessage);
-  }
-  return msgs;
-}

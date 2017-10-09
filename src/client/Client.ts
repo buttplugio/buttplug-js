@@ -6,6 +6,7 @@ import { IButtplugConnector } from "./IButtplugConnector";
 import { ButtplugWebsocketConnector } from "./ButtplugWebsocketConnector";
 import { ButtplugBrowserConnector } from "./ButtplugBrowserConnector";
 import * as Messages from "../core/Messages";
+import { CheckMessage } from "../core/MessageUtils";
 
 export class ButtplugClient extends EventEmitter {
   protected _pingTimer: NodeJS.Timer;
@@ -34,6 +35,15 @@ export class ButtplugClient extends EventEmitter {
     this._connector = connector;
     this._connector.addListener("message", this.ParseMessages);
     await this.InitializeConnection();
+  }
+
+  public get Connected(): boolean {
+    return this._connector !== null && this._connector.IsConnected();
+  }
+
+  public Disconnect() {
+    this.CheckConnector();
+    this._connector!.Disconnect();
   }
 
   public RequestDeviceList = async () => {
@@ -147,13 +157,15 @@ export class ButtplugClient extends EventEmitter {
   }
 
   private CheckConnector() {
-    if (this._connector === null || !this._connector.IsConnected()) {
+    if (!this.Connected) {
       throw new Error("ButtplugClient not connected");
     }
   }
 
   private async SendMessage(aMsg: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage> {
     this.CheckConnector();
+    // This will throw if our message is invalid
+    CheckMessage(aMsg);
     let res;
     aMsg.Id = this._counter;
     const msgPromise = new Promise<Messages.ButtplugMessage>((resolve) => { res = resolve; });
@@ -173,7 +185,7 @@ export class ButtplugClient extends EventEmitter {
       res();
       break;
     default:
-      rej();
+      rej(msg);
       break;
     }
     return p;

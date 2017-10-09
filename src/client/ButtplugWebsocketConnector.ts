@@ -2,7 +2,8 @@
 
 import { EventEmitter } from "events";
 import { IButtplugConnector } from "./IButtplugConnector";
-import { ButtplugMessage, FromJSON } from "../core/Messages";
+import { ButtplugMessage } from "../core/Messages";
+import { FromJSON } from "../core/MessageUtils";
 
 export class ButtplugWebsocketConnector extends EventEmitter implements IButtplugConnector {
   private _ws: WebSocket | undefined;
