@@ -1,7 +1,8 @@
 import BluetoothDeviceInfo from "./BluetoothDeviceInfo";
-import FleshlightLaunch from "./devices/FleshlightLaunch";
+import { FleshlightLaunch } from "./devices/FleshlightLaunch";
 import { LovenseRev1, LovenseRev2, LovenseRev3, LovenseRev4 } from "./devices/Lovense";
-import WeVibe from "./devices/WeVibe";
+import { VorzeA10Cyclone } from "./devices/VorzeA10Cyclone";
+import { WeVibe } from "./devices/WeVibe";
 
 export default class BluetoothDevices {
   public static GetDeviceInfo(): BluetoothDeviceInfo[] {
@@ -10,6 +11,7 @@ export default class BluetoothDevices {
             LovenseRev2.DeviceInfo,
             LovenseRev3.DeviceInfo,
             LovenseRev4.DeviceInfo,
+            VorzeA10Cyclone.DeviceInfo,
             WeVibe.DeviceInfo];
   }
 }

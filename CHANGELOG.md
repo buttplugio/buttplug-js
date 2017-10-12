@@ -1,3 +1,8 @@
+# Version 0.2.1 - 2017/10/11
+
+- Added WebBluetooth support for the Vorze A10 Cyclone 
+- Fixed types in VorzeA10CycloneCmd message
+
 # Version 0.2.0 - 2017/10/08
 
 - Simplified Client types. Now one client type with Websocket and Local connection functions.
