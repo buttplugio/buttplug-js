@@ -88,5 +88,5 @@ var FleshlightLaunch = /** @class */ (function (_super) {
         tx: "88f80581-0000-01e6-aace-0002a5d5c51b" }, FleshlightLaunch.CreateInstance);
     return FleshlightLaunch;
 }(ButtplugBluetoothDevice_1.default));
-exports.default = FleshlightLaunch;
+exports.FleshlightLaunch = FleshlightLaunch;
 //# sourceMappingURL=FleshlightLaunch.js.map

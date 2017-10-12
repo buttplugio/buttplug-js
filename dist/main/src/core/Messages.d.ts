@@ -139,11 +139,11 @@ export declare class LovenseCmd extends ButtplugDeviceMessage {
     constructor(Command: string, DeviceIndex?: number, Id?: number);
 }
 export declare class VorzeA10CycloneCmd extends ButtplugDeviceMessage {
-    Speed: string;
+    Speed: number;
     Clockwise: boolean;
     DeviceIndex: number;
     Id: number;
-    constructor(Speed: string, Clockwise: boolean, DeviceIndex?: number, Id?: number);
+    constructor(Speed: number, Clockwise: boolean, DeviceIndex?: number, Id?: number);
 }
 export declare const Messages: {
     DeviceAdded: typeof DeviceAdded;

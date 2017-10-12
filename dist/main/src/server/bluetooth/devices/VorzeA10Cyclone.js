@@ -48,26 +48,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var BluetoothDeviceInfo_1 = require("../BluetoothDeviceInfo");
 var ButtplugBluetoothDevice_1 = require("../ButtplugBluetoothDevice");
 var Messages = require("../../../core/Messages");
-var WeVibe = /** @class */ (function (_super) {
-    __extends(WeVibe, _super);
-    function WeVibe(aDeviceImpl) {
-        var _this = _super.call(this, "WeVibe " + aDeviceImpl.Name, aDeviceImpl) || this;
+var VorzeA10Cyclone = /** @class */ (function (_super) {
+    __extends(VorzeA10Cyclone, _super);
+    function VorzeA10Cyclone(aDeviceImpl) {
+        var _this = _super.call(this, "Vorze A10 Cyclone", aDeviceImpl) || this;
         _this.HandleStopDeviceCmd = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.HandleSingleMotorVibrateCmd(new Messages.SingleMotorVibrateCmd(0, aMsg.DeviceIndex, aMsg.Id))];
+                    case 0: return [4 /*yield*/, this.HandleVorzeA10CycloneCmd(new Messages.VorzeA10CycloneCmd(0, true, aMsg.DeviceIndex, aMsg.Id))];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });
         }); };
-        _this.HandleSingleMotorVibrateCmd = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
-            var speed, data;
+        _this.HandleVorzeA10CycloneCmd = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
+            var rawSpeed;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        speed = Math.floor(aMsg.Speed * 15);
-                        data = new Uint8Array([0x0f, 0x03, 0x00, (speed << 4) || (speed), 0x00, 0x03, 0x00, 0x00]);
-                        return [4 /*yield*/, this._deviceImpl.WriteValue("tx", data)];
+                        rawSpeed = (((aMsg.Clockwise ? 1 : 0) << 7) | aMsg.Speed) & 0xff;
+                        return [4 /*yield*/, this._deviceImpl.WriteValue("tx", new Uint8Array([0x01, 0x01, rawSpeed]))];
                     case 1:
                         _a.sent();
                         return [2 /*return*/, new Messages.Ok(aMsg.Id)];
@@ -75,19 +74,20 @@ var WeVibe = /** @class */ (function (_super) {
             });
         }); };
         _this.MsgFuncs.set(Messages.StopDeviceCmd.name, _this.HandleStopDeviceCmd);
-        _this.MsgFuncs.set(Messages.SingleMotorVibrateCmd.name, _this.HandleSingleMotorVibrateCmd);
+        _this.MsgFuncs.set(Messages.VorzeA10CycloneCmd.name, _this.HandleVorzeA10CycloneCmd);
         return _this;
     }
-    WeVibe.CreateInstance = function (aDeviceImpl) {
+    VorzeA10Cyclone.CreateInstance = function (aDeviceImpl) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, new WeVibe(aDeviceImpl)];
+                // Send initializer byte
+                aDeviceImpl.WriteValue("cmd", new Uint8Array([0x00]));
+                return [2 /*return*/, new VorzeA10Cyclone(aDeviceImpl)];
             });
         });
     };
-    WeVibe.DeviceInfo = new BluetoothDeviceInfo_1.default(["4 Plus", "Ditto", "Nova", "Wish", "Pivot", "Verge"], ["f000bb03-0451-4000-b000-000000000000"], { tx: "f000c000-0451-4000-b000-000000000000",
-        rx: "f000b000-0451-4000-b000-000000000000" }, WeVibe.CreateInstance);
-    return WeVibe;
+    VorzeA10Cyclone.DeviceInfo = new BluetoothDeviceInfo_1.default(["CycSA"], ["40ee1111-63ec-4b7f-8ce7-712efd55b90e"], { tx: "40ee2222-63ec-4b7f-8ce7-712efd55b90e" }, VorzeA10Cyclone.CreateInstance);
+    return VorzeA10Cyclone;
 }(ButtplugBluetoothDevice_1.default));
-exports.WeVibe = WeVibe;
-//# sourceMappingURL=WeVibe.js.map
+exports.VorzeA10Cyclone = VorzeA10Cyclone;
+//# sourceMappingURL=VorzeA10Cyclone.js.map
