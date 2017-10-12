@@ -222,7 +222,7 @@ export class LovenseCmd extends ButtplugDeviceMessage {
 }
 
 export class VorzeA10CycloneCmd extends ButtplugDeviceMessage {
-  constructor(public Speed: string,
+  constructor(public Speed: number,
               public Clockwise: boolean,
               public DeviceIndex: number = -1,
               public Id: number = 1) {
