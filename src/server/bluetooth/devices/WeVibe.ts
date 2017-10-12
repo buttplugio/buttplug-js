@@ -3,7 +3,7 @@ import ButtplugBluetoothDevice from "../ButtplugBluetoothDevice";
 import IBluetoothDeviceImpl from "../IBluetoothDeviceImpl";
 import * as Messages from "../../../core/Messages";
 
-export default class WeVibe extends ButtplugBluetoothDevice {
+export class WeVibe extends ButtplugBluetoothDevice {
   public static readonly DeviceInfo = new BluetoothDeviceInfo(["4 Plus", "Ditto", "Nova", "Wish", "Pivot", "Verge"],
                                                               ["f000bb03-0451-4000-b000-000000000000"],
                                                               { tx: "f000c000-0451-4000-b000-000000000000",
