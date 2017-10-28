@@ -23,6 +23,9 @@ export default class DeviceManager extends EventEmitter {
       this._subtypeManagers.push(manager);
     }
     // TODO: If we have no managers by this point, throw, because we'll never load a device
+    for (const manager of this._subtypeManagers) {
+      manager.addListener("scanningfinished", this.OnScanningFinished);
+    }
   }
 
   public SendMessage = async (aMessage: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage> => {
@@ -50,7 +53,6 @@ export default class DeviceManager extends EventEmitter {
     case "RequestDeviceList":
       return new Messages.DeviceList([], id);
     }
-    // TODO: Figure out how we're gonna deal with device messages here.
     const deviceMsg = (aMessage as Messages.ButtplugDeviceMessage);
     if (deviceMsg.DeviceIndex === undefined) {
       return this._logger.LogAndError(`Message Type ${aMessage.constructor.name} unhandled by this server.`,
@@ -96,5 +98,14 @@ export default class DeviceManager extends EventEmitter {
     }
     this._devices.delete(deviceIndex);
     ServerMessageHub.Instance.emitMessage(new Messages.DeviceRemoved(deviceIndex));
+  }
+
+  private OnScanningFinished = () => {
+    for (const manager of this._subtypeManagers) {
+      if (manager.IsScanning()) {
+        return;
+      }
+    }
+    ServerMessageHub.Instance.emitMessage(new Messages.ScanningFinished());
   }
 }
