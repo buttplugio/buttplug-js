@@ -23,7 +23,7 @@ export default class WebBluetoothDeviceManager extends EventEmitter implements I
     (((navigator as any).bluetooth) as Bluetooth).requestDevice(filters).then(async (device) => {
       await this.OpenDevice(device);
       this.emit("scanningfinished");
-    });
+    }).catch(() => this.emit("scanningfinished"));
     return true;
   }
 
