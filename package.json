@@ -2,18 +2,6 @@
   "name": "buttplug",
   "version": "0.2.2",
   "description": "Javascript library for accessing buttplug servers via node.js or web sockets",
-  "main": "./dist/main/src/index.js",
-  "types": "./dist/main/src/index.d.ts",
-  "scripts": {
-    "build": "trash dist dist-bundle && yarn build:main",
-    "build:copy-schema": "copyfiles ./dependencies/buttplug-schema/schema/buttplug-schema.json ./dist/main/",
-    "build:main": "tsc -p tsconfig.json && yarn build:copy-schema",
-    "tslint": "tslint -c tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
-    "tslint:fix": "tslint -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\"",
-    "pretest": "yarn build:main",
-    "test": "nyc mocha \"tests/**/*.ts\"",
-    "posttest": "nyc report && codecov -f coverage/*.json"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/metafetish/buttplug-js.git"
@@ -28,11 +16,22 @@
     "url": "https://github.com/metafetish/buttplug-js/issues"
   },
   "homepage": "https://github.com/metafetish/buttplug-js#readme",
+  "main": "./dist/main/src/index.js",
+  "types": "./dist/main/src/index.d.ts",
+  "scripts": {
+    "build": "trash dist dist-bundle && yarn build:main",
+    "build:copy-schema": "copyfiles ./dependencies/buttplug-schema/schema/buttplug-schema.json ./dist/main/",
+    "build:main": "tsc -p tsconfig.json && yarn build:copy-schema",
+    "tslint": "tslint -c tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "tslint:fix": "tslint -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "pretest": "yarn build:main",
+    "test": "nyc mocha \"tests/**/*.ts\"",
+    "posttest": "nyc report && codecov -f coverage/*.json"
+  },
   "dependencies": {
     "ajv": "^5.2.3",
     "class-transformer": "^0.1.8",
-    "reflect-metadata": "^0.1.10",
-    "ws": "^3.2.0"
+    "reflect-metadata": "^0.1.10"
   },
   "devDependencies": {
     "@types/chai": "^3.5.2",
