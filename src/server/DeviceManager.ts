@@ -16,7 +16,9 @@ export class DeviceManager extends EventEmitter {
     super();
     this._logger.Debug("Starting Device Manager");
     // If we have a bluetooth object on navigator, load the device manager
-    if (navigator && (navigator as any).bluetooth) {
+    if (typeof(window) !== "undefined" &&
+        typeof(window.navigator) !== "undefined" &&
+        (navigator as any).bluetooth) {
       const manager = new WebBluetoothDeviceManager();
       manager.addListener("deviceadded", this.OnDeviceAdded);
       manager.addListener("deviceremoved", this.OnDeviceRemoved);
