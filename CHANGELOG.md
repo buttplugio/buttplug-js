@@ -1,3 +1,7 @@
+# Version 0.2.2 - 2017/10/18
+
+- Fix emission of "scanningfinished" event and message in client/server
+
 # Version 0.2.1 - 2017/10/11
 
 - Added WebBluetooth support for the Vorze A10 Cyclone 
