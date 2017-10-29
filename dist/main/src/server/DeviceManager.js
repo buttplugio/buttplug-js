@@ -129,6 +129,15 @@ var DeviceManager = /** @class */ (function (_super) {
             _this._devices.delete(deviceIndex);
             ServerMessageHub_1.default.Instance.emitMessage(new Messages.DeviceRemoved(deviceIndex));
         };
+        _this.OnScanningFinished = function () {
+            for (var _i = 0, _a = _this._subtypeManagers; _i < _a.length; _i++) {
+                var manager = _a[_i];
+                if (manager.IsScanning()) {
+                    return;
+                }
+            }
+            ServerMessageHub_1.default.Instance.emitMessage(new Messages.ScanningFinished());
+        };
         _this._logger.Debug("Starting Device Manager");
         // If we have a bluetooth object on navigator, load the device manager
         if (navigator && navigator.bluetooth) {
@@ -137,8 +146,12 @@ var DeviceManager = /** @class */ (function (_super) {
             manager.addListener("deviceremoved", _this.OnDeviceRemoved);
             _this._subtypeManagers.push(manager);
         }
-        return _this;
         // TODO: If we have no managers by this point, throw, because we'll never load a device
+        for (var _i = 0, _a = _this._subtypeManagers; _i < _a.length; _i++) {
+            var manager = _a[_i];
+            manager.addListener("scanningfinished", _this.OnScanningFinished);
+        }
+        return _this;
     }
     return DeviceManager;
 }(events_1.EventEmitter));

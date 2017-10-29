@@ -111,7 +111,7 @@ var WebBluetoothDeviceManager = /** @class */ (function (_super) {
                         return [2 /*return*/];
                 }
             });
-        }); });
+        }); }).catch(function () { return _this.emit("scanningfinished"); });
         return true;
     };
     WebBluetoothDeviceManager.prototype.StopScanning = function () {

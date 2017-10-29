@@ -10,4 +10,5 @@ export default class DeviceManager extends EventEmitter {
     SendMessage: (aMessage: Messages.ButtplugMessage) => Promise<Messages.ButtplugMessage>;
     private OnDeviceAdded;
     private OnDeviceRemoved;
+    private OnScanningFinished;
 }
