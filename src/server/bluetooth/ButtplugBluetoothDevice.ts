@@ -1,7 +1,7 @@
-import ButtplugDevice from "../ButtplugDevice";
-import IBluetoothDeviceImpl from "./IBluetoothDeviceImpl";
+import { ButtplugDevice } from "../ButtplugDevice";
+import { IBluetoothDeviceImpl } from "./IBluetoothDeviceImpl";
 
-export default class ButtplugBluetoothDevice extends ButtplugDevice {
+export class ButtplugBluetoothDevice extends ButtplugDevice {
   public constructor(aName: string, protected _deviceImpl: IBluetoothDeviceImpl) {
     super(aName);
   }

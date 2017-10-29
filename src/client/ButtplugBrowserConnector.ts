@@ -3,7 +3,7 @@
 import { EventEmitter } from "events";
 import { ButtplugMessage } from "../core/Messages";
 import { IButtplugConnector } from "./IButtplugConnector";
-import ButtplugServer from "../server/ButtplugServer";
+import { ButtplugServer } from "../server/ButtplugServer";
 
 export class ButtplugBrowserConnector extends EventEmitter implements IButtplugConnector {
   private _connected: boolean = false;

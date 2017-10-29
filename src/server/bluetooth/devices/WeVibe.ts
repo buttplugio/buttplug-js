@@ -1,6 +1,6 @@
-import BluetoothDeviceInfo from "../BluetoothDeviceInfo";
-import ButtplugBluetoothDevice from "../ButtplugBluetoothDevice";
-import IBluetoothDeviceImpl from "../IBluetoothDeviceImpl";
+import { BluetoothDeviceInfo } from "../BluetoothDeviceInfo";
+import { ButtplugBluetoothDevice } from "../ButtplugBluetoothDevice";
+import { IBluetoothDeviceImpl } from "../IBluetoothDeviceImpl";
 import * as Messages from "../../../core/Messages";
 
 export class WeVibe extends ButtplugBluetoothDevice {

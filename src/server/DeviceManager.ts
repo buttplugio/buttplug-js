@@ -1,12 +1,12 @@
 import * as Messages from "../core/Messages";
-import IButtplugDevice from "./IButtplugDevice";
-import IDeviceSubtypeManager from "./IDeviceSubtypeManager";
-import WebBluetoothDeviceManager from "./bluetooth/WebBluetoothDeviceManager";
+import { IButtplugDevice } from "./IButtplugDevice";
+import { IDeviceSubtypeManager } from "./IDeviceSubtypeManager";
+import { WebBluetoothDeviceManager } from "./bluetooth/WebBluetoothDeviceManager";
 import { EventEmitter } from "events";
-import ServerMessageHub from "./ServerMessageHub";
+import { ServerMessageHub } from "./ServerMessageHub";
 import { ButtplugLogger } from "../core/Logging";
 
-export default class DeviceManager extends EventEmitter {
+export class DeviceManager extends EventEmitter {
   private _subtypeManagers: IDeviceSubtypeManager[] = [];
   private _devices: Map<number, IButtplugDevice> = new Map<number, IButtplugDevice>();
   private _deviceCounter: number = 1;

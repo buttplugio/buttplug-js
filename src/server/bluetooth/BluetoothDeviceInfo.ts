@@ -1,7 +1,7 @@
-import IBluetoothDeviceImpl from "./IBluetoothDeviceImpl";
-import ButtplugBluetoothDevice from "./ButtplugBluetoothDevice";
+import { IBluetoothDeviceImpl } from "./IBluetoothDeviceImpl";
+import { ButtplugBluetoothDevice } from "./ButtplugBluetoothDevice";
 
-export default class BluetoothDeviceInfo {
+export class BluetoothDeviceInfo {
   constructor(private _names: string[],
               private _services: string[],
               private _characteristics: object,

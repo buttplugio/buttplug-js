@@ -1,9 +1,9 @@
-import IBluetoothDeviceImpl from "./IBluetoothDeviceImpl";
-import BluetoothDeviceInfo from "./BluetoothDeviceInfo";
-import ButtplugBluetoothDevice from "./ButtplugBluetoothDevice";
+import { IBluetoothDeviceImpl } from "./IBluetoothDeviceImpl";
+import { BluetoothDeviceInfo } from "./BluetoothDeviceInfo";
+import { ButtplugBluetoothDevice } from "./ButtplugBluetoothDevice";
 import { EventEmitter } from "events";
 
-export default class WebBluetoothDevice extends EventEmitter implements IBluetoothDeviceImpl {
+export class WebBluetoothDevice extends EventEmitter implements IBluetoothDeviceImpl {
 
   public static async CreateDevice(aDeviceInfo: BluetoothDeviceInfo,
                                    aDevice: BluetoothDevice):
