@@ -1,12 +1,12 @@
 import * as Messages from "../core/Messages";
-import IButtplugDevice from "./IButtplugDevice";
-import IDeviceSubtypeManager from "./IDeviceSubtypeManager";
-import WebBluetoothDeviceManager from "./bluetooth/WebBluetoothDeviceManager";
+import { IButtplugDevice } from "./IButtplugDevice";
+import { IDeviceSubtypeManager } from "./IDeviceSubtypeManager";
+import { WebBluetoothDeviceManager } from "./bluetooth/WebBluetoothDeviceManager";
 import { EventEmitter } from "events";
-import ServerMessageHub from "./ServerMessageHub";
+import { ServerMessageHub } from "./ServerMessageHub";
 import { ButtplugLogger } from "../core/Logging";
 
-export default class DeviceManager extends EventEmitter {
+export class DeviceManager extends EventEmitter {
   private _subtypeManagers: IDeviceSubtypeManager[] = [];
   private _devices: Map<number, IButtplugDevice> = new Map<number, IButtplugDevice>();
   private _deviceCounter: number = 1;
@@ -16,7 +16,9 @@ export default class DeviceManager extends EventEmitter {
     super();
     this._logger.Debug("Starting Device Manager");
     // If we have a bluetooth object on navigator, load the device manager
-    if (navigator && (navigator as any).bluetooth) {
+    if (typeof(window) !== "undefined" &&
+        typeof(window.navigator) !== "undefined" &&
+        (navigator as any).bluetooth) {
       const manager = new WebBluetoothDeviceManager();
       manager.addListener("deviceadded", this.OnDeviceAdded);
       manager.addListener("deviceremoved", this.OnDeviceRemoved);
@@ -26,6 +28,13 @@ export default class DeviceManager extends EventEmitter {
     for (const manager of this._subtypeManagers) {
       manager.addListener("scanningfinished", this.OnScanningFinished);
     }
+  }
+
+  public AddDeviceManager = (aManager: IDeviceSubtypeManager) => {
+    this._subtypeManagers.push(aManager);
+    aManager.addListener("deviceadded", this.OnDeviceAdded);
+    aManager.addListener("deviceremoved", this.OnDeviceRemoved);
+    aManager.addListener("scanningfinished", this.OnScanningFinished);
   }
 
   public SendMessage = async (aMessage: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage> => {

@@ -1,19 +1,7 @@
 {
   "name": "buttplug",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Javascript library for accessing buttplug servers via node.js or web sockets",
-  "main": "./dist/main/src/index.js",
-  "types": "./dist/main/src/index.d.ts",
-  "scripts": {
-    "build": "trash dist dist-bundle && yarn build:main",
-    "build:copy-schema": "copyfiles ./dependencies/buttplug-schema/schema/buttplug-schema.json ./dist/main/",
-    "build:main": "tsc -p tsconfig.json && yarn build:copy-schema",
-    "tslint": "tslint -c tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
-    "tslint:fix": "tslint -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\"",
-    "pretest": "yarn build:main",
-    "test": "nyc mocha \"tests/**/*.ts\"",
-    "posttest": "nyc report && codecov -f coverage/*.json"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/metafetish/buttplug-js.git"
@@ -28,29 +16,41 @@
     "url": "https://github.com/metafetish/buttplug-js/issues"
   },
   "homepage": "https://github.com/metafetish/buttplug-js#readme",
+  "main": "./dist/main/src/index.js",
+  "types": "./dist/main/src/index.d.ts",
+  "scripts": {
+    "build": "trash dist dist-bundle && yarn build:main",
+    "build:copy-schema": "copyfiles ./dependencies/buttplug-schema/schema/buttplug-schema.json ./dist/main/",
+    "build:main": "tsc -p tsconfig.json && yarn build:copy-schema",
+    "tslint": "tslint -c tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "tslint:fix": "tslint -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "pretest": "yarn build:main",
+    "test": "nyc mocha \"tests/**/*.ts\"",
+    "posttest": "nyc report && codecov -f coverage/*.json"
+  },
   "dependencies": {
-    "ajv": "^5.2.3",
+    "ajv": "^5.3.0",
     "class-transformer": "^0.1.8",
     "reflect-metadata": "^0.1.10",
-    "ws": "^3.2.0"
+    "text-encoding": "^0.6.4"
   },
   "devDependencies": {
-    "@types/chai": "^3.5.2",
-    "@types/mocha": "^2.2.43",
-    "@types/node": "^7.0.43",
-    "@types/text-encoding": "^0.0.31",
-    "@types/web-bluetooth": "^0.0.2",
-    "chai": "^3.5.0",
-    "codecov": "^2.2.0",
+    "@types/chai": "^4.0.4",
+    "@types/mocha": "^2.2.44",
+    "@types/node": "^8.0.47",
+    "@types/text-encoding": "^0.0.32",
+    "@types/web-bluetooth": "^0.0.3",
+    "chai": "^4.1.2",
+    "codecov": "^3.0.0",
     "copyfiles": "^1.2.0",
-    "mocha": "^3.5.3",
-    "mock-socket": "^6.1.0",
-    "nyc": "^10.3.2",
+    "mocha": "^4.0.1",
+    "mock-socket": "^7.0.0",
+    "nyc": "^11.2.1",
     "trash-cli": "^1.4.0",
-    "ts-node": "^3.2.0",
-    "tslint": "^5.7.0",
+    "ts-node": "^3.3.0",
+    "tslint": "^5.8.0",
     "typescript": "^2.5.3",
-    "yarn": "^1.1.0"
+    "yarn": "^1.2.1"
   },
   "nyc": {
     "extension": [

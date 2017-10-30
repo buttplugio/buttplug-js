@@ -1,6 +1,6 @@
-import BluetoothDeviceInfo from "../BluetoothDeviceInfo";
-import ButtplugBluetoothDevice from "../ButtplugBluetoothDevice";
-import IBluetoothDeviceImpl from "../IBluetoothDeviceImpl";
+import { BluetoothDeviceInfo } from "../BluetoothDeviceInfo";
+import { ButtplugBluetoothDevice } from "../ButtplugBluetoothDevice";
+import { IBluetoothDeviceImpl } from "../IBluetoothDeviceImpl";
 import * as Messages from "../../../core/Messages";
 
 export class FleshlightLaunch extends ButtplugBluetoothDevice {
@@ -13,7 +13,7 @@ export class FleshlightLaunch extends ButtplugBluetoothDevice {
 
   public static async CreateInstance(aDeviceImpl: IBluetoothDeviceImpl): Promise<ButtplugBluetoothDevice> {
     // Send initializer byte
-    aDeviceImpl.WriteValue("cmd", new Uint8Array([0x00]));
+    await aDeviceImpl.WriteValue("cmd", new Uint8Array([0x00]));
     return new FleshlightLaunch(aDeviceImpl);
   }
 

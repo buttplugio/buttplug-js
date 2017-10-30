@@ -1,8 +1,8 @@
 import * as Messages from "../core/Messages";
 import { EventEmitter } from "events";
-import IButtplugDevice from "./IButtplugDevice";
+import { IButtplugDevice } from "./IButtplugDevice";
 
-export default class ButtplugDevice extends EventEmitter implements IButtplugDevice {
+export class ButtplugDevice extends EventEmitter implements IButtplugDevice {
   protected readonly MsgFuncs: Map<string, (aMsg: Messages.ButtplugMessage) => Promise<Messages.ButtplugMessage>> =
     new Map<string, (aMsg: Messages.ButtplugMessage) => Promise<Messages.ButtplugMessage>>();
 

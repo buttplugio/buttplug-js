@@ -1,11 +1,11 @@
 import { DeviceAdded } from "../../core/Messages";
-import IDeviceSubtypeManager from "../IDeviceSubtypeManager";
-import BluetoothDevices from "./BluetoothDevices";
-import BluetoothDeviceInfo from "./BluetoothDeviceInfo";
+import { IDeviceSubtypeManager } from "../IDeviceSubtypeManager";
+import { BluetoothDevices } from "./BluetoothDevices";
+import { BluetoothDeviceInfo } from "./BluetoothDeviceInfo";
 import { EventEmitter } from "events";
-import WebBluetoothDevice from "./WebBluetoothDevice";
+import { WebBluetoothDevice } from "./WebBluetoothDevice";
 
-export default class WebBluetoothDeviceManager extends EventEmitter implements IDeviceSubtypeManager {
+export class WebBluetoothDeviceManager extends EventEmitter implements IDeviceSubtypeManager {
   public StartScanning() {
     // Form scanning filters
     const info = BluetoothDevices.GetDeviceInfo();

@@ -1,10 +1,11 @@
 import * as Messages from "../core/Messages";
-import DeviceManager from "./DeviceManager";
+import { DeviceManager } from "./DeviceManager";
 import { EventEmitter } from "events";
-import ServerMessageHub from "./ServerMessageHub";
+import { ServerMessageHub } from "./ServerMessageHub";
+import { IDeviceSubtypeManager } from "./IDeviceSubtypeManager";
 import { ButtplugLogger, LogLevel, LogMessage } from "../core/Logging";
 
-export default class ButtplugServer extends EventEmitter {
+export class ButtplugServer extends EventEmitter {
 
   public static CanUseBluetooth = async (): Promise<boolean> => {
     if (navigator === undefined || !("bluetooth" in navigator)) {
@@ -28,6 +29,10 @@ export default class ButtplugServer extends EventEmitter {
     this._logger.Info(`Starting Buttplug Server: ${this._serverName}`);
     this._deviceManager = new DeviceManager();
     ServerMessageHub.Instance.addListener("message", this.OnOutgoingMessage);
+  }
+
+  public AddDeviceManager = (aManager: IDeviceSubtypeManager) => {
+    this._deviceManager.AddDeviceManager(aManager);
   }
 
   public SendMessage = async (aMessage: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage> => {
