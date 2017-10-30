@@ -56,7 +56,7 @@ var ButtplugBrowserConnector = /** @class */ (function (_super) {
         _this.Connect = function () { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 this._connected = true;
-                this._server = new ButtplugServer_1.default();
+                this._server = new ButtplugServer_1.ButtplugServer();
                 this._server.addListener("message", this.OnMessageReceived);
                 return [2 /*return*/, Promise.resolve()];
             });

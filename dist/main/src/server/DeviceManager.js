@@ -58,6 +58,12 @@ var DeviceManager = /** @class */ (function (_super) {
         _this._devices = new Map();
         _this._deviceCounter = 1;
         _this._logger = Logging_1.ButtplugLogger.Logger;
+        _this.AddDeviceManager = function (aManager) {
+            _this._subtypeManagers.push(aManager);
+            aManager.addListener("deviceadded", _this.OnDeviceAdded);
+            aManager.addListener("deviceremoved", _this.OnDeviceRemoved);
+            aManager.addListener("scanningfinished", _this.OnScanningFinished);
+        };
         _this.SendMessage = function (aMessage) { return __awaiter(_this, void 0, void 0, function () {
             var id, _i, _a, manager, _b, _c, manager, deviceMsg, device;
             return __generator(this, function (_d) {
@@ -111,7 +117,7 @@ var DeviceManager = /** @class */ (function (_super) {
             _this._deviceCounter += 1;
             _this._devices.set(deviceIndex, device);
             device.addListener("deviceremoved", _this.OnDeviceRemoved);
-            ServerMessageHub_1.default.Instance.emitMessage(new Messages.DeviceAdded(deviceIndex, device.Name, device.GetAllowedMessageTypes()));
+            ServerMessageHub_1.ServerMessageHub.Instance.emitMessage(new Messages.DeviceAdded(deviceIndex, device.Name, device.GetAllowedMessageTypes()));
         };
         _this.OnDeviceRemoved = function (device) {
             _this._logger.Debug("Device Removed: " + device.Name);
@@ -127,7 +133,7 @@ var DeviceManager = /** @class */ (function (_super) {
                 return;
             }
             _this._devices.delete(deviceIndex);
-            ServerMessageHub_1.default.Instance.emitMessage(new Messages.DeviceRemoved(deviceIndex));
+            ServerMessageHub_1.ServerMessageHub.Instance.emitMessage(new Messages.DeviceRemoved(deviceIndex));
         };
         _this.OnScanningFinished = function () {
             for (var _i = 0, _a = _this._subtypeManagers; _i < _a.length; _i++) {
@@ -136,12 +142,14 @@ var DeviceManager = /** @class */ (function (_super) {
                     return;
                 }
             }
-            ServerMessageHub_1.default.Instance.emitMessage(new Messages.ScanningFinished());
+            ServerMessageHub_1.ServerMessageHub.Instance.emitMessage(new Messages.ScanningFinished());
         };
         _this._logger.Debug("Starting Device Manager");
         // If we have a bluetooth object on navigator, load the device manager
-        if (navigator && navigator.bluetooth) {
-            var manager = new WebBluetoothDeviceManager_1.default();
+        if (typeof (window) !== "undefined" &&
+            typeof (window.navigator) !== "undefined" &&
+            navigator.bluetooth) {
+            var manager = new WebBluetoothDeviceManager_1.WebBluetoothDeviceManager();
             manager.addListener("deviceadded", _this.OnDeviceAdded);
             manager.addListener("deviceremoved", _this.OnDeviceRemoved);
             _this._subtypeManagers.push(manager);
@@ -155,5 +163,5 @@ var DeviceManager = /** @class */ (function (_super) {
     }
     return DeviceManager;
 }(events_1.EventEmitter));
-exports.default = DeviceManager;
+exports.DeviceManager = DeviceManager;
 //# sourceMappingURL=DeviceManager.js.map

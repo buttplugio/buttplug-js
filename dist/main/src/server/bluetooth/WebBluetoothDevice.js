@@ -152,5 +152,5 @@ var WebBluetoothDevice = /** @class */ (function (_super) {
     });
     return WebBluetoothDevice;
 }(events_1.EventEmitter));
-exports.default = WebBluetoothDevice;
+exports.WebBluetoothDevice = WebBluetoothDevice;
 //# sourceMappingURL=WebBluetoothDevice.js.map

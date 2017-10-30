@@ -16,9 +16,8 @@ describe("Message", function () {
     it("Converts DeviceList message from json correctly", function () {
         // tslint:disable-next-line:max-line-length
         var jsonStr = '[{"DeviceList":{"Id":2,"Devices": [{"DeviceIndex":0,"DeviceName":"Test","DeviceMessages":["Ok","Ping"]},{"DeviceIndex":1,"DeviceName":"Test1","DeviceMessages":["Ok","Ping"]}]}}]';
-        // tslint:disable-next-line:max-line-length
-        chai_1.expect(MessageUtils_1.FromJSON(jsonStr)).to.deep.equal([new Messages.DeviceList([new Messages.DeviceInfo(0, "Test", ["Ok", "Ping"]),
-                new Messages.DeviceInfo(1, "Test1", ["Ok", "Ping"])], 2)]);
+        // tslint:disable:max-line-length
+        chai_1.expect(MessageUtils_1.FromJSON(jsonStr)).to.deep.equal([new Messages.DeviceList([new Messages.DeviceInfo(0, "Test", ["Ok", "Ping"]), new Messages.DeviceInfo(1, "Test1", ["Ok", "Ping"])], 2)]);
     });
     it("Converts DeviceAdded message from json correctly", function () {
         var jsonStr = '[{"DeviceAdded":{"Id":0,"DeviceIndex":0,"DeviceName":"Test","DeviceMessages":["Ok","Ping"]}}]';

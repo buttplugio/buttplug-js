@@ -37,5 +37,5 @@ var BluetoothDeviceInfo = /** @class */ (function () {
     });
     return BluetoothDeviceInfo;
 }());
-exports.default = BluetoothDeviceInfo;
+exports.BluetoothDeviceInfo = BluetoothDeviceInfo;
 //# sourceMappingURL=BluetoothDeviceInfo.js.map

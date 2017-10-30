@@ -76,5 +76,5 @@ var ButtplugDevice = /** @class */ (function (_super) {
     });
     return ButtplugDevice;
 }(events_1.EventEmitter));
-exports.default = ButtplugDevice;
+exports.ButtplugDevice = ButtplugDevice;
 //# sourceMappingURL=ButtplugDevice.js.map

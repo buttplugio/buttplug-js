@@ -18,5 +18,5 @@ var BluetoothDevices = /** @class */ (function () {
     };
     return BluetoothDevices;
 }());
-exports.default = BluetoothDevices;
+exports.BluetoothDevices = BluetoothDevices;
 //# sourceMappingURL=BluetoothDevices.js.map

@@ -1,4 +1,4 @@
-import BluetoothDeviceInfo from "./BluetoothDeviceInfo";
-export default class BluetoothDevices {
+import { BluetoothDeviceInfo } from "./BluetoothDeviceInfo";
+export declare class BluetoothDevices {
     static GetDeviceInfo(): BluetoothDeviceInfo[];
 }

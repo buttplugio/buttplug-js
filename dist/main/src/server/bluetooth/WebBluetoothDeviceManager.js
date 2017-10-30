@@ -61,7 +61,7 @@ var WebBluetoothDeviceManager = /** @class */ (function (_super) {
                             // TODO Throw here?
                             return [2 /*return*/];
                         }
-                        info = BluetoothDevices_1.default.GetDeviceInfo();
+                        info = BluetoothDevices_1.BluetoothDevices.GetDeviceInfo();
                         deviceInfo = null;
                         for (_i = 0, info_1 = info; _i < info_1.length; _i++) {
                             di = info_1[_i];
@@ -75,7 +75,7 @@ var WebBluetoothDeviceManager = /** @class */ (function (_super) {
                             // We somehow got a device we don't know what to do with?
                             return [2 /*return*/];
                         }
-                        return [4 /*yield*/, WebBluetoothDevice_1.default.CreateDevice(deviceInfo, aDevice)];
+                        return [4 /*yield*/, WebBluetoothDevice_1.WebBluetoothDevice.CreateDevice(deviceInfo, aDevice)];
                     case 1:
                         device = _a.sent();
                         this.emit("deviceadded", device);
@@ -88,7 +88,7 @@ var WebBluetoothDeviceManager = /** @class */ (function (_super) {
     WebBluetoothDeviceManager.prototype.StartScanning = function () {
         var _this = this;
         // Form scanning filters
-        var info = BluetoothDevices_1.default.GetDeviceInfo();
+        var info = BluetoothDevices_1.BluetoothDevices.GetDeviceInfo();
         var filters = {
             filters: new Array(),
             optionalServices: new Array(),
@@ -124,5 +124,5 @@ var WebBluetoothDeviceManager = /** @class */ (function (_super) {
     };
     return WebBluetoothDeviceManager;
 }(events_1.EventEmitter));
-exports.default = WebBluetoothDeviceManager;
+exports.WebBluetoothDeviceManager = WebBluetoothDeviceManager;
 //# sourceMappingURL=WebBluetoothDeviceManager.js.map

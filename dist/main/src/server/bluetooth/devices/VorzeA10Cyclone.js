@@ -86,8 +86,8 @@ var VorzeA10Cyclone = /** @class */ (function (_super) {
             });
         });
     };
-    VorzeA10Cyclone.DeviceInfo = new BluetoothDeviceInfo_1.default(["CycSA"], ["40ee1111-63ec-4b7f-8ce7-712efd55b90e"], { tx: "40ee2222-63ec-4b7f-8ce7-712efd55b90e" }, VorzeA10Cyclone.CreateInstance);
+    VorzeA10Cyclone.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["CycSA"], ["40ee1111-63ec-4b7f-8ce7-712efd55b90e"], { tx: "40ee2222-63ec-4b7f-8ce7-712efd55b90e" }, VorzeA10Cyclone.CreateInstance);
     return VorzeA10Cyclone;
-}(ButtplugBluetoothDevice_1.default));
+}(ButtplugBluetoothDevice_1.ButtplugBluetoothDevice));
 exports.VorzeA10Cyclone = VorzeA10Cyclone;
 //# sourceMappingURL=VorzeA10Cyclone.js.map

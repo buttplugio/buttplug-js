@@ -22,6 +22,6 @@ var ButtplugBluetoothDevice = /** @class */ (function (_super) {
         this.emit("deviceremoved", this);
     };
     return ButtplugBluetoothDevice;
-}(ButtplugDevice_1.default));
-exports.default = ButtplugBluetoothDevice;
+}(ButtplugDevice_1.ButtplugDevice));
+exports.ButtplugBluetoothDevice = ButtplugBluetoothDevice;
 //# sourceMappingURL=ButtplugBluetoothDevice.js.map

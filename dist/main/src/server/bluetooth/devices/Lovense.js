@@ -48,6 +48,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var BluetoothDeviceInfo_1 = require("../BluetoothDeviceInfo");
 var ButtplugBluetoothDevice_1 = require("../ButtplugBluetoothDevice");
 var Messages = require("../../../core/Messages");
+var text_encoding_1 = require("text-encoding");
 var Lovense = /** @class */ (function (_super) {
     __extends(Lovense, _super);
     function Lovense(aDeviceImpl) {
@@ -66,7 +67,7 @@ var Lovense = /** @class */ (function (_super) {
                 switch (_a.label) {
                     case 0:
                         speed = Math.floor(20 * aMsg.Speed);
-                        return [4 /*yield*/, this._deviceImpl.WriteValue("tx", new TextEncoder().encode("Vibrate:" + speed + ";"))];
+                        return [4 /*yield*/, this._deviceImpl.WriteValue("tx", new text_encoding_1.TextEncoder().encode("Vibrate:" + speed + ";"))];
                     case 1:
                         _a.sent();
                         return [2 /*return*/, new Messages.Ok(aMsg.Id)];
@@ -88,12 +89,12 @@ var Lovense = /** @class */ (function (_super) {
         "LVS-Z001": "Hush",
         "LVS-P36": "Edge" };
     return Lovense;
-}(ButtplugBluetoothDevice_1.default));
-exports.default = Lovense;
+}(ButtplugBluetoothDevice_1.ButtplugBluetoothDevice));
+exports.Lovense = Lovense;
 var LovenseRev1 = /** @class */ (function () {
     function LovenseRev1() {
     }
-    LovenseRev1.DeviceInfo = new BluetoothDeviceInfo_1.default(["LVS-A011", "LVS-C011", "LVS-B011", "LVS-L009"], ["0000fff0-0000-1000-8000-00805f9b34fb"], { tx: "0000fff2-0000-1000-8000-00805f9b34fb",
+    LovenseRev1.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["LVS-A011", "LVS-C011", "LVS-B011", "LVS-L009"], ["0000fff0-0000-1000-8000-00805f9b34fb"], { tx: "0000fff2-0000-1000-8000-00805f9b34fb",
     }, Lovense.CreateInstance);
     return LovenseRev1;
 }());
@@ -101,7 +102,7 @@ exports.LovenseRev1 = LovenseRev1;
 var LovenseRev2 = /** @class */ (function () {
     function LovenseRev2() {
     }
-    LovenseRev2.DeviceInfo = new BluetoothDeviceInfo_1.default(["LVS-S001", "LVS-Z001"], ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"], { tx: "6e400002-b5a3-f393-e0a9-e50e24dcca9e",
+    LovenseRev2.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["LVS-S001", "LVS-Z001"], ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"], { tx: "6e400002-b5a3-f393-e0a9-e50e24dcca9e",
     }, Lovense.CreateInstance);
     return LovenseRev2;
 }());
@@ -109,7 +110,7 @@ exports.LovenseRev2 = LovenseRev2;
 var LovenseRev3 = /** @class */ (function () {
     function LovenseRev3() {
     }
-    LovenseRev3.DeviceInfo = new BluetoothDeviceInfo_1.default(["LVS-P36"], ["50300001-0024-4bd4-bbd5-a6920e4c5653"], { tx: "50300002-0024-4bd4-bbd5-a6920e4c5653",
+    LovenseRev3.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["LVS-P36"], ["50300001-0024-4bd4-bbd5-a6920e4c5653"], { tx: "50300002-0024-4bd4-bbd5-a6920e4c5653",
     }, Lovense.CreateInstance);
     return LovenseRev3;
 }());
@@ -117,7 +118,7 @@ exports.LovenseRev3 = LovenseRev3;
 var LovenseRev4 = /** @class */ (function () {
     function LovenseRev4() {
     }
-    LovenseRev4.DeviceInfo = new BluetoothDeviceInfo_1.default(["LVS-Domi37"], ["57300001-0023-4bd4-bbd5-a6920e4c5653"], { tx: "57300002-0023-4bd4-bbd5-a6920e4c5653",
+    LovenseRev4.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["LVS-Domi37"], ["57300001-0023-4bd4-bbd5-a6920e4c5653"], { tx: "57300002-0023-4bd4-bbd5-a6920e4c5653",
     }, Lovense.CreateInstance);
     return LovenseRev4;
 }());

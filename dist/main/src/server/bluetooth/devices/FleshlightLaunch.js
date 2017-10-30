@@ -77,16 +77,22 @@ var FleshlightLaunch = /** @class */ (function (_super) {
     FleshlightLaunch.CreateInstance = function (aDeviceImpl) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                // Send initializer byte
-                aDeviceImpl.WriteValue("cmd", new Uint8Array([0x00]));
-                return [2 /*return*/, new FleshlightLaunch(aDeviceImpl)];
+                switch (_a.label) {
+                    case 0: 
+                    // Send initializer byte
+                    return [4 /*yield*/, aDeviceImpl.WriteValue("cmd", new Uint8Array([0x00]))];
+                    case 1:
+                        // Send initializer byte
+                        _a.sent();
+                        return [2 /*return*/, new FleshlightLaunch(aDeviceImpl)];
+                }
             });
         });
     };
-    FleshlightLaunch.DeviceInfo = new BluetoothDeviceInfo_1.default(["Launch"], ["88f80580-0000-01e6-aace-0002a5d5c51b"], { cmd: "88f80583-0000-01e6-aace-0002a5d5c51b",
+    FleshlightLaunch.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["Launch"], ["88f80580-0000-01e6-aace-0002a5d5c51b"], { cmd: "88f80583-0000-01e6-aace-0002a5d5c51b",
         // rx: "88f80582-0000-01e6-aace-0002a5d5c51b",
         tx: "88f80581-0000-01e6-aace-0002a5d5c51b" }, FleshlightLaunch.CreateInstance);
     return FleshlightLaunch;
-}(ButtplugBluetoothDevice_1.default));
+}(ButtplugBluetoothDevice_1.ButtplugBluetoothDevice));
 exports.FleshlightLaunch = FleshlightLaunch;
 //# sourceMappingURL=FleshlightLaunch.js.map

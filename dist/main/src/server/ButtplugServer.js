@@ -63,6 +63,9 @@ var ButtplugServer = /** @class */ (function (_super) {
         _this._receivedRequestServerInfo = false;
         _this._logger = Logging_1.ButtplugLogger.Logger;
         _this._outgoingLogLevel = Logging_1.LogLevel.Off;
+        _this.AddDeviceManager = function (aManager) {
+            _this._deviceManager.AddDeviceManager(aManager);
+        };
         _this.SendMessage = function (aMessage) { return __awaiter(_this, void 0, void 0, function () {
             var id, logmsg, testmsg;
             return __generator(this, function (_a) {
@@ -120,8 +123,8 @@ var ButtplugServer = /** @class */ (function (_super) {
         _this._logger.LogLevel = Logging_1.LogLevel.Debug;
         _this._logger.SetConsoleLogging(true);
         _this._logger.Info("Starting Buttplug Server: " + _this._serverName);
-        _this._deviceManager = new DeviceManager_1.default();
-        ServerMessageHub_1.default.Instance.addListener("message", _this.OnOutgoingMessage);
+        _this._deviceManager = new DeviceManager_1.DeviceManager();
+        ServerMessageHub_1.ServerMessageHub.Instance.addListener("message", _this.OnOutgoingMessage);
         return _this;
     }
     ButtplugServer.CanUseBluetooth = function () { return __awaiter(_this, void 0, void 0, function () {
@@ -138,5 +141,5 @@ var ButtplugServer = /** @class */ (function (_super) {
     }); };
     return ButtplugServer;
 }(events_1.EventEmitter));
-exports.default = ButtplugServer;
+exports.ButtplugServer = ButtplugServer;
 //# sourceMappingURL=ButtplugServer.js.map

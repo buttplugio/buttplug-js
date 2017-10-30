@@ -1,7 +1,7 @@
-import BluetoothDeviceInfo from "../BluetoothDeviceInfo";
-import ButtplugBluetoothDevice from "../ButtplugBluetoothDevice";
-import IBluetoothDeviceImpl from "../IBluetoothDeviceImpl";
-export default class Lovense extends ButtplugBluetoothDevice {
+import { BluetoothDeviceInfo } from "../BluetoothDeviceInfo";
+import { ButtplugBluetoothDevice } from "../ButtplugBluetoothDevice";
+import { IBluetoothDeviceImpl } from "../IBluetoothDeviceImpl";
+export declare class Lovense extends ButtplugBluetoothDevice {
     static CreateInstance(aDeviceImpl: IBluetoothDeviceImpl): Promise<ButtplugBluetoothDevice>;
     private static _deviceNames;
     constructor(aDeviceImpl: IBluetoothDeviceImpl);

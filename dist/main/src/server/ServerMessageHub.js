@@ -29,5 +29,5 @@ var ServerMessageHub = /** @class */ (function (_super) {
     ServerMessageHub.sInstance = new ServerMessageHub();
     return ServerMessageHub;
 }(events_1.EventEmitter));
-exports.default = ServerMessageHub;
+exports.ServerMessageHub = ServerMessageHub;
 //# sourceMappingURL=ServerMessageHub.js.map
