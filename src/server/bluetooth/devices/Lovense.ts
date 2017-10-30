@@ -2,6 +2,7 @@ import { BluetoothDeviceInfo } from "../BluetoothDeviceInfo";
 import { ButtplugBluetoothDevice } from "../ButtplugBluetoothDevice";
 import { IBluetoothDeviceImpl } from "../IBluetoothDeviceImpl";
 import * as Messages from "../../../core/Messages";
+import { TextEncoder } from "text-encoding";
 
 export class Lovense extends ButtplugBluetoothDevice {
   public static CreateInstance(aDeviceImpl: IBluetoothDeviceImpl): Promise<ButtplugBluetoothDevice> {
