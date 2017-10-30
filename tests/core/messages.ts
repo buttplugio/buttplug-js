@@ -18,10 +18,8 @@ describe("Message", () => {
      () => {
        // tslint:disable-next-line:max-line-length
        const jsonStr = '[{"DeviceList":{"Id":2,"Devices": [{"DeviceIndex":0,"DeviceName":"Test","DeviceMessages":["Ok","Ping"]},{"DeviceIndex":1,"DeviceName":"Test1","DeviceMessages":["Ok","Ping"]}]}}]';
-       // tslint:disable-next-line:max-line-length
-       expect(FromJSON(jsonStr)).to.deep.equal([new Messages.DeviceList([new Messages.DeviceInfo(0, "Test", ["Ok", "Ping"]),
-                                                                                  new Messages.DeviceInfo(1, "Test1", ["Ok", "Ping"])],
-                                                                                 2)]);
+       // tslint:disable:max-line-length
+       expect(FromJSON(jsonStr)).to.deep.equal([new Messages.DeviceList([new Messages.DeviceInfo(0, "Test", ["Ok", "Ping"]), new Messages.DeviceInfo(1, "Test1", ["Ok", "Ping"])], 2)]);
      });
   it("Converts DeviceAdded message from json correctly",
      () => {
