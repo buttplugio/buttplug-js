@@ -30,6 +30,13 @@ export class DeviceManager extends EventEmitter {
     }
   }
 
+  public AddDeviceManager = (aManager: IDeviceSubtypeManager) => {
+    this._subtypeManagers.push(aManager);
+    aManager.addListener("deviceadded", this.OnDeviceAdded);
+    aManager.addListener("deviceremoved", this.OnDeviceRemoved);
+    aManager.addListener("scanningfinished", this.OnScanningFinished);
+  }
+
   public SendMessage = async (aMessage: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage> => {
     const id = aMessage.Id;
     switch (aMessage.constructor.name) {
