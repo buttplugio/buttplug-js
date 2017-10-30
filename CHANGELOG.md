@@ -1,4 +1,9 @@
-# Version 0.2.2 - 2017/10/18
+# Version 0.3.0 - 2017/10/29
+
+- Remove all default exports, require verbose include
+- Prepare library for use with node servers as well as web browser servers
+
+# Version 0.2.2 - 2017/10/28
 
 - Fix emission of "scanningfinished" event and message in client/server
 
