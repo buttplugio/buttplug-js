@@ -6,7 +6,8 @@ import { EventEmitter } from "events";
 import { WebBluetoothDevice } from "./WebBluetoothDevice";
 
 export class WebBluetoothDeviceManager extends EventEmitter implements IDeviceSubtypeManager {
-  public StartScanning() {
+  public async StartScanning() {
+
     // Form scanning filters
     const info = BluetoothDevices.GetDeviceInfo();
     const filters = {
@@ -20,11 +21,31 @@ export class WebBluetoothDeviceManager extends EventEmitter implements IDeviceSu
       filters.optionalServices = [...filters.optionalServices, ...deviceInfo.Services];
     }
 
-    (((navigator as any).bluetooth) as Bluetooth).requestDevice(filters).then(async (device) => {
-      await this.OpenDevice(device);
+    // At some point, we should use navigator.bluetooth.getAvailability() to
+    // check whether we have a radio to use. However, no browser currently
+    // implements this. Instead, see if requestDevice throws;
+
+    let device: BluetoothDevice;
+    try {
+      device = await (((navigator as any).bluetooth) as Bluetooth).requestDevice(filters);
+    } catch (e) {
       this.emit("scanningfinished");
-    }).catch(() => this.emit("scanningfinished"));
-    return true;
+      // This is the only way we have to check whether the user cancelled out of
+      // the dialog versus bluetooth radio not being available, as both errors
+      // are thrown as DOMExcpetion. Kill me.
+      if (e.message.indexOf("User cancelled") !== -1) {
+        return;
+      }
+      throw new Error("Bluetooth scanning interrupted. " +
+                      "Either user cancelled out of dialog, or bluetooth radio is not available. Exception: " + e);
+    }
+    try {
+      await this.OpenDevice(device);
+    } catch (e) {
+      this.emit("scanningfinished");
+      throw new Error(`Cannot open device ${device.name}: ${e}`);
+    }
+    this.emit("scanningfinished");
   }
 
   public StopScanning(): boolean {
