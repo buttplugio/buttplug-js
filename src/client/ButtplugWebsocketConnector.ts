@@ -28,7 +28,10 @@ export class ButtplugWebsocketConnector extends EventEmitter implements IButtplu
     let res;
     let rej;
     const p = new Promise<void>((resolve, reject) => { res = resolve; rej = reject; });
-    const conErrorCallback = (ev) => { rej(ev); };
+    // In websockets, our error rarely tells us much, as for security reasons
+    // browsers usually only throw Error Code 1006. It's up to those using this
+    // library to state what the problem might be.
+    const conErrorCallback = (ev) => rej();
     ws.addEventListener("open", async (ev) => {
       this._ws = ws;
       this._ws.addEventListener("message", (aMsg) => { this.ParseIncomingMessage(aMsg); });
