@@ -14,6 +14,7 @@ cache: yarn
 
 deploy:
   provider: pages
+  local_dir: doc
   skip_cleanup: true
   github_token: $GITHUB_KEY # Set in travis-ci.org dashboard
   on:
