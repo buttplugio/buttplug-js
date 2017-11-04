@@ -45,11 +45,11 @@
     "copyfiles": "^1.2.0",
     "mocha": "^4.0.1",
     "mock-socket": "^7.0.0",
-    "nyc": "^11.2.1",
+    "nyc": "^11.3.0",
     "trash-cli": "^1.4.0",
     "ts-node": "^3.3.0",
     "tslint": "^5.8.0",
-    "typescript": "^2.5.3",
+    "typescript": "^2.6.1",
     "yarn": "^1.2.1"
   },
   "nyc": {
