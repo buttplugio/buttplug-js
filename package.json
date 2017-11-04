@@ -74,6 +74,7 @@
     ],
     "sourceMap": true,
     "instrument": true,
-    "all": true
+    "all": true,
+    "cache": false
   }
 }
