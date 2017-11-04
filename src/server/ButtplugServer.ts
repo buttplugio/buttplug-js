@@ -24,7 +24,7 @@ export class ButtplugServer extends EventEmitter {
   constructor(private _serverName: string = "Buttplug JS Internal Server",
               private _maxPingTime: number = 0) {
     super();
-    this._logger.LogLevel = LogLevel.Debug;
+    this._logger.MaximumLogLevel = LogLevel.Debug;
     this._logger.SetConsoleLogging(true);
     this._logger.Info(`Starting Buttplug Server: ${this._serverName}`);
     this._deviceManager = new DeviceManager();
@@ -53,6 +53,8 @@ export class ButtplugServer extends EventEmitter {
     }
     switch (aMessage.constructor.name) {
     case "RequestLog":
+      // TODO: If requested log level is higher than what we have specified,
+      // what happens?
       const logmsg: Messages.RequestLog = aMessage as Messages.RequestLog;
       if (logmsg.LogLevel === LogLevel[LogLevel.Off]) {
         this._logger.removeListener("log", this.OnLogMessage);

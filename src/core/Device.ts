@@ -1,6 +1,9 @@
 "use strict";
 import * as Messages from "./Messages";
 
+/**
+ * Represents an abstract device, capable of taking certain kinds of messages.
+ */
 export class Device {
   public static fromMsg(aMsg: Messages.DeviceAdded | Messages.DeviceInfo): Device {
     return new Device(aMsg.DeviceIndex,
@@ -8,25 +11,34 @@ export class Device {
                       aMsg.DeviceMessages);
   }
 
-  constructor(private _index: number,
-              private _name: string,
-              private _allowedMessages: string[]) {
+  /**
+   * @param _index Index of the device, as created by the device manager.
+   * @param _name Name of the device.
+   * @param _allowedMsgs Buttplug messages the device can receive.
+   */
+  constructor(private index: number,
+              private name: string,
+              private allowedMsgs: string[]) {
   }
 
+  /**
+   * Return the name of the device.
+   */
   public get Name(): string {
-    return this._name;
+    return this.name;
   }
 
+  /**
+   * Return the index of the device.
+   */
   public get Index(): number {
-    return this._index;
+    return this.index;
   }
 
+  /**
+   * Return a list of message types the device accepts.
+   */
   public get AllowedMessages(): string[] {
-    return this._allowedMessages;
-  }
-
-  public newMessage(allowedMsg: number): Messages.ButtplugMessage {
-    const msg = this._allowedMessages[allowedMsg];
-    return Messages[msg];
+    return this.allowedMsgs;
   }
 }
