@@ -22,6 +22,7 @@
     "build": "trash dist dist-bundle && yarn build:main",
     "build:copy-schema": "copyfiles ./dependencies/buttplug-schema/schema/buttplug-schema.json ./dist/main/",
     "build:main": "tsc -p tsconfig.json && yarn build:copy-schema",
+    "build:doc": "typedoc --options typedoc.json --out doc .",
     "tslint": "tslint -c tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
     "tslint:fix": "tslint -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\"",
     "pretest": "yarn build:main",
@@ -49,6 +50,7 @@
     "trash-cli": "^1.4.0",
     "ts-node": "^3.3.0",
     "tslint": "^5.8.0",
+    "typedoc": "^0.9.0",
     "typescript": "^2.6.1",
     "yarn": "^1.2.1"
   },

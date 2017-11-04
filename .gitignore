@@ -50,3 +50,6 @@ obj/
 # dist directories
 dist
 dist-bundle
+
+# typedoc output
+doc/**
