@@ -1,3 +1,9 @@
+# Version 0.3.1 - 2017/12/02
+
+- Create generic connect function to allow users to define their own connectors
+- Documentation updates
+- Added more WeVibe names
+
 # Version 0.3.0 - 2017/10/29
 
 - Remove all default exports, require verbose include

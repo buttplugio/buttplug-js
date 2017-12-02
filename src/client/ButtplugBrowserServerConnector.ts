@@ -5,7 +5,7 @@ import { ButtplugMessage } from "../core/Messages";
 import { IButtplugConnector } from "./IButtplugConnector";
 import { ButtplugServer } from "../server/ButtplugServer";
 
-export class ButtplugBrowserConnector extends EventEmitter implements IButtplugConnector {
+export class ButtplugBrowserServerConnector extends EventEmitter implements IButtplugConnector {
   private _connected: boolean = false;
   private _server: ButtplugServer | null = null;
 

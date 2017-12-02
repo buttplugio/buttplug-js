@@ -43,7 +43,11 @@ export class DeviceManager extends EventEmitter {
     case "StartScanning":
       for (const manager of this._subtypeManagers) {
         if (!manager.IsScanning()) {
-          manager.StartScanning();
+          try {
+            await manager.StartScanning();
+          } catch (e) {
+            return new Messages.Error((e as Error).message, Messages.ErrorClass.ERROR_DEVICE, id);
+          }
         }
       }
       return new Messages.Ok(id);

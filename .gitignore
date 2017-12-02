@@ -46,3 +46,10 @@ tests/**/*.map
 bin/
 obj/
 .vs/
+
+# dist directories
+dist
+dist-bundle
+
+# typedoc output
+doc/**

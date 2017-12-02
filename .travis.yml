@@ -6,6 +6,16 @@ install:
   - yarn
 script:
   - yarn tslint
+  - yarn build
   - yarn test
+  - yarn build:doc
 
 cache: yarn
+
+deploy:
+  provider: pages
+  local_dir: doc
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN
+  on:
+    branch: master

@@ -5,30 +5,27 @@ import { IButtplugConnector } from "./IButtplugConnector";
 import { ButtplugMessage } from "../core/Messages";
 import { FromJSON } from "../core/MessageUtils";
 
-export class ButtplugWebsocketConnector extends EventEmitter implements IButtplugConnector {
+export class ButtplugBrowserWebsocketConnector extends EventEmitter implements IButtplugConnector {
+
   private _ws: WebSocket | undefined;
+
+  public constructor(private _url: string) {
+    super();
+  }
 
   public IsConnected(): boolean {
     return this._ws !== undefined;
   }
 
-  public ParseIncomingMessage = (aEvent: MessageEvent) => {
-    if (typeof (aEvent.data) === "string") {
-      const msgs = FromJSON(aEvent.data);
-      this.emit("message", msgs);
-    } else if (aEvent.data instanceof Blob) {
-      const reader = new FileReader();
-      reader.addEventListener("load", (ev) => { this.OnReaderLoad(ev); });
-      reader.readAsText(aEvent.data);
-    }
-  }
-
-  public Connect = async (aUrl: string): Promise<void> => {
-    const ws = new WebSocket(aUrl);
+  public Connect = async (): Promise<void> => {
+    const ws = new WebSocket(this._url);
     let res;
     let rej;
     const p = new Promise<void>((resolve, reject) => { res = resolve; rej = reject; });
-    const conErrorCallback = (ev) => { rej(ev); };
+    // In websockets, our error rarely tells us much, as for security reasons
+    // browsers usually only throw Error Code 1006. It's up to those using this
+    // library to state what the problem might be.
+    const conErrorCallback = (ev) => rej();
     ws.addEventListener("open", async (ev) => {
       this._ws = ws;
       this._ws.addEventListener("message", (aMsg) => { this.ParseIncomingMessage(aMsg); });
@@ -54,6 +51,17 @@ export class ButtplugWebsocketConnector extends EventEmitter implements IButtplu
       throw new Error("ButtplugClient not connected");
     }
     this._ws!.send("[" + aMsg.toJSON() + "]");
+  }
+
+  private ParseIncomingMessage = (aEvent: MessageEvent) => {
+    if (typeof (aEvent.data) === "string") {
+      const msgs = FromJSON(aEvent.data);
+      this.emit("message", msgs);
+    } else if (aEvent.data instanceof Blob) {
+      const reader = new FileReader();
+      reader.addEventListener("load", (ev) => { this.OnReaderLoad(ev); });
+      reader.readAsText(aEvent.data);
+    }
   }
 
   private OnReaderLoad(aEvent: Event) {
