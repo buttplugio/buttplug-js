@@ -3,8 +3,8 @@
 import { EventEmitter } from "events";
 import { Device } from "../core/Device";
 import { IButtplugConnector } from "./IButtplugConnector";
-import { ButtplugWebsocketConnector } from "./ButtplugWebsocketConnector";
-import { ButtplugBrowserConnector } from "./ButtplugBrowserConnector";
+import { ButtplugBrowserWebsocketConnector } from "./ButtplugBrowserWebsocketConnector";
+import { ButtplugBrowserServerConnector } from "./ButtplugBrowserServerConnector";
 import * as Messages from "../core/Messages";
 import { CheckMessage } from "../core/MessageUtils";
 
@@ -22,11 +22,11 @@ export class ButtplugClient extends EventEmitter {
   }
 
   public ConnectWebsocket = async (aAddress: string) => {
-    await this.Connect(new ButtplugWebsocketConnector(aAddress));
+    await this.Connect(new ButtplugBrowserWebsocketConnector(aAddress));
   }
 
   public ConnectLocal = async () => {
-    await this.Connect(new ButtplugBrowserConnector());
+    await this.Connect(new ButtplugBrowserServerConnector());
   }
 
   public Connect = async (aConnector: IButtplugConnector) => {
