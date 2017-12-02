@@ -1,3 +1,7 @@
+# Version 0.3.2 - 2017/12/02
+
+- Remove dist from .gitignore in release branch. Again. Ugh.
+
 # Version 0.3.1 - 2017/12/02
 
 - Create generic connect function to allow users to define their own connectors
