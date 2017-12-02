@@ -86,33 +86,58 @@ var WebBluetoothDeviceManager = /** @class */ (function (_super) {
         return _this;
     }
     WebBluetoothDeviceManager.prototype.StartScanning = function () {
-        var _this = this;
-        // Form scanning filters
-        var info = BluetoothDevices_1.BluetoothDevices.GetDeviceInfo();
-        var filters = {
-            filters: new Array(),
-            optionalServices: new Array(),
-        };
-        for (var _i = 0, info_2 = info; _i < info_2.length; _i++) {
-            var deviceInfo = info_2[_i];
-            for (var _a = 0, _b = deviceInfo.Names; _a < _b.length; _a++) {
-                var deviceName = _b[_a];
-                filters.filters.push({ name: deviceName });
-            }
-            filters.optionalServices = filters.optionalServices.concat(deviceInfo.Services);
-        }
-        (navigator.bluetooth).requestDevice(filters).then(function (device) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.OpenDevice(device)];
+        return __awaiter(this, void 0, void 0, function () {
+            var info, filters, _i, info_2, deviceInfo, _a, _b, deviceName, device, e_1, e_2;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        info = BluetoothDevices_1.BluetoothDevices.GetDeviceInfo();
+                        filters = {
+                            filters: new Array(),
+                            optionalServices: new Array(),
+                        };
+                        for (_i = 0, info_2 = info; _i < info_2.length; _i++) {
+                            deviceInfo = info_2[_i];
+                            for (_a = 0, _b = deviceInfo.Names; _a < _b.length; _a++) {
+                                deviceName = _b[_a];
+                                filters.filters.push({ name: deviceName });
+                            }
+                            filters.optionalServices = filters.optionalServices.concat(deviceInfo.Services);
+                        }
+                        _c.label = 1;
                     case 1:
-                        _a.sent();
+                        _c.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, (navigator.bluetooth).requestDevice(filters)];
+                    case 2:
+                        device = _c.sent();
+                        return [3 /*break*/, 4];
+                    case 3:
+                        e_1 = _c.sent();
+                        this.emit("scanningfinished");
+                        // This is the only way we have to check whether the user cancelled out of
+                        // the dialog versus bluetooth radio not being available, as both errors
+                        // are thrown as DOMExcpetion. Kill me.
+                        if (e_1.message.indexOf("User cancelled") !== -1) {
+                            return [2 /*return*/];
+                        }
+                        throw new Error("Bluetooth scanning interrupted. " +
+                            "Either user cancelled out of dialog, or bluetooth radio is not available. Exception: " + e_1);
+                    case 4:
+                        _c.trys.push([4, 6, , 7]);
+                        return [4 /*yield*/, this.OpenDevice(device)];
+                    case 5:
+                        _c.sent();
+                        return [3 /*break*/, 7];
+                    case 6:
+                        e_2 = _c.sent();
+                        this.emit("scanningfinished");
+                        throw new Error("Cannot open device " + device.name + ": " + e_2);
+                    case 7:
                         this.emit("scanningfinished");
                         return [2 /*return*/];
                 }
             });
-        }); }).catch(function () { return _this.emit("scanningfinished"); });
-        return true;
+        });
     };
     WebBluetoothDeviceManager.prototype.StopScanning = function () {
         // noop. We can only scan via the browser dialog, and we can't cancel that from outside.

@@ -85,7 +85,8 @@ var WeVibe = /** @class */ (function (_super) {
             });
         });
     };
-    WeVibe.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["4 Plus", "Ditto", "Nova", "Wish", "Pivot", "Verge"], ["f000bb03-0451-4000-b000-000000000000"], { tx: "f000c000-0451-4000-b000-000000000000",
+    WeVibe.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["4 Plus", "Ditto", "Nova", "Wish",
+        "Pivot", "Verge", "Cougar"], ["f000bb03-0451-4000-b000-000000000000"], { tx: "f000c000-0451-4000-b000-000000000000",
         rx: "f000b000-0451-4000-b000-000000000000" }, WeVibe.CreateInstance);
     return WeVibe;
 }(ButtplugBluetoothDevice_1.ButtplugBluetoothDevice));

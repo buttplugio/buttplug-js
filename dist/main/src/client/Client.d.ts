@@ -1,10 +1,11 @@
 /// <reference types="node" />
 import { EventEmitter } from "events";
 import { Device } from "../core/Device";
+import { IButtplugConnector } from "./IButtplugConnector";
 import * as Messages from "../core/Messages";
 export declare class ButtplugClient extends EventEmitter {
     protected _pingTimer: NodeJS.Timer;
-    private _connector;
+    protected _connector: IButtplugConnector | null;
     private _devices;
     private _counter;
     private _waitingMsgs;
@@ -12,6 +13,7 @@ export declare class ButtplugClient extends EventEmitter {
     constructor(aClientName: string);
     ConnectWebsocket: (aAddress: string) => Promise<void>;
     ConnectLocal: () => Promise<void>;
+    Connect: (aConnector: IButtplugConnector) => Promise<void>;
     readonly Connected: boolean;
     Disconnect(): void;
     RequestDeviceList: () => Promise<void>;

@@ -65,36 +65,55 @@ var DeviceManager = /** @class */ (function (_super) {
             aManager.addListener("scanningfinished", _this.OnScanningFinished);
         };
         _this.SendMessage = function (aMessage) { return __awaiter(_this, void 0, void 0, function () {
-            var id, _i, _a, manager, _b, _c, manager, deviceMsg, device;
-            return __generator(this, function (_d) {
-                switch (_d.label) {
+            var id, _a, _i, _b, manager, e_1, _c, _d, manager, deviceMsg, device;
+            return __generator(this, function (_e) {
+                switch (_e.label) {
                     case 0:
                         id = aMessage.Id;
-                        switch (aMessage.constructor.name) {
-                            case "StartScanning":
-                                for (_i = 0, _a = this._subtypeManagers; _i < _a.length; _i++) {
-                                    manager = _a[_i];
-                                    if (!manager.IsScanning()) {
-                                        manager.StartScanning();
-                                    }
-                                }
-                                return [2 /*return*/, new Messages.Ok(id)];
-                            case "StopScanning":
-                                for (_b = 0, _c = this._subtypeManagers; _b < _c.length; _b++) {
-                                    manager = _c[_b];
-                                    if (manager.IsScanning()) {
-                                        manager.StopScanning();
-                                    }
-                                }
-                                return [2 /*return*/, new Messages.Ok(id)];
-                            case "StopAllDevices":
-                                this._devices.forEach(function (deviceObj, index) {
-                                    deviceObj.ParseMessage(new Messages.StopDeviceCmd());
-                                });
-                                return [2 /*return*/, new Messages.Ok(id)];
-                            case "RequestDeviceList":
-                                return [2 /*return*/, new Messages.DeviceList([], id)];
+                        _a = aMessage.constructor.name;
+                        switch (_a) {
+                            case "StartScanning": return [3 /*break*/, 1];
+                            case "StopScanning": return [3 /*break*/, 8];
+                            case "StopAllDevices": return [3 /*break*/, 9];
+                            case "RequestDeviceList": return [3 /*break*/, 10];
                         }
+                        return [3 /*break*/, 11];
+                    case 1:
+                        _i = 0, _b = this._subtypeManagers;
+                        _e.label = 2;
+                    case 2:
+                        if (!(_i < _b.length)) return [3 /*break*/, 7];
+                        manager = _b[_i];
+                        if (!!manager.IsScanning()) return [3 /*break*/, 6];
+                        _e.label = 3;
+                    case 3:
+                        _e.trys.push([3, 5, , 6]);
+                        return [4 /*yield*/, manager.StartScanning()];
+                    case 4:
+                        _e.sent();
+                        return [3 /*break*/, 6];
+                    case 5:
+                        e_1 = _e.sent();
+                        return [2 /*return*/, new Messages.Error(e_1.message, Messages.ErrorClass.ERROR_DEVICE, id)];
+                    case 6:
+                        _i++;
+                        return [3 /*break*/, 2];
+                    case 7: return [2 /*return*/, new Messages.Ok(id)];
+                    case 8:
+                        for (_c = 0, _d = this._subtypeManagers; _c < _d.length; _c++) {
+                            manager = _d[_c];
+                            if (manager.IsScanning()) {
+                                manager.StopScanning();
+                            }
+                        }
+                        return [2 /*return*/, new Messages.Ok(id)];
+                    case 9:
+                        this._devices.forEach(function (deviceObj, index) {
+                            deviceObj.ParseMessage(new Messages.StopDeviceCmd());
+                        });
+                        return [2 /*return*/, new Messages.Ok(id)];
+                    case 10: return [2 /*return*/, new Messages.DeviceList([], id)];
+                    case 11:
                         deviceMsg = aMessage;
                         if (deviceMsg.DeviceIndex === undefined) {
                             return [2 /*return*/, this._logger.LogAndError("Message Type " + aMessage.constructor.name + " unhandled by this server.", Messages.ErrorClass.ERROR_MSG, id)];
@@ -107,7 +126,7 @@ var DeviceManager = /** @class */ (function (_super) {
                             return [2 /*return*/, this._logger.LogAndError("Device " + device.Name + " does not take message type " + aMessage.constructor.name, Messages.ErrorClass.ERROR_DEVICE, id)];
                         }
                         return [4 /*yield*/, device.ParseMessage(deviceMsg)];
-                    case 1: return [2 /*return*/, _d.sent()];
+                    case 12: return [2 /*return*/, _e.sent()];
                 }
             });
         }); };

@@ -47,8 +47,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var events_1 = require("events");
 var Device_1 = require("../core/Device");
-var ButtplugWebsocketConnector_1 = require("./ButtplugWebsocketConnector");
-var ButtplugBrowserConnector_1 = require("./ButtplugBrowserConnector");
+var ButtplugBrowserWebsocketConnector_1 = require("./ButtplugBrowserWebsocketConnector");
+var ButtplugBrowserServerConnector_1 = require("./ButtplugBrowserServerConnector");
 var Messages = require("../core/Messages");
 var MessageUtils_1 = require("../core/MessageUtils");
 var ButtplugClient = /** @class */ (function (_super) {
@@ -60,33 +60,32 @@ var ButtplugClient = /** @class */ (function (_super) {
         _this._counter = 1;
         _this._waitingMsgs = new Map();
         _this.ConnectWebsocket = function (aAddress) { return __awaiter(_this, void 0, void 0, function () {
-            var connector;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        connector = new ButtplugWebsocketConnector_1.ButtplugWebsocketConnector();
-                        return [4 /*yield*/, connector.Connect(aAddress)];
+                    case 0: return [4 /*yield*/, this.Connect(new ButtplugBrowserWebsocketConnector_1.ButtplugBrowserWebsocketConnector(aAddress))];
                     case 1:
-                        _a.sent();
-                        this._connector = connector;
-                        this._connector.addListener("message", this.ParseMessages);
-                        return [4 /*yield*/, this.InitializeConnection()];
-                    case 2:
                         _a.sent();
                         return [2 /*return*/];
                 }
             });
         }); };
         _this.ConnectLocal = function () { return __awaiter(_this, void 0, void 0, function () {
-            var connector;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        connector = new ButtplugBrowserConnector_1.ButtplugBrowserConnector();
-                        return [4 /*yield*/, connector.Connect()];
+                    case 0: return [4 /*yield*/, this.Connect(new ButtplugBrowserServerConnector_1.ButtplugBrowserServerConnector())];
                     case 1:
                         _a.sent();
-                        this._connector = connector;
+                        return [2 /*return*/];
+                }
+            });
+        }); };
+        _this.Connect = function (aConnector) { return __awaiter(_this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, aConnector.Connect()];
+                    case 1:
+                        _a.sent();
+                        this._connector = aConnector;
                         this._connector.addListener("message", this.ParseMessages);
                         return [4 /*yield*/, this.InitializeConnection()];
                     case 2:

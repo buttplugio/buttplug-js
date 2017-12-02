@@ -120,7 +120,7 @@ var ButtplugServer = /** @class */ (function (_super) {
         _this.OnOutgoingMessage = function (aMsg) {
             _this.emit("message", aMsg);
         };
-        _this._logger.LogLevel = Logging_1.LogLevel.Debug;
+        _this._logger.MaximumLogLevel = Logging_1.LogLevel.Debug;
         _this._logger.SetConsoleLogging(true);
         _this._logger.Info("Starting Buttplug Server: " + _this._serverName);
         _this._deviceManager = new DeviceManager_1.DeviceManager();
