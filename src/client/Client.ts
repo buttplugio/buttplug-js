@@ -10,7 +10,7 @@ import { CheckMessage } from "../core/MessageUtils";
 
 export class ButtplugClient extends EventEmitter {
   protected _pingTimer: NodeJS.Timer;
-  private _connector: IButtplugConnector | null = null;
+  protected _connector: IButtplugConnector | null = null;
   private _devices: Map<number, Device> = new Map();
   private _counter: number = 1;
   private _waitingMsgs: Map<number, (val: Messages.ButtplugMessage) => void> = new Map();
@@ -22,17 +22,16 @@ export class ButtplugClient extends EventEmitter {
   }
 
   public ConnectWebsocket = async (aAddress: string) => {
-    const connector = new ButtplugWebsocketConnector();
-    await connector.Connect(aAddress);
-    this._connector = connector;
-    this._connector.addListener("message", this.ParseMessages);
-    await this.InitializeConnection();
+    await this.Connect(new ButtplugWebsocketConnector(aAddress));
   }
 
   public ConnectLocal = async () => {
-    const connector = new ButtplugBrowserConnector();
-    await connector.Connect();
-    this._connector = connector;
+    await this.Connect(new ButtplugBrowserConnector());
+  }
+
+  public Connect = async (aConnector: IButtplugConnector) => {
+    await aConnector.Connect();
+    this._connector = aConnector;
     this._connector.addListener("message", this.ParseMessages);
     await this.InitializeConnection();
   }
