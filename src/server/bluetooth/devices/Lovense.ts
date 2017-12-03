@@ -2,7 +2,15 @@ import { BluetoothDeviceInfo } from "../BluetoothDeviceInfo";
 import { ButtplugBluetoothDevice } from "../ButtplugBluetoothDevice";
 import { IBluetoothDeviceImpl } from "../IBluetoothDeviceImpl";
 import * as Messages from "../../../core/Messages";
-import { TextEncoder } from "text-encoding";
+
+// The TextEncoder polyfill is 600k (DAMNIT JOSH). Locally (for things like the
+// node device manager), not a huge deal. For web hosted libraries, we'll assume
+// the browser has it and ignore the require, since this class is only really
+// useful for browsers with WebBluetooth anyways.
+let TextEncoder = typeof(window) !== "undefined" ? (window as any).TextEncoder : undefined;
+if (TextEncoder === undefined) {
+  TextEncoder = require("text-encoding").TextEncoder;
+}
 
 export class Lovense extends ButtplugBluetoothDevice {
   public static CreateInstance(aDeviceImpl: IBluetoothDeviceImpl): Promise<ButtplugBluetoothDevice> {
