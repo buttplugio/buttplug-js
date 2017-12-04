@@ -19,7 +19,8 @@
   "main": "./dist/main/src/index.js",
   "types": "./dist/main/src/index.d.ts",
   "scripts": {
-    "build": "trash dist dist-bundle && yarn build:main",
+    "build": "trash dist dist-bundle && yarn build:all",
+    "build:all": "yarn build:main && yarn build:web && yarn build:web:release",
     "build:copy-schema": "copyfiles ./dependencies/buttplug-schema/schema/buttplug-schema.json ./dist/main/",
     "build:main": "tsc -p tsconfig.json && yarn build:copy-schema",
     "build:redist": "tsc -p tsconfig.json && yarn build:copy-schema",
