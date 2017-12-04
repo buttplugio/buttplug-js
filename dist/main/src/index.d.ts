@@ -1,4 +1,5 @@
 export * from "./client/Client";
+export * from "./client/IButtplugConnector";
 export * from "./core/Messages";
 export * from "./core/MessageUtils";
 export * from "./core/Device";

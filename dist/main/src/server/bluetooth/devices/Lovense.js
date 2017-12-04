@@ -48,7 +48,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var BluetoothDeviceInfo_1 = require("../BluetoothDeviceInfo");
 var ButtplugBluetoothDevice_1 = require("../ButtplugBluetoothDevice");
 var Messages = require("../../../core/Messages");
-var text_encoding_1 = require("text-encoding");
+// The TextEncoder polyfill is 600k (DAMNIT JOSH). Locally (for things like the
+// node device manager), not a huge deal. For web hosted libraries, we'll assume
+// the browser has it and ignore the require, since this class is only really
+// useful for browsers with WebBluetooth anyways.
+var TextEncoder = typeof (window) !== "undefined" ? window.TextEncoder : undefined;
+if (TextEncoder === undefined) {
+    TextEncoder = require("text-encoding").TextEncoder;
+}
 var Lovense = /** @class */ (function (_super) {
     __extends(Lovense, _super);
     function Lovense(aDeviceImpl) {
@@ -67,7 +74,7 @@ var Lovense = /** @class */ (function (_super) {
                 switch (_a.label) {
                     case 0:
                         speed = Math.floor(20 * aMsg.Speed);
-                        return [4 /*yield*/, this._deviceImpl.WriteValue("tx", new text_encoding_1.TextEncoder().encode("Vibrate:" + speed + ";"))];
+                        return [4 /*yield*/, this._deviceImpl.WriteValue("tx", new TextEncoder().encode("Vibrate:" + speed + ";"))];
                     case 1:
                         _a.sent();
                         return [2 /*return*/, new Messages.Ok(aMsg.Id)];
