@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+<!--
+
+     Here's our HTML file. This is fairly simple, just providing 2 buttons that
+     either try to connect to a ButtplugServer locally, or via a websocket. Once a
+     server connection is made, we'll list all devices found, and try to make devices
+     that support a vibrate command vibrate for 3 seconds. All of that happens over in
+     script.js.
+
+-->
+
+<html>
+  <head>
+    <title>Hello!</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <h1>NOW IS THE TIME TO BUTTPLUG</h1>
+    <p>
+      If you have no idea what this is, <a href="https://glitch.com/edit/#!/how-to-buttplug?path=README.md:1:0">check out the glitch editor page for this project.</a>
+    </p>
+    <div id="buttons">
+      <button id="buttplug-websocket-button" onclick="clickHandler('wss://localhost:12345/buttplug');">
+        Press me to hopefully make things vibrate via WebSockets.
+      </button> (Win10, Requires <a href="https://github.com/metafetish/buttplug-csharp/releases">Buttplug C# App Suite</a> and Websocket Server running on localhost)<br/>
+      <button id="buttplug-local-button" onclick="clickHandler();">
+        Press me to hopefully make things vibrate via WebBluetooth
+      </button> (Chrome on macOS/Linux/Android/Chrome OS only)<br/>
+      <br/>
+      No iOS option yet. We're working on mobile apps now, hopefully ready soon!<br/>
+      <br/>
+    </div>
+    <div id="output">
+      <b>Devices Connected:</b>
+      <ul id="devices">
+        <!-- We'll list devices here as we see them added -->
+      </ul>
+    </div>
+    <!--
+         This is the buttplug module.
+    -->
+    <script src="../dist/web/buttplug.min.js"></script>
+    <script src="script.js" defer></script>
+  </body>
+</html>
