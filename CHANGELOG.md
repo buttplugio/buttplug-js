@@ -1,3 +1,9 @@
+# Version 0.4.0 - 2017/12/03
+
+- Add webpack config to build library for web on release
+- Expose IButtplugConnector for building external connector interfaces
+- Actually write usage information in the README
+
 # Version 0.3.2 - 2017/12/02
 
 - Remove dist from .gitignore in release branch. Again. Ugh.

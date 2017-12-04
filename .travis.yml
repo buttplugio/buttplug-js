@@ -6,7 +6,7 @@ install:
   - yarn
 script:
   - yarn tslint
-  - yarn build
+  - yarn build:all
   - yarn test
   - yarn build:doc
 
