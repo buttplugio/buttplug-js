@@ -4,7 +4,7 @@ import { EventEmitter } from "events";
 import { Device } from "../core/Device";
 import { IButtplugConnector } from "./IButtplugConnector";
 import { ButtplugBrowserWebsocketConnector } from "./ButtplugBrowserWebsocketConnector";
-import { ButtplugBrowserServerConnector } from "./ButtplugBrowserServerConnector";
+import { ButtplugEmbeddedServerConnector } from "./ButtplugEmbeddedServerConnector";
 import * as Messages from "../core/Messages";
 import { CheckMessage } from "../core/MessageUtils";
 
@@ -26,7 +26,7 @@ export class ButtplugClient extends EventEmitter {
   }
 
   public ConnectLocal = async () => {
-    await this.Connect(new ButtplugBrowserServerConnector());
+    await this.Connect(new ButtplugEmbeddedServerConnector());
   }
 
   public Connect = async (aConnector: IButtplugConnector) => {
