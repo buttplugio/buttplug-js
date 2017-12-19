@@ -4,10 +4,12 @@
 import {classToPlain, plainToClass} from "class-transformer";
 import "reflect-metadata";
 
-export class ButtplugMessage {
+export abstract class ButtplugMessage {
 
   constructor(public Id: number) {
   }
+
+  abstract get SchemaVersion(): number;
 
   public getType(): string {
     return this.constructor.name;
@@ -25,14 +27,14 @@ export class ButtplugMessage {
   }
 }
 
-export class ButtplugDeviceMessage extends ButtplugMessage {
+export abstract class ButtplugDeviceMessage extends ButtplugMessage {
   constructor(public DeviceIndex: number,
               public Id: number) {
     super(Id);
   }
 }
 
-export class ButtplugSystemMessage extends ButtplugMessage {
+export abstract class ButtplugSystemMessage extends ButtplugMessage {
   constructor(public Id: number = 0) {
     super(Id);
   }
@@ -42,12 +44,16 @@ export class Ok extends ButtplugSystemMessage {
   constructor(public Id: number) {
     super(Id);
   }
+
+  get SchemaVersion() { return 0; }
 }
 
 export class Ping extends ButtplugMessage {
   constructor(public Id: number) {
     super(Id);
   }
+
+  get SchemaVersion() { return 0; }
 }
 
 export class Test extends ButtplugMessage {
@@ -55,23 +61,27 @@ export class Test extends ButtplugMessage {
               public Id: number = 1) {
     super(Id);
   }
+
+  get SchemaVersion() { return 0; }
 }
 
 export enum ErrorClass {
-    ERROR_UNKNOWN,
-    ERROR_INIT,
-    ERROR_PING,
-    ERROR_MSG,
-    ERROR_DEVICE,
+  ERROR_UNKNOWN,
+  ERROR_INIT,
+  ERROR_PING,
+  ERROR_MSG,
+  ERROR_DEVICE,
 }
 
 export class Error extends ButtplugSystemMessage {
 
-    constructor(public ErrorMessage: string,
-                public ErrorCode: ErrorClass = ErrorClass.ERROR_UNKNOWN,
-                public Id: number = 1) {
+  constructor(public ErrorMessage: string,
+              public ErrorCode: ErrorClass = ErrorClass.ERROR_UNKNOWN,
+              public Id: number = 1) {
     super(Id);
   }
+
+  get SchemaVersion() { return 0; }
 }
 
 export class DeviceInfo {
@@ -86,6 +96,8 @@ export class DeviceList extends ButtplugSystemMessage {
               public Id: number) {
     super();
   }
+
+  get SchemaVersion() { return 0; }
 }
 
 export class DeviceAdded extends ButtplugSystemMessage {
@@ -94,36 +106,48 @@ export class DeviceAdded extends ButtplugSystemMessage {
               public DeviceMessages: string[]) {
     super();
   }
+
+  get SchemaVersion() { return 0; }
 }
 
 export class DeviceRemoved extends ButtplugSystemMessage {
   constructor(public DeviceIndex: number) {
     super();
   }
+
+  get SchemaVersion() { return 0; }
 }
 
 export class RequestDeviceList extends ButtplugMessage {
   constructor(public Id: number = 1) {
     super(Id);
   }
+
+  get SchemaVersion() { return 0; }
 }
 
 export class StartScanning extends ButtplugMessage {
   constructor(public Id: number = 1) {
     super(Id);
   }
+
+  get SchemaVersion() { return 0; }
 }
 
 export class StopScanning extends ButtplugMessage {
-    constructor(public Id: number = 1) {
-        super(Id);
-    }
+  constructor(public Id: number = 1) {
+    super(Id);
+  }
+
+  get SchemaVersion() { return 0; }
 }
 
 export class ScanningFinished extends ButtplugSystemMessage {
-    constructor() {
-        super();
-    }
+  constructor() {
+    super();
+  }
+
+  get SchemaVersion() { return 0; }
 }
 
 export class RequestLog extends ButtplugMessage {
@@ -131,6 +155,8 @@ export class RequestLog extends ButtplugMessage {
               public Id: number = 1) {
     super(Id);
   }
+
+  get SchemaVersion() { return 0; }
 }
 
 export class Log extends ButtplugSystemMessage {
@@ -138,12 +164,16 @@ export class Log extends ButtplugSystemMessage {
               public LogMessage: string) {
     super();
   }
+
+  get SchemaVersion() { return 0; }
 }
 
 export class RequestServerInfo extends ButtplugMessage {
   constructor(public ClientName: string, public Id: number = 1) {
     super(Id);
   }
+
+  get SchemaVersion() { return 0; }
 }
 
 export class ServerInfo extends ButtplugSystemMessage {
@@ -156,6 +186,8 @@ export class ServerInfo extends ButtplugSystemMessage {
               public Id: number = 1) {
     super();
   }
+
+  get SchemaVersion() { return 0; }
 }
 
 export class FleshlightLaunchFW12Cmd extends ButtplugDeviceMessage {
@@ -165,6 +197,8 @@ export class FleshlightLaunchFW12Cmd extends ButtplugDeviceMessage {
               public Id: number = 1) {
     super(DeviceIndex, Id);
   }
+
+  get SchemaVersion() { return 0; }
 }
 
 export class KiirooCmd extends ButtplugDeviceMessage {
@@ -190,6 +224,8 @@ export class KiirooCmd extends ButtplugDeviceMessage {
       return Math.round(pos);
     }
   }
+
+  get SchemaVersion() { return 0; }
 }
 
 export class SingleMotorVibrateCmd extends ButtplugDeviceMessage {
@@ -198,6 +234,8 @@ export class SingleMotorVibrateCmd extends ButtplugDeviceMessage {
               public Id: number = 1) {
     super(DeviceIndex, Id);
   }
+
+  get SchemaVersion() { return 0; }
 }
 
 export class StopDeviceCmd extends ButtplugDeviceMessage {
@@ -205,12 +243,16 @@ export class StopDeviceCmd extends ButtplugDeviceMessage {
               public Id: number = 1) {
     super(DeviceIndex, Id);
   }
+
+  get SchemaVersion() { return 0; }
 }
 
 export class StopAllDevices extends ButtplugMessage {
   constructor(public Id: number = 1) {
     super(Id);
   }
+
+  get SchemaVersion() { return 0; }
 }
 
 export class LovenseCmd extends ButtplugDeviceMessage {
@@ -219,6 +261,8 @@ export class LovenseCmd extends ButtplugDeviceMessage {
               public Id: number = 1) {
     super(DeviceIndex, Id);
   }
+
+  get SchemaVersion() { return 0; }
 }
 
 export class VorzeA10CycloneCmd extends ButtplugDeviceMessage {
@@ -228,6 +272,8 @@ export class VorzeA10CycloneCmd extends ButtplugDeviceMessage {
               public Id: number = 1) {
     super(DeviceIndex, Id);
   }
+
+  get SchemaVersion() { return 0; }
 }
 
 export const Messages = {
