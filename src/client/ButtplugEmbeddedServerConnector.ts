@@ -5,9 +5,13 @@ import { ButtplugMessage } from "../core/Messages";
 import { IButtplugConnector } from "./IButtplugConnector";
 import { ButtplugServer } from "../server/ButtplugServer";
 
-export class ButtplugBrowserServerConnector extends EventEmitter implements IButtplugConnector {
+export class ButtplugEmbeddedServerConnector extends EventEmitter implements IButtplugConnector {
   private _connected: boolean = false;
   private _server: ButtplugServer | null = null;
+
+  public get Server(): ButtplugServer | null {
+    return this._server;
+  }
 
   public IsConnected(): boolean {
     return this._connected;
