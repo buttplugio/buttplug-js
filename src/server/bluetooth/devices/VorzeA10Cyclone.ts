@@ -21,6 +21,27 @@ export class VorzeA10Cyclone extends ButtplugBluetoothDevice {
     this.MsgFuncs.set(Messages.VorzeA10CycloneCmd.name, this.HandleVorzeA10CycloneCmd);
   }
 
+  public GetMessageSpecifications(): object {
+    return {
+      RotateCmd: { FeatureCount: 1 },
+      VorzeA10CycloneCmd: {},
+      StopDeviceCmd: {},
+    };
+  }
+
+  private HandleRotateCmd = async (aMsg: Messages.RotateCmd): Promise<Messages.ButtplugMessage> => {
+    if (aMsg.Rotations.length !== 1) {
+      return new Messages.Error(`Vorze A10 Cyclone devices require RotateCmd to have 1 rotation command,` +
+                                ` ${aMsg.Rotations.length} sent.`,
+                                Messages.ErrorClass.ERROR_DEVICE,
+                                aMsg.Id);
+    }
+    return await this.HandleVorzeA10CycloneCmd(new Messages.VorzeA10CycloneCmd(aMsg.Rotations[0].Speed,
+                                                                               aMsg.Rotations[0].Clockwise,
+                                                                               aMsg.DeviceIndex,
+                                                                               aMsg.Id));
+  }
+
   private HandleStopDeviceCmd =
     async (aMsg: Messages.StopDeviceCmd): Promise<Messages.ButtplugMessage> => {
       return await this.HandleVorzeA10CycloneCmd(new Messages.VorzeA10CycloneCmd(0,
