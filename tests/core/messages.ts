@@ -19,7 +19,7 @@ describe("Message", () => {
        // tslint:disable-next-line:max-line-length
        const jsonStr = '[{"DeviceList":{"Id":2,"Devices": [{"DeviceIndex":0,"DeviceName":"Test","DeviceMessages":{"Ok":{},"Ping":{}}},{"DeviceIndex":1,"DeviceName":"Test1","DeviceMessages":{"Ok":{},"Ping":{}}}]}}]';
        // tslint:disable:max-line-length
-       expect(FromJSON(jsonStr)).to.deep.equal([new Messages.DeviceList([new Messages.DeviceInfo(0, "Test", {Ok: {}, Ping: {}}), new Messages.DeviceInfo(1, "Test1", {Ok: {}, Ping: {}})], 2)]);
+       expect(FromJSON(jsonStr)).to.deep.equal([new Messages.DeviceList([new Messages.DeviceInfoWithSpecifications(0, "Test", {Ok: {}, Ping: {}}), new Messages.DeviceInfoWithSpecifications(1, "Test1", {Ok: {}, Ping: {}})], 2)]);
      });
   it("Converts DeviceAdded message from json correctly",
      () => {
@@ -31,7 +31,7 @@ describe("Message", () => {
        const jsonStr = '[{"Error":{"Id":2,"ErrorCode":3,"ErrorMessage":"TestError"}}]';
        expect(FromJSON(jsonStr)).to.deep.equal([new Messages.Error("TestError",
                                                                             Messages.ErrorClass.ERROR_MSG,
-                                                                            2)]);
+                                                                   2)]);
      });
   it("Throws an error when trying to parse a message that breaks schema",
      () => {
@@ -65,4 +65,13 @@ describe("Message", () => {
        const jsonStr = '[{"VibrateCmd":{"Id":2, "DeviceIndex": 3, "Speeds": [{ "Index": 0, "Speed": 100}, {"Index": 1, "Speed": 50}]}}]';
        expect(FromJSON(jsonStr)).to.deep.equal([new Messages.VibrateCmd([{Index: 0, Speed: 100}, {Index: 1, Speed: 50}], 3, 2)]);
      });
+
+  it("Handles RequestServerInfo correctly across multiple schema versions",
+     () => {
+       const jsonV0Str = '[{"RequestServerInfo":{"Id":2,"ClientName":"TestClient"}}]';
+       expect(FromJSON(jsonV0Str)).to.deep.equal([new Messages.RequestServerInfo("TestClient", 0, 2)]);
+       const jsonV1Str = '[{"RequestServerInfo":{"Id":2,"MessageVersion":1,"ClientName":"TestClient"}}]';
+       expect(FromJSON(jsonV1Str)).to.deep.equal([new Messages.RequestServerInfo("TestClient", 1, 2)]);
+     });
+
 });

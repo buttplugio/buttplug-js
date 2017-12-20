@@ -79,9 +79,9 @@ describe("Client Tests", async () => {
     mockServer.on("message", (jsonmsg: string) => {
       const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
       delaySend(
-        new Messages.DeviceList([new Messages.DeviceInfo(0,
-                                                         "Test Device",
-                                                         {SingleMotorVibrateCmd: {}})],
+        new Messages.DeviceList([new Messages.DeviceInfoWithSpecifications(0,
+                                                                           "Test Device",
+                                                                           {SingleMotorVibrateCmd: {}})],
                                 msg.Id));
     });
     bp.on("deviceadded", (x) => {
