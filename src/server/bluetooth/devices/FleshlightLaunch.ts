@@ -23,6 +23,13 @@ export class FleshlightLaunch extends ButtplugBluetoothDevice {
     this.MsgFuncs.set(Messages.FleshlightLaunchFW12Cmd.name, this.HandleFleshlightLaunchFW12Cmd);
   }
 
+  public GetMessageSpecifications(): object {
+    return {
+      FleshlightLaunchFW12Cmd: {},
+      StopDeviceCmd: {},
+    };
+  }
+
   private HandleStopDeviceCmd =
     async (aMsg: Messages.StopDeviceCmd): Promise<Messages.ButtplugMessage> => {
       return await this.HandleFleshlightLaunchFW12Cmd(new Messages.FleshlightLaunchFW12Cmd(0,
