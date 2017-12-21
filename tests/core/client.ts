@@ -61,7 +61,9 @@ describe("Client Tests", async () => {
       const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
       expect(msg.constructor.name).to.equal("StartScanning");
       delaySend(new Messages.Ok(msg.Id));
-      delaySend(new Messages.DeviceAdded(0, "Test Device", ["SingleMotorVibrateCmd"]));
+      delaySend(new Messages.DeviceAdded(0,
+                                         "Test Device",
+                                         {SingleMotorVibrateCmd: {}}));
     });
     bp.on("deviceadded", (x) => {
       delaySend(new Messages.DeviceRemoved(0));
@@ -76,10 +78,11 @@ describe("Client Tests", async () => {
   it("Should emit a device when device list request received with new devices", async () => {
     mockServer.on("message", (jsonmsg: string) => {
       const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
-      delaySend(new Messages.DeviceList([new Messages.DeviceInfo(0,
-                                                                 "Test Device",
-                                                                 ["SingleMotorVibrateCmd"])],
-                                        msg.Id));
+      delaySend(
+        new Messages.DeviceList([new Messages.DeviceInfo(0,
+                                                         "Test Device",
+                                                         {SingleMotorVibrateCmd: {}})],
+                                msg.Id));
     });
     bp.on("deviceadded", (x) => {
       res();
@@ -106,7 +109,9 @@ describe("Client Tests", async () => {
       const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
       delaySend(new Messages.Ok(msg.Id));
       if (msg.getType() === "StartScanning") {
-        delaySend(new Messages.DeviceAdded(0, "Test Device", ["SingleMotorVibrateCmd"]));
+        delaySend(new Messages.DeviceAdded(0,
+                                           "Test Device",
+                                           {SingleMotorVibrateCmd: {}}));
       }
       if (msg instanceof Messages.ButtplugDeviceMessage) {
         expect(msg.DeviceIndex).to.equal(0);
@@ -131,7 +136,9 @@ describe("Client Tests", async () => {
       const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
       delaySend(new Messages.Ok(msg.Id));
       if (msg.getType() === "StartScanning") {
-        delaySend(new Messages.DeviceAdded(0, "Test Device", ["SingleMotorVibrateCmd"]));
+        delaySend(new Messages.DeviceAdded(0,
+                                           "Test Device",
+                                           {SingleMotorVibrateCmd: {}}));
       }
       if (msg instanceof Messages.ButtplugDeviceMessage) {
         expect(msg.DeviceIndex).to.equal(0);
