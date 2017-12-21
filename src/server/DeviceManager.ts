@@ -39,7 +39,7 @@ export class DeviceManager extends EventEmitter {
 
   public SendMessage = async (aMessage: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage> => {
     const id = aMessage.Id;
-    switch (aMessage.constructor.name) {
+    switch (aMessage.Type) {
     case "StartScanning":
       for (const manager of this._subtypeManagers) {
         if (!manager.IsScanning()) {
@@ -68,7 +68,7 @@ export class DeviceManager extends EventEmitter {
     }
     const deviceMsg = (aMessage as Messages.ButtplugDeviceMessage);
     if (deviceMsg.DeviceIndex === undefined) {
-      return this._logger.LogAndError(`Message Type ${aMessage.constructor.name} unhandled by this server.`,
+      return this._logger.LogAndError(`Message Type ${aMessage.Type} unhandled by this server.`,
                                       Messages.ErrorClass.ERROR_MSG,
                                       id);
     }
@@ -78,8 +78,8 @@ export class DeviceManager extends EventEmitter {
                                       id);
     }
     const device = this._devices.get(deviceMsg.DeviceIndex)!;
-    if (device.GetAllowedMessageTypes().indexOf(aMessage.constructor.name) < 0) {
-      return this._logger.LogAndError(`Device ${device.Name} does not take message type ${aMessage.constructor.name}`,
+    if (device.GetAllowedMessageTypes().indexOf(aMessage.Type) < 0) {
+      return this._logger.LogAndError(`Device ${device.Name} does not take message type ${aMessage.Type}`,
                                       Messages.ErrorClass.ERROR_DEVICE,
                                       id);
     }

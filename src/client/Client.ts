@@ -92,7 +92,7 @@ export class ButtplugClient extends EventEmitter {
     if (dev === undefined) {
       return Promise.reject(new Error("Device not available."));
     }
-    if (dev.AllowedMessages.indexOf(aDeviceMsg.getType()) === -1) {
+    if (dev.AllowedMessages.indexOf(aDeviceMsg.Type) === -1) {
       return Promise.reject(new Error("Device does not accept that message type."));
     }
     aDeviceMsg.DeviceIndex = aDevice.Index;
@@ -110,7 +110,7 @@ export class ButtplugClient extends EventEmitter {
         res!(x);
         return;
       }
-      switch (x.getType()) {
+      switch (x.Type) {
       case "Log":
         this.emit("log", x);
         break;
@@ -138,7 +138,7 @@ export class ButtplugClient extends EventEmitter {
   protected InitializeConnection = async (): Promise<boolean> => {
     this.CheckConnector();
     const msg = await this.SendMessage(new Messages.RequestServerInfo(this._clientName, 1));
-    switch (msg.getType()) {
+    switch (msg.Type) {
     case "ServerInfo": {
       // TODO: maybe store server name, do something with message template version?
       const ping = (msg as Messages.ServerInfo).MaxPingTime;
@@ -185,7 +185,7 @@ export class ButtplugClient extends EventEmitter {
     let rej;
     const msg = await this.SendMessage(aMsg);
     const p = new Promise<void>((resolve, reject) => { res = resolve; rej = reject; });
-    switch (msg.getType()) {
+    switch (msg.Type) {
     case "Ok":
       res();
       break;

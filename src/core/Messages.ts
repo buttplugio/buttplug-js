@@ -9,8 +9,25 @@ export class ButtplugMessage {
   constructor(public Id: number) {
   }
 
-  public getType(): string {
+  /***
+   * Returns the message type name
+   *
+   * Usually, the message type name will be the same as the message class
+   * constructor, so the constructor name is used by default. However, in
+   * instances where a message has different versions (i.e. DeviceAddedVersion0
+   * and DeviceAddedVersion1), we will need to override this to set the message
+   * name.
+   */
+  public get Type(): string {
     return this.constructor.name;
+  }
+
+  /***
+   * [DEPRECATED] Function version of the this.Type getter
+   *
+   */
+  public getType(): string {
+    return this.Type;
   }
 
   public toJSON(): string {
@@ -19,8 +36,7 @@ export class ButtplugMessage {
 
   public toProtocolFormat(): object {
     const jsonObj = {};
-    const instance: any = this.constructor;
-    jsonObj[instance.name] = classToPlain(this);
+    jsonObj[this.Type] = classToPlain(this);
     return jsonObj;
   }
 }
