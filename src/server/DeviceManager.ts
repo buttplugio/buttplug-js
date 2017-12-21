@@ -106,7 +106,7 @@ export class DeviceManager extends EventEmitter {
     device.addListener("deviceremoved", this.OnDeviceRemoved);
     ServerMessageHub.Instance.emitMessage(new Messages.DeviceAdded(deviceIndex,
                                                                    device.Name,
-                                                                   device.GetAllowedMessageTypes()));
+                                                                   device.GetMessageSpecifications()));
   }
 
   private OnDeviceRemoved = (device: IButtplugDevice) => {

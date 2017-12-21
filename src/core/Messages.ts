@@ -103,7 +103,7 @@ export class Error extends ButtplugSystemMessage {
 export class DeviceInfo {
   constructor(public DeviceIndex: number,
               public DeviceName: string,
-              public DeviceMessages: string[]) {
+              public DeviceMessages: object) {
   }
 }
 
@@ -119,7 +119,7 @@ export class DeviceList extends ButtplugSystemMessage {
 export class DeviceAdded extends ButtplugSystemMessage {
   constructor(public DeviceIndex: number,
               public DeviceName: string,
-              public DeviceMessages: string[]) {
+              public DeviceMessages: object) {
     super();
   }
 
