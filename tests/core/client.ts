@@ -1,5 +1,3 @@
-import { expect } from "chai";
-import "mocha";
 import { Server } from "mock-socket";
 import { ButtplugClient } from "../../src/client/Client";
 import * as Messages from "../../src/core/Messages";
@@ -49,7 +47,7 @@ describe("Client Tests", async () => {
 
     const finishTestPromise = new Promise((resolve) => { res = resolve; });
     bp.on("log", (x) => {
-      expect(x).to.deep.equal(new Messages.Log("Trace", "Test"));
+      expect(x).toEqual(new Messages.Log("Trace", "Test"));
       res();
     });
     await bp.RequestLog("Trace");
@@ -59,7 +57,7 @@ describe("Client Tests", async () => {
   it("Should emit a device on addition", async () => {
     mockServer.on("message", (jsonmsg: string) => {
       const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
-      expect(msg.constructor.name).to.equal("StartScanning");
+      expect(msg.constructor.name).toEqual("StartScanning");
       delaySend(new Messages.Ok(msg.Id));
       delaySend(new Messages.DeviceAdded(0, "Test Device", ["SingleMotorVibrateCmd"]));
     });
@@ -109,7 +107,7 @@ describe("Client Tests", async () => {
         delaySend(new Messages.DeviceAdded(0, "Test Device", ["SingleMotorVibrateCmd"]));
       }
       if (msg instanceof Messages.ButtplugDeviceMessage) {
-        expect(msg.DeviceIndex).to.equal(0);
+        expect(msg.DeviceIndex).toEqual(0);
       }
     });
     let device;
@@ -134,7 +132,7 @@ describe("Client Tests", async () => {
         delaySend(new Messages.DeviceAdded(0, "Test Device", ["SingleMotorVibrateCmd"]));
       }
       if (msg instanceof Messages.ButtplugDeviceMessage) {
-        expect(msg.DeviceIndex).to.equal(0);
+        expect(msg.DeviceIndex).toEqual(0);
       }
     });
     let device;
