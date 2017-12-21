@@ -10,7 +10,6 @@ export function CheckMessage(aMsgObj: ButtplugMessage) {
   if (jsonValidator([aMsgObj.toProtocolFormat()])) {
     return;
   }
-  console.log(aMsgObj);
   // Relay validator errors as an error message locally.
   const errorString = jsonValidator.errors!.map((error) => error.message).join("; ");
   throw new Error(errorString);
