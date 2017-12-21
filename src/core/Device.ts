@@ -18,7 +18,7 @@ export class Device {
    */
   constructor(private index: number,
               private name: string,
-              private allowedMsgs: string[]) {
+              private allowedMsgs: object) {
   }
 
   /**
@@ -39,6 +39,6 @@ export class Device {
    * Return a list of message types the device accepts.
    */
   public get AllowedMessages(): string[] {
-    return this.allowedMsgs;
+    return Object.keys(this.allowedMsgs);
   }
 }
