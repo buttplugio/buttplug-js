@@ -52,10 +52,6 @@ module.exports = {
   devtool: 'inline-source-map',
   plugins: [
     new webpack.NamedModulesPlugin(),
-    // We use text-encoding as a polyfill for node, but when packing for the
-    // web, we can assume the browser will have it. Ignore it here and save
-    // ourselves 600k of library!
-    new webpack.IgnorePlugin(/text-encoding/),
     new ForkTsCheckerWebpackPlugin(),
   ],
   node: {
