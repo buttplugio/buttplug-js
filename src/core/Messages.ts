@@ -292,6 +292,56 @@ export class VorzeA10CycloneCmd extends ButtplugDeviceMessage {
   get SchemaVersion() { return 0; }
 }
 
+export class SpeedSubcommand {
+  constructor(public Index: number,
+              public Speed: number) {
+  }
+}
+
+export class VibrateCmd extends ButtplugDeviceMessage {
+  constructor(public Speeds: SpeedSubcommand[],
+              public DeviceIndex: number = -1,
+              public Id: number = 1) {
+    super(DeviceIndex, Id);
+  }
+
+  get SchemaVersion() { return 1; }
+}
+
+export class RotateSubcommand {
+  constructor(public Index: number,
+              public Speed: number,
+              public Clockwise: boolean) {
+  }
+}
+
+export class RotateCmd extends ButtplugDeviceMessage {
+  constructor(public Rotations: RotateSubcommand[],
+              public DeviceIndex: number = -1,
+              public Id: number = 1) {
+    super(DeviceIndex, Id);
+  }
+
+  get SchemaVersion() { return 1; }
+}
+
+export class VectorSubcommand {
+  constructor(public Index: number,
+              public Position: number,
+              public Duration: number) {
+  }
+}
+
+export class LinearCmd extends ButtplugDeviceMessage {
+  constructor(public Vectors: VectorSubcommand[],
+              public DeviceIndex: number = -1,
+              public Id: number = 1) {
+    super(DeviceIndex, Id);
+  }
+
+  get SchemaVersion() { return 1; }
+}
+
 export const Messages = {
   DeviceAdded,
   DeviceList,
@@ -299,6 +349,7 @@ export const Messages = {
   Error,
   FleshlightLaunchFW12Cmd,
   KiirooCmd,
+  LinearCmd,
   Log,
   LovenseCmd,
   Ok,
@@ -306,6 +357,7 @@ export const Messages = {
   RequestDeviceList,
   RequestLog,
   RequestServerInfo,
+  RotateCmd,
   ScanningFinished,
   ServerInfo,
   SingleMotorVibrateCmd,
@@ -314,5 +366,6 @@ export const Messages = {
   StopDeviceCmd,
   StopScanning,
   Test,
+  VibrateCmd,
   VorzeA10CycloneCmd,
 };
