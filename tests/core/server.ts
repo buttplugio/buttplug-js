@@ -1,5 +1,3 @@
-import { expect } from "chai";
-import "mocha";
 import { Server } from "mock-socket";
 import { IDeviceSubtypeManager } from "../../src/server/IDeviceSubtypeManager";
 import { ButtplugEmbeddedServerConnector } from "../../src/client/ButtplugEmbeddedServerConnector";
@@ -96,11 +94,11 @@ describe("Server Tests", async () => {
     // function.
     oldClient.addListener("clientmessages", (aMsgs) => {
       try {
-        expect(aMsgs).to.deep.equal([new Messages.DeviceAddedVersion0(1,
-                                                                      "Test Device",
-                                                                      ["VibrateCmd",
-                                                                       "SingleMotorVibrateCmd",
-                                                                       "StopDeviceCmd"])]);
+        expect(aMsgs).toEqual([new Messages.DeviceAddedVersion0(1,
+                                                                "Test Device",
+                                                                ["VibrateCmd",
+                                                                 "SingleMotorVibrateCmd",
+                                                                 "StopDeviceCmd"])]);
         res();
       } catch (e) {
         rej(e);
