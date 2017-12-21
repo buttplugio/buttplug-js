@@ -60,4 +60,9 @@ describe("Message", () => {
 
        expect(msg2.toJSON()).to.equal('{"KiirooCmd":{"Id":2,"DeviceIndex":3,"Command":"4"}}');
      });
+  it("Handles Device Commands with Subcommand arrays correctly",
+     () => {
+       const jsonStr = '[{"VibrateCmd":{"Id":2, "DeviceIndex": 3, "Speeds": [{ "Index": 0, "Speed": 100}, {"Index": 1, "Speed": 50}]}}]';
+       expect(FromJSON(jsonStr)).to.deep.equal([new Messages.VibrateCmd([{Index: 0, Speed: 100}, {Index: 1, Speed: 50}], 3, 2)]);
+     });
 });
