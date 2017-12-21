@@ -15,14 +15,14 @@ describe("Message", () => {
   it("Converts DeviceList message from json correctly",
      () => {
        // tslint:disable-next-line:max-line-length
-       const jsonStr = '[{"DeviceList":{"Id":2,"Devices": [{"DeviceIndex":0,"DeviceName":"Test","DeviceMessages":["Ok","Ping"]},{"DeviceIndex":1,"DeviceName":"Test1","DeviceMessages":["Ok","Ping"]}]}}]';
+       const jsonStr = '[{"DeviceList":{"Id":2,"Devices": [{"DeviceIndex":0,"DeviceName":"Test","DeviceMessages":{"Ok":{},"Ping":{}}},{"DeviceIndex":1,"DeviceName":"Test1","DeviceMessages":{"Ok":{},"Ping":{}}}]}}]';
        // tslint:disable:max-line-length
-       expect(FromJSON(jsonStr)).toEqual([new Messages.DeviceList([new Messages.DeviceInfo(0, "Test", ["Ok", "Ping"]), new Messages.DeviceInfo(1, "Test1", ["Ok", "Ping"])], 2)]);
+       expect(FromJSON(jsonStr)).toEqual([new Messages.DeviceList([new Messages.DeviceInfo(0, "Test", {Ok: {}, Ping: {}}), new Messages.DeviceInfo(1, "Test1", {Ok: {}, Ping: {}})], 2)]);
      });
   it("Converts DeviceAdded message from json correctly",
      () => {
-       const jsonStr = '[{"DeviceAdded":{"Id":0,"DeviceIndex":0,"DeviceName":"Test","DeviceMessages":["Ok","Ping"]}}]';
-       expect(FromJSON(jsonStr)).toEqual([new Messages.DeviceAdded(0, "Test", ["Ok", "Ping"])]);
+       const jsonStr = '[{"DeviceAdded":{"Id":0,"DeviceIndex":0,"DeviceName":"Test","DeviceMessages":{"Ok":{},"Ping":{}}}}]';
+       expect(FromJSON(jsonStr)).toEqual([new Messages.DeviceAdded(0, "Test", {Ok: {}, Ping: {}})]);
      });
   it("Converts Error message from json correctly",
      () => {
