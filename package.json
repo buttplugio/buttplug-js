@@ -36,13 +36,11 @@
   "dependencies": {
     "ajv": "^5.5.2",
     "class-transformer": "^0.1.8",
-    "reflect-metadata": "^0.1.10",
-    "text-encoding": "^0.6.4"
+    "reflect-metadata": "^0.1.10"
   },
   "devDependencies": {
     "@types/jest": "^21.1.9",
     "@types/node": "^8.5.1",
-    "@types/text-encoding": "^0.0.32",
     "@types/web-bluetooth": "^0.0.3",
     "codecov": "^3.0.0",
     "copyfiles": "^1.2.0",

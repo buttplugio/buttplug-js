@@ -3,15 +3,6 @@ import { ButtplugBluetoothDevice } from "../ButtplugBluetoothDevice";
 import { IBluetoothDeviceImpl } from "../IBluetoothDeviceImpl";
 import * as Messages from "../../../core/Messages";
 
-// The TextEncoder polyfill is 600k (DAMNIT JOSH). Locally (for things like the
-// node device manager), not a huge deal. For web hosted libraries, we'll assume
-// the browser has it and ignore the require, since this class is only really
-// useful for browsers with WebBluetooth anyways.
-let TextEncoder = typeof(window) !== "undefined" ? (window as any).TextEncoder : undefined;
-if (TextEncoder === undefined) {
-  TextEncoder = require("text-encoding").TextEncoder;
-}
-
 export class Lovense extends ButtplugBluetoothDevice {
   public static CreateInstance(aDeviceImpl: IBluetoothDeviceImpl): Promise<ButtplugBluetoothDevice> {
     return Promise.resolve(new Lovense(aDeviceImpl));
@@ -38,7 +29,7 @@ export class Lovense extends ButtplugBluetoothDevice {
   private HandleSingleMotorVibrateCmd =
     async (aMsg: Messages.SingleMotorVibrateCmd): Promise<Messages.ButtplugMessage> => {
       const speed = Math.floor(20 * aMsg.Speed);
-      await this._deviceImpl.WriteValue("tx", new TextEncoder().encode("Vibrate:" + speed + ";"));
+      await this._deviceImpl.WriteValue("tx", Buffer.from("Vibrate:" + speed + ";"));
       return new Messages.Ok(aMsg.Id);
     }
 }
