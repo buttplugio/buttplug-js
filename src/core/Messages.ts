@@ -17,17 +17,26 @@ export abstract class ButtplugMessage {
                      this.Id);
   }
 
-  public getType(): string {
+  /***
+   * Returns the message type name
+   *
+   * Usually, the message type name will be the same as the message class
+   * constructor, so the constructor name is used by default. However, in
+   * instances where a message has different versions (i.e. DeviceAddedVersion0
+   * and DeviceAddedVersion1), we will need to override this to set the message
+   * name.
+   */
+  public get Type(): string {
     return this.constructor.name;
   }
 
-  public toJSON(): string {
+  public asJSON(): string {
     return JSON.stringify(this.toProtocolFormat());
   }
 
   public toProtocolFormat(): object {
     const jsonObj = {};
-    jsonObj[this.getType()] = classToPlain(this);
+    jsonObj[this.Type] = classToPlain(this);
     return jsonObj;
   }
 }
@@ -108,7 +117,7 @@ export class DeviceListVersion0 extends ButtplugSystemMessage {
     super();
   }
 
-  public getType(): string {
+  public get Type(): string {
     return "DeviceList";
   }
   get SchemaVersion() { return 0; }
@@ -127,7 +136,7 @@ export class DeviceListVersion1 extends ButtplugSystemMessage {
     super();
   }
 
-  public getType(): string {
+  public get Type(): string {
     return "DeviceList";
   }
 
@@ -153,7 +162,7 @@ export class DeviceAddedVersion0 extends ButtplugSystemMessage {
     super();
   }
 
-  public getType(): string {
+  public get Type(): string {
     return "DeviceAdded";
   }
   get SchemaVersion() { return 0; }
@@ -166,7 +175,7 @@ export class DeviceAddedVersion1 extends ButtplugSystemMessage {
     super();
   }
 
-  public getType(): string {
+  public get Type(): string {
     return "DeviceAdded";
   }
 
@@ -397,5 +406,7 @@ export class LinearCmd extends ButtplugDeviceMessage {
   get SchemaVersion() { return 1; }
 }
 
+// For messages with multiple versions, export the latest version as the
+// canonical version for the message type.
 export { DeviceListVersion1 as DeviceList };
 export { DeviceAddedVersion1 as DeviceAdded };

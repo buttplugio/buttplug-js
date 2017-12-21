@@ -21,12 +21,12 @@ export abstract class ButtplugDevice extends EventEmitter implements IButtplugDe
   }
 
   public ParseMessage = async (aMsg: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage> => {
-    if (!this.MsgFuncs.has(aMsg.getType())) {
-      return new Messages.Error("${this._name} cannot handle message of type ${aMsg.getType()} )",
+    if (!this.MsgFuncs.has(aMsg.Type)) {
+      return new Messages.Error("${this._name} cannot handle message of type ${aMsg.Type} )",
                                 Messages.ErrorClass.ERROR_MSG,
                                 aMsg.Id);
     }
     // Boy non-null assurance in the middle of functions looks weird.
-    return this.MsgFuncs.get(aMsg.getType())!(aMsg);
+    return this.MsgFuncs.get(aMsg.Type)!(aMsg);
   }
 }

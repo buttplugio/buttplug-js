@@ -5,7 +5,7 @@ describe("Message", () => {
   it("Converts ok message to json correctly",
      () => {
        const ok = new Messages.Ok(2);
-       expect(ok.toJSON()).toEqual('{"Ok":{"Id":2}}');
+       expect(ok.asJSON()).toEqual('{"Ok":{"Id":2}}');
      });
   it("Converts ok message from json correctly",
      () => {
@@ -56,7 +56,7 @@ describe("Message", () => {
        expect(msg2.Command).toEqual("4");
        expect(msg2.GetPosition()).toEqual(4);
 
-       expect(msg2.toJSON()).toEqual('{"KiirooCmd":{"Id":2,"DeviceIndex":3,"Command":"4"}}');
+       expect(msg2.asJSON()).toEqual('{"KiirooCmd":{"Id":2,"DeviceIndex":3,"Command":"4"}}');
      });
   it("Handles Device Commands with Subcommand arrays correctly",
      () => {

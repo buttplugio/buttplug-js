@@ -27,7 +27,7 @@ describe("Client Tests", async () => {
   });
 
   function delaySend(aMsg: Messages.ButtplugMessage) {
-    process.nextTick(() => mockServer.send("[" + aMsg.toJSON() + "]"));
+    process.nextTick(() => mockServer.send("[" + aMsg.asJSON() + "]"));
   }
 
   it("Should deal with request/reply correctly", async () => {
@@ -106,7 +106,7 @@ describe("Client Tests", async () => {
     mockServer.on("message", (jsonmsg: string) => {
       const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
       delaySend(new Messages.Ok(msg.Id));
-      if (msg.getType() === "StartScanning") {
+      if (msg.Type === "StartScanning") {
         delaySend(new Messages.DeviceAdded(0,
                                            "Test Device",
                                            {SingleMotorVibrateCmd: {}}));
@@ -133,7 +133,7 @@ describe("Client Tests", async () => {
     mockServer.on("message", (jsonmsg: string) => {
       const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
       delaySend(new Messages.Ok(msg.Id));
-      if (msg.getType() === "StartScanning") {
+      if (msg.Type === "StartScanning") {
         delaySend(new Messages.DeviceAdded(0,
                                            "Test Device",
                                            {SingleMotorVibrateCmd: {}}));

@@ -49,12 +49,12 @@ export class ButtplugServer extends EventEmitter {
     if (this._pingTimedOut) {
       return this._logger.LogAndError("Ping timed out.", Messages.ErrorClass.ERROR_MSG, id);
     }
-    if (!this._receivedRequestServerInfo && aMessage.constructor.name !== "RequestServerInfo") {
+    if (!this._receivedRequestServerInfo && aMessage.Type !== "RequestServerInfo") {
       return this._logger.LogAndError("RequestServerInfo must be first message received by server.",
                                       Messages.ErrorClass.ERROR_INIT,
                                       id);
     }
-    switch (aMessage.constructor.name) {
+    switch (aMessage.Type) {
     case "RequestLog":
       // TODO: If requested log level is higher than what we have specified,
       // what happens?
@@ -103,7 +103,7 @@ export class ButtplugServer extends EventEmitter {
   }
 
   private OnOutgoingMessage = (msg: Messages.ButtplugMessage) => {
-    if (msg.constructor.name === "Error") {
+    if (msg.Type === "Error") {
       return msg;
     }
     if (this._clientSchemaVersion === -1) {
@@ -113,7 +113,7 @@ export class ButtplugServer extends EventEmitter {
       msg = msg.DowngradeMessage();
     }
     // If there was a conversion problem, log as well as returning an error message.
-    if (msg.constructor.name === "Error") {
+    if (msg.Type === "Error") {
       this._logger.Error((msg as Messages.Error).ErrorMessage);
     }
     this.emit("message", msg);

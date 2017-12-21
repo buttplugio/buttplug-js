@@ -60,7 +60,7 @@ class TestOldClient extends ButtplugClient {
 
   protected InitializeConnection = async (): Promise<boolean> => {
     const msg = await this.SendMessage(new Messages.RequestServerInfo(this._clientName, 0));
-    switch (msg.getType()) {
+    switch (msg.Type) {
     case "ServerInfo": {
       // TODO: maybe store server name, do something with message template version?
       return true;
