@@ -24,7 +24,7 @@ describe("Client Tests", async () => {
     p = new Promise((resolve, reject) => { res = resolve; rej = reject; });
     const serverInfo = (jsonmsg: string) => {
       const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
-      delaySend(new Messages.ServerInfo(0, 0, 0, 0, 0, "Test Server", msg.Id));
+      delaySend(new Messages.ServerInfo(0, 0, 0, 1, 0, "Test Server", msg.Id));
       mockServer.removeEventListener("message", serverInfo);
     };
     mockServer.on("message", serverInfo);

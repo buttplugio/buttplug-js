@@ -15,6 +15,8 @@ export class ButtplugClient extends EventEmitter {
   protected _counter: number = 1;
   protected _waitingMsgs: Map<number, (val: Messages.ButtplugMessage) => void> = new Map();
   protected _clientName: string;
+  // TODO This should be set on schema load
+  protected _messageVersion: number = 1;
 
   constructor(aClientName: string) {
     super();
@@ -140,8 +142,14 @@ export class ButtplugClient extends EventEmitter {
     const msg = await this.SendMessage(new Messages.RequestServerInfo(this._clientName, 1));
     switch (msg.getType()) {
     case "ServerInfo": {
+      const serverinfo = (msg as Messages.ServerInfo);
       // TODO: maybe store server name, do something with message template version?
-      const ping = (msg as Messages.ServerInfo).MaxPingTime;
+      const ping = serverinfo.MaxPingTime;
+      if (serverinfo.MessageVersion < this._messageVersion) {
+        // Disconnect and throw an exception explaining the version mismatch problem.
+        this._connector!.Disconnect();
+        throw new Error("Server protocol version is older than client protocol version. Please update server.");
+      }
       if (ping > 0) {
         this._pingTimer = setInterval(() => {
           // If we've disconnected, stop trying to ping the server.
@@ -155,7 +163,11 @@ export class ButtplugClient extends EventEmitter {
       return true;
     }
     case "Error": {
+      // Disconnect and throw an exception with the error message we got back.
+      // This will usually only error out if we have a version mismatch that the
+      // server has detected.
       this._connector!.Disconnect();
+      throw new Error((msg as Messages.Error).ErrorMessage);
     }
     }
     return false;
