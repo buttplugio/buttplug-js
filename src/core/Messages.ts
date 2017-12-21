@@ -11,6 +11,12 @@ export abstract class ButtplugMessage {
 
   abstract get SchemaVersion(): number;
 
+  public DowngradeMessage(): ButtplugMessage {
+    return new Error("Message version downgrade required, but not defined for this message type.",
+                     ErrorClass.ERROR_MSG,
+                     this.Id);
+  }
+
   /***
    * Returns the message type name
    *
@@ -62,6 +68,7 @@ export class Ok extends ButtplugSystemMessage {
   }
 
   get SchemaVersion() { return 0; }
+
 }
 
 export class Ping extends ButtplugMessage {
@@ -100,30 +107,95 @@ export class Error extends ButtplugSystemMessage {
   get SchemaVersion() { return 0; }
 }
 
+/***
+ * DeviceInfo Message class from v0 spec
+ *
+ * Uses a string array for messages, instead of a specifications object.
+ */
 export class DeviceInfo {
   constructor(public DeviceIndex: number,
               public DeviceName: string,
-              public DeviceMessages: object) {
+              public DeviceMessages: string[]) {
   }
 }
 
-export class DeviceList extends ButtplugSystemMessage {
+export class DeviceListVersion0 extends ButtplugSystemMessage {
   constructor(public Devices: DeviceInfo[],
               public Id: number) {
     super();
   }
 
+  public get Type(): string {
+    return "DeviceList";
+  }
   get SchemaVersion() { return 0; }
 }
 
-export class DeviceAdded extends ButtplugSystemMessage {
+export class DeviceInfoWithSpecifications {
+  constructor(public DeviceIndex: number,
+              public DeviceName: string,
+              public DeviceMessages: object) {
+  }
+}
+
+export class DeviceListVersion1 extends ButtplugSystemMessage {
+  constructor(public Devices: DeviceInfoWithSpecifications[],
+              public Id: number) {
+    super();
+  }
+
+  public get Type(): string {
+    return "DeviceList";
+  }
+
+  public DowngradeMessage(): ButtplugMessage {
+    // This is going to look mostly the same, we just need to reduce our devices
+    // down to use string message lists instead of specification lists.
+    const oldDevices: DeviceInfo[] = [];
+    for (const newDevice of this.Devices) {
+      oldDevices.push(new DeviceInfo(newDevice.DeviceIndex,
+                                     newDevice.DeviceName,
+                                     Object.keys(newDevice.DeviceMessages)));
+    }
+    return new DeviceListVersion0(oldDevices, this.Id);
+  }
+
+  get SchemaVersion() { return 1; }
+}
+
+export class DeviceAddedVersion0 extends ButtplugSystemMessage {
+  constructor(public DeviceIndex: number,
+              public DeviceName: string,
+              public DeviceMessages: string[]) {
+    super();
+  }
+
+  public get Type(): string {
+    return "DeviceAdded";
+  }
+  get SchemaVersion() { return 0; }
+}
+
+export class DeviceAddedVersion1 extends ButtplugSystemMessage {
   constructor(public DeviceIndex: number,
               public DeviceName: string,
               public DeviceMessages: object) {
     super();
   }
 
-  get SchemaVersion() { return 0; }
+  public get Type(): string {
+    return "DeviceAdded";
+  }
+
+  get SchemaVersion() { return 1; }
+
+  public DowngradeMessage(): ButtplugMessage {
+    // This is going to look mostly the same, we just need to reduce our devices
+    // down to use string message lists instead of specification lists.
+    return new DeviceAddedVersion0(this.DeviceIndex,
+                                   this.DeviceName,
+                                   Object.keys(this.DeviceMessages));
+  }
 }
 
 export class DeviceRemoved extends ButtplugSystemMessage {
@@ -185,11 +257,11 @@ export class Log extends ButtplugSystemMessage {
 }
 
 export class RequestServerInfo extends ButtplugMessage {
-  constructor(public ClientName: string, public Id: number = 1) {
+  constructor(public ClientName: string, public MessageVersion: number = 0, public Id: number = 1) {
     super(Id);
   }
 
-  get SchemaVersion() { return 0; }
+  get SchemaVersion() { return 1; }
 }
 
 export class ServerInfo extends ButtplugSystemMessage {
@@ -342,30 +414,5 @@ export class LinearCmd extends ButtplugDeviceMessage {
   get SchemaVersion() { return 1; }
 }
 
-export const Messages = {
-  DeviceAdded,
-  DeviceList,
-  DeviceRemoved,
-  Error,
-  FleshlightLaunchFW12Cmd,
-  KiirooCmd,
-  LinearCmd,
-  Log,
-  LovenseCmd,
-  Ok,
-  Ping,
-  RequestDeviceList,
-  RequestLog,
-  RequestServerInfo,
-  RotateCmd,
-  ScanningFinished,
-  ServerInfo,
-  SingleMotorVibrateCmd,
-  StartScanning,
-  StopAllDevices,
-  StopDeviceCmd,
-  StopScanning,
-  Test,
-  VibrateCmd,
-  VorzeA10CycloneCmd,
-};
+export { DeviceListVersion1 as DeviceList };
+export { DeviceAddedVersion1 as DeviceAdded };

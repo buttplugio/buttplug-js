@@ -29,6 +29,10 @@ export class TestDevice extends ButtplugDevice {
     this._connected = connected;
   }
 
+  public GetMessageSpecifications(): object {
+    return {};
+  }
+
   public Disconnect() {
     this.emit("deviceremoved", this);
   }

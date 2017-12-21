@@ -4,10 +4,13 @@ import { EventEmitter } from "events";
 import { ServerMessageHub } from "./ServerMessageHub";
 import { IDeviceSubtypeManager } from "./IDeviceSubtypeManager";
 import { ButtplugLogger, ButtplugLogLevel, LogMessage } from "../core/Logging";
+import { RequestServerInfo } from "../core/Messages";
 
 export class ButtplugServer extends EventEmitter {
 
   // Member: PingTimer?
+  private _clientSchemaVersion: number = -1;
+  private _clientName: string;
   private _deviceManager: DeviceManager;
   private _pingTimedOut: boolean = false;
   private _receivedRequestServerInfo: boolean = false;
@@ -59,10 +62,20 @@ export class ButtplugServer extends EventEmitter {
       return new Messages.Ok(aMessage.Id);
     case "RequestServerInfo":
       this._logger.Debug(`Server: RequestServerInfo received.`);
+      const msg = aMessage as RequestServerInfo;
+      if (this._clientSchemaVersion > 1) {
+        // Client automatically disconnects on error message.
+        return new Messages.Error(`Client schema (${this._clientSchemaVersion}) newer than server schema (1). ` +
+                                  "Please upgrade server.",
+                                  Messages.ErrorClass.ERROR_INIT,
+                                  id);
+      }
       this._receivedRequestServerInfo = true;
+      this._clientSchemaVersion = msg.MessageVersion;
+      this._clientName = msg.ClientName;
       // TODO: Figure out how to encode this from the package version?
       // TODO: Figure out how to pull message schema version.
-      return new Messages.ServerInfo(0, 0, 9, 1, this._maxPingTime, this._serverName, id);
+      return new Messages.ServerInfo(0, 0, 0, 1, this._maxPingTime, this._serverName, id);
     case "Test":
       this._logger.Debug(`Server: Test received.`);
       const testmsg = aMessage as Messages.Test;
@@ -82,7 +95,20 @@ export class ButtplugServer extends EventEmitter {
     this.OnOutgoingMessage(new Messages.Log(ButtplugLogLevel[aMsg.LogLevel], aMsg.Message));
   }
 
-  private OnOutgoingMessage = (aMsg: Messages.ButtplugMessage) => {
-    this.emit("message", aMsg);
+  private OnOutgoingMessage = (msg: Messages.ButtplugMessage) => {
+    if (msg.constructor.name === "Error") {
+      return msg;
+    }
+    if (this._clientSchemaVersion === -1) {
+      return new Messages.Error("Cannot discern client schema version. Was RequestServerInfo message sent?");
+    }
+    while (msg.SchemaVersion !== this._clientSchemaVersion && msg.SchemaVersion > 0) {
+      msg = msg.DowngradeMessage();
+    }
+    // If there was a conversion problem, log as well as returning an error message.
+    if (msg.constructor.name === "Error") {
+      this._logger.Error((msg as Messages.Error).ErrorMessage);
+    }
+    this.emit("message", msg);
   }
 }
