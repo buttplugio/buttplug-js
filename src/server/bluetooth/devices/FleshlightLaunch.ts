@@ -17,10 +17,13 @@ export class FleshlightLaunch extends ButtplugBluetoothDevice {
     return new FleshlightLaunch(aDeviceImpl);
   }
 
+  private _lastPosition: number = 0;
+
   public constructor(aDeviceImpl: IBluetoothDeviceImpl) {
     super("Fleshlight Launch", aDeviceImpl);
     this.MsgFuncs.set(Messages.StopDeviceCmd.name, this.HandleStopDeviceCmd);
     this.MsgFuncs.set(Messages.FleshlightLaunchFW12Cmd.name, this.HandleFleshlightLaunchFW12Cmd);
+    this.MsgFuncs.set(Messages.LinearCmd.name, this.HandleLinearCmd);
   }
 
   public GetMessageSpecifications(): object {
@@ -42,5 +45,28 @@ export class FleshlightLaunch extends ButtplugBluetoothDevice {
     async (aMsg: Messages.FleshlightLaunchFW12Cmd): Promise<Messages.ButtplugMessage> => {
       await this._deviceImpl.WriteValue("tx", new Uint8Array([aMsg.Position, aMsg.Speed]));
       return new Messages.Ok(aMsg.Id);
+    }
+
+  private HandleLinearCmd =
+    async (aMsg: Messages.LinearCmd): Promise<Messages.ButtplugMessage> => {
+      if (aMsg.Vectors.length !== 1) {
+        return new Messages.Error("LinearCmd requires 1 vector for this device.",
+                                  Messages.ErrorClass.ERROR_DEVICE,
+                                  aMsg.Id);
+      }
+      // Move between 5/95, otherwise we'll allow the device to smack into hard
+      // stops because of braindead firmware.
+      const range: number = 90;
+      const vector = aMsg.Vectors[0];
+      const currentPosition = vector.Position * 100;
+      const positionDelta: number = Math.abs(currentPosition - this._lastPosition);
+      let speed: number = Math.floor(25000 * Math.pow(((vector.Duration * 90) / positionDelta), -1.05));
+
+      // Clamp speed on 0 <= x <= 95 so we don't break the launch.
+      speed = Math.min(Math.max(speed, 0), 95);
+
+      const positionGoal = Math.floor(((currentPosition / 99) * range) + ((99 - range) / 2));
+      this._lastPosition = positionGoal;
+      return await this.HandleFleshlightLaunchFW12Cmd(new Messages.FleshlightLaunchFW12Cmd(speed, positionGoal));
     }
 }
