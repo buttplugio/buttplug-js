@@ -1,14 +1,14 @@
 import { expect } from "chai";
 import "mocha";
 import { Server } from "mock-socket";
-import { IDeviceSubtypeManager } from "../../src/server/IDeviceSubtypeManager";
-import { ButtplugEmbeddedServerConnector } from "../../src/client/ButtplugEmbeddedServerConnector";
-import { ButtplugServer } from "../../src/server/ButtplugServer";
-import { IButtplugDevice } from "../../src/server/IButtplugDevice";
-import * as Messages from "../../src/core/Messages";
-import { FromJSON } from "../../src/core/MessageUtils";
+import { IDeviceSubtypeManager } from "../src/server/IDeviceSubtypeManager";
+import { ButtplugEmbeddedServerConnector } from "../src/client/ButtplugEmbeddedServerConnector";
+import { ButtplugServer } from "../src/server/ButtplugServer";
+import { IButtplugDevice } from "../src/server/IButtplugDevice";
+import * as Messages from "../src/core/Messages";
+import { FromJSON } from "../src/core/MessageUtils";
 import { EventEmitter } from "events";
-import { ButtplugClient } from "../../src/index";
+import { ButtplugClient } from "../src/index";
 
 class TestDevice extends EventEmitter implements IButtplugDevice {
   public get Name(): string {

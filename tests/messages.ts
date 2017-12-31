@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import "mocha";
-import * as Messages from "../../src/core/Messages";
-import { FromJSON } from "../../src/core/MessageUtils";
+import * as Messages from "../src/core/Messages";
+import { FromJSON } from "../src/core/MessageUtils";
 
 describe("Message", () => {
   it("Converts ok message to json correctly",
