@@ -150,5 +150,16 @@ describe("Client Tests", async () => {
     await bp.StartScanning();
     return p;
   });
-
+  it("Should receive disconnect event on disconnect", async () => {
+    const bplocal = new ButtplugClient("Test Client");
+    bplocal.addListener("disconnect", () => { res(); });
+    await bplocal.ConnectLocal();
+    bplocal.Disconnect();
+    return p;
+  });
+  it("Should receive disconnect event on websocket disconnect", async () => {
+    bp.addListener("disconnect", () => { res(); });
+    mockServer.close();
+    return p;
+  });
 });

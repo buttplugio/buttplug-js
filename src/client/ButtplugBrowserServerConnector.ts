@@ -36,7 +36,7 @@ export class ButtplugBrowserServerConnector extends EventEmitter implements IBut
     }
     this._connected = false;
     this._server = null;
-    this.emit("close");
+    this.emit("disconnect");
   }
 
   public Send = async (aMsg: ButtplugMessage) => {
