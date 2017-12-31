@@ -1,9 +1,9 @@
 import { expect } from "chai";
 import "mocha";
 import { Server } from "mock-socket";
-import { ButtplugClient } from "../../src/client/Client";
-import * as Messages from "../../src/core/Messages";
-import { FromJSON } from "../../src/core/MessageUtils";
+import { ButtplugClient } from "../src/client/Client";
+import * as Messages from "../src/core/Messages";
+import { FromJSON } from "../src/core/MessageUtils";
 
 describe("Client Tests", async () => {
   let mockServer: Server;
