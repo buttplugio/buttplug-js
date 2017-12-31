@@ -43,7 +43,7 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter implements I
     }
     this._ws!.close();
     this._ws = undefined;
-    this.emit("close");
+    this.emit("disconnect");
   }
 
   public Send = (aMsg: ButtplugMessage) => {
