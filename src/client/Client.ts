@@ -35,6 +35,7 @@ export class ButtplugClient extends EventEmitter {
     await aConnector.Connect();
     this._connector = aConnector;
     this._connector.addListener("message", this.ParseMessages);
+    this._connector.addListener("disconnect", () => this.emit("disconnect"));
     await this.InitializeConnection();
   }
 
