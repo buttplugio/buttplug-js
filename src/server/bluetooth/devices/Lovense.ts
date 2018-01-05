@@ -22,8 +22,12 @@ export class Lovense extends ButtplugBluetoothDevice {
                                   "LVS-B011": "Max",
                                   "LVS-L009": "Ambi",
                                   "LVS-S001": "Lush",
+                                  "LVS-Z36": "Hush",
                                   "LVS-Z001": "Hush",
-                                  "LVS-P36": "Edge"};
+                                  "LVS_Z001": "Hush",
+                                  "LVS-Domi37": "Domi",
+                                  "LVS-P36": "Edge",
+                                  "LVS-Edge37": "Edge"};
 
   public constructor(aDeviceImpl: IBluetoothDeviceImpl) {
     super(`Lovense ${aDeviceImpl.Name}`, aDeviceImpl);
@@ -74,7 +78,7 @@ export class LovenseRev1 {
 }
 
 export class LovenseRev2 {
-  public static readonly DeviceInfo = new BluetoothDeviceInfo(["LVS-S001", "LVS-Z001"],
+  public static readonly DeviceInfo = new BluetoothDeviceInfo(["LVS-S001", "LVS-Z001", "LVS_Z001"],
                                                               ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"],
                                                               {tx: "6e400002-b5a3-f393-e0a9-e50e24dcca9e",
                                                                // rx: "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
@@ -95,6 +99,24 @@ export class LovenseRev4 {
   public static readonly DeviceInfo = new BluetoothDeviceInfo(["LVS-Domi37"],
                                                               ["57300001-0023-4bd4-bbd5-a6920e4c5653"],
                                                               {tx: "57300002-0023-4bd4-bbd5-a6920e4c5653",
+                                                               // rx: "57300003-0023-4bd4-bbd5-a6920e4c5653"
+                                                              },
+                                                              Lovense.CreateInstance);
+}
+
+export class LovenseRev5 {
+  public static readonly DeviceInfo = new BluetoothDeviceInfo(["LVS-Z36"],
+                                                              ["5a300001-0024-4bd4-bbd5-a6920e4c5653"],
+                                                              {tx: "5a300002-0024-4bd4-bbd5-a6920e4c5653",
+                                                               // rx: "57300003-0023-4bd4-bbd5-a6920e4c5653"
+                                                              },
+                                                              Lovense.CreateInstance);
+}
+
+export class LovenseRev6 {
+  public static readonly DeviceInfo = new BluetoothDeviceInfo(["LVS-Edge37"],
+                                                              ["50300001-0023-4bd4-bbd5-a6920e4c5653"],
+                                                              {tx: "50300002-0023-4bd4-bbd5-a6920e4c5653",
                                                                // rx: "57300003-0023-4bd4-bbd5-a6920e4c5653"
                                                               },
                                                               Lovense.CreateInstance);
