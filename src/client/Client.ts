@@ -9,7 +9,7 @@ import * as Messages from "../core/Messages";
 import { CheckMessage } from "../core/MessageUtils";
 
 export class ButtplugClient extends EventEmitter {
-  protected _pingTimer: NodeJS.Timer;
+  protected _pingTimer: NodeJS.Timer | null = null;
   protected _connector: IButtplugConnector | null = null;
   protected _devices: Map<number, Device> = new Map();
   protected _counter: number = 1;
@@ -43,6 +43,7 @@ export class ButtplugClient extends EventEmitter {
 
   public Disconnect() {
     this.CheckConnector();
+    this.ShutdownConnection();
     this._connector!.Disconnect();
   }
 
@@ -142,8 +143,14 @@ export class ButtplugClient extends EventEmitter {
       // TODO: maybe store server name, do something with message template version?
       const ping = (msg as Messages.ServerInfo).MaxPingTime;
       if (ping > 0) {
-        this._pingTimer = setInterval(() =>
-                                      this.SendMessage(new Messages.Ping(this._counter)), Math.round(ping / 2));
+        this._pingTimer = setInterval(() => {
+          // If we've disconnected, stop trying to ping the server.
+          if (!this.Connected) {
+            this.ShutdownConnection();
+            return;
+          }
+          this.SendMessage(new Messages.Ping(this._counter));
+        } , Math.round(ping / 2));
       }
       return true;
     }
@@ -155,8 +162,9 @@ export class ButtplugClient extends EventEmitter {
   }
 
   protected ShutdownConnection = () => {
-    if (this._pingTimer) {
+    if (this._pingTimer !== null) {
       clearInterval(this._pingTimer);
+      this._pingTimer = null;
     }
   }
 
