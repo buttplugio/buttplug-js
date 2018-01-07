@@ -63,4 +63,13 @@ describe("Message", () => {
        const jsonStr = '[{"VibrateCmd":{"Id":2, "DeviceIndex": 3, "Speeds": [{ "Index": 0, "Speed": 100}, {"Index": 1, "Speed": 50}]}}]';
        expect(FromJSON(jsonStr)).toEqual([new Messages.VibrateCmd([{Index: 0, Speed: 100}, {Index: 1, Speed: 50}], 3, 2)]);
      });
+
+  it("Handles RequestServerInfo correctly across multiple schema versions",
+     () => {
+       const jsonV0Str = '[{"RequestServerInfo":{"Id":2,"ClientName":"TestClient"}}]';
+       expect(FromJSON(jsonV0Str)).toEqual([new Messages.RequestServerInfo("TestClient", 0, 2)]);
+       const jsonV1Str = '[{"RequestServerInfo":{"Id":2,"MessageVersion":1,"ClientName":"TestClient"}}]';
+       expect(FromJSON(jsonV1Str)).toEqual([new Messages.RequestServerInfo("TestClient", 1, 2)]);
+     });
+
 });
