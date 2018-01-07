@@ -11,12 +11,10 @@ import { CheckMessage } from "../core/MessageUtils";
 export class ButtplugClient extends EventEmitter {
   protected _pingTimer: NodeJS.Timer;
   protected _connector: IButtplugConnector | null = null;
-  protected _devices: Map<number, Device> = new Map();
-  protected _counter: number = 1;
-  protected _waitingMsgs: Map<number, (val: Messages.ButtplugMessage) => void> = new Map();
-  protected _clientName: string;
-  // TODO This should be set on schema load
-  protected _messageVersion: number = 1;
+  private _devices: Map<number, Device> = new Map();
+  private _counter: number = 1;
+  private _waitingMsgs: Map<number, (val: Messages.ButtplugMessage) => void> = new Map();
+  private _clientName: string;
 
   constructor(aClientName: string) {
     super();
@@ -92,7 +90,7 @@ export class ButtplugClient extends EventEmitter {
     if (dev === undefined) {
       return Promise.reject(new Error("Device not available."));
     }
-    if (dev.AllowedMessages.indexOf(aDeviceMsg.Type) === -1) {
+    if (dev.AllowedMessages.indexOf(aDeviceMsg.getType()) === -1) {
       return Promise.reject(new Error("Device does not accept that message type."));
     }
     aDeviceMsg.DeviceIndex = aDevice.Index;
@@ -100,17 +98,13 @@ export class ButtplugClient extends EventEmitter {
   }
 
   public ParseMessages = (aMsgs: Messages.ButtplugMessage[]) => {
-    this.ParseMessagesInternal(aMsgs);
-  }
-
-  protected ParseMessagesInternal(aMsgs: Messages.ButtplugMessage[]) {
-    for (const x of aMsgs) {
+    aMsgs.forEach((x: Messages.ButtplugMessage) => {
       if (x.Id > 0 && this._waitingMsgs.has(x.Id)) {
         const res = this._waitingMsgs.get(x.Id);
         res!(x);
         return;
       }
-      switch (x.Type) {
+      switch (x.getType()) {
       case "Log":
         this.emit("log", x);
         break;
@@ -132,22 +126,16 @@ export class ButtplugClient extends EventEmitter {
         this.emit("scanningfinished", x);
         break;
       }
-    }
+    });
   }
 
   protected InitializeConnection = async (): Promise<boolean> => {
     this.CheckConnector();
-    const msg = await this.SendMessage(new Messages.RequestServerInfo(this._clientName, 1));
-    switch (msg.Type) {
+    const msg = await this.SendMessage(new Messages.RequestServerInfo(this._clientName));
+    switch (msg.getType()) {
     case "ServerInfo": {
-      const serverinfo = (msg as Messages.ServerInfo);
       // TODO: maybe store server name, do something with message template version?
-      const ping = serverinfo.MaxPingTime;
-      if (serverinfo.MessageVersion < this._messageVersion) {
-        // Disconnect and throw an exception explaining the version mismatch problem.
-        this._connector!.Disconnect();
-        throw new Error("Server protocol version is older than client protocol version. Please update server.");
-      }
+      const ping = (msg as Messages.ServerInfo).MaxPingTime;
       if (ping > 0) {
         this._pingTimer = setInterval(() =>
                                       this.SendMessage(new Messages.Ping(this._counter)), Math.round(ping / 2));
@@ -155,11 +143,7 @@ export class ButtplugClient extends EventEmitter {
       return true;
     }
     case "Error": {
-      // Disconnect and throw an exception with the error message we got back.
-      // This will usually only error out if we have a version mismatch that the
-      // server has detected.
       this._connector!.Disconnect();
-      throw new Error((msg as Messages.Error).ErrorMessage);
     }
     }
     return false;
@@ -171,7 +155,13 @@ export class ButtplugClient extends EventEmitter {
     }
   }
 
-  protected async SendMessage(aMsg: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage> {
+  private CheckConnector() {
+    if (!this.Connected) {
+      throw new Error("ButtplugClient not connected");
+    }
+  }
+
+  private async SendMessage(aMsg: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage> {
     this.CheckConnector();
     // This will throw if our message is invalid
     CheckMessage(aMsg);
@@ -184,18 +174,12 @@ export class ButtplugClient extends EventEmitter {
     return await msgPromise;
   }
 
-  protected CheckConnector() {
-    if (!this.Connected) {
-      throw new Error("ButtplugClient not connected");
-    }
-  }
-
-  protected SendMsgExpectOk = async (aMsg: Messages.ButtplugMessage): Promise<void> => {
+  private SendMsgExpectOk = async (aMsg: Messages.ButtplugMessage): Promise<void> => {
     let res;
     let rej;
     const msg = await this.SendMessage(aMsg);
     const p = new Promise<void>((resolve, reject) => { res = resolve; rej = reject; });
-    switch (msg.Type) {
+    switch (msg.getType()) {
     case "Ok":
       res();
       break;

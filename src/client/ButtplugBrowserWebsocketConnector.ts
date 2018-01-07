@@ -50,7 +50,7 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter implements I
     if (!this.IsConnected()) {
       throw new Error("ButtplugClient not connected");
     }
-    this._ws!.send("[" + aMsg.asJSON() + "]");
+    this._ws!.send("[" + aMsg.toJSON() + "]");
   }
 
   private ParseIncomingMessage = (aEvent: MessageEvent) => {

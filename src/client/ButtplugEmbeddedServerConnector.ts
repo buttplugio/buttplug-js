@@ -9,10 +9,6 @@ export class ButtplugEmbeddedServerConnector extends EventEmitter implements IBu
   private _connected: boolean = false;
   private _server: ButtplugServer | null = null;
 
-  public set Server(server: ButtplugServer | null) {
-    this._server = server;
-  }
-
   public get Server(): ButtplugServer | null {
     return this._server;
   }
@@ -23,9 +19,7 @@ export class ButtplugEmbeddedServerConnector extends EventEmitter implements IBu
 
   public Connect = async (): Promise<void> => {
     this._connected = true;
-    if (this._server === null) {
-      this._server = new ButtplugServer();
-    }
+    this._server = new ButtplugServer();
     this._server.addListener("message", this.OnMessageReceived);
     return Promise.resolve();
   }

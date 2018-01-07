@@ -3,6 +3,15 @@ import { ButtplugBluetoothDevice } from "../ButtplugBluetoothDevice";
 import { IBluetoothDeviceImpl } from "../IBluetoothDeviceImpl";
 import * as Messages from "../../../core/Messages";
 
+// The TextEncoder polyfill is 600k (DAMNIT JOSH). Locally (for things like the
+// node device manager), not a huge deal. For web hosted libraries, we'll assume
+// the browser has it and ignore the require, since this class is only really
+// useful for browsers with WebBluetooth anyways.
+let TextEncoder = typeof(window) !== "undefined" ? (window as any).TextEncoder : undefined;
+if (TextEncoder === undefined) {
+  TextEncoder = require("text-encoding").TextEncoder;
+}
+
 export class Lovense extends ButtplugBluetoothDevice {
   public static CreateInstance(aDeviceImpl: IBluetoothDeviceImpl): Promise<ButtplugBluetoothDevice> {
     return Promise.resolve(new Lovense(aDeviceImpl));
@@ -19,28 +28,7 @@ export class Lovense extends ButtplugBluetoothDevice {
   public constructor(aDeviceImpl: IBluetoothDeviceImpl) {
     super(`Lovense ${aDeviceImpl.Name}`, aDeviceImpl);
     this.MsgFuncs.set(Messages.StopDeviceCmd.name, this.HandleStopDeviceCmd);
-    this.MsgFuncs.set(Messages.VibrateCmd.name, this.HandleVibrateCmd);
     this.MsgFuncs.set(Messages.SingleMotorVibrateCmd.name, this.HandleSingleMotorVibrateCmd);
-  }
-
-  public GetMessageSpecifications(): object {
-    return {
-      VibrateCmd: { FeatureCount: 1 },
-      SingleMotorVibrateCmd: {},
-      StopDeviceCmd: {},
-    };
-  }
-
-  private HandleVibrateCmd = async (aMsg: Messages.VibrateCmd): Promise<Messages.ButtplugMessage> => {
-    if (aMsg.Speeds.length !== 1) {
-      return new Messages.Error(`Lovense devices require VibrateCmd to have 1 speed command, ` +
-                                `${aMsg.Speeds.length} sent.`,
-                                Messages.ErrorClass.ERROR_DEVICE,
-                                aMsg.Id);
-    }
-    return await this.HandleSingleMotorVibrateCmd(new Messages.SingleMotorVibrateCmd(aMsg.Speeds[0].Speed,
-                                                                                     aMsg.DeviceIndex,
-                                                                                     aMsg.Id));
   }
 
   private HandleStopDeviceCmd = async (aMsg: Messages.StopDeviceCmd): Promise<Messages.ButtplugMessage> => {
@@ -50,7 +38,7 @@ export class Lovense extends ButtplugBluetoothDevice {
   private HandleSingleMotorVibrateCmd =
     async (aMsg: Messages.SingleMotorVibrateCmd): Promise<Messages.ButtplugMessage> => {
       const speed = Math.floor(20 * aMsg.Speed);
-      await this._deviceImpl.WriteValue("tx", Buffer.from("Vibrate:" + speed + ";"));
+      await this._deviceImpl.WriteValue("tx", new TextEncoder().encode("Vibrate:" + speed + ";"));
       return new Messages.Ok(aMsg.Id);
     }
 }

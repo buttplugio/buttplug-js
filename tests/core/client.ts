@@ -1,3 +1,5 @@
+import { expect } from "chai";
+import "mocha";
 import { Server } from "mock-socket";
 import { ButtplugClient } from "../../src/client/Client";
 import * as Messages from "../../src/core/Messages";
@@ -14,7 +16,7 @@ describe("Client Tests", async () => {
     p = new Promise((resolve, reject) => { res = resolve; rej = reject; });
     const serverInfo = (jsonmsg: string) => {
       const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
-      delaySend(new Messages.ServerInfo(0, 0, 0, 1, 0, "Test Server", msg.Id));
+      delaySend(new Messages.ServerInfo(0, 0, 0, 0, 0, "Test Server", msg.Id));
       mockServer.removeEventListener("message", serverInfo);
     };
     mockServer.on("message", serverInfo);
@@ -27,7 +29,7 @@ describe("Client Tests", async () => {
   });
 
   function delaySend(aMsg: Messages.ButtplugMessage) {
-    process.nextTick(() => mockServer.send("[" + aMsg.asJSON() + "]"));
+    process.nextTick(() => mockServer.send("[" + aMsg.toJSON() + "]"));
   }
 
   it("Should deal with request/reply correctly", async () => {
@@ -47,7 +49,7 @@ describe("Client Tests", async () => {
 
     const finishTestPromise = new Promise((resolve) => { res = resolve; });
     bp.on("log", (x) => {
-      expect(x).toEqual(new Messages.Log("Trace", "Test"));
+      expect(x).to.deep.equal(new Messages.Log("Trace", "Test"));
       res();
     });
     await bp.RequestLog("Trace");
@@ -57,11 +59,9 @@ describe("Client Tests", async () => {
   it("Should emit a device on addition", async () => {
     mockServer.on("message", (jsonmsg: string) => {
       const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
-      expect(msg.constructor.name).toEqual("StartScanning");
+      expect(msg.constructor.name).to.equal("StartScanning");
       delaySend(new Messages.Ok(msg.Id));
-      delaySend(new Messages.DeviceAdded(0,
-                                         "Test Device",
-                                         {SingleMotorVibrateCmd: {}}));
+      delaySend(new Messages.DeviceAdded(0, "Test Device", ["SingleMotorVibrateCmd"]));
     });
     bp.on("deviceadded", (x) => {
       delaySend(new Messages.DeviceRemoved(0));
@@ -76,11 +76,10 @@ describe("Client Tests", async () => {
   it("Should emit a device when device list request received with new devices", async () => {
     mockServer.on("message", (jsonmsg: string) => {
       const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
-      delaySend(
-        new Messages.DeviceList([new Messages.DeviceInfoWithSpecifications(0,
-                                                                           "Test Device",
-                                                                           {SingleMotorVibrateCmd: {}})],
-                                msg.Id));
+      delaySend(new Messages.DeviceList([new Messages.DeviceInfo(0,
+                                                                 "Test Device",
+                                                                 ["SingleMotorVibrateCmd"])],
+                                        msg.Id));
     });
     bp.on("deviceadded", (x) => {
       res();
@@ -106,13 +105,11 @@ describe("Client Tests", async () => {
     mockServer.on("message", (jsonmsg: string) => {
       const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
       delaySend(new Messages.Ok(msg.Id));
-      if (msg.Type === "StartScanning") {
-        delaySend(new Messages.DeviceAdded(0,
-                                           "Test Device",
-                                           {SingleMotorVibrateCmd: {}}));
+      if (msg.getType() === "StartScanning") {
+        delaySend(new Messages.DeviceAdded(0, "Test Device", ["SingleMotorVibrateCmd"]));
       }
       if (msg instanceof Messages.ButtplugDeviceMessage) {
-        expect(msg.DeviceIndex).toEqual(0);
+        expect(msg.DeviceIndex).to.equal(0);
       }
     });
     let device;
@@ -133,13 +130,11 @@ describe("Client Tests", async () => {
     mockServer.on("message", (jsonmsg: string) => {
       const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
       delaySend(new Messages.Ok(msg.Id));
-      if (msg.Type === "StartScanning") {
-        delaySend(new Messages.DeviceAdded(0,
-                                           "Test Device",
-                                           {SingleMotorVibrateCmd: {}}));
+      if (msg.getType() === "StartScanning") {
+        delaySend(new Messages.DeviceAdded(0, "Test Device", ["SingleMotorVibrateCmd"]));
       }
       if (msg instanceof Messages.ButtplugDeviceMessage) {
-        expect(msg.DeviceIndex).toEqual(0);
+        expect(msg.DeviceIndex).to.equal(0);
       }
     });
     let device;

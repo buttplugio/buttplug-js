@@ -39,7 +39,7 @@ export class DeviceManager extends EventEmitter {
 
   public SendMessage = async (aMessage: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage> => {
     const id = aMessage.Id;
-    switch (aMessage.Type) {
+    switch (aMessage.constructor.name) {
     case "StartScanning":
       for (const manager of this._subtypeManagers) {
         if (!manager.IsScanning()) {
@@ -68,7 +68,7 @@ export class DeviceManager extends EventEmitter {
     }
     const deviceMsg = (aMessage as Messages.ButtplugDeviceMessage);
     if (deviceMsg.DeviceIndex === undefined) {
-      return this._logger.LogAndError(`Message Type ${aMessage.Type} unhandled by this server.`,
+      return this._logger.LogAndError(`Message Type ${aMessage.constructor.name} unhandled by this server.`,
                                       Messages.ErrorClass.ERROR_MSG,
                                       id);
     }
@@ -78,8 +78,8 @@ export class DeviceManager extends EventEmitter {
                                       id);
     }
     const device = this._devices.get(deviceMsg.DeviceIndex)!;
-    if (device.GetAllowedMessageTypes().indexOf(aMessage.Type) < 0) {
-      return this._logger.LogAndError(`Device ${device.Name} does not take message type ${aMessage.Type}`,
+    if (device.GetAllowedMessageTypes().indexOf(aMessage.constructor.name) < 0) {
+      return this._logger.LogAndError(`Device ${device.Name} does not take message type ${aMessage.constructor.name}`,
                                       Messages.ErrorClass.ERROR_DEVICE,
                                       id);
     }
@@ -94,7 +94,7 @@ export class DeviceManager extends EventEmitter {
     device.addListener("deviceremoved", this.OnDeviceRemoved);
     ServerMessageHub.Instance.emitMessage(new Messages.DeviceAdded(deviceIndex,
                                                                    device.Name,
-                                                                   device.GetMessageSpecifications()));
+                                                                   device.GetAllowedMessageTypes()));
   }
 
   private OnDeviceRemoved = (device: IButtplugDevice) => {

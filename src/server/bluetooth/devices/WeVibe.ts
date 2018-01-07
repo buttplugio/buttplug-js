@@ -21,26 +21,6 @@ export class WeVibe extends ButtplugBluetoothDevice {
     this.MsgFuncs.set(Messages.SingleMotorVibrateCmd.name, this.HandleSingleMotorVibrateCmd);
   }
 
-  public GetMessageSpecifications(): object {
-    return {
-      VibrateCmd: { FeatureCount: 1 },
-      SingleMotorVibrateCmd: {},
-      StopDeviceCmd: {},
-    };
-  }
-
-  private HandleVibrateCmd = async (aMsg: Messages.VibrateCmd): Promise<Messages.ButtplugMessage> => {
-    if (aMsg.Speeds.length !== 1) {
-      return new Messages.Error(`WeVibe devices require VibrateCmd to have 1 speed command, ` +
-                                `${aMsg.Speeds.length} sent.`,
-                                Messages.ErrorClass.ERROR_DEVICE,
-                                aMsg.Id);
-    }
-    return await this.HandleSingleMotorVibrateCmd(new Messages.SingleMotorVibrateCmd(aMsg.Speeds[0].Speed,
-                                                                                     aMsg.DeviceIndex,
-                                                                                     aMsg.Id));
-  }
-
   private HandleStopDeviceCmd = async (aMsg: Messages.StopDeviceCmd): Promise<Messages.ButtplugMessage> => {
     return await this.HandleSingleMotorVibrateCmd(new Messages.SingleMotorVibrateCmd(0, aMsg.DeviceIndex, aMsg.Id));
   }

@@ -90,6 +90,27 @@ The example is also available for remix on
 [Glitch](https://glitch.com) at
 [https://how-to-buttplug.glitch.me/](https://how-to-buttplug.glitch.me/).
 
+## Using Buttplug With Webpack
+
+If you're going to build a web app in node using
+Webpack/Rollup/Browserify, you may want to exclude the "text-encoding"
+module. This module will add an extra 600k to your final bundle, but
+is required if you want Microsoft Edge/IE compatibility, or if you're
+building a native node app.
+
+For Webpack (assuming Webpack3):
+
+```javascript
+module.exports = {
+  //...
+  plugins: [
+    new webpack.IgnorePlugin(/text-encoding/),
+  ],
+  //...
+}
+
+```
+
 ## Helper Libraries
 
 - [buttplug-noble-device-manager](https://github.com/metafetish/buttplug-noble-device-manager) -
