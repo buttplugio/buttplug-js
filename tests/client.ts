@@ -9,6 +9,14 @@ describe("Client Tests", async () => {
   let p;
   let res;
   let rej;
+  class BPTestClient extends ButtplugClient {
+    constructor(ClientName: string) {
+      super(ClientName);
+    }
+    public get PingTimer() {
+      return this._pingTimer;
+    }
+  }
   beforeEach(async () => {
     mockServer = new Server("ws://localhost:6868");
     p = new Promise((resolve, reject) => { res = resolve; rej = reject; });
@@ -158,6 +166,16 @@ describe("Client Tests", async () => {
   it("Should receive disconnect event on websocket disconnect", async () => {
     bp.addListener("disconnect", () => { res(); });
     mockServer.close();
+    return p;
+  });
+  it("Should shut down ping timer on disconnect", async () => {
+    const bplocal = new BPTestClient("Test Client");
+    bplocal.addListener("disconnect", () => {
+      expect(bplocal.PingTimer).toEqual(null);
+      res();
+    });
+    await bplocal.ConnectLocal();
+    bplocal.Disconnect();
     return p;
   });
 });
