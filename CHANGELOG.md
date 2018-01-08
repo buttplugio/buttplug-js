@@ -1,3 +1,12 @@
+# Version 0.4.1 - 2018/01/07
+
+- Message types can now be accessed via getter ([Message].Type)
+- Client now emits "disconnect" event on disconnection (either user or server triggered)
+- Fixed bug where ping timer wouldn't stop on disconnect
+- Moved test system to jest
+- Removed dependency on text-encoding package
+- Added support for new Lovense devices (Hush with new firmware)
+
 # Version 0.4.0 - 2017/12/03
 
 - Add webpack config to build library for web on release
