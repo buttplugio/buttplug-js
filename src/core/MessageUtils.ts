@@ -4,7 +4,11 @@ import * as ajv from "ajv";
 import * as Messages from "./Messages";
 const buttplugSchema = require("../../dependencies/buttplug-schema/schema/buttplug-schema.json");
 
-const jsonValidator = ajv().compile(buttplugSchema);
+// Since we're still using the draft 06 schema, we now have to specifically add
+// it to ajv, which defaults to 7.
+const validator = new ajv();
+validator.addMetaSchema(require("ajv/lib/refs/json-schema-draft-06.json"));
+const jsonValidator = validator.compile(buttplugSchema);
 
 export function CheckMessage(aMsgObj: Messages.ButtplugMessage) {
   if (jsonValidator([aMsgObj.toProtocolFormat()])) {
