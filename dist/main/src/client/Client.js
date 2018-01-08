@@ -48,17 +48,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var events_1 = require("events");
 var Device_1 = require("../core/Device");
 var ButtplugBrowserWebsocketConnector_1 = require("./ButtplugBrowserWebsocketConnector");
-var ButtplugBrowserServerConnector_1 = require("./ButtplugBrowserServerConnector");
+var ButtplugEmbeddedServerConnector_1 = require("./ButtplugEmbeddedServerConnector");
 var Messages = require("../core/Messages");
 var MessageUtils_1 = require("../core/MessageUtils");
 var ButtplugClient = /** @class */ (function (_super) {
     __extends(ButtplugClient, _super);
     function ButtplugClient(aClientName) {
         var _this = _super.call(this) || this;
+        _this._pingTimer = null;
         _this._connector = null;
         _this._devices = new Map();
         _this._counter = 1;
         _this._waitingMsgs = new Map();
+        // TODO This should be set on schema load
+        _this._messageVersion = 1;
         _this.ConnectWebsocket = function (aAddress) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -72,7 +75,7 @@ var ButtplugClient = /** @class */ (function (_super) {
         _this.ConnectLocal = function () { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.Connect(new ButtplugBrowserServerConnector_1.ButtplugBrowserServerConnector())];
+                    case 0: return [4 /*yield*/, this.Connect(new ButtplugEmbeddedServerConnector_1.ButtplugEmbeddedServerConnector())];
                     case 1:
                         _a.sent();
                         return [2 /*return*/];
@@ -80,6 +83,7 @@ var ButtplugClient = /** @class */ (function (_super) {
             });
         }); };
         _this.Connect = function (aConnector) { return __awaiter(_this, void 0, void 0, function () {
+            var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, aConnector.Connect()];
@@ -87,6 +91,7 @@ var ButtplugClient = /** @class */ (function (_super) {
                         _a.sent();
                         this._connector = aConnector;
                         this._connector.addListener("message", this.ParseMessages);
+                        this._connector.addListener("disconnect", function () { return _this.emit("disconnect"); });
                         return [4 /*yield*/, this.InitializeConnection()];
                     case 2:
                         _a.sent();
@@ -148,35 +153,7 @@ var ButtplugClient = /** @class */ (function (_super) {
             });
         }); };
         _this.ParseMessages = function (aMsgs) {
-            aMsgs.forEach(function (x) {
-                if (x.Id > 0 && _this._waitingMsgs.has(x.Id)) {
-                    var res = _this._waitingMsgs.get(x.Id);
-                    res(x);
-                    return;
-                }
-                switch (x.getType()) {
-                    case "Log":
-                        _this.emit("log", x);
-                        break;
-                    case "DeviceAdded":
-                        var addedMsg = x;
-                        var addedDevice = Device_1.Device.fromMsg(addedMsg);
-                        _this._devices.set(addedMsg.DeviceIndex, addedDevice);
-                        _this.emit("deviceadded", addedDevice);
-                        break;
-                    case "DeviceRemoved":
-                        var removedMsg = x;
-                        if (_this._devices.has(removedMsg.DeviceIndex)) {
-                            var removedDevice = _this._devices.get(removedMsg.DeviceIndex);
-                            _this._devices.delete(removedMsg.DeviceIndex);
-                            _this.emit("deviceremoved", removedDevice);
-                        }
-                        break;
-                    case "ScanningFinished":
-                        _this.emit("scanningfinished", x);
-                        break;
-                }
-            });
+            _this.ParseMessagesInternal(aMsgs);
         };
         _this.InitializeConnection = function () { return __awaiter(_this, void 0, void 0, function () {
             var _this = this;
@@ -185,15 +162,20 @@ var ButtplugClient = /** @class */ (function (_super) {
                 switch (_a.label) {
                     case 0:
                         this.CheckConnector();
-                        return [4 /*yield*/, this.SendMessage(new Messages.RequestServerInfo(this._clientName))];
+                        return [4 /*yield*/, this.SendMessage(new Messages.RequestServerInfo(this._clientName, 1))];
                     case 1:
                         msg = _a.sent();
-                        switch (msg.getType()) {
+                        switch (msg.Type) {
                             case "ServerInfo": {
                                 ping = msg.MaxPingTime;
                                 if (ping > 0) {
                                     this._pingTimer = setInterval(function () {
-                                        return _this.SendMessage(new Messages.Ping(_this._counter));
+                                        // If we've disconnected, stop trying to ping the server.
+                                        if (!_this.Connected) {
+                                            _this.ShutdownConnection();
+                                            return;
+                                        }
+                                        _this.SendMessage(new Messages.Ping(_this._counter));
                                     }, Math.round(ping / 2));
                                 }
                                 return [2 /*return*/, true];
@@ -207,8 +189,9 @@ var ButtplugClient = /** @class */ (function (_super) {
             });
         }); };
         _this.ShutdownConnection = function () {
-            if (_this._pingTimer) {
+            if (_this._pingTimer !== null) {
                 clearInterval(_this._pingTimer);
+                _this._pingTimer = null;
             }
         };
         _this.SendMsgExpectOk = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
@@ -219,7 +202,7 @@ var ButtplugClient = /** @class */ (function (_super) {
                     case 1:
                         msg = _a.sent();
                         p = new Promise(function (resolve, reject) { res = resolve; rej = reject; });
-                        switch (msg.getType()) {
+                        switch (msg.Type) {
                             case "Ok":
                                 res();
                                 break;
@@ -243,6 +226,7 @@ var ButtplugClient = /** @class */ (function (_super) {
     });
     ButtplugClient.prototype.Disconnect = function () {
         this.CheckConnector();
+        this.ShutdownConnection();
         this._connector.Disconnect();
     };
     ButtplugClient.prototype.getDevices = function () {
@@ -266,7 +250,7 @@ var ButtplugClient = /** @class */ (function (_super) {
                         if (dev === undefined) {
                             return [2 /*return*/, Promise.reject(new Error("Device not available."))];
                         }
-                        if (dev.AllowedMessages.indexOf(aDeviceMsg.getType()) === -1) {
+                        if (dev.AllowedMessages.indexOf(aDeviceMsg.Type) === -1) {
                             return [2 /*return*/, Promise.reject(new Error("Device does not accept that message type."))];
                         }
                         aDeviceMsg.DeviceIndex = aDevice.Index;
@@ -276,9 +260,36 @@ var ButtplugClient = /** @class */ (function (_super) {
             });
         });
     };
-    ButtplugClient.prototype.CheckConnector = function () {
-        if (!this.Connected) {
-            throw new Error("ButtplugClient not connected");
+    ButtplugClient.prototype.ParseMessagesInternal = function (aMsgs) {
+        for (var _i = 0, aMsgs_1 = aMsgs; _i < aMsgs_1.length; _i++) {
+            var x = aMsgs_1[_i];
+            if (x.Id > 0 && this._waitingMsgs.has(x.Id)) {
+                var res = this._waitingMsgs.get(x.Id);
+                res(x);
+                return;
+            }
+            switch (x.Type) {
+                case "Log":
+                    this.emit("log", x);
+                    break;
+                case "DeviceAdded":
+                    var addedMsg = x;
+                    var addedDevice = Device_1.Device.fromMsg(addedMsg);
+                    this._devices.set(addedMsg.DeviceIndex, addedDevice);
+                    this.emit("deviceadded", addedDevice);
+                    break;
+                case "DeviceRemoved":
+                    var removedMsg = x;
+                    if (this._devices.has(removedMsg.DeviceIndex)) {
+                        var removedDevice = this._devices.get(removedMsg.DeviceIndex);
+                        this._devices.delete(removedMsg.DeviceIndex);
+                        this.emit("deviceremoved", removedDevice);
+                    }
+                    break;
+                case "ScanningFinished":
+                    this.emit("scanningfinished", x);
+                    break;
+            }
         }
     };
     ButtplugClient.prototype.SendMessage = function (aMsg) {
@@ -300,6 +311,11 @@ var ButtplugClient = /** @class */ (function (_super) {
                 }
             });
         });
+    };
+    ButtplugClient.prototype.CheckConnector = function () {
+        if (!this.Connected) {
+            throw new Error("ButtplugClient not connected");
+        }
     };
     return ButtplugClient;
 }(events_1.EventEmitter));

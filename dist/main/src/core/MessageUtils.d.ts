@@ -1,3 +1,3 @@
-import { ButtplugMessage } from "./Messages";
-export declare function CheckMessage(aMsgObj: ButtplugMessage): void;
-export declare function FromJSON(str: any): ButtplugMessage[];
+import * as Messages from "./Messages";
+export declare function CheckMessage(aMsgObj: Messages.ButtplugMessage): void;
+export declare function FromJSON(str: any): Messages.ButtplugMessage[];

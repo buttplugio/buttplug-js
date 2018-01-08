@@ -4,12 +4,13 @@ import { Device } from "../core/Device";
 import { IButtplugConnector } from "./IButtplugConnector";
 import * as Messages from "../core/Messages";
 export declare class ButtplugClient extends EventEmitter {
-    protected _pingTimer: NodeJS.Timer;
+    protected _pingTimer: NodeJS.Timer | null;
     protected _connector: IButtplugConnector | null;
-    private _devices;
-    private _counter;
-    private _waitingMsgs;
-    private _clientName;
+    protected _devices: Map<number, Device>;
+    protected _counter: number;
+    protected _waitingMsgs: Map<number, (val: Messages.ButtplugMessage) => void>;
+    protected _clientName: string;
+    protected _messageVersion: number;
     constructor(aClientName: string);
     ConnectWebsocket: (aAddress: string) => Promise<void>;
     ConnectLocal: () => Promise<void>;
@@ -24,9 +25,10 @@ export declare class ButtplugClient extends EventEmitter {
     StopAllDevices: () => Promise<void>;
     SendDeviceMessage(aDevice: Device, aDeviceMsg: Messages.ButtplugDeviceMessage): Promise<void>;
     ParseMessages: (aMsgs: Messages.ButtplugMessage[]) => void;
+    protected ParseMessagesInternal(aMsgs: Messages.ButtplugMessage[]): void;
     protected InitializeConnection: () => Promise<boolean>;
     protected ShutdownConnection: () => void;
-    private CheckConnector();
-    private SendMessage(aMsg);
-    private SendMsgExpectOk;
+    protected SendMessage(aMsg: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage>;
+    protected CheckConnector(): void;
+    protected SendMsgExpectOk: (aMsg: Messages.ButtplugMessage) => Promise<void>;
 }

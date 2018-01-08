@@ -2,6 +2,20 @@ import "reflect-metadata";
 export declare class ButtplugMessage {
     Id: number;
     constructor(Id: number);
+    /***
+     * Returns the message type name
+     *
+     * Usually, the message type name will be the same as the message class
+     * constructor, so the constructor name is used by default. However, in
+     * instances where a message has different versions (i.e. DeviceAddedVersion0
+     * and DeviceAddedVersion1), we will need to override this to set the message
+     * name.
+     */
+    readonly Type: string;
+    /***
+     * [DEPRECATED] Function version of the this.Type getter
+     *
+     */
     getType(): string;
     toJSON(): string;
     toProtocolFormat(): object;

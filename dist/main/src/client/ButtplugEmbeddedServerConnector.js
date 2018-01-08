@@ -47,16 +47,18 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var events_1 = require("events");
 var ButtplugServer_1 = require("../server/ButtplugServer");
-var ButtplugBrowserServerConnector = /** @class */ (function (_super) {
-    __extends(ButtplugBrowserServerConnector, _super);
-    function ButtplugBrowserServerConnector() {
+var ButtplugEmbeddedServerConnector = /** @class */ (function (_super) {
+    __extends(ButtplugEmbeddedServerConnector, _super);
+    function ButtplugEmbeddedServerConnector() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this._connected = false;
         _this._server = null;
         _this.Connect = function () { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 this._connected = true;
-                this._server = new ButtplugServer_1.ButtplugServer();
+                if (this._server === null) {
+                    this._server = new ButtplugServer_1.ButtplugServer();
+                }
                 this._server.addListener("message", this.OnMessageReceived);
                 return [2 /*return*/, Promise.resolve()];
             });
@@ -67,7 +69,7 @@ var ButtplugBrowserServerConnector = /** @class */ (function (_super) {
             }
             _this._connected = false;
             _this._server = null;
-            _this.emit("close");
+            _this.emit("disconnect");
         };
         _this.Send = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
             var returnMsg;
@@ -90,10 +92,20 @@ var ButtplugBrowserServerConnector = /** @class */ (function (_super) {
         };
         return _this;
     }
-    ButtplugBrowserServerConnector.prototype.IsConnected = function () {
+    Object.defineProperty(ButtplugEmbeddedServerConnector.prototype, "Server", {
+        get: function () {
+            return this._server;
+        },
+        set: function (server) {
+            this._server = server;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ButtplugEmbeddedServerConnector.prototype.IsConnected = function () {
         return this._connected;
     };
-    return ButtplugBrowserServerConnector;
+    return ButtplugEmbeddedServerConnector;
 }(events_1.EventEmitter));
-exports.ButtplugBrowserServerConnector = ButtplugBrowserServerConnector;
-//# sourceMappingURL=ButtplugBrowserServerConnector.js.map
+exports.ButtplugEmbeddedServerConnector = ButtplugEmbeddedServerConnector;
+//# sourceMappingURL=ButtplugEmbeddedServerConnector.js.map

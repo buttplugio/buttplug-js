@@ -58,11 +58,11 @@ var ButtplugDevice = /** @class */ (function (_super) {
         };
         _this.ParseMessage = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                if (!this.MsgFuncs.has(aMsg.getType())) {
-                    return [2 /*return*/, new Messages.Error("${this._name} cannot handle message of type ${aMsg.getType()} )", Messages.ErrorClass.ERROR_MSG, aMsg.Id)];
+                if (!this.MsgFuncs.has(aMsg.Type)) {
+                    return [2 /*return*/, new Messages.Error("${this._name} cannot handle message of type ${aMsg.Type} )", Messages.ErrorClass.ERROR_MSG, aMsg.Id)];
                 }
                 // Boy non-null assurance in the middle of functions looks weird.
-                return [2 /*return*/, this.MsgFuncs.get(aMsg.getType())(aMsg)];
+                return [2 /*return*/, this.MsgFuncs.get(aMsg.Type)(aMsg)];
             });
         }); };
         return _this;

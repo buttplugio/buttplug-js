@@ -17,16 +17,35 @@ var ButtplugMessage = /** @class */ (function () {
     function ButtplugMessage(Id) {
         this.Id = Id;
     }
+    Object.defineProperty(ButtplugMessage.prototype, "Type", {
+        /***
+         * Returns the message type name
+         *
+         * Usually, the message type name will be the same as the message class
+         * constructor, so the constructor name is used by default. However, in
+         * instances where a message has different versions (i.e. DeviceAddedVersion0
+         * and DeviceAddedVersion1), we will need to override this to set the message
+         * name.
+         */
+        get: function () {
+            return this.constructor.name;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /***
+     * [DEPRECATED] Function version of the this.Type getter
+     *
+     */
     ButtplugMessage.prototype.getType = function () {
-        return this.constructor.name;
+        return this.Type;
     };
     ButtplugMessage.prototype.toJSON = function () {
         return JSON.stringify(this.toProtocolFormat());
     };
     ButtplugMessage.prototype.toProtocolFormat = function () {
         var jsonObj = {};
-        var instance = this.constructor;
-        jsonObj[instance.name] = class_transformer_1.classToPlain(this);
+        jsonObj[this.Type] = class_transformer_1.classToPlain(this);
         return jsonObj;
     };
     return ButtplugMessage;

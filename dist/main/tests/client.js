@@ -1,4 +1,14 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -36,19 +46,31 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
-var chai_1 = require("chai");
-require("mocha");
 var mock_socket_1 = require("mock-socket");
-var Client_1 = require("../../src/client/Client");
-var Messages = require("../../src/core/Messages");
-var MessageUtils_1 = require("../../src/core/MessageUtils");
+var Client_1 = require("../src/client/Client");
+var Messages = require("../src/core/Messages");
+var MessageUtils_1 = require("../src/core/MessageUtils");
 describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, function () {
     var _this = this;
     function delaySend(aMsg) {
         process.nextTick(function () { return mockServer.send("[" + aMsg.toJSON() + "]"); });
     }
-    var mockServer, bp, p, res, rej;
+    var mockServer, bp, p, res, rej, BPTestClient;
     return __generator(this, function (_a) {
+        BPTestClient = /** @class */ (function (_super) {
+            __extends(BPTestClient, _super);
+            function BPTestClient(ClientName) {
+                return _super.call(this, ClientName) || this;
+            }
+            Object.defineProperty(BPTestClient.prototype, "PingTimer", {
+                get: function () {
+                    return this._pingTimer;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return BPTestClient;
+        }(Client_1.ButtplugClient));
         beforeEach(function () { return __awaiter(_this, void 0, void 0, function () {
             var serverInfo;
             return __generator(this, function (_a) {
@@ -103,7 +125,7 @@ describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, f
                         });
                         finishTestPromise = new Promise(function (resolve) { res = resolve; });
                         bp.on("log", function (x) {
-                            chai_1.expect(x).to.deep.equal(new Messages.Log("Trace", "Test"));
+                            expect(x).toEqual(new Messages.Log("Trace", "Test"));
                             res();
                         });
                         return [4 /*yield*/, bp.RequestLog("Trace")];
@@ -119,7 +141,7 @@ describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, f
                     case 0:
                         mockServer.on("message", function (jsonmsg) {
                             var msg = MessageUtils_1.FromJSON(jsonmsg)[0];
-                            chai_1.expect(msg.constructor.name).to.equal("StartScanning");
+                            expect(msg.constructor.name).toEqual("StartScanning");
                             delaySend(new Messages.Ok(msg.Id));
                             delaySend(new Messages.DeviceAdded(0, "Test Device", ["SingleMotorVibrateCmd"]));
                         });
@@ -186,7 +208,7 @@ describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, f
                                 delaySend(new Messages.DeviceAdded(0, "Test Device", ["SingleMotorVibrateCmd"]));
                             }
                             if (msg instanceof Messages.ButtplugDeviceMessage) {
-                                chai_1.expect(msg.DeviceIndex).to.equal(0);
+                                expect(msg.DeviceIndex).toEqual(0);
                             }
                         });
                         bp.on("deviceadded", function (x) { return __awaiter(_this, void 0, void 0, function () {
@@ -233,7 +255,7 @@ describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, f
                                 delaySend(new Messages.DeviceAdded(0, "Test Device", ["SingleMotorVibrateCmd"]));
                             }
                             if (msg instanceof Messages.ButtplugDeviceMessage) {
-                                chai_1.expect(msg.DeviceIndex).to.equal(0);
+                                expect(msg.DeviceIndex).toEqual(0);
                             }
                         });
                         bp.on("deviceadded", function (x) { return __awaiter(_this, void 0, void 0, function () {
@@ -261,6 +283,46 @@ describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, f
                         return [4 /*yield*/, bp.StartScanning()];
                     case 1:
                         _a.sent();
+                        return [2 /*return*/, p];
+                }
+            });
+        }); });
+        it("Should receive disconnect event on disconnect", function () { return __awaiter(_this, void 0, void 0, function () {
+            var bplocal;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        bplocal = new Client_1.ButtplugClient("Test Client");
+                        bplocal.addListener("disconnect", function () { res(); });
+                        return [4 /*yield*/, bplocal.ConnectLocal()];
+                    case 1:
+                        _a.sent();
+                        bplocal.Disconnect();
+                        return [2 /*return*/, p];
+                }
+            });
+        }); });
+        it("Should receive disconnect event on websocket disconnect", function () { return __awaiter(_this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                bp.addListener("disconnect", function () { res(); });
+                mockServer.close();
+                return [2 /*return*/, p];
+            });
+        }); });
+        it("Should shut down ping timer on disconnect", function () { return __awaiter(_this, void 0, void 0, function () {
+            var bplocal;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        bplocal = new BPTestClient("Test Client");
+                        bplocal.addListener("disconnect", function () {
+                            expect(bplocal.PingTimer).toEqual(null);
+                            res();
+                        });
+                        return [4 /*yield*/, bplocal.ConnectLocal()];
+                    case 1:
+                        _a.sent();
+                        bplocal.Disconnect();
                         return [2 /*return*/, p];
                 }
             });

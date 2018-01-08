@@ -80,7 +80,7 @@ var ButtplugBrowserWebsocketConnector = /** @class */ (function (_super) {
             }
             _this._ws.close();
             _this._ws = undefined;
-            _this.emit("close");
+            _this.emit("disconnect");
         };
         _this.Send = function (aMsg) {
             if (!_this.IsConnected()) {

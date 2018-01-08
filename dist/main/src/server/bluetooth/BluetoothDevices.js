@@ -13,6 +13,8 @@ var BluetoothDevices = /** @class */ (function () {
             Lovense_1.LovenseRev2.DeviceInfo,
             Lovense_1.LovenseRev3.DeviceInfo,
             Lovense_1.LovenseRev4.DeviceInfo,
+            Lovense_1.LovenseRev5.DeviceInfo,
+            Lovense_1.LovenseRev6.DeviceInfo,
             VorzeA10Cyclone_1.VorzeA10Cyclone.DeviceInfo,
             WeVibe_1.WeVibe.DeviceInfo];
     };

@@ -70,7 +70,7 @@ var DeviceManager = /** @class */ (function (_super) {
                 switch (_e.label) {
                     case 0:
                         id = aMessage.Id;
-                        _a = aMessage.constructor.name;
+                        _a = aMessage.Type;
                         switch (_a) {
                             case "StartScanning": return [3 /*break*/, 1];
                             case "StopScanning": return [3 /*break*/, 8];
@@ -116,14 +116,14 @@ var DeviceManager = /** @class */ (function (_super) {
                     case 11:
                         deviceMsg = aMessage;
                         if (deviceMsg.DeviceIndex === undefined) {
-                            return [2 /*return*/, this._logger.LogAndError("Message Type " + aMessage.constructor.name + " unhandled by this server.", Messages.ErrorClass.ERROR_MSG, id)];
+                            return [2 /*return*/, this._logger.LogAndError("Message Type " + aMessage.Type + " unhandled by this server.", Messages.ErrorClass.ERROR_MSG, id)];
                         }
                         if (!this._devices.has(deviceMsg.DeviceIndex)) {
                             return [2 /*return*/, this._logger.LogAndError("Device Index " + deviceMsg.DeviceIndex + " does not exist", Messages.ErrorClass.ERROR_DEVICE, id)];
                         }
                         device = this._devices.get(deviceMsg.DeviceIndex);
-                        if (device.GetAllowedMessageTypes().indexOf(aMessage.constructor.name) < 0) {
-                            return [2 /*return*/, this._logger.LogAndError("Device " + device.Name + " does not take message type " + aMessage.constructor.name, Messages.ErrorClass.ERROR_DEVICE, id)];
+                        if (device.GetAllowedMessageTypes().indexOf(aMessage.Type) < 0) {
+                            return [2 /*return*/, this._logger.LogAndError("Device " + device.Name + " does not take message type " + aMessage.Type, Messages.ErrorClass.ERROR_DEVICE, id)];
                         }
                         return [4 /*yield*/, device.ParseMessage(deviceMsg)];
                     case 12: return [2 /*return*/, _e.sent()];

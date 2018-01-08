@@ -77,10 +77,10 @@ var ButtplugServer = /** @class */ (function (_super) {
                 if (this._pingTimedOut) {
                     return [2 /*return*/, this._logger.LogAndError("Ping timed out.", Messages.ErrorClass.ERROR_MSG, id)];
                 }
-                if (!this._receivedRequestServerInfo && aMessage.constructor.name !== "RequestServerInfo") {
+                if (!this._receivedRequestServerInfo && aMessage.Type !== "RequestServerInfo") {
                     return [2 /*return*/, this._logger.LogAndError("RequestServerInfo must be first message received by server.", Messages.ErrorClass.ERROR_INIT, id)];
                 }
-                switch (aMessage.constructor.name) {
+                switch (aMessage.Type) {
                     case "RequestLog":
                         logmsg = aMessage;
                         if (logmsg.LogLevel === Logging_1.LogLevel[Logging_1.LogLevel.Off]) {
