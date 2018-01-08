@@ -5,9 +5,17 @@ import { ButtplugMessage } from "../core/Messages";
 import { IButtplugConnector } from "./IButtplugConnector";
 import { ButtplugServer } from "../server/ButtplugServer";
 
-export class ButtplugBrowserServerConnector extends EventEmitter implements IButtplugConnector {
+export class ButtplugEmbeddedServerConnector extends EventEmitter implements IButtplugConnector {
   private _connected: boolean = false;
   private _server: ButtplugServer | null = null;
+
+  public set Server(server: ButtplugServer | null) {
+    this._server = server;
+  }
+
+  public get Server(): ButtplugServer | null {
+    return this._server;
+  }
 
   public IsConnected(): boolean {
     return this._connected;
@@ -15,7 +23,9 @@ export class ButtplugBrowserServerConnector extends EventEmitter implements IBut
 
   public Connect = async (): Promise<void> => {
     this._connected = true;
-    this._server = new ButtplugServer();
+    if (this._server === null) {
+      this._server = new ButtplugServer();
+    }
     this._server.addListener("message", this.OnMessageReceived);
     return Promise.resolve();
   }
@@ -26,7 +36,7 @@ export class ButtplugBrowserServerConnector extends EventEmitter implements IBut
     }
     this._connected = false;
     this._server = null;
-    this.emit("close");
+    this.emit("disconnect");
   }
 
   public Send = async (aMsg: ButtplugMessage) => {

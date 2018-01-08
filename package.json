@@ -1,6 +1,6 @@
 {
   "name": "buttplug",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Javascript library for accessing buttplug servers via node.js or web sockets",
   "repository": {
     "type": "git",
@@ -30,61 +30,53 @@
     "tslint": "tslint -c tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
     "tslint:fix": "tslint -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\"",
     "pretest": "yarn build:main",
-    "test": "nyc mocha \"tests/**/*.ts\"",
-    "posttest": "nyc report && codecov -f coverage/*.json"
+    "test": "jest && remap-istanbul --input coverage/coverage-final.json --type json --output coverage/coverage-final.json && istanbul report",
+    "posttest": "codecov"
   },
   "dependencies": {
-    "ajv": "^5.5.1",
+    "ajv": "^6.0.0",
     "class-transformer": "^0.1.8",
-    "reflect-metadata": "^0.1.10",
-    "text-encoding": "^0.6.4"
+    "reflect-metadata": "^0.1.10"
   },
   "devDependencies": {
-    "@types/chai": "^4.0.7",
-    "@types/mocha": "^2.2.44",
-    "@types/node": "^8.0.54",
-    "@types/text-encoding": "^0.0.32",
-    "@types/web-bluetooth": "^0.0.3",
-    "chai": "^4.1.2",
+    "@types/jest": "^22.0.1",
+    "@types/node": "^8.5.7",
+    "@types/web-bluetooth": "^0.0.4",
     "codecov": "^3.0.0",
     "copyfiles": "^1.2.0",
-    "cross-env": "^5.1.1",
-    "fork-ts-checker-webpack-plugin": "^0.2.9",
-    "mocha": "^4.0.1",
+    "cross-env": "^5.1.3",
+    "fork-ts-checker-webpack-plugin": "^0.2.10",
+    "istanbul": "^0.4.5",
+    "jest": "^22.0.4",
     "mock-socket": "^7.1.0",
-    "nyc": "^11.3.0",
+    "remap-istanbul": "^0.9.5",
     "trash": "^4.2.1",
     "trash-cli": "^1.4.0",
+    "ts-jest": "^22.0.1",
     "ts-loader": "^3.2.0",
-    "ts-node": "^3.3.0",
+    "ts-node": "^4.1.0",
     "tslint": "^5.8.0",
     "typedoc": "^0.9.0",
     "typescript": "^2.6.2",
-    "uglifyjs-webpack-plugin": "^1.1.2",
-    "webpack": "^3.9.1",
+    "uglifyjs-webpack-plugin": "^1.1.6",
+    "webpack": "^3.10.0",
     "yarn": "^1.3.2"
   },
-  "nyc": {
-    "extension": [
-      ".ts"
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "js"
     ],
-    "include": [
-      "src/**/*.ts"
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "testMatch": [
+      "<rootDir>/tests/**/*.ts"
     ],
-    "exclude": [
-      "**/*.d.ts"
+    "coverageDirectory": "./coverage/",
+    "coverageReporters": [
+      "json"
     ],
-    "require": [
-      "ts-node/register"
-    ],
-    "reporter": [
-      "text",
-      "json",
-      "html"
-    ],
-    "sourceMap": true,
-    "instrument": true,
-    "all": true,
-    "cache": false
+    "collectCoverage": true
   }
 }
