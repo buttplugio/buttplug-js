@@ -1,3 +1,7 @@
+# Version 0.4.2 - 2018/01/08
+
+- Added support for new Lovense devices (Domi with new firmware)
+
 # Version 0.4.1 - 2018/01/07
 
 - Message types can now be accessed via getter ([Message].Type)
