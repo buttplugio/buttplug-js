@@ -89,6 +89,7 @@ var Lovense = /** @class */ (function (_super) {
         "LVS-Z001": "Hush",
         "LVS_Z001": "Hush",
         "LVS-Domi37": "Domi",
+        "LVS-Domi38": "Domi",
         "LVS-P36": "Edge",
         "LVS-Edge37": "Edge" };
     return Lovense;
@@ -121,7 +122,7 @@ exports.LovenseRev3 = LovenseRev3;
 var LovenseRev4 = /** @class */ (function () {
     function LovenseRev4() {
     }
-    LovenseRev4.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["LVS-Domi37"], ["57300001-0023-4bd4-bbd5-a6920e4c5653"], { tx: "57300002-0023-4bd4-bbd5-a6920e4c5653",
+    LovenseRev4.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["LVS-Domi37", "LVS-Domi38"], ["57300001-0023-4bd4-bbd5-a6920e4c5653"], { tx: "57300002-0023-4bd4-bbd5-a6920e4c5653",
     }, Lovense.CreateInstance);
     return LovenseRev4;
 }());
