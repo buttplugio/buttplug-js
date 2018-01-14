@@ -19,14 +19,9 @@ export class DeviceManager extends EventEmitter {
     if (typeof(window) !== "undefined" &&
         typeof(window.navigator) !== "undefined" &&
         (navigator as any).bluetooth) {
-      const manager = new WebBluetoothDeviceManager();
-      manager.addListener("deviceadded", this.OnDeviceAdded);
-      manager.addListener("deviceremoved", this.OnDeviceRemoved);
-      this._subtypeManagers.push(manager);
-    }
-    // TODO: If we have no managers by this point, throw, because we'll never load a device
-    for (const manager of this._subtypeManagers) {
-      manager.addListener("scanningfinished", this.OnScanningFinished);
+      this.AddDeviceManager(new WebBluetoothDeviceManager());
+    } else {
+      this._logger.Info("DeviceManager: Not adding WebBluetooth Manager, no capabilities found.");
     }
   }
 
@@ -43,6 +38,13 @@ export class DeviceManager extends EventEmitter {
     switch (aMessage.Type) {
     case "StartScanning":
       this._logger.Debug(`Device Manager: Starting scan`);
+      if (this._subtypeManagers.length === 0) {
+        // If we have no managers by this point, return an error, because we'll
+        // have nothing to scan with.
+        return this._logger.LogAndError("No device managers available, cannot scan.",
+                                        Messages.ErrorClass.ERROR_DEVICE,
+                                        id);
+      }
       for (const manager of this._subtypeManagers) {
         if (!manager.IsScanning()) {
           try {
