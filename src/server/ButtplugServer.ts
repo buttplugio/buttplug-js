@@ -3,7 +3,7 @@ import { DeviceManager } from "./DeviceManager";
 import { EventEmitter } from "events";
 import { ServerMessageHub } from "./ServerMessageHub";
 import { IDeviceSubtypeManager } from "./IDeviceSubtypeManager";
-import { ButtplugLogger, LogLevel, LogMessage } from "../core/Logging";
+import { ButtplugLogger, ButtplugLogLevel, LogMessage } from "../core/Logging";
 
 export class ButtplugServer extends EventEmitter {
 
@@ -19,14 +19,12 @@ export class ButtplugServer extends EventEmitter {
   private _pingTimedOut: boolean = false;
   private _receivedRequestServerInfo: boolean = false;
   private _logger = ButtplugLogger.Logger;
-  private _outgoingLogLevel = LogLevel.Off;
+  private _outgoingLogLevel = ButtplugLogLevel.Off;
 
   constructor(private _serverName: string = "Buttplug JS Internal Server",
               private _maxPingTime: number = 0) {
     super();
-    this._logger.MaximumLogLevel = LogLevel.Debug;
-    this._logger.SetConsoleLogging(true);
-    this._logger.Info(`Starting Buttplug Server: ${this._serverName}`);
+    this._logger.Info(`Server: Starting Buttplug Server: ${this._serverName}`);
     this._deviceManager = new DeviceManager();
     ServerMessageHub.Instance.addListener("message", this.OnOutgoingMessage);
   }
@@ -53,15 +51,14 @@ export class ButtplugServer extends EventEmitter {
     }
     switch (aMessage.Type) {
     case "RequestLog":
-      // TODO: If requested log level is higher than what we have specified,
-      // what happens?
       const logmsg: Messages.RequestLog = aMessage as Messages.RequestLog;
-      if (logmsg.LogLevel === LogLevel[LogLevel.Off]) {
+      this._logger.Debug(`Server: RequestLog received for level ${logmsg.LogLevel}`);
+      if (logmsg.LogLevel === ButtplugLogLevel[ButtplugLogLevel.Off]) {
         this._logger.removeListener("log", this.OnLogMessage);
-      } else if (this._outgoingLogLevel === LogLevel.Off) {
+      } else if (this._outgoingLogLevel === ButtplugLogLevel.Off) {
         this._logger.addListener("log", this.OnLogMessage);
       }
-      this._outgoingLogLevel = LogLevel[logmsg.LogLevel];
+      this._outgoingLogLevel = ButtplugLogLevel[logmsg.LogLevel];
       return new Messages.Ok(logmsg.Id);
     case "Ping":
       // TODO: Implement Ping
@@ -86,7 +83,7 @@ export class ButtplugServer extends EventEmitter {
     if (aMsg.LogLevel > this._outgoingLogLevel) {
       return;
     }
-    this.OnOutgoingMessage(new Messages.Log(LogLevel[aMsg.LogLevel], aMsg.Message));
+    this.OnOutgoingMessage(new Messages.Log(ButtplugLogLevel[aMsg.LogLevel], aMsg.Message));
   }
 
   private OnOutgoingMessage = (aMsg: Messages.ButtplugMessage) => {

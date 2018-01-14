@@ -1,4 +1,4 @@
-import { LogLevel, ButtplugLogger } from "../src/core/Logging";
+import { ButtplugLogLevel, ButtplugLogger } from "../src/core/Logging";
 
 class TestLogger extends ButtplugLogger {
   public static ResetLogger() {
@@ -36,7 +36,7 @@ describe("Logging Tests", async () => {
     let rej;
     let count = 0;
     const p = new Promise((rs, rj) => { res = rs; rej = rj; });
-    logger.MaximumLogLevel = LogLevel.Trace;
+    logger.MaximumEventLogLevel = ButtplugLogLevel.Trace;
 
     logger.addListener("log", (msg) => {
       count++;
@@ -55,7 +55,6 @@ describe("Logging Tests", async () => {
   });
 
   it("Should deal with different log levels for console and events", (() => {
-    logger.ConsoleLogging = true;
     jest.spyOn(global.console, "log");
     let res;
     let rej;
@@ -63,8 +62,8 @@ describe("Logging Tests", async () => {
     logger.addListener("log", (msg) => {
       rej();
     });
-    logger.MaximumLogLevel = LogLevel.Debug;
-    logger.MaximumConsoleLogLevel = LogLevel.Trace;
+    logger.MaximumEventLogLevel = ButtplugLogLevel.Debug;
+    logger.MaximumConsoleLogLevel = ButtplugLogLevel.Trace;
     logger.Trace("test");
     expect(console.log).toBeCalled();
     res();

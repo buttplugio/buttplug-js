@@ -4,6 +4,7 @@ export * from "./client/ButtplugEmbeddedServerConnector";
 export * from "./core/Messages";
 export * from "./core/MessageUtils";
 export * from "./core/Device";
+export * from "./core/Logging";
 export * from "./server/ButtplugServer";
 export * from "./server/ButtplugDevice";
 export * from "./server/IDeviceSubtypeManager";
