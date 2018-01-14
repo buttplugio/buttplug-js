@@ -1,3 +1,4 @@
+import { ButtplugLogger } from "../../core/Logging";
 import { DeviceAdded } from "../../core/Messages";
 import { IDeviceSubtypeManager } from "../IDeviceSubtypeManager";
 import { BluetoothDevices } from "./BluetoothDevices";

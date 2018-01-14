@@ -1,5 +1,6 @@
 "use strict";
 
+import { ButtplugLogger } from "../core/Logging";
 import { EventEmitter } from "events";
 import { Device } from "../core/Device";
 import { IButtplugConnector } from "./IButtplugConnector";
@@ -15,27 +16,32 @@ export class ButtplugClient extends EventEmitter {
   protected _counter: number = 1;
   protected _waitingMsgs: Map<number, (val: Messages.ButtplugMessage) => void> = new Map();
   protected _clientName: string;
+  protected _logger = ButtplugLogger.Logger;
   // TODO This should be set on schema load
   protected _messageVersion: number = 1;
 
   constructor(aClientName: string) {
     super();
     this._clientName = aClientName;
+    this._logger.Debug(`ButtplugClient: Client ${aClientName} created.`);
   }
 
   public ConnectWebsocket = async (aAddress: string) => {
+    this._logger.Info(`ButtplugClient: Connecting to ${aAddress}`);
     await this.Connect(new ButtplugBrowserWebsocketConnector(aAddress));
   }
 
   public ConnectLocal = async () => {
+    this._logger.Info(`ButtplugClient: Connecting to In-Browser Server`);
     await this.Connect(new ButtplugEmbeddedServerConnector());
   }
 
   public Connect = async (aConnector: IButtplugConnector) => {
+    this._logger.Info(`ButtplugClient: Connecting using ${aConnector.constructor.name}`);
     await aConnector.Connect();
     this._connector = aConnector;
     this._connector.addListener("message", this.ParseMessages);
-    this._connector.addListener("disconnect", () => this.emit("disconnect"));
+    this._connector.addListener("disconnect", this.DisconnectHandler);
     await this.InitializeConnection();
   }
 
@@ -44,6 +50,7 @@ export class ButtplugClient extends EventEmitter {
   }
 
   public Disconnect() {
+    this._logger.Debug(`ButtplugClient: Disconnect called`);
     this.CheckConnector();
     this.ShutdownConnection();
     this._connector!.Disconnect();
@@ -51,12 +58,16 @@ export class ButtplugClient extends EventEmitter {
 
   public RequestDeviceList = async () => {
     this.CheckConnector();
+    this._logger.Debug(`ButtplugClient: ReceiveDeviceList called`);
     const deviceList = (await this.SendMessage(new Messages.RequestDeviceList())) as Messages.DeviceList;
     deviceList.Devices.forEach((d) => {
       if (!this._devices.has(d.DeviceIndex)) {
         const device = Device.fromMsg(d);
+        this._logger.Debug(`ButtplugClient: Adding Device: ${device}`);
         this._devices.set(d.DeviceIndex, device);
         this.emit("deviceadded", device);
+      } else {
+        this._logger.Debug(`ButtplugClient: Device already added: ${d}`);
       }
     });
   }
@@ -73,18 +84,22 @@ export class ButtplugClient extends EventEmitter {
   }
 
   public StartScanning = async (): Promise<void> => {
+    this._logger.Debug(`ButtplugClient: StartScanning called`);
     return await this.SendMsgExpectOk(new Messages.StartScanning());
   }
 
   public StopScanning = async (): Promise<void> => {
+    this._logger.Debug(`ButtplugClient: StopScanning called`);
     return await this.SendMsgExpectOk(new Messages.StopScanning());
   }
 
   public RequestLog = async (aLogLevel: string): Promise<void> => {
+    this._logger.Debug(`ButtplugClient: RequestLog called with level ${aLogLevel}`);
     return await this.SendMsgExpectOk(new Messages.RequestLog(aLogLevel));
   }
 
   public StopAllDevices = async (): Promise<void> => {
+    this._logger.Debug(`ButtplugClient: StopAllDevices`);
     return await this.SendMsgExpectOk(new Messages.StopAllDevices());
   }
 
@@ -92,10 +107,12 @@ export class ButtplugClient extends EventEmitter {
     this.CheckConnector();
     const dev = this._devices.get(aDevice.Index);
     if (dev === undefined) {
+      this._logger.Error(`Device ${aDevice} not available.`);
       return Promise.reject(new Error("Device not available."));
     }
     if (dev.AllowedMessages.indexOf(aDeviceMsg.Type) === -1) {
-      return Promise.reject(new Error("Device does not accept that message type."));
+      this._logger.Error(`Device ${aDevice} does not accept message type ${aDeviceMsg.Type}.`);
+      return Promise.reject(new Error(`Device ${aDevice} does not accept message type ${aDeviceMsg.Type}.`));
     }
     aDeviceMsg.DeviceIndex = aDevice.Index;
     return await this.SendMsgExpectOk(aDeviceMsg);
@@ -103,6 +120,11 @@ export class ButtplugClient extends EventEmitter {
 
   public ParseMessages = (aMsgs: Messages.ButtplugMessage[]) => {
     this.ParseMessagesInternal(aMsgs);
+  }
+
+  protected DisconnectHandler = () => {
+    this._logger.Info(`ButtplugClient: Disconnect event receieved.`);
+    this.emit("disconnect");
   }
 
   protected ParseMessagesInternal(aMsgs: Messages.ButtplugMessage[]) {
@@ -142,6 +164,8 @@ export class ButtplugClient extends EventEmitter {
     const msg = await this.SendMessage(new Messages.RequestServerInfo(this._clientName, 1));
     switch (msg.Type) {
     case "ServerInfo": {
+      const info = msg as Messages.ServerInfo;
+      this._logger.Info(`ButtplugClient: Connected to Server ${info.ServerName}`);
       // TODO: maybe store server name, do something with message template version?
       const ping = (msg as Messages.ServerInfo).MaxPingTime;
       if (ping > 0) {
@@ -157,6 +181,8 @@ export class ButtplugClient extends EventEmitter {
       return true;
     }
     case "Error": {
+      const err = msg as Messages.Error;
+      this._logger.Error(`ButtplugClient: Cannot connect to server. ${err.ErrorMessage}`);
       this._connector!.Disconnect();
     }
     }

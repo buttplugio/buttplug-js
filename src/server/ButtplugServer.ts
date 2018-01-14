@@ -35,7 +35,7 @@ export class ButtplugServer extends EventEmitter {
 
   public SendMessage = async (aMessage: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage> => {
     const id = aMessage.Id;
-    this._logger.Trace(`Got Message: ${aMessage}`);
+    this._logger.Trace(`Server: Got Message: ${aMessage}`);
     if (id === 0) {
       return this._logger.LogAndError("Message Id 0 is reserved for outgoing system messages. Please use another Id.",
                                       Messages.ErrorClass.ERROR_MSG,
@@ -64,11 +64,13 @@ export class ButtplugServer extends EventEmitter {
       // TODO: Implement Ping
       return new Messages.Ok(aMessage.Id);
     case "RequestServerInfo":
+      this._logger.Debug(`Server: RequestServerInfo received.`);
       this._receivedRequestServerInfo = true;
       // TODO: Figure out how to encode this from the package version?
       // TODO: Figure out how to pull message schema version.
       return new Messages.ServerInfo(0, 0, 9, 1, this._maxPingTime, this._serverName, id);
     case "Test":
+      this._logger.Debug(`Server: Test received.`);
       const testmsg = aMessage as Messages.Test;
       return new Messages.Test(testmsg.TestString, aMessage.Id);
     }
