@@ -4,7 +4,8 @@ var webpack = require('webpack');
 var ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
-module.exports = {
+module.exports = [{
+  name: "library",
   // Needed so tsconfig can be found
   context: __dirname,
   stats: {
@@ -19,7 +20,7 @@ module.exports = {
   entry: './src/index.ts',
   output: {
     path: path.resolve(__dirname, './dist/web'),
-    filename: 'buttplug.js',
+    filename: 'buttplug',
     libraryTarget: 'umd',
     library: {
       root: "Buttplug",
@@ -57,34 +58,112 @@ module.exports = {
   node: {
     fs: 'empty'
   }
-};
-
-if (process.env.NODE_ENV === 'production') {
-  module.exports.devtool = '#source-map';
-  module.exports.output.filename = 'buttplug.min.js';
-  // http://vue-loader.vuejs.org/en/workflow/production.html
-  module.exports.plugins = (module.exports.plugins || []).concat([
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: '"production"'
-      }
-    }),
-    new webpack.optimize.ModuleConcatenationPlugin(),
-    new UglifyJSPlugin({
-      sourceMap: true,
-      uglifyOptions: {
-        mangle: {
-          keep_classnames: true,
-          keep_fnames: true
-        },
-        compress: {
-          keep_fnames: true,
-          warnings: false
+}, {
+  name: "devtools",
+  // Needed so tsconfig can be found
+  context: __dirname,
+  stats: {
+    assets: false,
+    colors: true,
+    version: false,
+    hash: true,
+    timings: true,
+    chunks: false,
+    chunkModules: false
+  },
+  entry: './src/devtools/index.ts',
+  output: {
+    path: path.resolve(__dirname, './dist/web'),
+    filename: 'buttplug-devtools',
+    libraryTarget: 'umd',
+    library: {
+      root: "ButtplugDevTools",
+      amd: "buttplug-devtools-amd",
+      commonjs: "buttplug-devtools-commonjs"
+    }
+  },
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+        exclude: /node_modules|vue\/src|tests|example/,
+        loader: 'ts-loader',
+        options: {
+          transpileOnly: true
+        }
+      },
+      {
+        test: /\.(png|jpg|gif|svg|eot|woff|woff2|ttf)$/,
+        loader: 'url-loader',
+        options: {
+          limit: 100000,
+          name: '[name].[ext]?[hash]'
+        }
+      },
+      {
+        test: /\.css$/,
+        loader: ['style-loader', 'css-loader']
+      },
+      {
+        test: /\.(html)$/,
+        use: {
+          loader: 'html-loader'
         }
       }
-    }),
-    new webpack.LoaderOptionsPlugin({
-      minimize: true
-    })
-  ]);
+    ]
+  },
+  resolve: {
+    extensions: [".ts", ".js", ".json"]
+  },
+  devServer: {
+    historyApiFallback: true,
+    noInfo: true
+  },
+  performance: {
+    hints: false
+  },
+  devtool: 'inline-source-map',
+  plugins: [
+    new webpack.NamedModulesPlugin(),
+    new ForkTsCheckerWebpackPlugin(),
+  ],
+  node: {
+    fs: 'empty'
+  }
+}];
+
+if (process.env.NODE_ENV === 'production') {
+  for (const m of module.exports) {
+    m.devtool = '#source-map';
+    m.output.filename = `${m.output.filename}.min.js`;
+    // http://vue-loader.vuejs.org/en/workflow/production.html
+    m.plugins = (module.exports.plugins || []).concat([
+      new webpack.DefinePlugin({
+        'process.env': {
+          NODE_ENV: '"production"'
+        }
+      }),
+      new webpack.optimize.ModuleConcatenationPlugin(),
+      new UglifyJSPlugin({
+        sourceMap: true,
+        uglifyOptions: {
+          mangle: {
+            keep_classnames: true,
+            keep_fnames: true
+          },
+          compress: {
+            keep_fnames: true,
+            warnings: false
+          }
+        }
+      }),
+      new webpack.LoaderOptionsPlugin({
+        minimize: true
+      })
+    ]);
+  }
+} else {
+  for (const m of module.exports) {
+    m.output.filename = `${m.output.filename}.js`;
+  }
 }
