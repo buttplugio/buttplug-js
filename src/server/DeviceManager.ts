@@ -14,7 +14,7 @@ export class DeviceManager extends EventEmitter {
 
   constructor() {
     super();
-    this._logger.Debug("Starting Device Manager");
+    this._logger.Debug("DeviceManager: Starting Device Manager");
     // If we have a bluetooth object on navigator, load the device manager
     if (typeof(window) !== "undefined" &&
         typeof(window.navigator) !== "undefined" &&
@@ -37,7 +37,7 @@ export class DeviceManager extends EventEmitter {
     const id = aMessage.Id;
     switch (aMessage.Type) {
     case "StartScanning":
-      this._logger.Debug(`Device Manager: Starting scan`);
+      this._logger.Debug(`DeviceManager: Starting scan`);
       if (this._subtypeManagers.length === 0) {
         // If we have no managers by this point, return an error, because we'll
         // have nothing to scan with.
@@ -46,7 +46,7 @@ export class DeviceManager extends EventEmitter {
                                         id);
       }
       for (const manager of this._subtypeManagers) {
-        if (!manager.IsScanning()) {
+        if (!manager.IsScanning) {
           try {
             await manager.StartScanning();
           } catch (e) {
@@ -58,7 +58,7 @@ export class DeviceManager extends EventEmitter {
     case "StopScanning":
       this._logger.Debug(`DeviceManager: Stopping scan`);
       for (const manager of this._subtypeManagers) {
-        if (manager.IsScanning()) {
+        if (manager.IsScanning) {
           manager.StopScanning();
         }
       }
@@ -124,7 +124,7 @@ export class DeviceManager extends EventEmitter {
   private OnScanningFinished = () => {
     this._logger.Debug(`DeviceManager: Scanning Finished.`);
     for (const manager of this._subtypeManagers) {
-      if (manager.IsScanning()) {
+      if (manager.IsScanning) {
         return;
       }
     }
