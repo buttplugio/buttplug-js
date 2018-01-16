@@ -116,6 +116,7 @@ export class DeviceManager extends EventEmitter {
     if (deviceIndex === null) {
       return;
     }
+    device.removeAllListeners("deviceremoved");
     this._devices.delete(deviceIndex);
     this._logger.Info(`DeviceManager: Device Removed: ${device.Name} (${deviceIndex})`);
     ServerMessageHub.Instance.emitMessage(new Messages.DeviceRemoved(deviceIndex));
