@@ -125,7 +125,7 @@ module.exports = [{
   devtool: 'inline-source-map',
   plugins: [
     new webpack.NamedModulesPlugin(),
-    new ForkTsCheckerWebpackPlugin(),
+    new ForkTsCheckerWebpackPlugin()
   ],
   node: {
     fs: 'empty'
@@ -161,6 +161,9 @@ if (process.env.NODE_ENV === 'production') {
         minimize: true
       })
     ]);
+    if (m.name == "devtools") {
+      m.plugins.concat([new webpack.IgnorePlugin(/core.*|server.*|client.*/)]);
+    }
   }
 } else {
   for (const m of module.exports) {
