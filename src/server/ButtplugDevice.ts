@@ -24,7 +24,7 @@ export class ButtplugDevice extends EventEmitter implements IButtplugDevice {
                                 Messages.ErrorClass.ERROR_MSG,
                                 aMsg.Id);
     }
-    // Boy non-null assurance in the middle of functions looks weird.
+    // Non-null assurance in the middle of functions looks weird.
     return this.MsgFuncs.get(aMsg.Type)!(aMsg);
   }
 }

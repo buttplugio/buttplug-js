@@ -14,23 +14,19 @@ export class DeviceManager extends EventEmitter {
 
   constructor() {
     super();
-    this._logger.Debug("Starting Device Manager");
+    this._logger.Debug("DeviceManager: Starting Device Manager");
     // If we have a bluetooth object on navigator, load the device manager
     if (typeof(window) !== "undefined" &&
         typeof(window.navigator) !== "undefined" &&
         (navigator as any).bluetooth) {
-      const manager = new WebBluetoothDeviceManager();
-      manager.addListener("deviceadded", this.OnDeviceAdded);
-      manager.addListener("deviceremoved", this.OnDeviceRemoved);
-      this._subtypeManagers.push(manager);
-    }
-    // TODO: If we have no managers by this point, throw, because we'll never load a device
-    for (const manager of this._subtypeManagers) {
-      manager.addListener("scanningfinished", this.OnScanningFinished);
+      this.AddDeviceManager(new WebBluetoothDeviceManager());
+    } else {
+      this._logger.Info("DeviceManager: Not adding WebBluetooth Manager, no capabilities found.");
     }
   }
 
   public AddDeviceManager = (aManager: IDeviceSubtypeManager) => {
+    this._logger.Info(`DeviceManager: Adding Device Manager ${aManager.constructor.name}`);
     this._subtypeManagers.push(aManager);
     aManager.addListener("deviceadded", this.OnDeviceAdded);
     aManager.addListener("deviceremoved", this.OnDeviceRemoved);
@@ -41,8 +37,16 @@ export class DeviceManager extends EventEmitter {
     const id = aMessage.Id;
     switch (aMessage.Type) {
     case "StartScanning":
+      this._logger.Debug(`DeviceManager: Starting scan`);
+      if (this._subtypeManagers.length === 0) {
+        // If we have no managers by this point, return an error, because we'll
+        // have nothing to scan with.
+        return this._logger.LogAndError("No device managers available, cannot scan.",
+                                        Messages.ErrorClass.ERROR_DEVICE,
+                                        id);
+      }
       for (const manager of this._subtypeManagers) {
-        if (!manager.IsScanning()) {
+        if (!manager.IsScanning) {
           try {
             await manager.StartScanning();
           } catch (e) {
@@ -52,18 +56,21 @@ export class DeviceManager extends EventEmitter {
       }
       return new Messages.Ok(id);
     case "StopScanning":
+      this._logger.Debug(`DeviceManager: Stopping scan`);
       for (const manager of this._subtypeManagers) {
-        if (manager.IsScanning()) {
+        if (manager.IsScanning) {
           manager.StopScanning();
         }
       }
       return new Messages.Ok(id);
     case "StopAllDevices":
+      this._logger.Debug(`DeviceManager: Stopping all devices`);
       this._devices.forEach((deviceObj, index) => {
         deviceObj.ParseMessage(new Messages.StopDeviceCmd());
       });
       return new Messages.Ok(id);
     case "RequestDeviceList":
+      this._logger.Debug(`DeviceManager: Sending device list`);
       return new Messages.DeviceList([], id);
     }
     const deviceMsg = (aMessage as Messages.ButtplugDeviceMessage);
@@ -83,14 +90,15 @@ export class DeviceManager extends EventEmitter {
                                       Messages.ErrorClass.ERROR_DEVICE,
                                       id);
     }
+    this._logger.Trace(`DeviceManager: Sending ${deviceMsg.Type} to ${device.Name} (${deviceMsg.Id})`);
     return await device.ParseMessage(deviceMsg);
   }
 
   private OnDeviceAdded = (device: IButtplugDevice) => {
-    this._logger.Debug(`Device Added: ${device.Name}`);
     const deviceIndex = this._deviceCounter;
     this._deviceCounter += 1;
     this._devices.set(deviceIndex, device);
+    this._logger.Info(`DeviceManager: Device Added: ${device.Name} (${deviceIndex})`);
     device.addListener("deviceremoved", this.OnDeviceRemoved);
     ServerMessageHub.Instance.emitMessage(new Messages.DeviceAdded(deviceIndex,
                                                                    device.Name,
@@ -98,7 +106,6 @@ export class DeviceManager extends EventEmitter {
   }
 
   private OnDeviceRemoved = (device: IButtplugDevice) => {
-    this._logger.Debug(`Device Removed: ${device.Name}`);
     let deviceIndex: number | null = null;
     for (const entry of Array.from(this._devices.entries())) {
       if (entry[1] === device) {
@@ -109,13 +116,16 @@ export class DeviceManager extends EventEmitter {
     if (deviceIndex === null) {
       return;
     }
+    device.removeAllListeners("deviceremoved");
     this._devices.delete(deviceIndex);
+    this._logger.Info(`DeviceManager: Device Removed: ${device.Name} (${deviceIndex})`);
     ServerMessageHub.Instance.emitMessage(new Messages.DeviceRemoved(deviceIndex));
   }
 
   private OnScanningFinished = () => {
+    this._logger.Debug(`DeviceManager: Scanning Finished.`);
     for (const manager of this._subtypeManagers) {
-      if (manager.IsScanning()) {
+      if (manager.IsScanning) {
         return;
       }
     }

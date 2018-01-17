@@ -1,3 +1,4 @@
+import { ButtplugLogger } from "../../core/Logging";
 import { DeviceAdded } from "../../core/Messages";
 import { IDeviceSubtypeManager } from "../IDeviceSubtypeManager";
 import { BluetoothDevices } from "./BluetoothDevices";
@@ -48,12 +49,11 @@ export class WebBluetoothDeviceManager extends EventEmitter implements IDeviceSu
     this.emit("scanningfinished");
   }
 
-  public StopScanning(): boolean {
+  public StopScanning() {
     // noop. We can only scan via the browser dialog, and we can't cancel that from outside.
-    return true;
   }
 
-  public IsScanning(): boolean {
+  public get IsScanning(): boolean {
     // noop.
     return false;
   }

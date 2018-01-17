@@ -1,3 +1,10 @@
+# Version 0.4.3 - 2018/01/16
+
+- Fix many logging bugs
+- Add more log messages to library
+- Add devtools module, with log viewer, test device manager, and device visualizer
+- Add Node websocket connector and server, for native server capabilities
+
 # Version 0.4.2 - 2018/01/08
 
 - Added support for new Lovense devices (Domi with new firmware)

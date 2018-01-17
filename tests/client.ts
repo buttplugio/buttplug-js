@@ -178,4 +178,11 @@ describe("Client Tests", async () => {
     bplocal.Disconnect();
     return p;
   });
+  it("Should get error on scanning when no device managers available.", async () => {
+    const bplocal = new ButtplugClient("Test Client");
+    bplocal.addListener("disconnect", () => { res(); });
+    await bplocal.ConnectLocal();
+    await expect(bplocal.StartScanning()).rejects.toThrow();
+    bplocal.Disconnect();
+  });
 });
