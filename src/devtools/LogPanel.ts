@@ -13,7 +13,7 @@ export class LogPanel {
       headerTitle: "Buttplug Log",
       position:    "center-top 0 80",
       contentSize: "650 250",
-      callback: function() {
+      callback() {
         this.content.innerHTML = logPanelHTML;
         LogPanel._panel = new LogPanel(logger);
       },

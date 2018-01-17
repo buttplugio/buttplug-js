@@ -34,6 +34,7 @@
     "posttest": "codecov"
   },
   "dependencies": {
+    "@tweenjs/tween.js": "^17.1.1",
     "ajv": "^6.0.0",
     "class-transformer": "^0.1.8",
     "jspanel4": "^4.0.0-beta.2",
@@ -42,6 +43,7 @@
   "devDependencies": {
     "@types/jest": "^22.0.1",
     "@types/node": "^8.5.7",
+    "@types/tween.js": "^16.9.0",
     "@types/web-bluetooth": "^0.0.4",
     "codecov": "^3.0.0",
     "copyfiles": "^1.2.0",
