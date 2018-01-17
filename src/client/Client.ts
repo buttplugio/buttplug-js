@@ -20,7 +20,7 @@ export class ButtplugClient extends EventEmitter {
   // TODO This should be set on schema load
   protected _messageVersion: number = 1;
 
-  constructor(aClientName: string) {
+  constructor(aClientName: string = "Generic Buttplug Client") {
     super();
     this._clientName = aClientName;
     this._logger.Debug(`ButtplugClient: Client ${aClientName} created.`);
