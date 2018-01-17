@@ -19,7 +19,6 @@ var TestDeviceManager = /** @class */ (function (_super) {
         _this._isScanning = false;
         _this._testVibrationDevice = new TestDevice_1.TestDevice("Test Vibration Device", true, false);
         _this._testLinearDevice = new TestDevice_1.TestDevice("Test Linear Device", false, true);
-        console.log("Creating new test device manager!");
         return _this;
     }
     TestDeviceManager.Get = function () {
