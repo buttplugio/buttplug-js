@@ -19,7 +19,6 @@ export class TestDeviceManager extends EventEmitter implements IDeviceSubtypeMan
 
   protected constructor() {
     super();
-    console.log("Creating new test device manager!");
   }
 
   public StartScanning(): void {
