@@ -62,7 +62,7 @@ var ButtplugServer = /** @class */ (function (_super) {
         _this._pingTimedOut = false;
         _this._receivedRequestServerInfo = false;
         _this._logger = Logging_1.ButtplugLogger.Logger;
-        _this._outgoingLogLevel = Logging_1.LogLevel.Off;
+        _this._outgoingLogLevel = Logging_1.ButtplugLogLevel.Off;
         _this.AddDeviceManager = function (aManager) {
             _this._deviceManager.AddDeviceManager(aManager);
         };
@@ -70,7 +70,7 @@ var ButtplugServer = /** @class */ (function (_super) {
             var id, logmsg, testmsg;
             return __generator(this, function (_a) {
                 id = aMessage.Id;
-                this._logger.Trace("Got Message: " + aMessage);
+                this._logger.Trace("Server: Got Message: " + aMessage);
                 if (id === 0) {
                     return [2 /*return*/, this._logger.LogAndError("Message Id 0 is reserved for outgoing system messages. Please use another Id.", Messages.ErrorClass.ERROR_MSG, id)];
                 }
@@ -83,23 +83,26 @@ var ButtplugServer = /** @class */ (function (_super) {
                 switch (aMessage.Type) {
                     case "RequestLog":
                         logmsg = aMessage;
-                        if (logmsg.LogLevel === Logging_1.LogLevel[Logging_1.LogLevel.Off]) {
+                        this._logger.Debug("Server: RequestLog received for level " + logmsg.LogLevel);
+                        if (logmsg.LogLevel === Logging_1.ButtplugLogLevel[Logging_1.ButtplugLogLevel.Off]) {
                             this._logger.removeListener("log", this.OnLogMessage);
                         }
-                        else if (this._outgoingLogLevel === Logging_1.LogLevel.Off) {
+                        else if (this._outgoingLogLevel === Logging_1.ButtplugLogLevel.Off) {
                             this._logger.addListener("log", this.OnLogMessage);
                         }
-                        this._outgoingLogLevel = Logging_1.LogLevel[logmsg.LogLevel];
+                        this._outgoingLogLevel = Logging_1.ButtplugLogLevel[logmsg.LogLevel];
                         return [2 /*return*/, new Messages.Ok(logmsg.Id)];
                     case "Ping":
                         // TODO: Implement Ping
                         return [2 /*return*/, new Messages.Ok(aMessage.Id)];
                     case "RequestServerInfo":
+                        this._logger.Debug("Server: RequestServerInfo received.");
                         this._receivedRequestServerInfo = true;
                         // TODO: Figure out how to encode this from the package version?
                         // TODO: Figure out how to pull message schema version.
                         return [2 /*return*/, new Messages.ServerInfo(0, 0, 9, 1, this._maxPingTime, this._serverName, id)];
                     case "Test":
+                        this._logger.Debug("Server: Test received.");
                         testmsg = aMessage;
                         return [2 /*return*/, new Messages.Test(testmsg.TestString, aMessage.Id)];
                 }
@@ -115,14 +118,12 @@ var ButtplugServer = /** @class */ (function (_super) {
             if (aMsg.LogLevel > _this._outgoingLogLevel) {
                 return;
             }
-            _this.OnOutgoingMessage(new Messages.Log(Logging_1.LogLevel[aMsg.LogLevel], aMsg.Message));
+            _this.OnOutgoingMessage(new Messages.Log(Logging_1.ButtplugLogLevel[aMsg.LogLevel], aMsg.Message));
         };
         _this.OnOutgoingMessage = function (aMsg) {
             _this.emit("message", aMsg);
         };
-        _this._logger.MaximumLogLevel = Logging_1.LogLevel.Debug;
-        _this._logger.SetConsoleLogging(true);
-        _this._logger.Info("Starting Buttplug Server: " + _this._serverName);
+        _this._logger.Info("Server: Starting Buttplug Server: " + _this._serverName);
         _this._deviceManager = new DeviceManager_1.DeviceManager();
         ServerMessageHub_1.ServerMessageHub.Instance.addListener("message", _this.OnOutgoingMessage);
         return _this;

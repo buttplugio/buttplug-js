@@ -45,36 +45,65 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var ButtplugDevice_1 = require("../server/ButtplugDevice");
 var Messages = require("../core/Messages");
-var events_1 = require("events");
-var ButtplugDevice = /** @class */ (function (_super) {
-    __extends(ButtplugDevice, _super);
-    function ButtplugDevice(_name) {
-        var _this = _super.call(this) || this;
-        _this._name = _name;
-        _this.MsgFuncs = new Map();
-        _this.GetAllowedMessageTypes = function () {
-            return Array.from(_this.MsgFuncs.keys());
-        };
-        _this.ParseMessage = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
+var TestDevice = /** @class */ (function (_super) {
+    __extends(TestDevice, _super);
+    function TestDevice(name, shouldVibrate, shouldLinear) {
+        if (shouldVibrate === void 0) { shouldVibrate = false; }
+        if (shouldLinear === void 0) { shouldLinear = false; }
+        var _this = _super.call(this, "Test Device - " + name) || this;
+        _this._connected = false;
+        _this._linearSpeed = 0;
+        _this._linearPosition = 0;
+        _this._vibrateSpeed = 0;
+        _this.HandleStopDeviceCmd = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                if (!this.MsgFuncs.has(aMsg.Type)) {
-                    return [2 /*return*/, new Messages.Error("${this._name} cannot handle message of type ${aMsg.Type} )", Messages.ErrorClass.ERROR_MSG, aMsg.Id)];
-                }
-                // Non-null assurance in the middle of functions looks weird.
-                return [2 /*return*/, this.MsgFuncs.get(aMsg.Type)(aMsg)];
+                this.emit("vibrate", 0);
+                this.emit("linear", { position: this._linearPosition,
+                    speed: this._linearSpeed });
+                return [2 /*return*/, Promise.resolve(new Messages.Ok(aMsg.Id))];
             });
         }); };
+        _this.HandleSingleMotorVibrateCmd = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                this._vibrateSpeed = aMsg.Speed;
+                this.emit("vibrate", aMsg.Speed);
+                return [2 /*return*/, Promise.resolve(new Messages.Ok(aMsg.Id))];
+            });
+        }); };
+        _this.HandleFleshlightLaunchFW12Cmd = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                this._linearPosition = aMsg.Position;
+                this._linearSpeed = aMsg.Speed;
+                this.emit("linear", { position: this._linearPosition,
+                    speed: this._linearSpeed });
+                return [2 /*return*/, Promise.resolve(new Messages.Ok(aMsg.Id))];
+            });
+        }); };
+        _this.MsgFuncs.set(Messages.StopDeviceCmd.name, _this.HandleStopDeviceCmd);
+        if (shouldVibrate) {
+            _this.MsgFuncs.set(Messages.SingleMotorVibrateCmd.name, _this.HandleSingleMotorVibrateCmd);
+        }
+        if (shouldLinear) {
+            _this.MsgFuncs.set(Messages.FleshlightLaunchFW12Cmd.name, _this.HandleFleshlightLaunchFW12Cmd);
+        }
         return _this;
     }
-    Object.defineProperty(ButtplugDevice.prototype, "Name", {
+    Object.defineProperty(TestDevice.prototype, "Connected", {
         get: function () {
-            return this._name;
+            return this._connected;
+        },
+        set: function (connected) {
+            this._connected = connected;
         },
         enumerable: true,
         configurable: true
     });
-    return ButtplugDevice;
-}(events_1.EventEmitter));
-exports.ButtplugDevice = ButtplugDevice;
-//# sourceMappingURL=ButtplugDevice.js.map
+    TestDevice.prototype.Disconnect = function () {
+        this.emit("deviceremoved", this);
+    };
+    return TestDevice;
+}(ButtplugDevice_1.ButtplugDevice));
+exports.TestDevice = TestDevice;
+//# sourceMappingURL=TestDevice.js.map

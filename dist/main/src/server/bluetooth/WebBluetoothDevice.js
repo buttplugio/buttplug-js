@@ -45,6 +45,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var Logging_1 = require("../../core/Logging");
 var events_1 = require("events");
 var WebBluetoothDevice = /** @class */ (function (_super) {
     __extends(WebBluetoothDevice, _super);
@@ -52,12 +53,14 @@ var WebBluetoothDevice = /** @class */ (function (_super) {
         var _this = _super.call(this) || this;
         _this._deviceInfo = _deviceInfo;
         _this._device = _device;
+        _this._logger = Logging_1.ButtplugLogger.Logger;
         _this._characteristics = new Map();
         _this.Connect = function () { return __awaiter(_this, void 0, void 0, function () {
             var _a, _b, _i, _c, name_1, _d, _e, _f;
             return __generator(this, function (_g) {
                 switch (_g.label) {
                     case 0:
+                        this._logger.Debug("WebBluetoothDevice: " + this.constructor.name + " connecting");
                         this._device.addEventListener("gattserverdisconnected", this.OnDisconnect);
                         _a = this;
                         return [4 /*yield*/, this._device.gatt.connect()];
@@ -86,6 +89,7 @@ var WebBluetoothDevice = /** @class */ (function (_super) {
             });
         }); };
         _this.OnDisconnect = function () {
+            _this._logger.Debug("WebBluetoothDevice: " + _this.constructor.name + " disconnecting");
             _this._device.removeEventListener("gattserverdisconnected", _this.OnDisconnect);
             _this.emit("deviceremoved");
         };
@@ -98,6 +102,7 @@ var WebBluetoothDevice = /** @class */ (function (_super) {
                             return [2 /*return*/];
                         }
                         chr = this._characteristics.get(aCharacteristic);
+                        this._logger.Trace("WebBluetoothDevice: " + this.constructor.name + " writing " + aValue + " to " + chr.uuid);
                         return [4 /*yield*/, chr.writeValue(aValue)];
                     case 1:
                         _a.sent();
@@ -114,6 +119,7 @@ var WebBluetoothDevice = /** @class */ (function (_super) {
                             throw new Error("Tried to access wrong characteristic!");
                         }
                         chr = this._characteristics.get(aCharacteristic);
+                        this._logger.Trace("WebBluetoothDevice: " + this.constructor.name + " reading from " + chr.uuid);
                         return [4 /*yield*/, chr.readValue()];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
@@ -138,6 +144,7 @@ var WebBluetoothDevice = /** @class */ (function (_super) {
                         deviceImpl.addListener("deviceremoved", function () {
                             device.OnDisconnect();
                         });
+                        Logging_1.ButtplugLogger.Logger.Debug("WebBluetoothDevice: Creating " + device.constructor.name);
                         return [2 /*return*/, device];
                 }
             });

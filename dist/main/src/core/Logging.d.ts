@@ -5,7 +5,7 @@ import * as Messages from "./Messages";
  * Enumeration of log levels for LogMessage message types. Log levels must match
  * order and name specified in LogMessage portion of the Buttplug protocol spec.
  */
-export declare enum LogLevel {
+export declare enum ButtplugLogLevel {
     Off = 0,
     Fatal = 1,
     Error = 2,
@@ -28,7 +28,7 @@ export declare class LogMessage {
      * @param logMessage Log message.
      * @param logLevel: Log severity level.
      */
-    constructor(logMessage: string, logLevel: LogLevel);
+    constructor(logMessage: string, logLevel: ButtplugLogLevel);
     /**
      * Returns the log message.
      */
@@ -36,7 +36,7 @@ export declare class LogMessage {
     /**
      * Returns the log message level.
      */
-    readonly LogLevel: LogLevel;
+    readonly LogLevel: ButtplugLogLevel;
     /**
      * Returns the log message timestamp.
      */
@@ -54,14 +54,10 @@ export declare class LogMessage {
 export declare class ButtplugLogger extends EventEmitter {
     /** Singleton instance for the logger */
     protected static sLogger: ButtplugLogger | undefined;
-    /** Array of stored log messages */
-    protected logMessages: LogMessage[];
-    /** Size limit of logMessages array */
-    protected logLimit: number;
-    /** If true, call console.log on all new log messages */
-    protected logToConsole: boolean;
-    /** If logToConsole is true, sets maximum log level to log to console */
-    protected maximumLogLevel: LogLevel;
+    /** Sets maximum log level to log to console */
+    protected maximumConsoleLogLevel: ButtplugLogLevel;
+    /** Sets maximum log level for all log messages */
+    protected maximumEventLogLevel: ButtplugLogLevel;
     /**
      * Returns the stored static instance of the logger, creating one if it
      * doesn't currently exist.
@@ -78,17 +74,20 @@ export declare class ButtplugLogger extends EventEmitter {
     /**
      * Get the maximum log level to output to console.
      */
-    MaximumLogLevel: LogLevel;
+    MaximumConsoleLogLevel: ButtplugLogLevel;
+    /**
+     * Set the global maximum log level
+     */
+    /**
+     * Get the global maximum log level
+     */
+    MaximumEventLogLevel: ButtplugLogLevel;
     /**
      * Log a message, then create a Error buttplug message with the log message.
      * Used when an operation has errored out and status needs to be both logged
      * and returned to the client as an Error Message type.
      */
     LogAndError(aMsg: string, aErrorClass: Messages.ErrorClass, aMsgId: number): Messages.ButtplugMessage;
-    /**
-     * Sets whether log messages are logged to the web console.
-     */
-    SetConsoleLogging(aShouldLog: boolean): void;
     /**
      * Log new message at Fatal level.
      */
@@ -117,5 +116,5 @@ export declare class ButtplugLogger extends EventEmitter {
      * Checks to see if message should be logged, and if so, adds message to the
      * log buffer. May also print message and emit event.
      */
-    protected AddLogMessage(aMsg: string, aLevel: LogLevel): void;
+    protected AddLogMessage(aMsg: string, aLevel: ButtplugLogLevel): void;
 }

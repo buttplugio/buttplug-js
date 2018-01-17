@@ -327,6 +327,24 @@ describe("Client Tests", function () { return __awaiter(_this, void 0, void 0, f
                 }
             });
         }); });
+        it("Should get error on scanning when no device managers available.", function () { return __awaiter(_this, void 0, void 0, function () {
+            var bplocal;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        bplocal = new Client_1.ButtplugClient("Test Client");
+                        bplocal.addListener("disconnect", function () { res(); });
+                        return [4 /*yield*/, bplocal.ConnectLocal()];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, expect(bplocal.StartScanning()).rejects.toThrow()];
+                    case 2:
+                        _a.sent();
+                        bplocal.Disconnect();
+                        return [2 /*return*/];
+                }
+            });
+        }); });
         return [2 /*return*/];
     });
 }); });

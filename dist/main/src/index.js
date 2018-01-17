@@ -8,6 +8,7 @@ __export(require("./client/ButtplugEmbeddedServerConnector"));
 __export(require("./core/Messages"));
 __export(require("./core/MessageUtils"));
 __export(require("./core/Device"));
+__export(require("./core/Logging"));
 __export(require("./server/ButtplugServer"));
 __export(require("./server/ButtplugDevice"));
 __export(require("./server/bluetooth/ButtplugBluetoothDevice"));

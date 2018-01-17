@@ -141,12 +141,15 @@ var WebBluetoothDeviceManager = /** @class */ (function (_super) {
     };
     WebBluetoothDeviceManager.prototype.StopScanning = function () {
         // noop. We can only scan via the browser dialog, and we can't cancel that from outside.
-        return true;
     };
-    WebBluetoothDeviceManager.prototype.IsScanning = function () {
-        // noop.
-        return false;
-    };
+    Object.defineProperty(WebBluetoothDeviceManager.prototype, "IsScanning", {
+        get: function () {
+            // noop.
+            return false;
+        },
+        enumerable: true,
+        configurable: true
+    });
     return WebBluetoothDeviceManager;
 }(events_1.EventEmitter));
 exports.WebBluetoothDeviceManager = WebBluetoothDeviceManager;

@@ -44,37 +44,79 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
-var Messages = require("../core/Messages");
-var events_1 = require("events");
-var ButtplugDevice = /** @class */ (function (_super) {
-    __extends(ButtplugDevice, _super);
-    function ButtplugDevice(_name) {
-        var _this = _super.call(this) || this;
-        _this._name = _name;
-        _this.MsgFuncs = new Map();
-        _this.GetAllowedMessageTypes = function () {
-            return Array.from(_this.MsgFuncs.keys());
-        };
-        _this.ParseMessage = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                if (!this.MsgFuncs.has(aMsg.Type)) {
-                    return [2 /*return*/, new Messages.Error("${this._name} cannot handle message of type ${aMsg.Type} )", Messages.ErrorClass.ERROR_MSG, aMsg.Id)];
-                }
-                // Non-null assurance in the middle of functions looks weird.
-                return [2 /*return*/, this.MsgFuncs.get(aMsg.Type)(aMsg)];
-            });
-        }); };
-        return _this;
+var Logging_1 = require("../src/core/Logging");
+var TestLogger = /** @class */ (function (_super) {
+    __extends(TestLogger, _super);
+    function TestLogger() {
+        return _super !== null && _super.apply(this, arguments) || this;
     }
-    Object.defineProperty(ButtplugDevice.prototype, "Name", {
-        get: function () {
-            return this._name;
-        },
-        enumerable: true,
-        configurable: true
+    TestLogger.ResetLogger = function () {
+        Logging_1.ButtplugLogger.sLogger = new Logging_1.ButtplugLogger();
+    };
+    return TestLogger;
+}(Logging_1.ButtplugLogger));
+describe("Logging Tests", function () { return __awaiter(_this, void 0, void 0, function () {
+    var logger;
+    return __generator(this, function (_a) {
+        logger = TestLogger.Logger;
+        beforeEach(function () {
+            TestLogger.ResetLogger();
+            logger = TestLogger.Logger;
+        });
+        it("Should log nothing at start.", function () {
+            var res;
+            var rej;
+            var p = new Promise(function (rs, rj) { res = rs; rej = rj; });
+            logger.addListener("log", function (msg) {
+                rej();
+            });
+            logger.Debug("test");
+            logger.Fatal("test");
+            logger.Error("test");
+            logger.Warn("test");
+            logger.Info("test");
+            logger.Trace("test");
+            res();
+            return p;
+        });
+        it("Should log everything on trace.", function () {
+            var res;
+            var rej;
+            var count = 0;
+            var p = new Promise(function (rs, rj) { res = rs; rej = rj; });
+            logger.MaximumEventLogLevel = Logging_1.ButtplugLogLevel.Trace;
+            logger.addListener("log", function (msg) {
+                count++;
+            });
+            logger.Debug("test");
+            logger.Fatal("test");
+            logger.Error("test");
+            logger.Warn("test");
+            logger.Info("test");
+            logger.Trace("test");
+            if (count === 6) {
+                return Promise.resolve();
+            }
+            return Promise.reject("Log event count incorrect!");
+        });
+        it("Should deal with different log levels for console and events", (function () {
+            jest.spyOn(global.console, "log");
+            var res;
+            var rej;
+            var p = new Promise(function (rs, rj) { res = rs; rej = rj; });
+            logger.addListener("log", function (msg) {
+                rej();
+            });
+            logger.MaximumEventLogLevel = Logging_1.ButtplugLogLevel.Debug;
+            logger.MaximumConsoleLogLevel = Logging_1.ButtplugLogLevel.Trace;
+            logger.Trace("test");
+            expect(console.log).toBeCalled();
+            res();
+            return p;
+        }));
+        return [2 /*return*/];
     });
-    return ButtplugDevice;
-}(events_1.EventEmitter));
-exports.ButtplugDevice = ButtplugDevice;
-//# sourceMappingURL=ButtplugDevice.js.map
+}); });
+//# sourceMappingURL=logging.js.map

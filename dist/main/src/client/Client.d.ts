@@ -1,4 +1,5 @@
 /// <reference types="node" />
+import { ButtplugLogger } from "../core/Logging";
 import { EventEmitter } from "events";
 import { Device } from "../core/Device";
 import { IButtplugConnector } from "./IButtplugConnector";
@@ -10,8 +11,9 @@ export declare class ButtplugClient extends EventEmitter {
     protected _counter: number;
     protected _waitingMsgs: Map<number, (val: Messages.ButtplugMessage) => void>;
     protected _clientName: string;
+    protected _logger: ButtplugLogger;
     protected _messageVersion: number;
-    constructor(aClientName: string);
+    constructor(aClientName?: string);
     ConnectWebsocket: (aAddress: string) => Promise<void>;
     ConnectLocal: () => Promise<void>;
     Connect: (aConnector: IButtplugConnector) => Promise<void>;
@@ -25,6 +27,7 @@ export declare class ButtplugClient extends EventEmitter {
     StopAllDevices: () => Promise<void>;
     SendDeviceMessage(aDevice: Device, aDeviceMsg: Messages.ButtplugDeviceMessage): Promise<void>;
     ParseMessages: (aMsgs: Messages.ButtplugMessage[]) => void;
+    protected DisconnectHandler: () => void;
     protected ParseMessagesInternal(aMsgs: Messages.ButtplugMessage[]): void;
     protected InitializeConnection: () => Promise<boolean>;
     protected ShutdownConnection: () => void;

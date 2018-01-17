@@ -16,16 +16,16 @@ var Messages = require("./Messages");
  * Enumeration of log levels for LogMessage message types. Log levels must match
  * order and name specified in LogMessage portion of the Buttplug protocol spec.
  */
-var LogLevel;
-(function (LogLevel) {
-    LogLevel[LogLevel["Off"] = 0] = "Off";
-    LogLevel[LogLevel["Fatal"] = 1] = "Fatal";
-    LogLevel[LogLevel["Error"] = 2] = "Error";
-    LogLevel[LogLevel["Warn"] = 3] = "Warn";
-    LogLevel[LogLevel["Info"] = 4] = "Info";
-    LogLevel[LogLevel["Debug"] = 5] = "Debug";
-    LogLevel[LogLevel["Trace"] = 6] = "Trace";
-})(LogLevel = exports.LogLevel || (exports.LogLevel = {}));
+var ButtplugLogLevel;
+(function (ButtplugLogLevel) {
+    ButtplugLogLevel[ButtplugLogLevel["Off"] = 0] = "Off";
+    ButtplugLogLevel[ButtplugLogLevel["Fatal"] = 1] = "Fatal";
+    ButtplugLogLevel[ButtplugLogLevel["Error"] = 2] = "Error";
+    ButtplugLogLevel[ButtplugLogLevel["Warn"] = 3] = "Warn";
+    ButtplugLogLevel[ButtplugLogLevel["Info"] = 4] = "Info";
+    ButtplugLogLevel[ButtplugLogLevel["Debug"] = 5] = "Debug";
+    ButtplugLogLevel[ButtplugLogLevel["Trace"] = 6] = "Trace";
+})(ButtplugLogLevel = exports.ButtplugLogLevel || (exports.ButtplugLogLevel = {}));
 /**
  * Representation of log messages for the internal logging utility.
  */
@@ -78,7 +78,7 @@ var LogMessage = /** @class */ (function () {
          * Returns a formatted string with timestamp, level, and message.
          */
         get: function () {
-            return LogLevel[this.logLevel] + " : " + this.timestamp + " : " + this.logMessage;
+            return ButtplugLogLevel[this.logLevel] + " : " + this.timestamp + " : " + this.logMessage;
         },
         enumerable: true,
         configurable: true
@@ -99,14 +99,10 @@ var ButtplugLogger = /** @class */ (function (_super) {
      */
     function ButtplugLogger() {
         var _this = _super.call(this) || this;
-        /** Array of stored log messages */
-        _this.logMessages = [];
-        /** Size limit of logMessages array */
-        _this.logLimit = 1000;
-        /** If true, call console.log on all new log messages */
-        _this.logToConsole = false;
-        /** If logToConsole is true, sets maximum log level to log to console */
-        _this.maximumLogLevel = LogLevel.Off;
+        /** Sets maximum log level to log to console */
+        _this.maximumConsoleLogLevel = ButtplugLogLevel.Off;
+        /** Sets maximum log level for all log messages */
+        _this.maximumEventLogLevel = ButtplugLogLevel.Off;
         return _this;
     }
     Object.defineProperty(ButtplugLogger, "Logger", {
@@ -123,18 +119,34 @@ var ButtplugLogger = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(ButtplugLogger.prototype, "MaximumLogLevel", {
+    Object.defineProperty(ButtplugLogger.prototype, "MaximumConsoleLogLevel", {
         /**
          * Set the maximum log level to output to console.
          */
         get: function () {
-            return this.maximumLogLevel;
+            return this.maximumConsoleLogLevel;
         },
         /**
          * Get the maximum log level to output to console.
          */
+        set: function (aButtplugLogLevel) {
+            this.maximumConsoleLogLevel = aButtplugLogLevel;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ButtplugLogger.prototype, "MaximumEventLogLevel", {
+        /**
+         * Set the global maximum log level
+         */
+        get: function () {
+            return this.maximumEventLogLevel;
+        },
+        /**
+         * Get the global maximum log level
+         */
         set: function (aLogLevel) {
-            this.maximumLogLevel = aLogLevel;
+            this.maximumEventLogLevel = aLogLevel;
         },
         enumerable: true,
         configurable: true
@@ -149,64 +161,61 @@ var ButtplugLogger = /** @class */ (function (_super) {
         return new Messages.Error(aMsg, aErrorClass, aMsgId);
     };
     /**
-     * Sets whether log messages are logged to the web console.
-     */
-    ButtplugLogger.prototype.SetConsoleLogging = function (aShouldLog) {
-        this.logToConsole = aShouldLog;
-    };
-    /**
      * Log new message at Fatal level.
      */
     ButtplugLogger.prototype.Fatal = function (aMsg) {
-        this.AddLogMessage(aMsg, LogLevel.Fatal);
+        this.AddLogMessage(aMsg, ButtplugLogLevel.Fatal);
     };
     /**
      * Log new message at Error level.
      */
     ButtplugLogger.prototype.Error = function (aMsg) {
-        this.AddLogMessage(aMsg, LogLevel.Error);
+        this.AddLogMessage(aMsg, ButtplugLogLevel.Error);
     };
     /**
      * Log new message at Warn level.
      */
     ButtplugLogger.prototype.Warn = function (aMsg) {
-        this.AddLogMessage(aMsg, LogLevel.Warn);
+        this.AddLogMessage(aMsg, ButtplugLogLevel.Warn);
     };
     /**
      * Log new message at Info level.
      */
     ButtplugLogger.prototype.Info = function (aMsg) {
-        this.AddLogMessage(aMsg, LogLevel.Info);
+        this.AddLogMessage(aMsg, ButtplugLogLevel.Info);
     };
     /**
      * Log new message at Debug level.
      */
     ButtplugLogger.prototype.Debug = function (aMsg) {
-        this.AddLogMessage(aMsg, LogLevel.Debug);
+        this.AddLogMessage(aMsg, ButtplugLogLevel.Debug);
     };
     /**
      * Log new message at Trace level.
      */
     ButtplugLogger.prototype.Trace = function (aMsg) {
-        this.AddLogMessage(aMsg, LogLevel.Trace);
+        this.AddLogMessage(aMsg, ButtplugLogLevel.Trace);
     };
     /**
      * Checks to see if message should be logged, and if so, adds message to the
      * log buffer. May also print message and emit event.
      */
     ButtplugLogger.prototype.AddLogMessage = function (aMsg, aLevel) {
-        if (aLevel > this.maximumLogLevel) {
+        // If nothing wants the log message we have, ignore it.
+        if (aLevel > this.maximumEventLogLevel && aLevel > this.maximumConsoleLogLevel) {
             return;
         }
-        if (this.logMessages.length > this.logLimit) {
-            this.logMessages.shift();
-        }
         var msg = new LogMessage(aMsg, aLevel);
-        if (this.logToConsole) {
+        // Clients and console logging may have different needs. For instance, it
+        // could be that the client requests trace level, while all we want in the
+        // console is info level. This makes sure the client can't also spam the
+        // console.
+        if (aLevel <= this.maximumConsoleLogLevel) {
             console.log(msg.FormattedMessage);
         }
-        this.logMessages.push(new LogMessage(aMsg, aLevel));
-        this.emit("log", msg);
+        if (aLevel <= this.maximumEventLogLevel) {
+            this.emit("log", msg);
+        }
     };
     /** Singleton instance for the logger */
     ButtplugLogger.sLogger = undefined;

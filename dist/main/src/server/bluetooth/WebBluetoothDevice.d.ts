@@ -8,6 +8,7 @@ export declare class WebBluetoothDevice extends EventEmitter implements IBluetoo
     private _deviceInfo;
     private _device;
     static CreateDevice(aDeviceInfo: BluetoothDeviceInfo, aDevice: BluetoothDevice): Promise<ButtplugBluetoothDevice>;
+    private _logger;
     private _server;
     private _service;
     private _characteristics;

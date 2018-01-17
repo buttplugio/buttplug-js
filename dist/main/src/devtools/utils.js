@@ -45,36 +45,54 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var Messages = require("../core/Messages");
-var events_1 = require("events");
-var ButtplugDevice = /** @class */ (function (_super) {
-    __extends(ButtplugDevice, _super);
-    function ButtplugDevice(_name) {
-        var _this = _super.call(this) || this;
-        _this._name = _name;
-        _this.MsgFuncs = new Map();
-        _this.GetAllowedMessageTypes = function () {
-            return Array.from(_this.MsgFuncs.keys());
-        };
-        _this.ParseMessage = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                if (!this.MsgFuncs.has(aMsg.Type)) {
-                    return [2 /*return*/, new Messages.Error("${this._name} cannot handle message of type ${aMsg.Type} )", Messages.ErrorClass.ERROR_MSG, aMsg.Id)];
-                }
-                // Non-null assurance in the middle of functions looks weird.
-                return [2 /*return*/, this.MsgFuncs.get(aMsg.Type)(aMsg)];
-            });
-        }); };
-        return _this;
+var Logging_1 = require("../core/Logging");
+var Client_1 = require("../client/Client");
+var ButtplugEmbeddedServerConnector_1 = require("../client/ButtplugEmbeddedServerConnector");
+var ButtplugServer_1 = require("../server/ButtplugServer");
+var TestDeviceManager_1 = require("./TestDeviceManager");
+var TestDeviceManagerPanel_1 = require("./TestDeviceManagerPanel");
+var LogPanel_1 = require("./LogPanel");
+var ButtplugDevToolsLogger = /** @class */ (function (_super) {
+    __extends(ButtplugDevToolsLogger, _super);
+    function ButtplugDevToolsLogger() {
+        return _super !== null && _super.apply(this, arguments) || this;
     }
-    Object.defineProperty(ButtplugDevice.prototype, "Name", {
-        get: function () {
-            return this._name;
+    Object.defineProperty(ButtplugDevToolsLogger, "Logger", {
+        set: function (logger) {
+            Logging_1.ButtplugLogger.sLogger = logger;
         },
         enumerable: true,
         configurable: true
     });
-    return ButtplugDevice;
-}(events_1.EventEmitter));
-exports.ButtplugDevice = ButtplugDevice;
-//# sourceMappingURL=ButtplugDevice.js.map
+    return ButtplugDevToolsLogger;
+}(Logging_1.ButtplugLogger));
+function CreateLoggerPanel(logger) {
+    LogPanel_1.LogPanel.ShowLogPanel(logger);
+}
+exports.CreateLoggerPanel = CreateLoggerPanel;
+function CreateDeviceManagerPanel() {
+    TestDeviceManagerPanel_1.TestDeviceManagerPanel.ShowTestDeviceManagerPanel();
+}
+exports.CreateDeviceManagerPanel = CreateDeviceManagerPanel;
+function CreateDevToolsClient(logger) {
+    return __awaiter(this, void 0, void 0, function () {
+        var client, server, localConnector;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    ButtplugDevToolsLogger.Logger = logger;
+                    client = new Client_1.ButtplugClient("Test Client");
+                    server = new ButtplugServer_1.ButtplugServer("Test Server");
+                    server.AddDeviceManager(TestDeviceManager_1.TestDeviceManager.Get());
+                    localConnector = new ButtplugEmbeddedServerConnector_1.ButtplugEmbeddedServerConnector();
+                    localConnector.Server = server;
+                    return [4 /*yield*/, client.Connect(localConnector)];
+                case 1:
+                    _a.sent();
+                    return [2 /*return*/, Promise.resolve(client)];
+            }
+        });
+    });
+}
+exports.CreateDevToolsClient = CreateDevToolsClient;
+//# sourceMappingURL=utils.js.map
