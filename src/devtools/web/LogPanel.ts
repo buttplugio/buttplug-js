@@ -1,4 +1,4 @@
-import { ButtplugLogger, LogMessage, ButtplugLogLevel } from "../index";
+import { ButtplugLogger, LogMessage, ButtplugLogLevel } from "../../index";
 const jsPanel = require("./jspanel.js");
 require("jspanel4/dist/jspanel.css");
 require("jspanel4/dist/fonts/jsglyph.eot");
