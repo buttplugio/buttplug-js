@@ -21,15 +21,23 @@ export class TestDeviceManager extends EventEmitter implements IDeviceSubtypeMan
     super();
   }
 
+  public ConnectVibrationDevice() {
+    this._testVibrationDevice.Connected = true;
+    this.emit("deviceadded", this._testVibrationDevice);
+  }
+
+  public ConnectLinearDevice() {
+    this._testLinearDevice.Connected = true;
+    this.emit("deviceadded", this._testLinearDevice);
+  }
+
   public StartScanning(): void {
     this._isScanning = true;
     if (!this._testVibrationDevice.Connected) {
-      this._testVibrationDevice.Connected = true;
-      setTimeout(() => this.emit("deviceadded", this._testVibrationDevice), 50);
+      setTimeout(() => this.ConnectVibrationDevice(), 50);
     }
     if (!this._testLinearDevice.Connected) {
-      this._testLinearDevice.Connected = true;
-      setTimeout(() => this.emit("deviceadded", this._testLinearDevice), 50);
+      setTimeout(() => this.ConnectLinearDevice(), 50);
     }
     setTimeout(() => this.StopScanning(), 100);
   }

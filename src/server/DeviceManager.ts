@@ -71,7 +71,11 @@ export class DeviceManager extends EventEmitter {
       return new Messages.Ok(id);
     case "RequestDeviceList":
       this._logger.Debug(`DeviceManager: Sending device list`);
-      return new Messages.DeviceList([], id);
+      const devices: Messages.DeviceInfo[] = [];
+      this._devices.forEach((v: IButtplugDevice, k: number) => {
+        devices.push(new Messages.DeviceInfo(k, v.Name, v.GetAllowedMessageTypes()));
+      });
+      return new Messages.DeviceList(devices, id);
     }
     const deviceMsg = (aMessage as Messages.ButtplugDeviceMessage);
     if (deviceMsg.DeviceIndex === undefined) {

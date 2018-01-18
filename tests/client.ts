@@ -1,11 +1,9 @@
-import { Server } from "mock-socket";
-import { ButtplugClient } from "../src/client/Client";
+import { Device, ButtplugClient, FromJSON, ButtplugLogger,
+         ButtplugLogLevel, ButtplugServer, ButtplugEmbeddedServerConnector } from "../src/index";
+import { TestDeviceManager, CreateDevToolsClient } from "../src/devtools/index";
 import * as Messages from "../src/core/Messages";
-import { FromJSON } from "../src/core/MessageUtils";
 
 describe("Client Tests", async () => {
-  let mockServer: Server;
-  let bp: ButtplugClient;
   let p;
   let res;
   let rej;
@@ -17,60 +15,38 @@ describe("Client Tests", async () => {
       return this._pingTimer;
     }
   }
-  beforeEach(async () => {
-    mockServer = new Server("ws://localhost:6868");
+
+  beforeEach(() => {
+    jest.setTimeout(1000);
     p = new Promise((resolve, reject) => { res = resolve; rej = reject; });
-    const serverInfo = (jsonmsg: string) => {
-      const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
-      delaySend(new Messages.ServerInfo(0, 0, 0, 0, 0, "Test Server", msg.Id));
-      mockServer.removeEventListener("message", serverInfo);
-    };
-    mockServer.on("message", serverInfo);
-    bp = new ButtplugClient("Test Buttplug Client");
-    await bp.ConnectWebsocket("ws://localhost:6868");
   });
 
-  afterEach(function(done) {
-    mockServer.stop(done);
-  });
+  const SetupServer = async (): Promise<ButtplugClient> => {
+    const bp = new ButtplugClient("Test Buttplug Client");
+    await bp.ConnectLocal();
+    return bp;
+  };
 
-  function delaySend(aMsg: Messages.ButtplugMessage) {
-    process.nextTick(() => mockServer.send("[" + aMsg.toJSON() + "]"));
-  }
-
-  it("Should deal with request/reply correctly", async () => {
-    mockServer.on("message", (jsonmsg: string) => {
-      const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
-      delaySend(new Messages.Ok(msg.Id));
-    });
-    await bp.StartScanning();
-    await bp.StopScanning();
-  });
   it("Should emit a log message on requestlog (testing basic event emitters)", async () => {
-    mockServer.on("message", (jsonmsg: string) => {
-      const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
-      delaySend(new Messages.Ok(msg.Id));
-      delaySend(new Messages.Log("Trace", "Test"));
+    const bp = await SetupServer();
+    await bp.RequestLog("Error");
+    process.nextTick(() => {
+      bp.on("log", (x) => {
+        expect(x).toEqual(new Messages.Log("Error", "Test"));
+        // Turn logging events back off.
+        ButtplugLogger.Logger.MaximumEventLogLevel = ButtplugLogLevel.Off;
+        res();
+      });
+      ButtplugLogger.Logger.Error("Test");
     });
-
-    const finishTestPromise = new Promise((resolve) => { res = resolve; });
-    bp.on("log", (x) => {
-      expect(x).toEqual(new Messages.Log("Trace", "Test"));
-      res();
-    });
-    await bp.RequestLog("Trace");
-    return finishTestPromise;
+    return p;
   });
 
   it("Should emit a device on addition", async () => {
-    mockServer.on("message", (jsonmsg: string) => {
-      const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
-      expect(msg.constructor.name).toEqual("StartScanning");
-      delaySend(new Messages.Ok(msg.Id));
-      delaySend(new Messages.DeviceAdded(0, "Test Device", ["SingleMotorVibrateCmd"]));
-    });
+    const bp = await CreateDevToolsClient();
+    const tdm = TestDeviceManager.Get();
     bp.on("deviceadded", (x) => {
-      delaySend(new Messages.DeviceRemoved(0));
+      tdm.VibrationDevice.Disconnect();
     });
     bp.on("deviceremoved", (x) => {
       res();
@@ -79,27 +55,23 @@ describe("Client Tests", async () => {
     return p;
   });
 
-  it("Should emit a device when device list request received with new devices", async () => {
-    mockServer.on("message", (jsonmsg: string) => {
-      const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
-      delaySend(new Messages.DeviceList([new Messages.DeviceInfo(0,
-                                                                 "Test Device",
-                                                                 ["SingleMotorVibrateCmd"])],
-                                        msg.Id));
-    });
-    bp.on("deviceadded", (x) => {
+  it("Should emit a device on connection when device already attached", async () => {
+    const client = new ButtplugClient("Test Client");
+    client.on("deviceadded", (x) => {
       res();
     });
-    await bp.RequestDeviceList();
+    const server = new ButtplugServer("Test Server");
+    server.AddDeviceManager(TestDeviceManager.Get());
+    TestDeviceManager.Get().ConnectLinearDevice();
+    const localConnector = new ButtplugEmbeddedServerConnector();
+    localConnector.Server = server;
+    await client.Connect(localConnector);
     return p;
   });
 
   it("Should emit when device scanning is over", async () => {
-    mockServer.on("message", (jsonmsg: string) => {
-      const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
-      delaySend(new Messages.Ok(msg.Id));
-      delaySend(new Messages.ScanningFinished());
-    });
+    const bp = await CreateDevToolsClient();
+    const tdm = TestDeviceManager.Get();
     bp.on("scanningfinished", (x) => {
       res();
     });
@@ -108,54 +80,40 @@ describe("Client Tests", async () => {
   });
 
   it("Should allow correct device messages and reject unauthorized", async () => {
-    mockServer.on("message", (jsonmsg: string) => {
-      const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
-      delaySend(new Messages.Ok(msg.Id));
-      if (msg.getType() === "StartScanning") {
-        delaySend(new Messages.DeviceAdded(0, "Test Device", ["SingleMotorVibrateCmd"]));
-      }
-      if (msg instanceof Messages.ButtplugDeviceMessage) {
-        expect(msg.DeviceIndex).toEqual(0);
-      }
-    });
     let device;
-    bp.on("deviceadded", async (x) => {
+    const bp = await CreateDevToolsClient();
+    bp.on("deviceadded", async (x: Device) => {
+      // The test server will always return the vibrator first if we use
+      // StartScanning.
+      if (x.Index !== 1) {
+        return;
+      }
       device = x;
       await bp.SendDeviceMessage(x, new Messages.SingleMotorVibrateCmd(1.0));
-      try {
-        await bp.SendDeviceMessage(x, new Messages.KiirooCmd("2"));
-        throw Error("Should've thrown!");
-      } catch (_) {
-        res();
-      }
+      expect(async () => await bp.SendDeviceMessage(x, new Messages.KiirooCmd("2"))).toThrow();
+      res();
     });
     await bp.StartScanning();
     return p;
   });
+
   it("Should reject schema violating message", async () => {
-    mockServer.on("message", (jsonmsg: string) => {
-      const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
-      delaySend(new Messages.Ok(msg.Id));
-      if (msg.getType() === "StartScanning") {
-        delaySend(new Messages.DeviceAdded(0, "Test Device", ["SingleMotorVibrateCmd"]));
-      }
-      if (msg instanceof Messages.ButtplugDeviceMessage) {
-        expect(msg.DeviceIndex).toEqual(0);
-      }
-    });
     let device;
+    const bp = await CreateDevToolsClient();
     bp.on("deviceadded", async (x) => {
-      device = x;
-      try {
-        await bp.SendDeviceMessage(x, new Messages.SingleMotorVibrateCmd(50));
-        rej(new Error("Should've thrown!"));
-      } catch (_) {
-        res();
+      // The test server will always return the vibrator first if we use
+      // StartScanning.
+      if (x.Index !== 1) {
+        return;
       }
+      device = x;
+      expect(async () => await bp.SendDeviceMessage(x, new Messages.SingleMotorVibrateCmd(50))).toThrow();
+      res();
     });
     await bp.StartScanning();
     return p;
   });
+
   it("Should receive disconnect event on disconnect", async () => {
     const bplocal = new ButtplugClient("Test Client");
     bplocal.addListener("disconnect", () => { res(); });
@@ -163,11 +121,7 @@ describe("Client Tests", async () => {
     bplocal.Disconnect();
     return p;
   });
-  it("Should receive disconnect event on websocket disconnect", async () => {
-    bp.addListener("disconnect", () => { res(); });
-    mockServer.close();
-    return p;
-  });
+
   it("Should shut down ping timer on disconnect", async () => {
     const bplocal = new BPTestClient("Test Client");
     bplocal.addListener("disconnect", () => {
@@ -178,6 +132,7 @@ describe("Client Tests", async () => {
     bplocal.Disconnect();
     return p;
   });
+
   it("Should get error on scanning when no device managers available.", async () => {
     const bplocal = new ButtplugClient("Test Client");
     bplocal.addListener("disconnect", () => { res(); });

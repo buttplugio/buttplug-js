@@ -58,6 +58,7 @@ export class ButtplugServer extends EventEmitter {
       } else if (this._outgoingLogLevel === ButtplugLogLevel.Off) {
         this._logger.addListener("log", this.OnLogMessage);
       }
+      this._logger.MaximumEventLogLevel = ButtplugLogLevel[logmsg.LogLevel];
       this._outgoingLogLevel = ButtplugLogLevel[logmsg.LogLevel];
       return new Messages.Ok(logmsg.Id);
     case "Ping":
