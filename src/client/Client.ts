@@ -56,22 +56,6 @@ export class ButtplugClient extends EventEmitter {
     this._connector!.Disconnect();
   }
 
-  public RequestDeviceList = async () => {
-    this.CheckConnector();
-    this._logger.Debug(`ButtplugClient: ReceiveDeviceList called`);
-    const deviceList = (await this.SendMessage(new Messages.RequestDeviceList())) as Messages.DeviceList;
-    deviceList.Devices.forEach((d) => {
-      if (!this._devices.has(d.DeviceIndex)) {
-        const device = Device.fromMsg(d);
-        this._logger.Debug(`ButtplugClient: Adding Device: ${device}`);
-        this._devices.set(d.DeviceIndex, device);
-        this.emit("deviceadded", device);
-      } else {
-        this._logger.Debug(`ButtplugClient: Device already added: ${d}`);
-      }
-    });
-  }
-
   public getDevices(): Device[] {
     // While this function doesn't actually send a message, if we don't have a
     // connector, we shouldn't have devices.
@@ -178,6 +162,7 @@ export class ButtplugClient extends EventEmitter {
           this.SendMessage(new Messages.Ping(this._counter));
         } , Math.round(ping / 2));
       }
+      await this.RequestDeviceList();
       return true;
     }
     case "Error": {
@@ -187,6 +172,23 @@ export class ButtplugClient extends EventEmitter {
     }
     }
     return false;
+  }
+
+  protected RequestDeviceList = async () => {
+    this.CheckConnector();
+    this._logger.Debug(`ButtplugClient: ReceiveDeviceList called`);
+    const deviceList = (await this.SendMessage(new Messages.RequestDeviceList())) as Messages.DeviceList;
+    console.log(deviceList);
+    deviceList.Devices.forEach((d) => {
+      if (!this._devices.has(d.DeviceIndex)) {
+        const device = Device.fromMsg(d);
+        this._logger.Debug(`ButtplugClient: Adding Device: ${device}`);
+        this._devices.set(d.DeviceIndex, device);
+        this.emit("deviceadded", device);
+      } else {
+        this._logger.Debug(`ButtplugClient: Device already added: ${d}`);
+      }
+    });
   }
 
   protected ShutdownConnection = () => {
