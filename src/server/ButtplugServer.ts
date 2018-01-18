@@ -7,13 +7,6 @@ import { ButtplugLogger, ButtplugLogLevel, LogMessage } from "../core/Logging";
 
 export class ButtplugServer extends EventEmitter {
 
-  public static CanUseBluetooth = async (): Promise<boolean> => {
-    if (navigator === undefined || !("bluetooth" in navigator)) {
-      return false;
-    }
-    return await navigator.bluetooth.getAvailability();
-  }
-
   // Member: PingTimer?
   private _deviceManager: DeviceManager;
   private _pingTimedOut: boolean = false;
