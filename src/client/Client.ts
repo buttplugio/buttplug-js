@@ -178,7 +178,6 @@ export class ButtplugClient extends EventEmitter {
     this.CheckConnector();
     this._logger.Debug(`ButtplugClient: ReceiveDeviceList called`);
     const deviceList = (await this.SendMessage(new Messages.RequestDeviceList())) as Messages.DeviceList;
-    console.log(deviceList);
     deviceList.Devices.forEach((d) => {
       if (!this._devices.has(d.DeviceIndex)) {
         const device = Device.fromMsg(d);

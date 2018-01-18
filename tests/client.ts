@@ -1,4 +1,4 @@
-import { Device, ButtplugClient, FromJSON, ButtplugLogger,
+import { Device, ButtplugClient, FromJSON, ButtplugLogger, CheckMessage,
          ButtplugLogLevel, ButtplugServer, ButtplugEmbeddedServerConnector } from "../src/index";
 import { TestDeviceManager, CreateDevToolsClient } from "../src/devtools/index";
 import * as Messages from "../src/core/Messages";
@@ -7,6 +7,7 @@ describe("Client Tests", async () => {
   let p;
   let res;
   let rej;
+
   class BPTestClient extends ButtplugClient {
     constructor(ClientName: string) {
       super(ClientName);
@@ -14,29 +15,63 @@ describe("Client Tests", async () => {
     public get PingTimer() {
       return this._pingTimer;
     }
+    public async SendCheckedMessage(aMsg: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage> {
+      this.CheckConnector();
+      // This will throw if our message is invalid
+      CheckMessage(aMsg);
+      return await this.SendUncheckedMessage(aMsg);
+    }
+
+    public async SendUncheckedMessage(aMsg: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage>  {
+      let r;
+      aMsg.Id = this._counter;
+      const msgPromise = new Promise<Messages.ButtplugMessage>((resolve) => { r = resolve; });
+      this._waitingMsgs.set(this._counter, r);
+      this._counter += 1;
+      this._connector!.Send(aMsg);
+      return await msgPromise;
+    }
   }
 
   beforeEach(() => {
+    // None of our tests should take very long.
     jest.setTimeout(1000);
     p = new Promise((resolve, reject) => { res = resolve; rej = reject; });
   });
 
-  const SetupServer = async (): Promise<ButtplugClient> => {
-    const bp = new ButtplugClient("Test Buttplug Client");
+  const SetupServer = async (): Promise<BPTestClient> => {
+    const bp = new BPTestClient("Test Buttplug Client");
     await bp.ConnectLocal();
     return bp;
   };
 
+  it("Should return a test message.", async () => {
+    const bp = await SetupServer();
+    await expect(bp.SendCheckedMessage(new Messages.Test("Test")))
+      .resolves
+      .toEqual(new Messages.Test("Test", 3));
+  });
+
   it("Should emit a log message on requestlog (testing basic event emitters)", async () => {
     const bp = await SetupServer();
     await bp.RequestLog("Error");
+    let called = false;
     process.nextTick(() => {
-      bp.on("log", (x) => {
+      bp.on("log", async (x) => {
+        // This will fire if we get another log message after turning things off.
+        if (called) {
+          rej();
+        }
+        called = true;
         expect(x).toEqual(new Messages.Log("Error", "Test"));
         // Turn logging events back off.
-        ButtplugLogger.Logger.MaximumEventLogLevel = ButtplugLogLevel.Off;
+        await bp.RequestLog("Off");
+        // Make sure we don't get called again.
+        ButtplugLogger.Logger.Error("Test");
         res();
       });
+      // We shouldn't see this one.
+      ButtplugLogger.Logger.Trace("Test");
       ButtplugLogger.Logger.Error("Test");
     });
     return p;
@@ -107,7 +142,7 @@ describe("Client Tests", async () => {
         return;
       }
       device = x;
-      expect(async () => await bp.SendDeviceMessage(x, new Messages.SingleMotorVibrateCmd(50))).toThrow();
+      await expect(bp.SendDeviceMessage(x, new Messages.SingleMotorVibrateCmd(50))).rejects;
       res();
     });
     await bp.StartScanning();
@@ -137,7 +172,7 @@ describe("Client Tests", async () => {
     const bplocal = new ButtplugClient("Test Client");
     bplocal.addListener("disconnect", () => { res(); });
     await bplocal.ConnectLocal();
-    await expect(bplocal.StartScanning()).rejects.toThrow();
+    await expect(bplocal.StartScanning()).rejects;
     bplocal.Disconnect();
   });
 });
