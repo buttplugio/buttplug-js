@@ -79,7 +79,7 @@
       "^.+\\.ts$": "ts-jest"
     },
     "testMatch": [
-      "<rootDir>/tests/**/*.ts"
+      "<rootDir>/tests/**/test-*.ts"
     ],
     "coverageDirectory": "./coverage/",
     "coverageReporters": [
