@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { IDeviceSubtypeManager } from "../server/IDeviceSubtypeManager";
+import { IDeviceSubtypeManager } from "../index";
 import { TestDevice } from "./TestDevice";
 
 export class TestDeviceManager extends EventEmitter implements IDeviceSubtypeManager {

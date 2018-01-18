@@ -112,6 +112,18 @@ module.exports = [{
       }
     ]
   },
+  externals: [
+    function(context, request, callback) {
+      if (/..\/index$/.test(request)){
+        // If a module in the devtools has been included from the core module,
+        // replace it with a reference to the Buttplug global. This allows us to
+        // exclude the library/dependencies and make the library smaller, since
+        // it's considered a plugin anyways.
+        return callback(null, 'root Buttplug');
+      }
+      return callback();
+    }
+  ],
   resolve: {
     extensions: [".ts", ".js", ".json"]
   },
@@ -161,9 +173,6 @@ if (process.env.NODE_ENV === 'production') {
         minimize: true
       })
     ]);
-    if (m.name == "devtools") {
-      m.plugins.concat([new webpack.IgnorePlugin(/core.*|server.*|client.*/)]);
-    }
   }
 } else {
   for (const m of module.exports) {

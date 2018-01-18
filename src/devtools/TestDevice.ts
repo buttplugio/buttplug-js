@@ -1,5 +1,5 @@
-import { ButtplugDevice } from "../server/ButtplugDevice";
-import * as Messages from "../core/Messages";
+import { ButtplugDevice } from "../index";
+import * as Messages from "../index";
 
 export class TestDevice extends ButtplugDevice {
 
