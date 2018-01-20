@@ -2,7 +2,9 @@ import { Device, ButtplugClient, FromJSON, ButtplugLogger, CheckMessage,
          ButtplugLogLevel, ButtplugServer, ButtplugEmbeddedServerConnector } from "../src/index";
 import { TestDeviceManager, CreateDevToolsClient } from "../src/devtools/index";
 import * as Messages from "../src/core/Messages";
-import { BPTestClient } from "./utils";
+import { BPTestClient, SetupTestSuite } from "./utils";
+
+SetupTestSuite();
 
 describe("Client Tests", async () => {
   let p;
@@ -44,6 +46,7 @@ describe("Client Tests", async () => {
         await bp.RequestLog("Off");
         // Make sure we don't get called again.
         ButtplugLogger.Logger.Error("Test");
+        bp.removeAllListeners();
         res();
       });
       // We shouldn't see this one.
@@ -118,7 +121,7 @@ describe("Client Tests", async () => {
         return;
       }
       device = x;
-      await expect(bp.SendDeviceMessage(x, new Messages.SingleMotorVibrateCmd(50))).rejects;
+      await (expect(bp.SendDeviceMessage(x, new Messages.SingleMotorVibrateCmd(50))).rejects.toThrow());
       res();
     });
     await bp.StartScanning();
@@ -148,7 +151,7 @@ describe("Client Tests", async () => {
     const bplocal = new ButtplugClient("Test Client");
     bplocal.addListener("disconnect", () => { res(); });
     await bplocal.ConnectLocal();
-    await expect(bplocal.StartScanning()).rejects;
+    await expect(bplocal.StartScanning()).rejects.toThrow();
     bplocal.Disconnect();
   });
 });

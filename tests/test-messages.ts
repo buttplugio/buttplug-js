@@ -1,5 +1,8 @@
 import * as Messages from "../src/core/Messages";
 import { FromJSON } from "../src/core/MessageUtils";
+import { SetupTestSuite } from "./utils";
+
+SetupTestSuite();
 
 describe("Message", () => {
   it("Converts ok message to json correctly",

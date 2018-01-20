@@ -25,3 +25,9 @@ export class BPTestClient extends ButtplugClient {
     return await msgPromise;
   }
 }
+
+export function SetupTestSuite() {
+  process.on("unhandledRejection", (error) => {
+    throw new Error("Unhandled Promise rejection!");
+  });
+}

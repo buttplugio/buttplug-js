@@ -7,6 +7,9 @@ import * as Messages from "../src/core/Messages";
 import { FromJSON } from "../src/core/MessageUtils";
 import { EventEmitter } from "events";
 import { ButtplugClient } from "../src/index";
+import { SetupTestSuite } from "./utils";
+
+SetupTestSuite();
 
 class TestDevice extends EventEmitter implements IButtplugDevice {
   public get Name(): string {
