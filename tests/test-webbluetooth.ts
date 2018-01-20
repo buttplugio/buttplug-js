@@ -1,6 +1,8 @@
 import { WebBluetoothMock, DeviceMock, CharacteristicMock, PrimaryServiceMock, GattMock } from "web-bluetooth-mock";
+import { ButtplugLogger, ButtplugLogLevel } from "../src/core/Logging";
 import { ButtplugClient } from "../src/client/Client";
 import { BPTestClient, SetupTestSuite } from "./utils";
+import { VibrateCmd, SpeedSubcommand } from "../src/index";
 
 SetupTestSuite();
 
@@ -38,6 +40,31 @@ describe("WebBluetooth library tests", () => {
     await bp.StartScanning();
     expect(bluetooth.requestDevice).toHaveBeenCalled();
     expect(gatt.connect).toHaveBeenCalled();
+  });
+
+  it("should emit device removed on disconnect", async () => {
+    bp.on("deviceremoved", () => res());
+    await bp.StartScanning();
+    await bp.StopScanning();
+    device.dispatchEvent(new Event("gattserverdisconnected"));
+    return p;
+  });
+
+  it("should write value to port on message", async () => {
+    await bp.StartScanning();
+    await bp.StopScanning();
+    jest.spyOn(tx, "writeValue");
+    await bp.SendDeviceMessage(bp.Devices[0], new VibrateCmd([new SpeedSubcommand(0, 1)]));
+    expect(tx.writeValue).toBeCalledWith(Buffer.from("Vibrate:20;"));
+  });
+
+  it("should stop scanning on requestdevice being cancelled", async () => {
+    bp.on("scanningfinished", () => res());
+    bluetooth.requestDevice = () => {
+      throw new Error("User cancelled");
+    };
+    await bp.StartScanning();
+    return p;
   });
 
 });
