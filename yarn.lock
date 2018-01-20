@@ -80,6 +80,10 @@
   version "16.9.0"
   resolved "https://registry.yarnpkg.com/@types/tween.js/-/tween.js-16.9.0.tgz#af25067f86e15d2cba89b26776fc273ff7f55650"
 
+"@types/web-bluetooth@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@types/web-bluetooth/-/web-bluetooth-0.0.3.tgz#39472343a188585a041bbd40ddc944d051282863"
+
 "@types/web-bluetooth@^0.0.4":
   version "0.0.4"
   resolved "https://registry.yarnpkg.com/@types/web-bluetooth/-/web-bluetooth-0.0.4.tgz#107b7fc8666470035b541b194c933d320cd8fb47"
@@ -1702,6 +1706,10 @@ event-emitter@~0.3.5:
   dependencies:
     d "1"
     es5-ext "~0.10.14"
+
+event-target-shim@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/event-target-shim/-/event-target-shim-3.0.0.tgz#d2faa31db7d97188463b2cbde5e09601acae4672"
 
 events@^1.0.0:
   version "1.1.1"
@@ -5637,6 +5645,13 @@ weak@^1.0.1:
   dependencies:
     bindings "^1.2.1"
     nan "^2.0.5"
+
+web-bluetooth-mock@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/web-bluetooth-mock/-/web-bluetooth-mock-1.0.2.tgz#60a3a9ab60dd565f96a858fbf07c15597bcb0cd1"
+  dependencies:
+    "@types/web-bluetooth" "^0.0.3"
+    event-target-shim "^3.0.0"
 
 webidl-conversions@^4.0.1, webidl-conversions@^4.0.2:
   version "4.0.2"
