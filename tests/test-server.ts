@@ -7,48 +7,10 @@ import * as Messages from "../src/core/Messages";
 import { FromJSON } from "../src/core/MessageUtils";
 import { EventEmitter } from "events";
 import { ButtplugClient } from "../src/index";
+import { TestDeviceManager } from "../src/devtools";
 import { SetupTestSuite } from "./utils";
 
 SetupTestSuite();
-
-class TestDevice extends EventEmitter implements IButtplugDevice {
-  public get Name(): string {
-    return "Test Device";
-  }
-  public GetMessageSpecifications(): object {
-    return {
-      VibrateCmd: { FeatureCount: 2},
-      SingleMotorVibrateCmd: {},
-      StopDeviceCmd: {},
-    };
-  }
-  public GetAllowedMessageTypes(): string[] {
-    return Object.keys(this.GetMessageSpecifications());
-  }
-  public ParseMessage(aMsg: Messages.ButtplugDeviceMessage): Promise<Messages.ButtplugMessage> {
-    return Promise.resolve(new Messages.Ok(aMsg.Id));
-  }
-}
-
-class TestDeviceManager extends EventEmitter implements IDeviceSubtypeManager {
-  private _isScanning: boolean = false;
-
-  public async StartScanning() {
-    this._isScanning = true;
-    process.nextTick(() => {
-      this.emit("deviceadded", new TestDevice());
-    });
-  }
-
-  public StopScanning() {
-    this._isScanning = false;
-    this.emit("scanningfinished");
-  }
-
-  public get IsScanning(): boolean {
-    return this._isScanning;
-  }
-}
 
 class TestOldClient extends ButtplugClient {
 
@@ -80,7 +42,7 @@ describe("Server Tests", async () => {
   let bpServer: ButtplugServer;
   beforeEach(async () => {
     bpServer = new ButtplugServer("Test Server", 0);
-    bpServer.AddDeviceManager(new TestDeviceManager());
+    bpServer.AddDeviceManager(TestDeviceManager.Get());
   });
 
   it("Should downgrade messages", async () => {
@@ -98,7 +60,7 @@ describe("Server Tests", async () => {
     oldClient.addListener("clientmessages", (aMsgs) => {
       try {
         expect(aMsgs).toEqual([new Messages.DeviceAddedVersion0(1,
-                                                                "Test Device",
+                                                                "Test Device - Test Vibration Device",
                                                                 ["VibrateCmd",
                                                                  "SingleMotorVibrateCmd",
                                                                  "StopDeviceCmd"])]);
