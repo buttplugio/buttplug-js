@@ -12,8 +12,6 @@ describe("Client Tests", async () => {
   let rej;
 
   beforeEach(() => {
-    // None of our tests should take very long.
-    jest.setTimeout(1000);
     p = new Promise((resolve, reject) => { res = resolve; rej = reject; });
   });
 
