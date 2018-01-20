@@ -1,4 +1,5 @@
 import * as Messages from "../core/Messages";
+import { GetSchemaVersion } from "../core/MessageUtils";
 import { DeviceManager } from "./DeviceManager";
 import { EventEmitter } from "events";
 import { ServerMessageHub } from "./ServerMessageHub";
@@ -75,7 +76,7 @@ export class ButtplugServer extends EventEmitter {
       this._clientName = msg.ClientName;
       // TODO: Figure out how to encode this from the package version?
       // TODO: Figure out how to pull message schema version.
-      return new Messages.ServerInfo(0, 0, 0, 1, this._maxPingTime, this._serverName, id);
+      return new Messages.ServerInfo(0, 0, 0, GetSchemaVersion(), this._maxPingTime, this._serverName, id);
     case "Test":
       this._logger.Debug(`Server: Test received.`);
       const testmsg = aMessage as Messages.Test;
