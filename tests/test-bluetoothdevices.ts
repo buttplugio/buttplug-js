@@ -37,6 +37,8 @@ describe("WebBluetooth library tests", () => {
     await bp.StartScanning();
     await bp.StopScanning();
     jest.spyOn(mockBT.txChar, "writeValue");
+    await expect(bp.SendDeviceMessage(bp.Devices[0], new VibrateCmd([new SpeedSubcommand(0, 1),
+                                                                     new SpeedSubcommand(0, 2)]))).rejects.toThrow();
     await bp.SendDeviceMessage(bp.Devices[0], new VibrateCmd([new SpeedSubcommand(0, 1)]));
     expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate:20;"));
     await bp.SendDeviceMessage(bp.Devices[0], new SingleMotorVibrateCmd(.5));
@@ -50,11 +52,9 @@ describe("WebBluetooth library tests", () => {
     await bp.StartScanning();
     await bp.StopScanning();
     jest.spyOn(mockBT.txChar, "writeValue");
-    try {
-      await bp.SendDeviceMessage(bp.Devices[0], new VibrateCmd([new SpeedSubcommand(0, 1)]));
-    } catch (e) {
-      console.log(e);
-    }
+    await expect(bp.SendDeviceMessage(bp.Devices[0], new VibrateCmd([new SpeedSubcommand(0, 1),
+                                                                     new SpeedSubcommand(0, 2)]))).rejects.toThrow();
+    await bp.SendDeviceMessage(bp.Devices[0], new VibrateCmd([new SpeedSubcommand(0, 1)]));
     expect(mockBT.txChar.writeValue).toBeCalledWith(new Uint8Array([0x0f, 0x03, 0x00, 0xff, 0x00, 0x03, 0x00, 0x00]));
     await bp.SendDeviceMessage(bp.Devices[0], new SingleMotorVibrateCmd(.5));
     expect(mockBT.txChar.writeValue).toBeCalledWith(new Uint8Array([0x0f, 0x03, 0x00, 0x77, 0x00, 0x03, 0x00, 0x00]));
