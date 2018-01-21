@@ -30,6 +30,7 @@ export class FleshlightLaunch extends ButtplugBluetoothDevice {
     return {
       FleshlightLaunchFW12Cmd: {},
       StopDeviceCmd: {},
+      LinearCmd: { FeatureCount: 1 },
     };
   }
 
@@ -43,6 +44,7 @@ export class FleshlightLaunch extends ButtplugBluetoothDevice {
 
   private HandleFleshlightLaunchFW12Cmd =
     async (aMsg: Messages.FleshlightLaunchFW12Cmd): Promise<Messages.ButtplugMessage> => {
+      this._lastPosition = aMsg.Position;
       await this._deviceImpl.WriteValue("tx", new Uint8Array([aMsg.Position, aMsg.Speed]));
       return new Messages.Ok(aMsg.Id);
     }
@@ -66,7 +68,12 @@ export class FleshlightLaunch extends ButtplugBluetoothDevice {
       speed = Math.min(Math.max(speed, 0), 95);
 
       const positionGoal = Math.floor(((currentPosition / 99) * range) + ((99 - range) / 2));
-      this._lastPosition = positionGoal;
-      return await this.HandleFleshlightLaunchFW12Cmd(new Messages.FleshlightLaunchFW12Cmd(speed, positionGoal));
+      // We'll set this._lastPosition in FleshlightLaunchFW12Cmd, since
+      // everything kinda funnels to that.
+      const ret = await this.HandleFleshlightLaunchFW12Cmd(new Messages.FleshlightLaunchFW12Cmd(speed,
+                                                                                                positionGoal,
+                                                                                                aMsg.DeviceIndex,
+                                                                                                aMsg.Id));
+      return ret;
     }
 }
