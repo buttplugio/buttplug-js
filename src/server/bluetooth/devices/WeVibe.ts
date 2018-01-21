@@ -22,7 +22,7 @@ export class WeVibe extends ButtplugBluetoothDevice {
     this.MsgFuncs.set(Messages.VibrateCmd.name, this.HandleVibrateCmd);
   }
 
-  public GetMessageSpecifications(): object {
+  public get MessageSpecifications(): object {
     return {
       VibrateCmd: { FeatureCount: 1 },
       SingleMotorVibrateCmd: {},

@@ -10,14 +10,14 @@ export abstract class ButtplugDevice extends EventEmitter implements IButtplugDe
     super();
   }
 
-  public abstract GetMessageSpecifications(): object;
+  public abstract get MessageSpecifications(): object;
 
   public get Name() {
     return this._name;
   }
 
-  public GetAllowedMessageTypes(): string[] {
-    return Object.keys(this.GetMessageSpecifications());
+  public get AllowedMessageTypes(): string[] {
+    return Object.keys(this.MessageSpecifications);
   }
 
   public ParseMessage = async (aMsg: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage> => {

@@ -28,7 +28,7 @@ export class Lovense extends ButtplugBluetoothDevice {
     this.MsgFuncs.set(Messages.SingleMotorVibrateCmd.name, this.HandleSingleMotorVibrateCmd);
   }
 
-  public GetMessageSpecifications(): object {
+  public get MessageSpecifications(): object {
     return {
       VibrateCmd: { FeatureCount: 1 },
       SingleMotorVibrateCmd: {},

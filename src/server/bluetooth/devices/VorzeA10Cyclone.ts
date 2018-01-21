@@ -22,7 +22,7 @@ export class VorzeA10Cyclone extends ButtplugBluetoothDevice {
     this.MsgFuncs.set(Messages.RotateCmd.name, this.HandleRotateCmd);
   }
 
-  public GetMessageSpecifications(): object {
+  public get MessageSpecifications(): object {
     return {
       RotateCmd: { FeatureCount: 1 },
       VorzeA10CycloneCmd: {},

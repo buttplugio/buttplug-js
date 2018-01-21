@@ -75,7 +75,7 @@ export class DeviceManager extends EventEmitter {
       this._logger.Debug(`DeviceManager: Sending device list`);
       const devices: Messages.DeviceInfo[] = [];
       this._devices.forEach((v: IButtplugDevice, k: number) => {
-        devices.push(new Messages.DeviceInfo(k, v.Name, v.GetAllowedMessageTypes()));
+        devices.push(new Messages.DeviceInfo(k, v.Name, v.AllowedMessageTypes));
       });
       return new Messages.DeviceList(devices, id);
     }
@@ -91,7 +91,7 @@ export class DeviceManager extends EventEmitter {
                                       id);
     }
     const device = this._devices.get(deviceMsg.DeviceIndex)!;
-    if (device.GetAllowedMessageTypes().indexOf(aMessage.Type) < 0) {
+    if (device.AllowedMessageTypes.indexOf(aMessage.Type) < 0) {
       return this._logger.LogAndError(`Device ${device.Name} does not take message type ${aMessage.Type}`,
                                       Messages.ErrorClass.ERROR_DEVICE,
                                       id);
@@ -108,7 +108,7 @@ export class DeviceManager extends EventEmitter {
     device.addListener("deviceremoved", this.OnDeviceRemoved);
     ServerMessageHub.Instance.emitMessage(new Messages.DeviceAdded(deviceIndex,
                                                                    device.Name,
-                                                                   device.GetMessageSpecifications()));
+                                                                   device.MessageSpecifications));
   }
 
   private OnDeviceRemoved = (device: IButtplugDevice) => {

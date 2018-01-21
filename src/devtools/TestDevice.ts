@@ -31,7 +31,7 @@ export class TestDevice extends ButtplugDevice {
     this._connected = connected;
   }
 
-  public GetMessageSpecifications(): object {
+  public get MessageSpecifications(): object {
     if (this.MsgFuncs.has(Messages.VibrateCmd.name)) {
       return {
         VibrateCmd: { FeatureCount: 1 },
