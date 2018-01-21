@@ -74,7 +74,10 @@ describe("WebBluetooth library tests", () => {
                                                      new VectorSubcommand(1, 1, 1)]))).rejects.toThrow();
     await bp.SendDeviceMessage(bp.Devices[0], new FleshlightLaunchFW12Cmd(99, 99));
     expect(mockBT.txChar.writeValue).toBeCalledWith(new Uint8Array([99, 99]));
-    // TODO: Actual LinearCmd test
+    // We should expect to be at position 99 here, so calculate time and
+    // movement from that accordingly.
+    await bp.SendDeviceMessage(bp.Devices[0], new LinearCmd([new VectorSubcommand(0, .5, 500)]));
+    expect(mockBT.txChar.writeValue).toBeCalledWith(new Uint8Array([49, 19]));
     await bp.StopAllDevices();
     expect(mockBT.txChar.writeValue).toBeCalledWith(new Uint8Array([0, 0]));
   });
