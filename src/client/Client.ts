@@ -95,8 +95,8 @@ export class ButtplugClient extends EventEmitter {
       return Promise.reject(new Error("Device not available."));
     }
     if (dev.AllowedMessages.indexOf(aDeviceMsg.Type) === -1) {
-      this._logger.Error(`Device ${aDevice} does not accept message type ${aDeviceMsg.Type}.`);
-      return Promise.reject(new Error(`Device ${aDevice} does not accept message type ${aDeviceMsg.Type}.`));
+      this._logger.Error(`Device ${aDevice.Name} does not accept message type ${aDeviceMsg.Type}.`);
+      return Promise.reject(new Error(`Device ${aDevice.Name} does not accept message type ${aDeviceMsg.Type}.`));
     }
     aDeviceMsg.DeviceIndex = aDevice.Index;
     return await this.SendMsgExpectOk(aDeviceMsg);
