@@ -1,5 +1,7 @@
 import { ButtplugClient, CheckMessage } from "../src/index";
+import { BluetoothDeviceInfo } from "../src/server/bluetooth/BluetoothDeviceInfo";
 import * as Messages from "../src/core/Messages";
+import { WebBluetoothMock, DeviceMock, CharacteristicMock, PrimaryServiceMock, GattMock } from "web-bluetooth-mock";
 
 export class BPTestClient extends ButtplugClient {
   constructor(ClientName: string) {
@@ -32,4 +34,20 @@ export function SetupTestSuite() {
   process.on("unhandledRejection", (error) => {
     throw new Error("Unhandled Promise rejection!");
   });
+}
+
+export class WebBluetoothMockObject {
+  constructor(public device: DeviceMock,
+              public gatt: GattMock,
+              public service: PrimaryServiceMock,
+              public txChar: CharacteristicMock) {
+  }
+}
+
+export function MakeMockWebBluetoothDevice(deviceInfo: BluetoothDeviceInfo): WebBluetoothMockObject {
+  const device = new DeviceMock(deviceInfo.Names[0], [deviceInfo.Services[0]]);
+  const gatt = device.gatt;
+  const service = device.getServiceMock(deviceInfo.Services[0]);
+  const tx = service.getCharacteristicMock((deviceInfo.Characteristics as any).tx);
+  return new WebBluetoothMockObject(device, gatt, service, tx);
 }
