@@ -117,7 +117,7 @@ module.exports = [{
       // This will catch both the imports from the devtools and devtools/web
       // directories. And will probably cause some weird bug at some point.
       // Future me, you are totally allowed to hate now me for this.
-      if (/..\/index|$/.test(request)) {
+      if (/..\/index$/.test(request)) {
         // If a module in the devtools has been included from the core module,
         // replace it with a reference to the Buttplug global. This allows us to
         // exclude the library/dependencies and make the library smaller, since
