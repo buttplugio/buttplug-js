@@ -67,4 +67,13 @@ describe("WebBluetooth library tests", () => {
     return p;
   });
 
+  it("should stop scanning on device not opening", async () => {
+    bp.on("scanningfinished", () => res());
+    gatt.connect = () => {
+      throw new Error("Connection error");
+    };
+    await expect(bp.StartScanning()).rejects.toThrow();
+    return p;
+  });
+
 });

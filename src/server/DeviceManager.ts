@@ -50,7 +50,9 @@ export class DeviceManager extends EventEmitter {
           try {
             await manager.StartScanning();
           } catch (e) {
-            return new Messages.Error((e as Error).message, Messages.ErrorClass.ERROR_DEVICE, id);
+            return this._logger.LogAndError((e as Error).message,
+                                            Messages.ErrorClass.ERROR_DEVICE,
+                                            id);
           }
         }
       }
