@@ -19,6 +19,7 @@ export class VorzeA10Cyclone extends ButtplugBluetoothDevice {
     super("Vorze A10 Cyclone", aDeviceImpl);
     this.MsgFuncs.set(Messages.StopDeviceCmd.name, this.HandleStopDeviceCmd);
     this.MsgFuncs.set(Messages.VorzeA10CycloneCmd.name, this.HandleVorzeA10CycloneCmd);
+    this.MsgFuncs.set(Messages.RotateCmd.name, this.HandleRotateCmd);
   }
 
   public GetMessageSpecifications(): object {
@@ -36,7 +37,7 @@ export class VorzeA10Cyclone extends ButtplugBluetoothDevice {
                                 Messages.ErrorClass.ERROR_DEVICE,
                                 aMsg.Id);
     }
-    return await this.HandleVorzeA10CycloneCmd(new Messages.VorzeA10CycloneCmd(aMsg.Rotations[0].Speed,
+    return await this.HandleVorzeA10CycloneCmd(new Messages.VorzeA10CycloneCmd(aMsg.Rotations[0].Speed * 100,
                                                                                aMsg.Rotations[0].Clockwise,
                                                                                aMsg.DeviceIndex,
                                                                                aMsg.Id));
@@ -45,7 +46,7 @@ export class VorzeA10Cyclone extends ButtplugBluetoothDevice {
   private HandleStopDeviceCmd =
     async (aMsg: Messages.StopDeviceCmd): Promise<Messages.ButtplugMessage> => {
       return await this.HandleVorzeA10CycloneCmd(new Messages.VorzeA10CycloneCmd(0,
-                                                                                 true,
+                                                                                 false,
                                                                                  aMsg.DeviceIndex,
                                                                                  aMsg.Id));
     }
