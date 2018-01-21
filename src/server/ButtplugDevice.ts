@@ -22,7 +22,7 @@ export abstract class ButtplugDevice extends EventEmitter implements IButtplugDe
 
   public ParseMessage = async (aMsg: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage> => {
     if (!this.MsgFuncs.has(aMsg.Type)) {
-      return new Messages.Error("${this._name} cannot handle message of type ${aMsg.Type} )",
+      return new Messages.Error(`${this._name} cannot handle message of type ${aMsg.Type}`,
                                 Messages.ErrorClass.ERROR_MSG,
                                 aMsg.Id);
     }
