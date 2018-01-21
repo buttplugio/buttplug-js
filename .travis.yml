@@ -1,21 +1,4 @@
 language: node_js
-sudo: false
 node_js:
-  - 9
-install:
-  - yarn
-script:
-  - yarn tslint
-  - yarn build:all
-  - yarn test
-  - yarn build:doc
-
-cache: yarn
-
-deploy:
-  provider: pages
-  local_dir: doc
-  skip_cleanup: true
-  github_token: $GITHUB_TOKEN
-  on:
-    branch: master
+  - "7"
+script: "npm run test"

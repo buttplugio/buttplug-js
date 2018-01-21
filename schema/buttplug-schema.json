@@ -549,7 +549,7 @@
       "properties": {
         "Id": { "$ref": "#/components/Id" },
         "DeviceIndex": { "$ref": "#/components/DeviceIndex" },
-        "Speeds": {
+        "Rotations": {
           "description": "Device rotation speeds (floating point, 0 < x < 1) keyed on rotator number, stepping will be device specific.",
           "type": "array",
           "items": {
@@ -585,7 +585,7 @@
       "required": [
         "Id",
         "DeviceIndex",
-        "Speeds"
+        "Rotations"
       ]
     },
     "LinearCmd": {
