@@ -19,6 +19,7 @@ export class WeVibe extends ButtplugBluetoothDevice {
     super(`WeVibe ${aDeviceImpl.Name}` , aDeviceImpl);
     this.MsgFuncs.set(Messages.StopDeviceCmd.name, this.HandleStopDeviceCmd);
     this.MsgFuncs.set(Messages.SingleMotorVibrateCmd.name, this.HandleSingleMotorVibrateCmd);
+    this.MsgFuncs.set(Messages.VibrateCmd.name, this.HandleVibrateCmd);
   }
 
   public GetMessageSpecifications(): object {
@@ -48,7 +49,7 @@ export class WeVibe extends ButtplugBluetoothDevice {
   private HandleSingleMotorVibrateCmd =
     async (aMsg: Messages.SingleMotorVibrateCmd): Promise<Messages.ButtplugMessage> => {
       const speed = Math.floor(aMsg.Speed * 15);
-      const data: Uint8Array = new Uint8Array([0x0f, 0x03, 0x00, (speed << 4) || (speed), 0x00, 0x03, 0x00, 0x00]);
+      const data: Uint8Array = new Uint8Array([0x0f, 0x03, 0x00, (speed << 4) | (speed), 0x00, 0x03, 0x00, 0x00]);
       await this._deviceImpl.WriteValue("tx", data);
       return new Messages.Ok(aMsg.Id);
     }
