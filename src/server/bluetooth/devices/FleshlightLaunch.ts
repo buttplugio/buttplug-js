@@ -70,10 +70,9 @@ export class FleshlightLaunch extends ButtplugBluetoothDevice {
       const positionGoal = Math.floor(((currentPosition / 99) * range) + ((99 - range) / 2));
       // We'll set this._lastPosition in FleshlightLaunchFW12Cmd, since
       // everything kinda funnels to that.
-      const ret = await this.HandleFleshlightLaunchFW12Cmd(new Messages.FleshlightLaunchFW12Cmd(speed,
-                                                                                                positionGoal,
-                                                                                                aMsg.DeviceIndex,
-                                                                                                aMsg.Id));
-      return ret;
+      return await this.HandleFleshlightLaunchFW12Cmd(new Messages.FleshlightLaunchFW12Cmd(speed,
+                                                                                           positionGoal,
+                                                                                           aMsg.DeviceIndex,
+                                                                                           aMsg.Id));
     }
 }

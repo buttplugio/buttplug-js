@@ -87,10 +87,29 @@ export class TestDevice extends ButtplugDevice {
 
   private HandleLinearCmd =
     async (aMsg: Messages.LinearCmd): Promise<Messages.ButtplugMessage> => {
-      const speed = 0;
-      return await this.HandleFleshlightLaunchFW12Cmd(new FleshlightLaunchFW12Cmd(speed,
-                                                                                  aMsg.Vectors[0].Position * 99,
-                                                                                  aMsg.DeviceIndex));
+      if (aMsg.Vectors.length !== 1) {
+        return new Messages.Error("LinearCmd requires 1 vector for this device.",
+                                  Messages.ErrorClass.ERROR_DEVICE,
+                                  aMsg.Id);
+      }
+      // Move between 5/95, otherwise we'll allow the device to smack into hard
+      // stops because of braindead firmware.
+      const range: number = 90;
+      const vector = aMsg.Vectors[0];
+      const currentPosition = vector.Position * 100;
+      const positionDelta: number = Math.abs(currentPosition - this._linearPosition);
+      let speed: number = Math.floor(25000 * Math.pow(((vector.Duration * 90) / positionDelta), -1.05));
+
+      // Clamp speed on 0 <= x <= 95 so we don't break the launch.
+      speed = Math.min(Math.max(speed, 0), 95);
+
+      const positionGoal = Math.floor(((currentPosition / 99) * range) + ((99 - range) / 2));
+      // We'll set this._lastPosition in FleshlightLaunchFW12Cmd, since
+      // everything kinda funnels to that.
+      return await this.HandleFleshlightLaunchFW12Cmd(new Messages.FleshlightLaunchFW12Cmd(speed,
+                                                                                           positionGoal,
+                                                                                           aMsg.DeviceIndex,
+                                                                                           aMsg.Id));
     }
 
 }
