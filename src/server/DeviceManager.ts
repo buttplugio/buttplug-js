@@ -50,7 +50,9 @@ export class DeviceManager extends EventEmitter {
           try {
             await manager.StartScanning();
           } catch (e) {
-            return new Messages.Error((e as Error).message, Messages.ErrorClass.ERROR_DEVICE, id);
+            return this._logger.LogAndError((e as Error).message,
+                                            Messages.ErrorClass.ERROR_DEVICE,
+                                            id);
           }
         }
       }
@@ -71,7 +73,11 @@ export class DeviceManager extends EventEmitter {
       return new Messages.Ok(id);
     case "RequestDeviceList":
       this._logger.Debug(`DeviceManager: Sending device list`);
-      return new Messages.DeviceList([], id);
+      const devices: Messages.DeviceInfo[] = [];
+      this._devices.forEach((v: IButtplugDevice, k: number) => {
+        devices.push(new Messages.DeviceInfo(k, v.Name, v.AllowedMessageTypes));
+      });
+      return new Messages.DeviceList(devices, id);
     }
     const deviceMsg = (aMessage as Messages.ButtplugDeviceMessage);
     if (deviceMsg.DeviceIndex === undefined) {
@@ -85,7 +91,7 @@ export class DeviceManager extends EventEmitter {
                                       id);
     }
     const device = this._devices.get(deviceMsg.DeviceIndex)!;
-    if (device.GetAllowedMessageTypes().indexOf(aMessage.Type) < 0) {
+    if (device.AllowedMessageTypes.indexOf(aMessage.Type) < 0) {
       return this._logger.LogAndError(`Device ${device.Name} does not take message type ${aMessage.Type}`,
                                       Messages.ErrorClass.ERROR_DEVICE,
                                       id);
@@ -102,7 +108,7 @@ export class DeviceManager extends EventEmitter {
     device.addListener("deviceremoved", this.OnDeviceRemoved);
     ServerMessageHub.Instance.emitMessage(new Messages.DeviceAdded(deviceIndex,
                                                                    device.Name,
-                                                                   device.GetAllowedMessageTypes()));
+                                                                   device.MessageSpecifications));
   }
 
   private OnDeviceRemoved = (device: IButtplugDevice) => {

@@ -5,7 +5,7 @@ import * as Messages from "./Messages";
  * Represents an abstract device, capable of taking certain kinds of messages.
  */
 export class Device {
-  public static fromMsg(aMsg: Messages.DeviceAdded | Messages.DeviceInfo): Device {
+  public static fromMsg(aMsg: Messages.DeviceAddedVersion1 | Messages.DeviceInfoWithSpecifications): Device {
     return new Device(aMsg.DeviceIndex,
                       aMsg.DeviceName,
                       aMsg.DeviceMessages);
@@ -18,7 +18,7 @@ export class Device {
    */
   constructor(private index: number,
               private name: string,
-              private allowedMsgs: string[]) {
+              private allowedMsgs: object) {
   }
 
   /**
@@ -39,6 +39,6 @@ export class Device {
    * Return a list of message types the device accepts.
    */
   public get AllowedMessages(): string[] {
-    return this.allowedMsgs;
+    return Object.keys(this.allowedMsgs);
   }
 }

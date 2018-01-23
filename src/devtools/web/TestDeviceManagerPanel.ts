@@ -1,4 +1,4 @@
-import { TestDeviceManager } from "./TestDeviceManager";
+import { TestDeviceManager } from "../TestDeviceManager";
 import * as TWEEN from "@tweenjs/tween.js";
 
 const jsPanel = require("./jspanel.js");

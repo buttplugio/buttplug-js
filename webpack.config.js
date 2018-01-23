@@ -71,7 +71,7 @@ module.exports = [{
     chunks: false,
     chunkModules: false
   },
-  entry: './src/devtools/index.ts',
+  entry: './src/devtools/web/index.web.ts',
   output: {
     path: path.resolve(__dirname, './dist/web'),
     filename: 'buttplug-devtools',
@@ -112,6 +112,21 @@ module.exports = [{
       }
     ]
   },
+  externals: [
+    function(context, request, callback) {
+      // This will catch both the imports from the devtools and devtools/web
+      // directories. And will probably cause some weird bug at some point.
+      // Future me, you are totally allowed to hate now me for this.
+      if (/..\/index$/.test(request)) {
+        // If a module in the devtools has been included from the core module,
+        // replace it with a reference to the Buttplug global. This allows us to
+        // exclude the library/dependencies and make the library smaller, since
+        // it's considered a plugin anyways.
+        return callback(null, 'root Buttplug');
+      }
+      return callback();
+    }
+  ],
   resolve: {
     extensions: [".ts", ".js", ".json"]
   },
@@ -161,9 +176,6 @@ if (process.env.NODE_ENV === 'production') {
         minimize: true
       })
     ]);
-    if (m.name == "devtools") {
-      m.plugins.concat([new webpack.IgnorePlugin(/core.*|server.*|client.*/)]);
-    }
   }
 } else {
   for (const m of module.exports) {

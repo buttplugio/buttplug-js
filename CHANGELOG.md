@@ -1,3 +1,15 @@
+# Version 0.5.0 - 2018/01/22
+
+- Added Buttplug Spec v1 implementation
+  - More generic message types (VibrateCmd, RotateCmd, LinearCmd)
+  - Message attributes (device feature counts)
+  - Message downgrading capabilities
+- Added tests. So many tests.
+- Divided devtools into core and web directories
+- Updated devtools to depend on buttplug as an external library (makes file sizes smaller)
+- Library now uses es6 by default
+- Lots of bug fixes due to aforementioned tests (Wevibe control issues, missing error message, etc...)
+
 # Version 0.4.3 - 2018/01/16
 
 - Fix many logging bugs

@@ -24,7 +24,28 @@ export class Lovense extends ButtplugBluetoothDevice {
   public constructor(aDeviceImpl: IBluetoothDeviceImpl) {
     super(`Lovense ${aDeviceImpl.Name}`, aDeviceImpl);
     this.MsgFuncs.set(Messages.StopDeviceCmd.name, this.HandleStopDeviceCmd);
+    this.MsgFuncs.set(Messages.VibrateCmd.name, this.HandleVibrateCmd);
     this.MsgFuncs.set(Messages.SingleMotorVibrateCmd.name, this.HandleSingleMotorVibrateCmd);
+  }
+
+  public get MessageSpecifications(): object {
+    return {
+      VibrateCmd: { FeatureCount: 1 },
+      SingleMotorVibrateCmd: {},
+      StopDeviceCmd: {},
+    };
+  }
+
+  private HandleVibrateCmd = async (aMsg: Messages.VibrateCmd): Promise<Messages.ButtplugMessage> => {
+    if (aMsg.Speeds.length !== 1) {
+      return new Messages.Error(`Lovense devices require VibrateCmd to have 1 speed command, ` +
+                                `${aMsg.Speeds.length} sent.`,
+                                Messages.ErrorClass.ERROR_DEVICE,
+                                aMsg.Id);
+    }
+    return await this.HandleSingleMotorVibrateCmd(new Messages.SingleMotorVibrateCmd(aMsg.Speeds[0].Speed,
+                                                                                     aMsg.DeviceIndex,
+                                                                                     aMsg.Id));
   }
 
   private HandleStopDeviceCmd = async (aMsg: Messages.StopDeviceCmd): Promise<Messages.ButtplugMessage> => {

@@ -1,4 +1,4 @@
-import { ButtplugLogger, LogMessage, ButtplugLogLevel } from "../core/Logging";
+import { ButtplugLogger, LogMessage, ButtplugLogLevel } from "../../index";
 const jsPanel = require("./jspanel.js");
 require("jspanel4/dist/jspanel.css");
 require("jspanel4/dist/fonts/jsglyph.eot");
@@ -7,7 +7,7 @@ require("./LogPanel.css");
 
 export class LogPanel {
 
-  public static ShowLogPanel(logger: ButtplugLogger) {
+  public static ShowLogPanel() {
     jsPanel.jsPanel.create({
       theme:       "primary",
       headerTitle: "Buttplug Log",
@@ -15,7 +15,7 @@ export class LogPanel {
       contentSize: "650 250",
       callback() {
         this.content.innerHTML = logPanelHTML;
-        LogPanel._panel = new LogPanel(logger);
+        LogPanel._panel = new LogPanel();
       },
     });
   }
@@ -25,21 +25,22 @@ export class LogPanel {
   private panelLevelSelect: HTMLSelectElement;
   private consoleLevelSelect: HTMLSelectElement;
 
-  constructor(logger: ButtplugLogger) {
+  constructor() {
     this.logTextArea = document.getElementById("buttplugdevtoolslogtextarea")! as HTMLTextAreaElement;
     this.panelLevelSelect = document.getElementById("buttplugdevtoolsloglevelpanelselect")! as HTMLSelectElement;
     this.consoleLevelSelect = document.getElementById("buttplugdevtoolsloglevelconsoleselect")! as HTMLSelectElement;
-    logger.addListener("log", (msg) => {
+    const log = ButtplugLogger.Logger;
+    log.addListener("log", (msg) => {
       this.addLogMessage(msg);
     });
     this.panelLevelSelect.addEventListener("change", () => {
-      logger.MaximumEventLogLevel = ButtplugLogLevel[this.panelLevelSelect.value];
+      log.MaximumEventLogLevel = ButtplugLogLevel[this.panelLevelSelect.value];
     });
     this.consoleLevelSelect.addEventListener("change", () => {
-      logger.MaximumConsoleLogLevel = ButtplugLogLevel[this.consoleLevelSelect.value];
+      log.MaximumConsoleLogLevel = ButtplugLogLevel[this.consoleLevelSelect.value];
     });
-    logger.MaximumEventLogLevel = ButtplugLogLevel.Debug;
-    logger.Debug("LogPanel: DevTools Log panel enabled.");
+    log.MaximumEventLogLevel = ButtplugLogLevel.Debug;
+    log.Debug("LogPanel: DevTools Log panel enabled.");
   }
 
   private addLogMessage(msg: LogMessage) {

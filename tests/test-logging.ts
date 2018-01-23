@@ -1,12 +1,15 @@
 import { ButtplugLogLevel, ButtplugLogger } from "../src/core/Logging";
+import { SetupTestSuite } from "./utils";
 
-class TestLogger extends ButtplugLogger {
-  public static ResetLogger() {
-    ButtplugLogger.sLogger = new ButtplugLogger();
-  }
-}
+SetupTestSuite();
 
 describe("Logging Tests", async () => {
+  class TestLogger extends ButtplugLogger {
+    public static ResetLogger() {
+      ButtplugLogger.sLogger = new ButtplugLogger();
+    }
+  }
+
   let logger = TestLogger.Logger;
 
   beforeEach(() => {

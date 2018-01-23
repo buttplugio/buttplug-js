@@ -37,3 +37,7 @@ export function FromJSON(str): Messages.ButtplugMessage[] {
   }
   return msgs;
 }
+
+export function GetSchemaVersion(): number {
+  return parseInt(buttplugSchema.version, 10);
+}
