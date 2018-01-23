@@ -5,7 +5,8 @@ import { IDeviceSubtypeManager } from "./IDeviceSubtypeManager";
 export declare class ButtplugServer extends EventEmitter {
     private _serverName;
     private _maxPingTime;
-    static CanUseBluetooth: () => Promise<boolean>;
+    private _clientSchemaVersion;
+    private _clientName;
     private _deviceManager;
     private _pingTimedOut;
     private _receivedRequestServerInfo;

@@ -5,6 +5,8 @@ export declare class Lovense extends ButtplugBluetoothDevice {
     static CreateInstance(aDeviceImpl: IBluetoothDeviceImpl): Promise<ButtplugBluetoothDevice>;
     private static _deviceNames;
     constructor(aDeviceImpl: IBluetoothDeviceImpl);
+    readonly MessageSpecifications: object;
+    private HandleVibrateCmd;
     private HandleStopDeviceCmd;
     private HandleSingleMotorVibrateCmd;
 }

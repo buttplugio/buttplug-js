@@ -1,14 +1,4 @@
 "use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -17,78 +7,48 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [0, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var BluetoothDeviceInfo_1 = require("../BluetoothDeviceInfo");
-var ButtplugBluetoothDevice_1 = require("../ButtplugBluetoothDevice");
-var Messages = require("../../../core/Messages");
-var WeVibe = /** @class */ (function (_super) {
-    __extends(WeVibe, _super);
-    function WeVibe(aDeviceImpl) {
-        var _this = _super.call(this, "WeVibe " + aDeviceImpl.Name, aDeviceImpl) || this;
-        _this.HandleStopDeviceCmd = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.HandleSingleMotorVibrateCmd(new Messages.SingleMotorVibrateCmd(0, aMsg.DeviceIndex, aMsg.Id))];
-                    case 1: return [2 /*return*/, _a.sent()];
-                }
-            });
-        }); };
-        _this.HandleSingleMotorVibrateCmd = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
-            var speed, data;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        speed = Math.floor(aMsg.Speed * 15);
-                        data = new Uint8Array([0x0f, 0x03, 0x00, (speed << 4) || (speed), 0x00, 0x03, 0x00, 0x00]);
-                        return [4 /*yield*/, this._deviceImpl.WriteValue("tx", data)];
-                    case 1:
-                        _a.sent();
-                        return [2 /*return*/, new Messages.Ok(aMsg.Id)];
-                }
-            });
-        }); };
-        _this.MsgFuncs.set(Messages.StopDeviceCmd.name, _this.HandleStopDeviceCmd);
-        _this.MsgFuncs.set(Messages.SingleMotorVibrateCmd.name, _this.HandleSingleMotorVibrateCmd);
-        return _this;
-    }
-    WeVibe.CreateInstance = function (aDeviceImpl) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, new WeVibe(aDeviceImpl)];
-            });
+const BluetoothDeviceInfo_1 = require("../BluetoothDeviceInfo");
+const ButtplugBluetoothDevice_1 = require("../ButtplugBluetoothDevice");
+const Messages = require("../../../core/Messages");
+class WeVibe extends ButtplugBluetoothDevice_1.ButtplugBluetoothDevice {
+    constructor(aDeviceImpl) {
+        super(`WeVibe ${aDeviceImpl.Name}`, aDeviceImpl);
+        this.HandleVibrateCmd = (aMsg) => __awaiter(this, void 0, void 0, function* () {
+            if (aMsg.Speeds.length !== 1) {
+                return new Messages.Error(`WeVibe devices require VibrateCmd to have 1 speed command, ` +
+                    `${aMsg.Speeds.length} sent.`, Messages.ErrorClass.ERROR_DEVICE, aMsg.Id);
+            }
+            return yield this.HandleSingleMotorVibrateCmd(new Messages.SingleMotorVibrateCmd(aMsg.Speeds[0].Speed, aMsg.DeviceIndex, aMsg.Id));
         });
-    };
-    WeVibe.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["4 Plus", "Ditto", "Nova", "Wish",
-        "Pivot", "Verge", "Cougar"], ["f000bb03-0451-4000-b000-000000000000"], { tx: "f000c000-0451-4000-b000-000000000000",
-        rx: "f000b000-0451-4000-b000-000000000000" }, WeVibe.CreateInstance);
-    return WeVibe;
-}(ButtplugBluetoothDevice_1.ButtplugBluetoothDevice));
+        this.HandleStopDeviceCmd = (aMsg) => __awaiter(this, void 0, void 0, function* () {
+            return yield this.HandleSingleMotorVibrateCmd(new Messages.SingleMotorVibrateCmd(0, aMsg.DeviceIndex, aMsg.Id));
+        });
+        this.HandleSingleMotorVibrateCmd = (aMsg) => __awaiter(this, void 0, void 0, function* () {
+            const speed = Math.floor(aMsg.Speed * 15);
+            const data = new Uint8Array([0x0f, 0x03, 0x00, (speed << 4) | (speed), 0x00, 0x03, 0x00, 0x00]);
+            yield this._deviceImpl.WriteValue("tx", data);
+            return new Messages.Ok(aMsg.Id);
+        });
+        this.MsgFuncs.set(Messages.StopDeviceCmd.name, this.HandleStopDeviceCmd);
+        this.MsgFuncs.set(Messages.SingleMotorVibrateCmd.name, this.HandleSingleMotorVibrateCmd);
+        this.MsgFuncs.set(Messages.VibrateCmd.name, this.HandleVibrateCmd);
+    }
+    static CreateInstance(aDeviceImpl) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new WeVibe(aDeviceImpl);
+        });
+    }
+    get MessageSpecifications() {
+        return {
+            VibrateCmd: { FeatureCount: 1 },
+            SingleMotorVibrateCmd: {},
+            StopDeviceCmd: {},
+        };
+    }
+}
+WeVibe.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["4 Plus", "Ditto", "Nova", "Wish",
+    "Pivot", "Verge", "Cougar"], ["f000bb03-0451-4000-b000-000000000000"], { tx: "f000c000-0451-4000-b000-000000000000",
+    rx: "f000b000-0451-4000-b000-000000000000" }, WeVibe.CreateInstance);
 exports.WeVibe = WeVibe;
 //# sourceMappingURL=WeVibe.js.map

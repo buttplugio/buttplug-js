@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import { EventEmitter } from "events";
-import { IDeviceSubtypeManager } from "../server/IDeviceSubtypeManager";
+import { IDeviceSubtypeManager } from "../index";
 import { TestDevice } from "./TestDevice";
 export declare class TestDeviceManager extends EventEmitter implements IDeviceSubtypeManager {
     static Get(): TestDeviceManager;
@@ -9,6 +9,8 @@ export declare class TestDeviceManager extends EventEmitter implements IDeviceSu
     private _testVibrationDevice;
     private _testLinearDevice;
     protected constructor();
+    ConnectVibrationDevice(): void;
+    ConnectLinearDevice(): void;
     StartScanning(): void;
     readonly VibrationDevice: TestDevice;
     readonly LinearDevice: TestDevice;

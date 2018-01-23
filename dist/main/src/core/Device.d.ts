@@ -6,13 +6,13 @@ export declare class Device {
     private index;
     private name;
     private allowedMsgs;
-    static fromMsg(aMsg: Messages.DeviceAdded | Messages.DeviceInfo): Device;
+    static fromMsg(aMsg: Messages.DeviceAddedVersion1 | Messages.DeviceInfoWithSpecifications): Device;
     /**
      * @param _index Index of the device, as created by the device manager.
      * @param _name Name of the device.
      * @param _allowedMsgs Buttplug messages the device can receive.
      */
-    constructor(index: number, name: string, allowedMsgs: string[]);
+    constructor(index: number, name: string, allowedMsgs: object);
     /**
      * Return the name of the device.
      */

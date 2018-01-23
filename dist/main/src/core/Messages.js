@@ -1,109 +1,83 @@
 // tslint:disable:max-classes-per-file
 "use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-var class_transformer_1 = require("class-transformer");
+const class_transformer_1 = require("class-transformer");
 require("reflect-metadata");
-var ButtplugMessage = /** @class */ (function () {
-    function ButtplugMessage(Id) {
+class ButtplugMessage {
+    constructor(Id) {
         this.Id = Id;
     }
-    Object.defineProperty(ButtplugMessage.prototype, "Type", {
-        /***
-         * Returns the message type name
-         *
-         * Usually, the message type name will be the same as the message class
-         * constructor, so the constructor name is used by default. However, in
-         * instances where a message has different versions (i.e. DeviceAddedVersion0
-         * and DeviceAddedVersion1), we will need to override this to set the message
-         * name.
-         */
-        get: function () {
-            return this.constructor.name;
-        },
-        enumerable: true,
-        configurable: true
-    });
+    DowngradeMessage() {
+        return new Error("Message version downgrade required, but not defined for this message type.", ErrorClass.ERROR_MSG, this.Id);
+    }
+    /***
+     * Returns the message type name
+     *
+     * Usually, the message type name will be the same as the message class
+     * constructor, so the constructor name is used by default. However, in
+     * instances where a message has different versions (i.e. DeviceAddedVersion0
+     * and DeviceAddedVersion1), we will need to override this to set the message
+     * name.
+     */
+    get Type() {
+        return this.constructor.name;
+    }
     /***
      * [DEPRECATED] Function version of the this.Type getter
      *
      */
-    ButtplugMessage.prototype.getType = function () {
+    getType() {
         return this.Type;
-    };
-    ButtplugMessage.prototype.toJSON = function () {
+    }
+    toJSON() {
         return JSON.stringify(this.toProtocolFormat());
-    };
-    ButtplugMessage.prototype.toProtocolFormat = function () {
-        var jsonObj = {};
+    }
+    toProtocolFormat() {
+        const jsonObj = {};
         jsonObj[this.Type] = class_transformer_1.classToPlain(this);
         return jsonObj;
-    };
-    return ButtplugMessage;
-}());
+    }
+}
 exports.ButtplugMessage = ButtplugMessage;
-var ButtplugDeviceMessage = /** @class */ (function (_super) {
-    __extends(ButtplugDeviceMessage, _super);
-    function ButtplugDeviceMessage(DeviceIndex, Id) {
-        var _this = _super.call(this, Id) || this;
-        _this.DeviceIndex = DeviceIndex;
-        _this.Id = Id;
-        return _this;
+class ButtplugDeviceMessage extends ButtplugMessage {
+    constructor(DeviceIndex, Id) {
+        super(Id);
+        this.DeviceIndex = DeviceIndex;
+        this.Id = Id;
     }
-    return ButtplugDeviceMessage;
-}(ButtplugMessage));
+}
 exports.ButtplugDeviceMessage = ButtplugDeviceMessage;
-var ButtplugSystemMessage = /** @class */ (function (_super) {
-    __extends(ButtplugSystemMessage, _super);
-    function ButtplugSystemMessage(Id) {
-        if (Id === void 0) { Id = 0; }
-        var _this = _super.call(this, Id) || this;
-        _this.Id = Id;
-        return _this;
+class ButtplugSystemMessage extends ButtplugMessage {
+    constructor(Id = 0) {
+        super(Id);
+        this.Id = Id;
     }
-    return ButtplugSystemMessage;
-}(ButtplugMessage));
+}
 exports.ButtplugSystemMessage = ButtplugSystemMessage;
-var Ok = /** @class */ (function (_super) {
-    __extends(Ok, _super);
-    function Ok(Id) {
-        var _this = _super.call(this, Id) || this;
-        _this.Id = Id;
-        return _this;
+class Ok extends ButtplugSystemMessage {
+    constructor(Id) {
+        super(Id);
+        this.Id = Id;
     }
-    return Ok;
-}(ButtplugSystemMessage));
+    get SchemaVersion() { return 0; }
+}
 exports.Ok = Ok;
-var Ping = /** @class */ (function (_super) {
-    __extends(Ping, _super);
-    function Ping(Id) {
-        var _this = _super.call(this, Id) || this;
-        _this.Id = Id;
-        return _this;
+class Ping extends ButtplugMessage {
+    constructor(Id) {
+        super(Id);
+        this.Id = Id;
     }
-    return Ping;
-}(ButtplugMessage));
+    get SchemaVersion() { return 0; }
+}
 exports.Ping = Ping;
-var Test = /** @class */ (function (_super) {
-    __extends(Test, _super);
-    function Test(TestString, Id) {
-        if (Id === void 0) { Id = 1; }
-        var _this = _super.call(this, Id) || this;
-        _this.TestString = TestString;
-        _this.Id = Id;
-        return _this;
+class Test extends ButtplugMessage {
+    constructor(TestString, Id = 1) {
+        super(Id);
+        this.TestString = TestString;
+        this.Id = Id;
     }
-    return Test;
-}(ButtplugMessage));
+    get SchemaVersion() { return 0; }
+}
 exports.Test = Test;
 var ErrorClass;
 (function (ErrorClass) {
@@ -113,291 +87,321 @@ var ErrorClass;
     ErrorClass[ErrorClass["ERROR_MSG"] = 3] = "ERROR_MSG";
     ErrorClass[ErrorClass["ERROR_DEVICE"] = 4] = "ERROR_DEVICE";
 })(ErrorClass = exports.ErrorClass || (exports.ErrorClass = {}));
-var Error = /** @class */ (function (_super) {
-    __extends(Error, _super);
-    function Error(ErrorMessage, ErrorCode, Id) {
-        if (ErrorCode === void 0) { ErrorCode = ErrorClass.ERROR_UNKNOWN; }
-        if (Id === void 0) { Id = 1; }
-        var _this = _super.call(this, Id) || this;
-        _this.ErrorMessage = ErrorMessage;
-        _this.ErrorCode = ErrorCode;
-        _this.Id = Id;
-        return _this;
+class Error extends ButtplugSystemMessage {
+    constructor(ErrorMessage, ErrorCode = ErrorClass.ERROR_UNKNOWN, Id = 1) {
+        super(Id);
+        this.ErrorMessage = ErrorMessage;
+        this.ErrorCode = ErrorCode;
+        this.Id = Id;
     }
-    return Error;
-}(ButtplugSystemMessage));
+    get SchemaVersion() { return 0; }
+}
 exports.Error = Error;
-var DeviceInfo = /** @class */ (function () {
-    function DeviceInfo(DeviceIndex, DeviceName, DeviceMessages) {
+/***
+ * DeviceInfo Message class from v0 spec
+ *
+ * Uses a string array for messages, instead of a specifications object.
+ */
+class DeviceInfo {
+    constructor(DeviceIndex, DeviceName, DeviceMessages) {
         this.DeviceIndex = DeviceIndex;
         this.DeviceName = DeviceName;
         this.DeviceMessages = DeviceMessages;
     }
-    return DeviceInfo;
-}());
+}
 exports.DeviceInfo = DeviceInfo;
-var DeviceList = /** @class */ (function (_super) {
-    __extends(DeviceList, _super);
-    function DeviceList(Devices, Id) {
-        var _this = _super.call(this) || this;
-        _this.Devices = Devices;
-        _this.Id = Id;
-        return _this;
+class DeviceListVersion0 extends ButtplugSystemMessage {
+    constructor(Devices, Id) {
+        super();
+        this.Devices = Devices;
+        this.Id = Id;
     }
-    return DeviceList;
-}(ButtplugSystemMessage));
-exports.DeviceList = DeviceList;
-var DeviceAdded = /** @class */ (function (_super) {
-    __extends(DeviceAdded, _super);
-    function DeviceAdded(DeviceIndex, DeviceName, DeviceMessages) {
-        var _this = _super.call(this) || this;
-        _this.DeviceIndex = DeviceIndex;
-        _this.DeviceName = DeviceName;
-        _this.DeviceMessages = DeviceMessages;
-        return _this;
+    get Type() {
+        return "DeviceList";
     }
-    return DeviceAdded;
-}(ButtplugSystemMessage));
-exports.DeviceAdded = DeviceAdded;
-var DeviceRemoved = /** @class */ (function (_super) {
-    __extends(DeviceRemoved, _super);
-    function DeviceRemoved(DeviceIndex) {
-        var _this = _super.call(this) || this;
-        _this.DeviceIndex = DeviceIndex;
-        return _this;
+    get SchemaVersion() { return 0; }
+}
+exports.DeviceListVersion0 = DeviceListVersion0;
+class DeviceInfoWithSpecifications {
+    constructor(DeviceIndex, DeviceName, DeviceMessages) {
+        this.DeviceIndex = DeviceIndex;
+        this.DeviceName = DeviceName;
+        this.DeviceMessages = DeviceMessages;
     }
-    return DeviceRemoved;
-}(ButtplugSystemMessage));
+}
+exports.DeviceInfoWithSpecifications = DeviceInfoWithSpecifications;
+class DeviceListVersion1 extends ButtplugSystemMessage {
+    constructor(Devices, Id) {
+        super();
+        this.Devices = Devices;
+        this.Id = Id;
+    }
+    get Type() {
+        return "DeviceList";
+    }
+    DowngradeMessage() {
+        // This is going to look mostly the same, we just need to reduce our devices
+        // down to use string message lists instead of specification lists.
+        const oldDevices = [];
+        for (const newDevice of this.Devices) {
+            oldDevices.push(new DeviceInfo(newDevice.DeviceIndex, newDevice.DeviceName, Object.keys(newDevice.DeviceMessages)));
+        }
+        return new DeviceListVersion0(oldDevices, this.Id);
+    }
+    get SchemaVersion() { return 1; }
+}
+exports.DeviceListVersion1 = DeviceListVersion1;
+exports.DeviceList = DeviceListVersion1;
+class DeviceAddedVersion0 extends ButtplugSystemMessage {
+    constructor(DeviceIndex, DeviceName, DeviceMessages) {
+        super();
+        this.DeviceIndex = DeviceIndex;
+        this.DeviceName = DeviceName;
+        this.DeviceMessages = DeviceMessages;
+    }
+    get Type() {
+        return "DeviceAdded";
+    }
+    get SchemaVersion() { return 0; }
+}
+exports.DeviceAddedVersion0 = DeviceAddedVersion0;
+class DeviceAddedVersion1 extends ButtplugSystemMessage {
+    constructor(DeviceIndex, DeviceName, DeviceMessages) {
+        super();
+        this.DeviceIndex = DeviceIndex;
+        this.DeviceName = DeviceName;
+        this.DeviceMessages = DeviceMessages;
+    }
+    get Type() {
+        return "DeviceAdded";
+    }
+    get SchemaVersion() { return 1; }
+    DowngradeMessage() {
+        // This is going to look mostly the same, we just need to reduce our devices
+        // down to use string message lists instead of specification lists.
+        return new DeviceAddedVersion0(this.DeviceIndex, this.DeviceName, Object.keys(this.DeviceMessages));
+    }
+}
+exports.DeviceAddedVersion1 = DeviceAddedVersion1;
+exports.DeviceAdded = DeviceAddedVersion1;
+class DeviceRemoved extends ButtplugSystemMessage {
+    constructor(DeviceIndex) {
+        super();
+        this.DeviceIndex = DeviceIndex;
+    }
+    get SchemaVersion() { return 0; }
+}
 exports.DeviceRemoved = DeviceRemoved;
-var RequestDeviceList = /** @class */ (function (_super) {
-    __extends(RequestDeviceList, _super);
-    function RequestDeviceList(Id) {
-        if (Id === void 0) { Id = 1; }
-        var _this = _super.call(this, Id) || this;
-        _this.Id = Id;
-        return _this;
+class RequestDeviceList extends ButtplugMessage {
+    constructor(Id = 1) {
+        super(Id);
+        this.Id = Id;
     }
-    return RequestDeviceList;
-}(ButtplugMessage));
+    get SchemaVersion() { return 0; }
+}
 exports.RequestDeviceList = RequestDeviceList;
-var StartScanning = /** @class */ (function (_super) {
-    __extends(StartScanning, _super);
-    function StartScanning(Id) {
-        if (Id === void 0) { Id = 1; }
-        var _this = _super.call(this, Id) || this;
-        _this.Id = Id;
-        return _this;
+class StartScanning extends ButtplugMessage {
+    constructor(Id = 1) {
+        super(Id);
+        this.Id = Id;
     }
-    return StartScanning;
-}(ButtplugMessage));
+    get SchemaVersion() { return 0; }
+}
 exports.StartScanning = StartScanning;
-var StopScanning = /** @class */ (function (_super) {
-    __extends(StopScanning, _super);
-    function StopScanning(Id) {
-        if (Id === void 0) { Id = 1; }
-        var _this = _super.call(this, Id) || this;
-        _this.Id = Id;
-        return _this;
+class StopScanning extends ButtplugMessage {
+    constructor(Id = 1) {
+        super(Id);
+        this.Id = Id;
     }
-    return StopScanning;
-}(ButtplugMessage));
+    get SchemaVersion() { return 0; }
+}
 exports.StopScanning = StopScanning;
-var ScanningFinished = /** @class */ (function (_super) {
-    __extends(ScanningFinished, _super);
-    function ScanningFinished() {
-        return _super.call(this) || this;
+class ScanningFinished extends ButtplugSystemMessage {
+    constructor() {
+        super();
     }
-    return ScanningFinished;
-}(ButtplugSystemMessage));
+    get SchemaVersion() { return 0; }
+}
 exports.ScanningFinished = ScanningFinished;
-var RequestLog = /** @class */ (function (_super) {
-    __extends(RequestLog, _super);
-    function RequestLog(LogLevel, Id) {
-        if (Id === void 0) { Id = 1; }
-        var _this = _super.call(this, Id) || this;
-        _this.LogLevel = LogLevel;
-        _this.Id = Id;
-        return _this;
+class RequestLog extends ButtplugMessage {
+    constructor(LogLevel, Id = 1) {
+        super(Id);
+        this.LogLevel = LogLevel;
+        this.Id = Id;
     }
-    return RequestLog;
-}(ButtplugMessage));
+    get SchemaVersion() { return 0; }
+}
 exports.RequestLog = RequestLog;
-var Log = /** @class */ (function (_super) {
-    __extends(Log, _super);
-    function Log(LogLevel, LogMessage) {
-        var _this = _super.call(this) || this;
-        _this.LogLevel = LogLevel;
-        _this.LogMessage = LogMessage;
-        return _this;
+class Log extends ButtplugSystemMessage {
+    constructor(LogLevel, LogMessage) {
+        super();
+        this.LogLevel = LogLevel;
+        this.LogMessage = LogMessage;
     }
-    return Log;
-}(ButtplugSystemMessage));
+    get SchemaVersion() { return 0; }
+}
 exports.Log = Log;
-var RequestServerInfo = /** @class */ (function (_super) {
-    __extends(RequestServerInfo, _super);
-    function RequestServerInfo(ClientName, Id) {
-        if (Id === void 0) { Id = 1; }
-        var _this = _super.call(this, Id) || this;
-        _this.ClientName = ClientName;
-        _this.Id = Id;
-        return _this;
+class RequestServerInfo extends ButtplugMessage {
+    constructor(ClientName, MessageVersion = 0, Id = 1) {
+        super(Id);
+        this.ClientName = ClientName;
+        this.MessageVersion = MessageVersion;
+        this.Id = Id;
     }
-    return RequestServerInfo;
-}(ButtplugMessage));
+    get SchemaVersion() { return 1; }
+}
 exports.RequestServerInfo = RequestServerInfo;
-var ServerInfo = /** @class */ (function (_super) {
-    __extends(ServerInfo, _super);
-    function ServerInfo(MajorVersion, MinorVersion, BuildVersion, MessageVersion, MaxPingTime, ServerName, Id) {
-        if (Id === void 0) { Id = 1; }
-        var _this = _super.call(this) || this;
-        _this.MajorVersion = MajorVersion;
-        _this.MinorVersion = MinorVersion;
-        _this.BuildVersion = BuildVersion;
-        _this.MessageVersion = MessageVersion;
-        _this.MaxPingTime = MaxPingTime;
-        _this.ServerName = ServerName;
-        _this.Id = Id;
-        return _this;
+class ServerInfo extends ButtplugSystemMessage {
+    constructor(MajorVersion, MinorVersion, BuildVersion, MessageVersion, MaxPingTime, ServerName, Id = 1) {
+        super();
+        this.MajorVersion = MajorVersion;
+        this.MinorVersion = MinorVersion;
+        this.BuildVersion = BuildVersion;
+        this.MessageVersion = MessageVersion;
+        this.MaxPingTime = MaxPingTime;
+        this.ServerName = ServerName;
+        this.Id = Id;
     }
-    return ServerInfo;
-}(ButtplugSystemMessage));
+    get SchemaVersion() { return 0; }
+}
 exports.ServerInfo = ServerInfo;
-var FleshlightLaunchFW12Cmd = /** @class */ (function (_super) {
-    __extends(FleshlightLaunchFW12Cmd, _super);
-    function FleshlightLaunchFW12Cmd(Speed, Position, DeviceIndex, Id) {
-        if (DeviceIndex === void 0) { DeviceIndex = -1; }
-        if (Id === void 0) { Id = 1; }
-        var _this = _super.call(this, DeviceIndex, Id) || this;
-        _this.Speed = Speed;
-        _this.Position = Position;
-        _this.DeviceIndex = DeviceIndex;
-        _this.Id = Id;
-        return _this;
+class FleshlightLaunchFW12Cmd extends ButtplugDeviceMessage {
+    constructor(Speed, Position, DeviceIndex = -1, Id = 1) {
+        super(DeviceIndex, Id);
+        this.Speed = Speed;
+        this.Position = Position;
+        this.DeviceIndex = DeviceIndex;
+        this.Id = Id;
     }
-    return FleshlightLaunchFW12Cmd;
-}(ButtplugDeviceMessage));
+    get SchemaVersion() { return 0; }
+}
 exports.FleshlightLaunchFW12Cmd = FleshlightLaunchFW12Cmd;
-var KiirooCmd = /** @class */ (function (_super) {
-    __extends(KiirooCmd, _super);
-    function KiirooCmd(Command, DeviceIndex, Id) {
-        if (Command === void 0) { Command = "0"; }
-        if (DeviceIndex === void 0) { DeviceIndex = -1; }
-        if (Id === void 0) { Id = 1; }
-        var _this = _super.call(this, DeviceIndex, Id) || this;
-        _this.Command = Command;
-        _this.DeviceIndex = DeviceIndex;
-        _this.Id = Id;
-        return _this;
+class KiirooCmd extends ButtplugDeviceMessage {
+    constructor(Command = "0", DeviceIndex = -1, Id = 1) {
+        super(DeviceIndex, Id);
+        this.Command = Command;
+        this.DeviceIndex = DeviceIndex;
+        this.Id = Id;
     }
-    KiirooCmd.prototype.SetPosition = function (aPos) {
+    SetPosition(aPos) {
         if (aPos >= 0 && aPos <= 4) {
             this.Command = String(Math.round(aPos));
         }
         else {
             this.Command = "0";
         }
-    };
-    KiirooCmd.prototype.GetPosition = function () {
-        var pos = Number(this.Command) ? Number(this.Command) : 0;
+    }
+    GetPosition() {
+        const pos = Number(this.Command) ? Number(this.Command) : 0;
         if (pos < 0 || pos > 4) {
             return 0;
         }
         else {
             return Math.round(pos);
         }
-    };
-    return KiirooCmd;
-}(ButtplugDeviceMessage));
+    }
+    get SchemaVersion() { return 0; }
+}
 exports.KiirooCmd = KiirooCmd;
-var SingleMotorVibrateCmd = /** @class */ (function (_super) {
-    __extends(SingleMotorVibrateCmd, _super);
-    function SingleMotorVibrateCmd(Speed, DeviceIndex, Id) {
-        if (DeviceIndex === void 0) { DeviceIndex = -1; }
-        if (Id === void 0) { Id = 1; }
-        var _this = _super.call(this, DeviceIndex, Id) || this;
-        _this.Speed = Speed;
-        _this.DeviceIndex = DeviceIndex;
-        _this.Id = Id;
-        return _this;
+class SingleMotorVibrateCmd extends ButtplugDeviceMessage {
+    constructor(Speed, DeviceIndex = -1, Id = 1) {
+        super(DeviceIndex, Id);
+        this.Speed = Speed;
+        this.DeviceIndex = DeviceIndex;
+        this.Id = Id;
     }
-    return SingleMotorVibrateCmd;
-}(ButtplugDeviceMessage));
+    get SchemaVersion() { return 0; }
+}
 exports.SingleMotorVibrateCmd = SingleMotorVibrateCmd;
-var StopDeviceCmd = /** @class */ (function (_super) {
-    __extends(StopDeviceCmd, _super);
-    function StopDeviceCmd(DeviceIndex, Id) {
-        if (DeviceIndex === void 0) { DeviceIndex = -1; }
-        if (Id === void 0) { Id = 1; }
-        var _this = _super.call(this, DeviceIndex, Id) || this;
-        _this.DeviceIndex = DeviceIndex;
-        _this.Id = Id;
-        return _this;
+class StopDeviceCmd extends ButtplugDeviceMessage {
+    constructor(DeviceIndex = -1, Id = 1) {
+        super(DeviceIndex, Id);
+        this.DeviceIndex = DeviceIndex;
+        this.Id = Id;
     }
-    return StopDeviceCmd;
-}(ButtplugDeviceMessage));
+    get SchemaVersion() { return 0; }
+}
 exports.StopDeviceCmd = StopDeviceCmd;
-var StopAllDevices = /** @class */ (function (_super) {
-    __extends(StopAllDevices, _super);
-    function StopAllDevices(Id) {
-        if (Id === void 0) { Id = 1; }
-        var _this = _super.call(this, Id) || this;
-        _this.Id = Id;
-        return _this;
+class StopAllDevices extends ButtplugMessage {
+    constructor(Id = 1) {
+        super(Id);
+        this.Id = Id;
     }
-    return StopAllDevices;
-}(ButtplugMessage));
+    get SchemaVersion() { return 0; }
+}
 exports.StopAllDevices = StopAllDevices;
-var LovenseCmd = /** @class */ (function (_super) {
-    __extends(LovenseCmd, _super);
-    function LovenseCmd(Command, DeviceIndex, Id) {
-        if (DeviceIndex === void 0) { DeviceIndex = -1; }
-        if (Id === void 0) { Id = 1; }
-        var _this = _super.call(this, DeviceIndex, Id) || this;
-        _this.Command = Command;
-        _this.DeviceIndex = DeviceIndex;
-        _this.Id = Id;
-        return _this;
+class LovenseCmd extends ButtplugDeviceMessage {
+    constructor(Command, DeviceIndex = -1, Id = 1) {
+        super(DeviceIndex, Id);
+        this.Command = Command;
+        this.DeviceIndex = DeviceIndex;
+        this.Id = Id;
     }
-    return LovenseCmd;
-}(ButtplugDeviceMessage));
+    get SchemaVersion() { return 0; }
+}
 exports.LovenseCmd = LovenseCmd;
-var VorzeA10CycloneCmd = /** @class */ (function (_super) {
-    __extends(VorzeA10CycloneCmd, _super);
-    function VorzeA10CycloneCmd(Speed, Clockwise, DeviceIndex, Id) {
-        if (DeviceIndex === void 0) { DeviceIndex = -1; }
-        if (Id === void 0) { Id = 1; }
-        var _this = _super.call(this, DeviceIndex, Id) || this;
-        _this.Speed = Speed;
-        _this.Clockwise = Clockwise;
-        _this.DeviceIndex = DeviceIndex;
-        _this.Id = Id;
-        return _this;
+class VorzeA10CycloneCmd extends ButtplugDeviceMessage {
+    constructor(Speed, Clockwise, DeviceIndex = -1, Id = 1) {
+        super(DeviceIndex, Id);
+        this.Speed = Speed;
+        this.Clockwise = Clockwise;
+        this.DeviceIndex = DeviceIndex;
+        this.Id = Id;
     }
-    return VorzeA10CycloneCmd;
-}(ButtplugDeviceMessage));
+    get SchemaVersion() { return 0; }
+}
 exports.VorzeA10CycloneCmd = VorzeA10CycloneCmd;
-exports.Messages = {
-    DeviceAdded: DeviceAdded,
-    DeviceList: DeviceList,
-    DeviceRemoved: DeviceRemoved,
-    Error: Error,
-    FleshlightLaunchFW12Cmd: FleshlightLaunchFW12Cmd,
-    KiirooCmd: KiirooCmd,
-    Log: Log,
-    LovenseCmd: LovenseCmd,
-    Ok: Ok,
-    Ping: Ping,
-    RequestDeviceList: RequestDeviceList,
-    RequestLog: RequestLog,
-    RequestServerInfo: RequestServerInfo,
-    ScanningFinished: ScanningFinished,
-    ServerInfo: ServerInfo,
-    SingleMotorVibrateCmd: SingleMotorVibrateCmd,
-    StartScanning: StartScanning,
-    StopAllDevices: StopAllDevices,
-    StopDeviceCmd: StopDeviceCmd,
-    StopScanning: StopScanning,
-    Test: Test,
-    VorzeA10CycloneCmd: VorzeA10CycloneCmd,
-};
+class SpeedSubcommand {
+    constructor(Index, Speed) {
+        this.Index = Index;
+        this.Speed = Speed;
+    }
+}
+exports.SpeedSubcommand = SpeedSubcommand;
+class VibrateCmd extends ButtplugDeviceMessage {
+    constructor(Speeds, DeviceIndex = -1, Id = 1) {
+        super(DeviceIndex, Id);
+        this.Speeds = Speeds;
+        this.DeviceIndex = DeviceIndex;
+        this.Id = Id;
+    }
+    get SchemaVersion() { return 1; }
+}
+exports.VibrateCmd = VibrateCmd;
+class RotateSubcommand {
+    constructor(Index, Speed, Clockwise) {
+        this.Index = Index;
+        this.Speed = Speed;
+        this.Clockwise = Clockwise;
+    }
+}
+exports.RotateSubcommand = RotateSubcommand;
+class RotateCmd extends ButtplugDeviceMessage {
+    constructor(Rotations, DeviceIndex = -1, Id = 1) {
+        super(DeviceIndex, Id);
+        this.Rotations = Rotations;
+        this.DeviceIndex = DeviceIndex;
+        this.Id = Id;
+    }
+    get SchemaVersion() { return 1; }
+}
+exports.RotateCmd = RotateCmd;
+class VectorSubcommand {
+    constructor(Index, Position, Duration) {
+        this.Index = Index;
+        this.Position = Position;
+        this.Duration = Duration;
+    }
+}
+exports.VectorSubcommand = VectorSubcommand;
+class LinearCmd extends ButtplugDeviceMessage {
+    constructor(Vectors, DeviceIndex = -1, Id = 1) {
+        super(DeviceIndex, Id);
+        this.Vectors = Vectors;
+        this.DeviceIndex = DeviceIndex;
+        this.Id = Id;
+    }
+    get SchemaVersion() { return 1; }
+}
+exports.LinearCmd = LinearCmd;
 //# sourceMappingURL=Messages.js.map

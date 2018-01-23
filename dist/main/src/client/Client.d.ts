@@ -19,8 +19,7 @@ export declare class ButtplugClient extends EventEmitter {
     Connect: (aConnector: IButtplugConnector) => Promise<void>;
     readonly Connected: boolean;
     Disconnect(): void;
-    RequestDeviceList: () => Promise<void>;
-    getDevices(): Device[];
+    readonly Devices: Device[];
     StartScanning: () => Promise<void>;
     StopScanning: () => Promise<void>;
     RequestLog: (aLogLevel: string) => Promise<void>;
@@ -30,6 +29,7 @@ export declare class ButtplugClient extends EventEmitter {
     protected DisconnectHandler: () => void;
     protected ParseMessagesInternal(aMsgs: Messages.ButtplugMessage[]): void;
     protected InitializeConnection: () => Promise<boolean>;
+    protected RequestDeviceList: () => Promise<void>;
     protected ShutdownConnection: () => void;
     protected SendMessage(aMsg: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage>;
     protected CheckConnector(): void;

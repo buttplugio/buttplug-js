@@ -1,14 +1,4 @@
 "use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -17,93 +7,95 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [0, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var ButtplugDevice_1 = require("../server/ButtplugDevice");
-var Messages = require("../core/Messages");
-var TestDevice = /** @class */ (function (_super) {
-    __extends(TestDevice, _super);
-    function TestDevice(name, shouldVibrate, shouldLinear) {
-        if (shouldVibrate === void 0) { shouldVibrate = false; }
-        if (shouldLinear === void 0) { shouldLinear = false; }
-        var _this = _super.call(this, "Test Device - " + name) || this;
-        _this._connected = false;
-        _this._linearSpeed = 0;
-        _this._linearPosition = 0;
-        _this._vibrateSpeed = 0;
-        _this.HandleStopDeviceCmd = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
+const index_1 = require("../index");
+const Messages = require("../index");
+class TestDevice extends index_1.ButtplugDevice {
+    constructor(name, shouldVibrate = false, shouldLinear = false) {
+        super(`Test Device - ${name}`);
+        this._connected = false;
+        this._linearSpeed = 0;
+        this._linearPosition = 0;
+        this._vibrateSpeed = 0;
+        this.HandleStopDeviceCmd = (aMsg) => __awaiter(this, void 0, void 0, function* () {
+            if (this.MsgFuncs.has(Messages.VibrateCmd.name)) {
                 this.emit("vibrate", 0);
+            }
+            else if (this.MsgFuncs.has(Messages.LinearCmd.name)) {
                 this.emit("linear", { position: this._linearPosition,
                     speed: this._linearSpeed });
-                return [2 /*return*/, Promise.resolve(new Messages.Ok(aMsg.Id))];
-            });
-        }); };
-        _this.HandleSingleMotorVibrateCmd = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                this._vibrateSpeed = aMsg.Speed;
-                this.emit("vibrate", aMsg.Speed);
-                return [2 /*return*/, Promise.resolve(new Messages.Ok(aMsg.Id))];
-            });
-        }); };
-        _this.HandleFleshlightLaunchFW12Cmd = function (aMsg) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                this._linearPosition = aMsg.Position;
-                this._linearSpeed = aMsg.Speed;
-                this.emit("linear", { position: this._linearPosition,
-                    speed: this._linearSpeed });
-                return [2 /*return*/, Promise.resolve(new Messages.Ok(aMsg.Id))];
-            });
-        }); };
-        _this.MsgFuncs.set(Messages.StopDeviceCmd.name, _this.HandleStopDeviceCmd);
+            }
+            return Promise.resolve(new Messages.Ok(aMsg.Id));
+        });
+        this.HandleSingleMotorVibrateCmd = (aMsg) => __awaiter(this, void 0, void 0, function* () {
+            this._vibrateSpeed = aMsg.Speed;
+            this.emit("vibrate", aMsg.Speed);
+            return Promise.resolve(new Messages.Ok(aMsg.Id));
+        });
+        this.HandleVibrateCmd = (aMsg) => __awaiter(this, void 0, void 0, function* () {
+            return this.HandleSingleMotorVibrateCmd(new index_1.SingleMotorVibrateCmd(aMsg.Speeds[0].Speed, aMsg.DeviceIndex, aMsg.Id));
+        });
+        this.HandleFleshlightLaunchFW12Cmd = (aMsg) => __awaiter(this, void 0, void 0, function* () {
+            this._linearPosition = aMsg.Position;
+            this._linearSpeed = aMsg.Speed;
+            this.emit("linear", { position: this._linearPosition,
+                speed: this._linearSpeed });
+            return Promise.resolve(new Messages.Ok(aMsg.Id));
+        });
+        this.HandleLinearCmd = (aMsg) => __awaiter(this, void 0, void 0, function* () {
+            if (aMsg.Vectors.length !== 1) {
+                return new Messages.Error("LinearCmd requires 1 vector for this device.", Messages.ErrorClass.ERROR_DEVICE, aMsg.Id);
+            }
+            // Move between 5/95, otherwise we'll allow the device to smack into hard
+            // stops because of braindead firmware.
+            const range = 90;
+            const vector = aMsg.Vectors[0];
+            const currentPosition = vector.Position * 100;
+            const positionDelta = Math.abs(currentPosition - this._linearPosition);
+            let speed = Math.floor(25000 * Math.pow(((vector.Duration * 90) / positionDelta), -1.05));
+            // Clamp speed on 0 <= x <= 95 so we don't break the launch.
+            speed = Math.min(Math.max(speed, 0), 95);
+            const positionGoal = Math.floor(((currentPosition / 99) * range) + ((99 - range) / 2));
+            // We'll set this._lastPosition in FleshlightLaunchFW12Cmd, since
+            // everything kinda funnels to that.
+            return yield this.HandleFleshlightLaunchFW12Cmd(new Messages.FleshlightLaunchFW12Cmd(speed, positionGoal, aMsg.DeviceIndex, aMsg.Id));
+        });
+        this.MsgFuncs.set(Messages.StopDeviceCmd.name, this.HandleStopDeviceCmd);
         if (shouldVibrate) {
-            _this.MsgFuncs.set(Messages.SingleMotorVibrateCmd.name, _this.HandleSingleMotorVibrateCmd);
+            this.MsgFuncs.set(Messages.SingleMotorVibrateCmd.name, this.HandleSingleMotorVibrateCmd);
+            this.MsgFuncs.set(Messages.VibrateCmd.name, this.HandleVibrateCmd);
         }
         if (shouldLinear) {
-            _this.MsgFuncs.set(Messages.FleshlightLaunchFW12Cmd.name, _this.HandleFleshlightLaunchFW12Cmd);
+            this.MsgFuncs.set(Messages.FleshlightLaunchFW12Cmd.name, this.HandleFleshlightLaunchFW12Cmd);
+            this.MsgFuncs.set(Messages.LinearCmd.name, this.HandleLinearCmd);
         }
-        return _this;
     }
-    Object.defineProperty(TestDevice.prototype, "Connected", {
-        get: function () {
-            return this._connected;
-        },
-        set: function (connected) {
-            this._connected = connected;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    TestDevice.prototype.Disconnect = function () {
+    get Connected() {
+        return this._connected;
+    }
+    set Connected(connected) {
+        this._connected = connected;
+    }
+    get MessageSpecifications() {
+        if (this.MsgFuncs.has(Messages.VibrateCmd.name)) {
+            return {
+                VibrateCmd: { FeatureCount: 1 },
+                SingleMotorVibrateCmd: {},
+                StopDeviceCmd: {},
+            };
+        }
+        else if (this.MsgFuncs.has(Messages.LinearCmd.name)) {
+            return {
+                LinearCmd: { FeatureCount: 1 },
+                FleshlightLaunchFW12Cmd: {},
+                StopDeviceCmd: {},
+            };
+        }
+        return {};
+    }
+    Disconnect() {
         this.emit("deviceremoved", this);
-    };
-    return TestDevice;
-}(ButtplugDevice_1.ButtplugDevice));
+    }
+}
 exports.TestDevice = TestDevice;
 //# sourceMappingURL=TestDevice.js.map
