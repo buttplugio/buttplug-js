@@ -38,8 +38,7 @@
     "ajv": "^6.0.1",
     "class-transformer": "^0.1.8",
     "jspanel4": "^4.0.0-beta.2",
-    "reflect-metadata": "^0.1.12",
-    "ws": "^4.0.0"
+    "reflect-metadata": "^0.1.12"
   },
   "devDependencies": {
     "@types/jest": "^22.0.1",
