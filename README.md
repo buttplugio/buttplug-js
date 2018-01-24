@@ -104,65 +104,12 @@ be accessed by loading the following script:
 For more information on using Buttplug DevTools, see our glitch tutorial at
 [https://how-to-buttplug-devtools.glitch.me](https://how-to-buttplug-devtools.glitch.me).
 
-## Node Websocket Classes
-
-buttplug-js includes modules for using native Node websockets.
-
-### Server
-
-The client class provided with this library derives from the
-ButtplugServer class, and can be used as a standalone server.
-
-```javascript
-let Buttplug = require('buttplug');
-
-let server = new Buttplug.ButtplugNodeWebsocketServer();
-
-// Insecure hosting, on localhost:12345
-server.StartInsecureServer()
-
-// Secure hosting, on 192.168.1.2:6969
-// Cert and Private should be paths to cert/private files
-server.StartSecureServer("./cert.pem", "./private.pem", 6969, "192.168.1.2");
-
-// ...
-```
-
-If you need to create a local secure server with self-signed
-certificate (for instance, for accessing the server from a web app on
-an https server), we recommend using the
-[selfsigned](https://www.npmjs.com/package/selfsigned) package.
-
-### Client (Connector)
-
-The client class provided with this library implements the
-IButtplugConnector interface, and needs to be passed to a
-ButtplugClient class during connection.
-
-```javascript
-let Buttplug = require('buttplug');
-
-// The connector takes the websocket URL to connect to, and a boolean
-// to know whether to reject on cert fail if connecting via secure
-// websockets.
-//
-// If you are connecting to a local server, there is a good chance 
-// it will be using a self-signed cert. You will need to pass 'false'
-// as the second argument so the cert if not rejected. If you will 
-// only be connecting to servers with actual CA verifiable certs,
-// pass 'true'.
-let connector = 
-  new Buttplug.ButtplugNodeWebsocketClientConnector("wss://localhost:12345/buttplug", false);
-
-let bpc = new bp.ButtplugClient("test");
-bpc.Connect(c);
-// ...
-```
-
 ## Helper Libraries
 
 - [buttplug-noble-device-manager](https://github.com/metafetish/buttplug-noble-device-manager) -
   Noble device manager for native Bluetooth Device management.
+- [buttplug-node-websockets](https://github.com/metafetish/buttplug-node-websockets) -
+  Websocket client and server for native node applications.
 - [vue-buttplug-material-component](https://github.com/metafetish/vue-buttplug-material-component) -
   Vue.js component using [Vue Material
   Design](https://vuematerial.io). Provides a simple interface for
@@ -178,6 +125,7 @@ bpc.Connect(c);
   Buttplug bindings for the [Twine Interaction Fiction Game
   Engine](http://twinery.org). Allows developers to easily include
   device control in their games.
+
 ## License
 
 buttplug-js is BSD 3-Clause licensed.
