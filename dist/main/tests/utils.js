@@ -40,7 +40,7 @@ class BPTestClient extends index_1.ButtplugClient {
 exports.BPTestClient = BPTestClient;
 function SetupTestSuite() {
     // None of our tests should take very long.
-    jest.setTimeout(500);
+    jest.setTimeout(1000);
     process.on("unhandledRejection", (error) => {
         throw new Error("Unhandled Promise rejection!");
     });
