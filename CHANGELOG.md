@@ -1,3 +1,7 @@
+# Version 0.5.1 - 2018/01/23
+
+- Remove node websocket connector and server, since it doesn't build/include nicely as a submodule. (#87)
+
 # Version 0.5.0 - 2018/01/22
 
 - Added Buttplug Spec v1 implementation
