@@ -13,11 +13,13 @@ export class Lovense extends ButtplugBluetoothDevice {
                                   "LVS-B011": "Max",
                                   "LVS-L009": "Ambi",
                                   "LVS-S001": "Lush",
+                                  "LVS-S35": "Lush",
                                   "LVS-Z36": "Hush",
                                   "LVS-Z001": "Hush",
                                   "LVS_Z001": "Hush",
                                   "LVS-Domi37": "Domi",
                                   "LVS-Domi38": "Domi",
+                                  "LVS-Domi39": "Domi",
                                   "LVS-P36": "Edge",
                                   "LVS-Edge37": "Edge"};
 
@@ -88,7 +90,7 @@ export class LovenseRev3 {
 }
 
 export class LovenseRev4 {
-  public static readonly DeviceInfo = new BluetoothDeviceInfo(["LVS-Domi37", "LVS-Domi38"],
+  public static readonly DeviceInfo = new BluetoothDeviceInfo(["LVS-Domi37", "LVS-Domi38", "LVS-Domi39"],
                                                               ["57300001-0023-4bd4-bbd5-a6920e4c5653"],
                                                               {tx: "57300002-0023-4bd4-bbd5-a6920e4c5653",
                                                                // rx: "57300003-0023-4bd4-bbd5-a6920e4c5653"
@@ -110,6 +112,15 @@ export class LovenseRev6 {
                                                               ["50300001-0023-4bd4-bbd5-a6920e4c5653"],
                                                               {tx: "50300002-0023-4bd4-bbd5-a6920e4c5653",
                                                                // rx: "57300003-0023-4bd4-bbd5-a6920e4c5653"
+                                                              },
+                                                              Lovense.CreateInstance);
+}
+
+export class LovenseRev7 {
+  public static readonly DeviceInfo = new BluetoothDeviceInfo(["LVS-S35"],
+                                                              ["53300001-0023-4bd4-bbd5-a6920e4c5653"],
+                                                              {tx: "53300002-0023-4bd4-bbd5-a6920e4c5653",
+                                                               // rx: "53300003-0023-4bd4-bbd5-a6920e4c5653"
                                                               },
                                                               Lovense.CreateInstance);
 }
