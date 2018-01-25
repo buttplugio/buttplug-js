@@ -46,7 +46,7 @@ export class ButtplugClient extends EventEmitter {
   }
 
   public get Connected(): boolean {
-    return this._connector !== null && this._connector.IsConnected();
+    return this._connector !== null && this._connector.Connected;
   }
 
   public Disconnect() {

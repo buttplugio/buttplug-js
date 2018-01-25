@@ -13,7 +13,7 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter implements I
     super();
   }
 
-  public IsConnected(): boolean {
+  public get Connected(): boolean {
     return this._ws !== undefined;
   }
 
@@ -38,7 +38,7 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter implements I
   }
 
   public Disconnect = () => {
-    if (!this.IsConnected()) {
+    if (!this.Connected) {
       return;
     }
     this._ws!.close();
@@ -47,7 +47,7 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter implements I
   }
 
   public Send = (aMsg: ButtplugMessage) => {
-    if (!this.IsConnected()) {
+    if (!this.Connected) {
       throw new Error("ButtplugClient not connected");
     }
     this._ws!.send("[" + aMsg.toJSON() + "]");

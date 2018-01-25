@@ -5,5 +5,5 @@ export interface IButtplugConnector extends EventEmitter {
   Connect: () => Promise<void>;
   Disconnect: () => void;
   Send: (aMsg: ButtplugMessage) => void;
-  IsConnected(): boolean;
+  readonly Connected: boolean;
 }
