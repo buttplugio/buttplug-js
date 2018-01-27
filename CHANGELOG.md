@@ -1,3 +1,8 @@
+# Version 0.5.2 - 2018/01/26
+
+- Fix webpack settings so mangling doesn't destroy parser
+- Add new IDs for Lovense Domi and Lush
+
 # Version 0.5.1 - 2018/01/23
 
 - Remove node websocket connector and server, since it doesn't build/include nicely as a submodule. (#87)
