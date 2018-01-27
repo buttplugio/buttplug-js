@@ -167,6 +167,7 @@ if (process.env.NODE_ENV === 'production') {
             keep_fnames: true
           },
           compress: {
+            keep_classnames: true,
             keep_fnames: true,
             warnings: false
           }
