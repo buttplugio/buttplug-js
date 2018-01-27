@@ -6,7 +6,7 @@ export declare class ButtplugBrowserWebsocketConnector extends EventEmitter impl
     private _url;
     private _ws;
     constructor(_url: string);
-    IsConnected(): boolean;
+    readonly Connected: boolean;
     Connect: () => Promise<void>;
     Disconnect: () => void;
     Send: (aMsg: ButtplugMessage) => void;

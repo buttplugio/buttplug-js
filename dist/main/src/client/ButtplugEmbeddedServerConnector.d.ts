@@ -7,7 +7,7 @@ export declare class ButtplugEmbeddedServerConnector extends EventEmitter implem
     private _connected;
     private _server;
     Server: ButtplugServer | null;
-    IsConnected(): boolean;
+    readonly Connected: boolean;
     Connect: () => Promise<void>;
     Disconnect: () => void;
     Send: (aMsg: ButtplugMessage) => Promise<void>;

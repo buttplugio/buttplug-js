@@ -34,7 +34,7 @@ class ButtplugBrowserWebsocketConnector extends events_1.EventEmitter {
             return p;
         });
         this.Disconnect = () => {
-            if (!this.IsConnected()) {
+            if (!this.Connected) {
                 return;
             }
             this._ws.close();
@@ -42,7 +42,7 @@ class ButtplugBrowserWebsocketConnector extends events_1.EventEmitter {
             this.emit("disconnect");
         };
         this.Send = (aMsg) => {
-            if (!this.IsConnected()) {
+            if (!this.Connected) {
                 throw new Error("ButtplugClient not connected");
             }
             this._ws.send("[" + aMsg.toJSON() + "]");
@@ -59,7 +59,7 @@ class ButtplugBrowserWebsocketConnector extends events_1.EventEmitter {
             }
         };
     }
-    IsConnected() {
+    get Connected() {
         return this._ws !== undefined;
     }
     OnReaderLoad(aEvent) {

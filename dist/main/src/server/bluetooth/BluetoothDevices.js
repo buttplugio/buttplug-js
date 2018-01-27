@@ -13,6 +13,7 @@ class BluetoothDevices {
             Lovense_1.LovenseRev4.DeviceInfo,
             Lovense_1.LovenseRev5.DeviceInfo,
             Lovense_1.LovenseRev6.DeviceInfo,
+            Lovense_1.LovenseRev7.DeviceInfo,
             VorzeA10Cyclone_1.VorzeA10Cyclone.DeviceInfo,
             WeVibe_1.WeVibe.DeviceInfo];
     }

@@ -48,7 +48,7 @@ class ButtplugEmbeddedServerConnector extends events_1.EventEmitter {
     get Server() {
         return this._server;
     }
-    IsConnected() {
+    get Connected() {
         return this._connected;
     }
 }
