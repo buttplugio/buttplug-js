@@ -21,7 +21,7 @@ node modules that will aid development.
 - [API Documentation](#api-documentation)
 - [Usage Example](#usage-example)
 - [Web Application Developer Tools](#web-application-developer-tools)
-- [Node Websocket Classes](#node-websocket-classes)
+- [Buttplug and Uglify](@buttplug-and-uglify)
 - [Helper Libraries](#helper-libraries)
 - [Applications Using Buttplug-JS](#applications-using-buttplug-js)
 - [License](#license)
@@ -98,11 +98,33 @@ applications, including a log viewer and a device simulator. These can
 be accessed by loading the following script:
 
 ```html
-    <script src='https://cdn.jsdelivr.net/npm/buttplug@[version]/dist/web/buttplug-devtools.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/buttplug@[version]/dist/web/buttplug-devtools.min.js'></script>
 ```
 
 For more information on using Buttplug DevTools, see our glitch tutorial at
 [https://how-to-buttplug-devtools.glitch.me](https://how-to-buttplug-devtools.glitch.me).
+
+## Buttplug and Uglify
+
+When using Buttplug with an application that will uses Uglify for
+compression and minifying, make sure to set the following options:
+
+```javascript
+uglifyOptions: {
+  mangle: {
+    keep_fnames: true,
+    keep_classnames: true
+  },
+  compress: {
+    keep_fnames: true,
+    keep_classnames: true
+  }
+}
+```
+
+If keep_fnames and keep_classnames are not set, the compressor and
+mangler will cause the buttplug message parser to throw errors. If you
+get invalid message errors, this may be why.
 
 ## Helper Libraries
 

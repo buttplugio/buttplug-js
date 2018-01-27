@@ -17,7 +17,7 @@ export class ButtplugEmbeddedServerConnector extends EventEmitter implements IBu
     return this._server;
   }
 
-  public IsConnected(): boolean {
+  public get Connected(): boolean {
     return this._connected;
   }
 
