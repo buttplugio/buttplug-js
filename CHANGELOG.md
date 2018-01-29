@@ -1,3 +1,8 @@
+# Version 0.5.3 - 2018/01/29
+
+- Fix bug in devtools web exports
+- Add more styles to log panel so outside styles don't affect it.
+
 # Version 0.5.2 - 2018/01/26
 
 - Fix webpack settings so mangling doesn't destroy parser
