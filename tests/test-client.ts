@@ -2,7 +2,7 @@ import { Device, ButtplugClient, FromJSON, ButtplugLogger, CheckMessage,
          ButtplugLogLevel, ButtplugServer, ButtplugEmbeddedServerConnector } from "../src/index";
 import { TestDeviceManager, CreateDevToolsClient } from "../src/devtools/index";
 import * as Messages from "../src/core/Messages";
-import { BPTestClient, SetupTestSuite } from "./utils";
+import { BPTestClient, SetupTestSuite, SetupTestServer } from "./utils";
 
 SetupTestSuite();
 
@@ -15,11 +15,11 @@ describe("Client Tests", async () => {
     p = new Promise((resolve, reject) => { res = resolve; rej = reject; });
   });
 
-  const SetupServer = async (): Promise<BPTestClient> => {
+  async function SetupServer(): Promise<BPTestClient> {
     const bp = new BPTestClient("Test Buttplug Client");
     await bp.ConnectLocal();
     return bp;
-  };
+  }
 
   it("Should return a test message.", async () => {
     const bp = await SetupServer();
@@ -55,8 +55,10 @@ describe("Client Tests", async () => {
   });
 
   it("Should emit a device on addition", async () => {
-    const bp = await CreateDevToolsClient();
-    const tdm = TestDeviceManager.Get();
+    const connector = await SetupTestServer();
+    const tdm = connector.TestDeviceManager;
+    const server = connector.Server;
+    const bp = connector.Client;
     bp.on("deviceadded", (x) => {
       tdm.VibrationDevice.Disconnect();
     });
@@ -73,8 +75,9 @@ describe("Client Tests", async () => {
       res();
     });
     const server = new ButtplugServer("Test Server");
-    server.AddDeviceManager(TestDeviceManager.Get());
-    TestDeviceManager.Get().ConnectLinearDevice();
+    const tdm = new TestDeviceManager();
+    server.AddDeviceManager(tdm);
+    tdm.ConnectLinearDevice();
     const localConnector = new ButtplugEmbeddedServerConnector();
     localConnector.Server = server;
     await client.Connect(localConnector);
@@ -82,9 +85,9 @@ describe("Client Tests", async () => {
   });
 
   it("Should emit when device scanning is over", async () => {
-    const bp = await CreateDevToolsClient();
-    const tdm = TestDeviceManager.Get();
+    const bp = (await SetupTestServer()).Client;
     bp.on("scanningfinished", (x) => {
+      bp.removeAllListeners("scanningfinished");
       res();
     });
     await bp.StartScanning();
@@ -92,17 +95,16 @@ describe("Client Tests", async () => {
   });
 
   it("Should allow correct device messages and reject unauthorized", async () => {
-    let device;
-    const bp = await CreateDevToolsClient();
-    bp.on("deviceadded", async (x: Device) => {
-      // The test server will always return the vibrator first if we use
-      // StartScanning.
-      if (x.Index !== 1) {
-        return;
+    const bp = (await SetupTestServer()).Client;
+
+    bp.on("scanningfinished", async () => {
+      try {
+        await bp.SendDeviceMessage(bp.Devices[0], new Messages.SingleMotorVibrateCmd(1.0));
+      } catch (e) {
+        rej();
       }
-      device = x;
-      await bp.SendDeviceMessage(x, new Messages.SingleMotorVibrateCmd(1.0));
-      expect(async () => await bp.SendDeviceMessage(x, new Messages.KiirooCmd("2"))).toThrow();
+
+      await expect(bp.SendDeviceMessage(bp.Devices[0], new Messages.KiirooCmd("2"))).rejects.toThrow();
       res();
     });
     await bp.StartScanning();
@@ -110,16 +112,9 @@ describe("Client Tests", async () => {
   });
 
   it("Should reject schema violating message", async () => {
-    let device;
-    const bp = await CreateDevToolsClient();
-    bp.on("deviceadded", async (x) => {
-      // The test server will always return the vibrator first if we use
-      // StartScanning.
-      if (x.Index !== 1) {
-        return;
-      }
-      device = x;
-      await (expect(bp.SendDeviceMessage(x, new Messages.SingleMotorVibrateCmd(50))).rejects.toThrow());
+    const bp = (await SetupTestServer()).Client;
+    bp.on("scanningfinished", async (x) => {
+      await (expect(bp.SendDeviceMessage(bp.Devices[0], new Messages.SingleMotorVibrateCmd(50))).rejects.toThrow());
       res();
     });
     await bp.StartScanning();

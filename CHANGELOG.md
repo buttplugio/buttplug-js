@@ -1,3 +1,13 @@
+# Version 0.6.0 - 2018/02/05
+
+- Rolling version number due to devtools API change
+- TestDeviceManager no longer a singleton. That was a bad idea in the first place.
+- TestDeviceManagerPanel now requires a ButtplugServer as a parameter
+- Added Connector getter in ButtplugClient, as sometimes it's handy to pull an embedded connector
+  and get the Server from it (For things like the TestDeviceManagerPanel).
+- Devices now have internal IDs, so deviceadded isn't fired multiple times for the same device
+- Added basic MaxPro Smart Vibrator support
+
 # Version 0.5.3 - 2018/01/29
 
 - Fix bug in devtools web exports

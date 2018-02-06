@@ -12,6 +12,11 @@ the web. If you want to build a buttplug application in native node,
 check out the [Helper Libraries](#helper-libraries) section for more
 node modules that will aid development.
 
+**Note:** As long as this library is in the v0.x library phase, expect
+API breaking changes at minor version (0.x) changes. Build version
+(0.?.x) version changes should just be bug fixes or non API breaking
+additions.
+
 ## Table Of Contents
 
 - [Support The Project](#support-the-project)

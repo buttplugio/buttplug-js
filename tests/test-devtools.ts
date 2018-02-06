@@ -1,4 +1,4 @@
-import { SetupTestSuite } from "./utils";
+import { SetupTestSuite, SetupTestServer } from "./utils";
 import { TestDeviceManager, CreateDevToolsClient } from "../src/devtools/index";
 import { SingleMotorVibrateCmd, FleshlightLaunchFW12Cmd, LinearCmd, VibrateCmd,
          SpeedSubcommand, VectorSubcommand } from "../src/index";
@@ -17,8 +17,9 @@ describe("devtools tests", () => {
   });
 
   it("should translate test device calls correctly", async () => {
-    const bp = await CreateDevToolsClient();
-    const tdm = TestDeviceManager.Get();
+    const testserver = await SetupTestServer();
+    const bp = testserver.Client;
+    const tdm = testserver.TestDeviceManager;
     let deviceCount = 0;
     bp.on("deviceadded", (x) => {
       deviceCount += 1;

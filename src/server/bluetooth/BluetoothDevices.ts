@@ -4,6 +4,7 @@ import { LovenseRev1, LovenseRev2, LovenseRev3, LovenseRev4,
          LovenseRev5, LovenseRev6, LovenseRev7 } from "./devices/Lovense";
 import { VorzeA10Cyclone } from "./devices/VorzeA10Cyclone";
 import { WeVibe } from "./devices/WeVibe";
+import { Maxpro } from "./devices/Maxpro";
 
 export class BluetoothDevices {
   public static GetDeviceInfo(): BluetoothDeviceInfo[] {
@@ -15,6 +16,7 @@ export class BluetoothDevices {
             LovenseRev5.DeviceInfo,
             LovenseRev6.DeviceInfo,
             LovenseRev7.DeviceInfo,
+            Maxpro.DeviceInfo,
             VorzeA10Cyclone.DeviceInfo,
             WeVibe.DeviceInfo];
   }

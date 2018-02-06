@@ -1,3 +1,4 @@
+import { ButtplugServer, ButtplugLogger } from "../../index";
 import { TestDeviceManager } from "../TestDeviceManager";
 import * as TWEEN from "@tweenjs/tween.js";
 
@@ -8,21 +9,33 @@ const testPanelHTML = require("./TestDeviceManagerPanel.html").toString();
 require("./TestDeviceManagerPanel.css");
 
 export class TestDeviceManagerPanel {
-  public static ShowTestDeviceManagerPanel() {
+  public static ShowTestDeviceManagerPanel(buttplugServer: ButtplugServer) {
+    let tdm: TestDeviceManager | null = null;
+    for (const mgr of buttplugServer.DeviceManagers) {
+      if (mgr.constructor.name === "TestDeviceManager") {
+        tdm = (mgr as TestDeviceManager);
+        break;
+      }
+    }
+    if (tdm === null) {
+      ButtplugLogger.Logger.Error("TestDeviceManagerPanel: Cannot get test device manager from server.");
+      throw new Error("Cannot get test device manager from server.");
+    }
     jsPanel.jsPanel.create({
+      id: () => "buttplug-test-device-manager-panel",
       theme:       "primary",
       headerTitle: "Test Device Manager",
       position:    "center-top 0 80",
       contentSize: "400 250",
       callback() {
         this.content.innerHTML = testPanelHTML;
-        TestDeviceManagerPanel._panel = new TestDeviceManagerPanel();
+        TestDeviceManagerPanel._panel = new TestDeviceManagerPanel(tdm!);
       },
     });
   }
 
   protected static _panel: TestDeviceManagerPanel;
-  private _testManager = TestDeviceManager.Get();
+  private _testManager: TestDeviceManager;
   private fleshlightElement: HTMLElement;
   private vibratorElement: HTMLElement;
   private currentLaunchPosition: any = { x: 0, y: 0 };
@@ -30,12 +43,13 @@ export class TestDeviceManagerPanel {
   private moveRadius: number = 0;
   private currentVibratePosition: any = { x: 0, y: 0 };
 
-  constructor() {
+  constructor(tdm: TestDeviceManager) {
+    this._testManager = tdm;
     document.getElementById("vibratedisconnect")!.addEventListener("click", () => {
-      this._testManager.VibrationDevice.Disconnect();
+      this._testManager!.VibrationDevice.Disconnect();
     });
     document.getElementById("lineardisconnect")!.addEventListener("click", () => {
-      this._testManager.LinearDevice.Disconnect();
+      this._testManager!.LinearDevice.Disconnect();
     });
     this._testManager.VibrationDevice.addListener("vibrate", (speed) => {
       document.getElementById("vibrationspeed")!.innerHTML = speed;

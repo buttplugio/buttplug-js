@@ -6,7 +6,7 @@ export abstract class ButtplugDevice extends EventEmitter implements IButtplugDe
   protected readonly MsgFuncs: Map<string, (aMsg: Messages.ButtplugMessage) => Promise<Messages.ButtplugMessage>> =
     new Map<string, (aMsg: Messages.ButtplugMessage) => Promise<Messages.ButtplugMessage>>();
 
-  public constructor(protected _name: string) {
+  public constructor(protected _name: string, protected _id: string) {
     super();
   }
 
@@ -14,6 +14,10 @@ export abstract class ButtplugDevice extends EventEmitter implements IButtplugDe
 
   public get Name() {
     return this._name;
+  }
+
+  public get Id() {
+    return this._id;
   }
 
   public get AllowedMessageTypes(): string[] {
