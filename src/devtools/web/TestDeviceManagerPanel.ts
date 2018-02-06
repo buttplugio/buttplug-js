@@ -11,6 +11,7 @@ require("./TestDeviceManagerPanel.css");
 export class TestDeviceManagerPanel {
   public static ShowTestDeviceManagerPanel(buttplugServer: ButtplugServer) {
     jsPanel.jsPanel.create({
+      id: () => "buttplug-test-device-manager-panel",
       theme:       "primary",
       headerTitle: "Test Device Manager",
       position:    "center-top 0 80",
