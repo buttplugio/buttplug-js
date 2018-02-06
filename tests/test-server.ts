@@ -9,6 +9,7 @@ import { EventEmitter } from "events";
 import { ButtplugClient } from "../src/index";
 import { TestDeviceManager } from "../src/devtools";
 import { SetupTestSuite } from "./utils";
+import { ButtplugLogger, ButtplugLogLevel } from "../src/core/Logging";
 
 SetupTestSuite();
 
@@ -42,7 +43,7 @@ describe("Server Tests", async () => {
   let bpServer: ButtplugServer;
   beforeEach(async () => {
     bpServer = new ButtplugServer("Test Server", 0);
-    bpServer.AddDeviceManager(TestDeviceManager.Get());
+    bpServer.AddDeviceManager(new TestDeviceManager());
   });
 
   it("Should downgrade messages", async () => {
@@ -72,4 +73,23 @@ describe("Server Tests", async () => {
     return p;
   });
 
+  it("Should clear all device managers when ClearDeviceManagers called", async () => {
+    const bpConnector = new ButtplugEmbeddedServerConnector();
+    bpConnector.Server = bpServer;
+    const client = new ButtplugClient();
+    await client.Connect(bpConnector);
+    let res;
+    let rej;
+    const p = new Promise((resolve, reject) => { res = resolve; rej = reject; });
+    client.addListener("scanningfinished", (aMsgs) => {
+      try {
+        expect(client.Devices.length).toEqual(0);
+        res();
+      } catch (e) {
+        rej(e);
+      }
+    });
+    await client.StartScanning();
+    return p;
+  });
 });

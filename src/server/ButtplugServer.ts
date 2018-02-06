@@ -30,6 +30,14 @@ export class ButtplugServer extends EventEmitter {
     this._deviceManager.AddDeviceManager(aManager);
   }
 
+  public get DeviceManagers(): IDeviceSubtypeManager[] {
+    return this._deviceManager.DeviceManagers;
+  }
+
+  public ClearDeviceManagers = () => {
+    this._deviceManager.ClearDeviceManagers();
+  }
+
   public SendMessage = async (aMessage: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage> => {
     const id = aMessage.Id;
     this._logger.Trace(`Server: Got Message: ${aMessage}`);

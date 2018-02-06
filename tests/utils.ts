@@ -1,4 +1,5 @@
-import { ButtplugClient, CheckMessage } from "../src/index";
+import { ButtplugClient, CheckMessage, ButtplugServer, ButtplugEmbeddedServerConnector } from "../src/index";
+import { TestDeviceManager } from "../src/devtools/index";
 import { BluetoothDeviceInfo } from "../src/server/bluetooth/BluetoothDeviceInfo";
 import * as Messages from "../src/core/Messages";
 import { WebBluetoothMock, DeviceMock, CharacteristicMock, PrimaryServiceMock, GattMock } from "web-bluetooth-mock";
@@ -32,7 +33,7 @@ export function SetupTestSuite() {
   // None of our tests should take very long.
   jest.setTimeout(1000);
   process.on("unhandledRejection", (error) => {
-    throw new Error("Unhandled Promise rejection!");
+    throw new Error(`Unhandled Promise rejection! ${error}`);
   });
 }
 
@@ -50,4 +51,19 @@ export function MakeMockWebBluetoothDevice(deviceInfo: BluetoothDeviceInfo): Web
   const service = device.getServiceMock(deviceInfo.Services[0]);
   const tx = service.getCharacteristicMock((deviceInfo.Characteristics as any).tx);
   return new WebBluetoothMockObject(device, gatt, service, tx);
+}
+
+export async function SetupTestServer(): Promise<any> {
+  const client = new ButtplugClient("Test Client");
+  const server = new ButtplugServer("Test Server");
+  server.ClearDeviceManagers();
+  const testdevicemanager = new TestDeviceManager();
+  server.AddDeviceManager(testdevicemanager);
+  const localConnector = new ButtplugEmbeddedServerConnector();
+  localConnector.Server = server;
+  await client.Connect(localConnector);
+  return Promise.resolve({Client: client,
+                          Server: server,
+                          TestDeviceManager: testdevicemanager,
+                          Connector: localConnector});
 }

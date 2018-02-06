@@ -25,7 +25,11 @@ export class DeviceManager extends EventEmitter {
     }
   }
 
-  public ClearDeviceManagers() {
+  public get DeviceManagers(): IDeviceSubtypeManager[] {
+    return this._subtypeManagers;
+  }
+
+  public ClearDeviceManagers = () => {
     this._logger.Info("DeviceManager: Clearing device subtype managers");
     this._subtypeManagers = [];
   }

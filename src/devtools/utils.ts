@@ -5,7 +5,7 @@ export async function CreateDevToolsClient(): Promise<ButtplugClient> {
   const client = new ButtplugClient("Test Client");
   const server = new ButtplugServer("Test Server");
   server.ClearDeviceManagers();
-  server.AddDeviceManager(TestDeviceManager.Get());
+  server.AddDeviceManager(new TestDeviceManager());
   const localConnector = new ButtplugEmbeddedServerConnector();
   localConnector.Server = server;
   await client.Connect(localConnector);
