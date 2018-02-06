@@ -1,7 +1,7 @@
 {
   "name": "buttplug",
   "version": "0.6.0",
-  "description": "Javascript library for accessing buttplug servers via node.js or web sockets",
+  "description": "Javascript library for creating or accessing Buttplug Intimate Hardware Protocol servers/clients, for node or web",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/metafetish/buttplug-js.git"
