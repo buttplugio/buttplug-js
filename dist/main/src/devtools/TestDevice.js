@@ -12,7 +12,7 @@ const index_1 = require("../index");
 const Messages = require("../index");
 class TestDevice extends index_1.ButtplugDevice {
     constructor(name, shouldVibrate = false, shouldLinear = false) {
-        super(`Test Device - ${name}`);
+        super(`Test Device - ${name}`, "TestDevice" + (shouldVibrate ? "Vibrate" : "") + (shouldLinear ? "Linear" : ""));
         this._connected = false;
         this._linearSpeed = 0;
         this._linearPosition = 0;
@@ -94,6 +94,7 @@ class TestDevice extends index_1.ButtplugDevice {
         return {};
     }
     Disconnect() {
+        this._connected = false;
         this.emit("deviceremoved", this);
     }
 }

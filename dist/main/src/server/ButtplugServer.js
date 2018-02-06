@@ -28,6 +28,9 @@ class ButtplugServer extends events_1.EventEmitter {
         this.AddDeviceManager = (aManager) => {
             this._deviceManager.AddDeviceManager(aManager);
         };
+        this.ClearDeviceManagers = () => {
+            this._deviceManager.ClearDeviceManagers();
+        };
         this.SendMessage = (aMessage) => __awaiter(this, void 0, void 0, function* () {
             const id = aMessage.Id;
             this._logger.Trace(`Server: Got Message: ${aMessage}`);
@@ -105,6 +108,9 @@ class ButtplugServer extends events_1.EventEmitter {
         this._logger.Info(`Server: Starting Buttplug Server: ${this._serverName}`);
         this._deviceManager = new DeviceManager_1.DeviceManager();
         ServerMessageHub_1.ServerMessageHub.Instance.addListener("message", this.OnOutgoingMessage);
+    }
+    get DeviceManagers() {
+        return this._deviceManager.DeviceManagers;
     }
 }
 exports.ButtplugServer = ButtplugServer;

@@ -6,8 +6,8 @@ function CreateLoggerPanel() {
     LogPanel_1.LogPanel.ShowLogPanel();
 }
 exports.CreateLoggerPanel = CreateLoggerPanel;
-function CreateDeviceManagerPanel() {
-    TestDeviceManagerPanel_1.TestDeviceManagerPanel.ShowTestDeviceManagerPanel();
+function CreateDeviceManagerPanel(buttplugServer) {
+    TestDeviceManagerPanel_1.TestDeviceManagerPanel.ShowTestDeviceManagerPanel(buttplugServer);
 }
 exports.CreateDeviceManagerPanel = CreateDeviceManagerPanel;
 //# sourceMappingURL=utils.web.js.map

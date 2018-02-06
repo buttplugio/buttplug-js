@@ -18,3 +18,4 @@ export declare class WebBluetoothMockObject {
     constructor(device: DeviceMock, gatt: GattMock, service: PrimaryServiceMock, txChar: CharacteristicMock);
 }
 export declare function MakeMockWebBluetoothDevice(deviceInfo: BluetoothDeviceInfo): WebBluetoothMockObject;
+export declare function SetupTestServer(): Promise<any>;

@@ -64,6 +64,9 @@ class WebBluetoothDevice extends events_1.EventEmitter {
     get Name() {
         return this._device.name;
     }
+    get Id() {
+        return this._device.id;
+    }
 }
 exports.WebBluetoothDevice = WebBluetoothDevice;
 //# sourceMappingURL=WebBluetoothDevice.js.map

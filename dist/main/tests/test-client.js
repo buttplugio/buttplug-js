@@ -20,11 +20,13 @@ describe("Client Tests", () => __awaiter(this, void 0, void 0, function* () {
     beforeEach(() => {
         p = new Promise((resolve, reject) => { res = resolve; rej = reject; });
     });
-    const SetupServer = () => __awaiter(this, void 0, void 0, function* () {
-        const bp = new utils_1.BPTestClient("Test Buttplug Client");
-        yield bp.ConnectLocal();
-        return bp;
-    });
+    function SetupServer() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const bp = new utils_1.BPTestClient("Test Buttplug Client");
+            yield bp.ConnectLocal();
+            return bp;
+        });
+    }
     it("Should return a test message.", () => __awaiter(this, void 0, void 0, function* () {
         const bp = yield SetupServer();
         yield expect(bp.SendCheckedMessage(new Messages.Test("Test")))
@@ -57,8 +59,10 @@ describe("Client Tests", () => __awaiter(this, void 0, void 0, function* () {
         return p;
     }));
     it("Should emit a device on addition", () => __awaiter(this, void 0, void 0, function* () {
-        const bp = yield index_2.CreateDevToolsClient();
-        const tdm = index_2.TestDeviceManager.Get();
+        const connector = yield utils_1.SetupTestServer();
+        const tdm = connector.TestDeviceManager;
+        const server = connector.Server;
+        const bp = connector.Client;
         bp.on("deviceadded", (x) => {
             tdm.VibrationDevice.Disconnect();
         });
@@ -74,50 +78,42 @@ describe("Client Tests", () => __awaiter(this, void 0, void 0, function* () {
             res();
         });
         const server = new index_1.ButtplugServer("Test Server");
-        server.AddDeviceManager(index_2.TestDeviceManager.Get());
-        index_2.TestDeviceManager.Get().ConnectLinearDevice();
+        const tdm = new index_2.TestDeviceManager();
+        server.AddDeviceManager(tdm);
+        tdm.ConnectLinearDevice();
         const localConnector = new index_1.ButtplugEmbeddedServerConnector();
         localConnector.Server = server;
         yield client.Connect(localConnector);
         return p;
     }));
     it("Should emit when device scanning is over", () => __awaiter(this, void 0, void 0, function* () {
-        const bp = yield index_2.CreateDevToolsClient();
-        const tdm = index_2.TestDeviceManager.Get();
+        const bp = (yield utils_1.SetupTestServer()).Client;
         bp.on("scanningfinished", (x) => {
+            bp.removeAllListeners("scanningfinished");
             res();
         });
         yield bp.StartScanning();
         return p;
     }));
     it("Should allow correct device messages and reject unauthorized", () => __awaiter(this, void 0, void 0, function* () {
-        let device;
-        const bp = yield index_2.CreateDevToolsClient();
-        bp.on("deviceadded", (x) => __awaiter(this, void 0, void 0, function* () {
-            // The test server will always return the vibrator first if we use
-            // StartScanning.
-            if (x.Index !== 1) {
-                return;
+        const bp = (yield utils_1.SetupTestServer()).Client;
+        bp.on("scanningfinished", () => __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield bp.SendDeviceMessage(bp.Devices[0], new Messages.SingleMotorVibrateCmd(1.0));
             }
-            device = x;
-            yield bp.SendDeviceMessage(x, new Messages.SingleMotorVibrateCmd(1.0));
-            expect(() => __awaiter(this, void 0, void 0, function* () { return yield bp.SendDeviceMessage(x, new Messages.KiirooCmd("2")); })).toThrow();
+            catch (e) {
+                rej();
+            }
+            yield expect(bp.SendDeviceMessage(bp.Devices[0], new Messages.KiirooCmd("2"))).rejects.toThrow();
             res();
         }));
         yield bp.StartScanning();
         return p;
     }));
     it("Should reject schema violating message", () => __awaiter(this, void 0, void 0, function* () {
-        let device;
-        const bp = yield index_2.CreateDevToolsClient();
-        bp.on("deviceadded", (x) => __awaiter(this, void 0, void 0, function* () {
-            // The test server will always return the vibrator first if we use
-            // StartScanning.
-            if (x.Index !== 1) {
-                return;
-            }
-            device = x;
-            yield (expect(bp.SendDeviceMessage(x, new Messages.SingleMotorVibrateCmd(50))).rejects.toThrow());
+        const bp = (yield utils_1.SetupTestServer()).Client;
+        bp.on("scanningfinished", (x) => __awaiter(this, void 0, void 0, function* () {
+            yield (expect(bp.SendDeviceMessage(bp.Devices[0], new Messages.SingleMotorVibrateCmd(50))).rejects.toThrow());
             res();
         }));
         yield bp.StartScanning();

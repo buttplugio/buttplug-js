@@ -11,9 +11,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Messages = require("../core/Messages");
 const events_1 = require("events");
 class ButtplugDevice extends events_1.EventEmitter {
-    constructor(_name) {
+    constructor(_name, _id) {
         super();
         this._name = _name;
+        this._id = _id;
         this.MsgFuncs = new Map();
         this.ParseMessage = (aMsg) => __awaiter(this, void 0, void 0, function* () {
             if (!this.MsgFuncs.has(aMsg.Type)) {
@@ -25,6 +26,9 @@ class ButtplugDevice extends events_1.EventEmitter {
     }
     get Name() {
         return this._name;
+    }
+    get Id() {
+        return this._id;
     }
     get AllowedMessageTypes() {
         return Object.keys(this.MessageSpecifications);

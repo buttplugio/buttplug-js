@@ -14,6 +14,8 @@ export declare class ButtplugServer extends EventEmitter {
     private _outgoingLogLevel;
     constructor(_serverName?: string, _maxPingTime?: number);
     AddDeviceManager: (aManager: IDeviceSubtypeManager) => void;
+    readonly DeviceManagers: IDeviceSubtypeManager[];
+    ClearDeviceManagers: () => void;
     SendMessage: (aMessage: Messages.ButtplugMessage) => Promise<Messages.ButtplugMessage>;
     Shutdown: () => Promise<void>;
     private OnLogMessage;

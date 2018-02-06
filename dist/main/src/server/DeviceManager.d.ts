@@ -8,6 +8,8 @@ export declare class DeviceManager extends EventEmitter {
     private _deviceCounter;
     private _logger;
     constructor();
+    readonly DeviceManagers: IDeviceSubtypeManager[];
+    ClearDeviceManagers: () => void;
     AddDeviceManager: (aManager: IDeviceSubtypeManager) => void;
     SendMessage: (aMessage: Messages.ButtplugMessage) => Promise<Messages.ButtplugMessage>;
     private OnDeviceAdded;

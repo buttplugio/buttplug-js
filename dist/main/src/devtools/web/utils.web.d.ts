@@ -1,2 +1,3 @@
+import { ButtplugServer } from "../../index";
 export declare function CreateLoggerPanel(): void;
-export declare function CreateDeviceManagerPanel(): void;
+export declare function CreateDeviceManagerPanel(buttplugServer: ButtplugServer): void;

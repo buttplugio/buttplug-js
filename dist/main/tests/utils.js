@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const index_1 = require("../src/index");
+const index_2 = require("../src/devtools/index");
 const web_bluetooth_mock_1 = require("web-bluetooth-mock");
 class BPTestClient extends index_1.ButtplugClient {
     constructor(ClientName) {
@@ -42,7 +43,7 @@ function SetupTestSuite() {
     // None of our tests should take very long.
     jest.setTimeout(1000);
     process.on("unhandledRejection", (error) => {
-        throw new Error("Unhandled Promise rejection!");
+        throw new Error(`Unhandled Promise rejection! ${error}`);
     });
 }
 exports.SetupTestSuite = SetupTestSuite;
@@ -63,4 +64,21 @@ function MakeMockWebBluetoothDevice(deviceInfo) {
     return new WebBluetoothMockObject(device, gatt, service, tx);
 }
 exports.MakeMockWebBluetoothDevice = MakeMockWebBluetoothDevice;
+function SetupTestServer() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const client = new index_1.ButtplugClient("Test Client");
+        const server = new index_1.ButtplugServer("Test Server");
+        server.ClearDeviceManagers();
+        const testdevicemanager = new index_2.TestDeviceManager();
+        server.AddDeviceManager(testdevicemanager);
+        const localConnector = new index_1.ButtplugEmbeddedServerConnector();
+        localConnector.Server = server;
+        yield client.Connect(localConnector);
+        return Promise.resolve({ Client: client,
+            Server: server,
+            TestDeviceManager: testdevicemanager,
+            Connector: localConnector });
+    });
+}
+exports.SetupTestServer = SetupTestServer;
 //# sourceMappingURL=utils.js.map

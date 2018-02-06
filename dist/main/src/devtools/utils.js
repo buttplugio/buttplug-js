@@ -14,7 +14,8 @@ function CreateDevToolsClient() {
     return __awaiter(this, void 0, void 0, function* () {
         const client = new index_1.ButtplugClient("Test Client");
         const server = new index_1.ButtplugServer("Test Server");
-        server.AddDeviceManager(TestDeviceManager_1.TestDeviceManager.Get());
+        server.ClearDeviceManagers();
+        server.AddDeviceManager(new TestDeviceManager_1.TestDeviceManager());
         const localConnector = new index_1.ButtplugEmbeddedServerConnector();
         localConnector.Server = server;
         yield client.Connect(localConnector);

@@ -17,6 +17,7 @@ export declare class ButtplugClient extends EventEmitter {
     ConnectWebsocket: (aAddress: string) => Promise<void>;
     ConnectLocal: () => Promise<void>;
     Connect: (aConnector: IButtplugConnector) => Promise<void>;
+    readonly Connector: IButtplugConnector | null;
     readonly Connected: boolean;
     Disconnect(): void;
     readonly Devices: Device[];

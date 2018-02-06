@@ -20,6 +20,10 @@ class DeviceManager extends events_1.EventEmitter {
         this._devices = new Map();
         this._deviceCounter = 1;
         this._logger = Logging_1.ButtplugLogger.Logger;
+        this.ClearDeviceManagers = () => {
+            this._logger.Info("DeviceManager: Clearing device subtype managers");
+            this._subtypeManagers = [];
+        };
         this.AddDeviceManager = (aManager) => {
             this._logger.Info(`DeviceManager: Adding Device Manager ${aManager.constructor.name}`);
             this._subtypeManagers.push(aManager);
@@ -85,6 +89,12 @@ class DeviceManager extends events_1.EventEmitter {
             return yield device.ParseMessage(deviceMsg);
         });
         this.OnDeviceAdded = (device) => {
+            for (const dev of this._devices.values()) {
+                if (dev.Id === device.Id) {
+                    this._logger.Info(`DeviceManager: Device ${device.Name} (id: ${device.Id}) already added, ignoring.`);
+                    return;
+                }
+            }
             const deviceIndex = this._deviceCounter;
             this._deviceCounter += 1;
             this._devices.set(deviceIndex, device);
@@ -127,6 +137,9 @@ class DeviceManager extends events_1.EventEmitter {
         else {
             this._logger.Info("DeviceManager: Not adding WebBluetooth Manager, no capabilities found.");
         }
+    }
+    get DeviceManagers() {
+        return this._subtypeManagers;
     }
 }
 exports.DeviceManager = DeviceManager;

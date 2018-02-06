@@ -144,6 +144,9 @@ class ButtplugClient extends events_1.EventEmitter {
         this._clientName = aClientName;
         this._logger.Debug(`ButtplugClient: Client ${aClientName} created.`);
     }
+    get Connector() {
+        return this._connector;
+    }
     get Connected() {
         return this._connector !== null && this._connector.Connected;
     }

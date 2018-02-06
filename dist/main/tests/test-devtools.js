@@ -8,8 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const index_1 = require("../src/devtools/index");
-const index_2 = require("../src/index");
+const utils_1 = require("./utils");
+const index_1 = require("../src/index");
 describe("devtools tests", () => {
     let p;
     let res;
@@ -21,8 +21,9 @@ describe("devtools tests", () => {
         resetTestPromise();
     });
     it("should translate test device calls correctly", () => __awaiter(this, void 0, void 0, function* () {
-        const bp = yield index_1.CreateDevToolsClient();
-        const tdm = index_1.TestDeviceManager.Get();
+        const testserver = yield utils_1.SetupTestServer();
+        const bp = testserver.Client;
+        const tdm = testserver.TestDeviceManager;
         let deviceCount = 0;
         bp.on("deviceadded", (x) => {
             deviceCount += 1;
@@ -38,14 +39,14 @@ describe("devtools tests", () => {
         vibrateDevice.on("vibrate", (speed) => {
             res(speed);
         });
-        yield bp.SendDeviceMessage(bp.Devices[0], new index_2.SingleMotorVibrateCmd(1));
+        yield bp.SendDeviceMessage(bp.Devices[0], new index_1.SingleMotorVibrateCmd(1));
         yield expect(p).resolves.toBe(1);
         resetTestPromise();
         vibrateDevice.removeAllListeners();
         vibrateDevice.on("vibrate", (speed) => {
             res(speed);
         });
-        yield bp.SendDeviceMessage(bp.Devices[0], new index_2.VibrateCmd([new index_2.SpeedSubcommand(0, 0.5)]));
+        yield bp.SendDeviceMessage(bp.Devices[0], new index_1.VibrateCmd([new index_1.SpeedSubcommand(0, 0.5)]));
         yield expect(p).resolves.toBe(0.5);
         resetTestPromise();
         vibrateDevice.removeAllListeners();
@@ -59,14 +60,14 @@ describe("devtools tests", () => {
         linearDevice.on("linear", (obj) => {
             res(obj);
         });
-        yield bp.SendDeviceMessage(bp.Devices[1], new index_2.FleshlightLaunchFW12Cmd(50, 50));
+        yield bp.SendDeviceMessage(bp.Devices[1], new index_1.FleshlightLaunchFW12Cmd(50, 50));
         yield expect(p).resolves.toEqual({ position: 50, speed: 50 });
         resetTestPromise();
         linearDevice.removeAllListeners();
         linearDevice.on("linear", (obj) => {
             res(obj);
         });
-        yield bp.SendDeviceMessage(bp.Devices[1], new index_2.LinearCmd([new index_2.VectorSubcommand(0, .25, 300)]));
+        yield bp.SendDeviceMessage(bp.Devices[1], new index_1.LinearCmd([new index_1.VectorSubcommand(0, .25, 300)]));
         yield expect(p).resolves.toEqual({ position: 27, speed: 16 });
         resetTestPromise();
         linearDevice.removeAllListeners();

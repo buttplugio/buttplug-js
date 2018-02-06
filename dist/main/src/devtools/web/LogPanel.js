@@ -26,6 +26,7 @@ class LogPanel {
     }
     static ShowLogPanel() {
         jsPanel.jsPanel.create({
+            id: () => "buttplug-logger-panel",
             theme: "primary",
             headerTitle: "Buttplug Log",
             position: "center-top 0 80",

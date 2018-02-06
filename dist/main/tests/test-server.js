@@ -41,7 +41,7 @@ describe("Server Tests", () => __awaiter(this, void 0, void 0, function* () {
     let bpServer;
     beforeEach(() => __awaiter(this, void 0, void 0, function* () {
         bpServer = new ButtplugServer_1.ButtplugServer("Test Server", 0);
-        bpServer.AddDeviceManager(devtools_1.TestDeviceManager.Get());
+        bpServer.AddDeviceManager(new devtools_1.TestDeviceManager());
     }));
     it("Should downgrade messages", () => __awaiter(this, void 0, void 0, function* () {
         const bpConnector = new ButtplugEmbeddedServerConnector_1.ButtplugEmbeddedServerConnector();
@@ -66,6 +66,26 @@ describe("Server Tests", () => __awaiter(this, void 0, void 0, function* () {
                 rej(e);
             }
         });
+        return p;
+    }));
+    it("Should clear all device managers when ClearDeviceManagers called", () => __awaiter(this, void 0, void 0, function* () {
+        const bpConnector = new ButtplugEmbeddedServerConnector_1.ButtplugEmbeddedServerConnector();
+        bpConnector.Server = bpServer;
+        const client = new index_1.ButtplugClient();
+        yield client.Connect(bpConnector);
+        let res;
+        let rej;
+        const p = new Promise((resolve, reject) => { res = resolve; rej = reject; });
+        client.addListener("scanningfinished", (aMsgs) => {
+            try {
+                expect(client.Devices.length).toEqual(0);
+                res();
+            }
+            catch (e) {
+                rej(e);
+            }
+        });
+        yield client.StartScanning();
         return p;
     }));
 }));

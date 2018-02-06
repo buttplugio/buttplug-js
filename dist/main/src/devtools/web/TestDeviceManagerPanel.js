@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const TestDeviceManager_1 = require("../TestDeviceManager");
+const index_1 = require("../../index");
 const TWEEN = require("@tweenjs/tween.js");
 const jsPanel = require("./jspanel.js");
 require("jspanel4/dist/jspanel.css");
@@ -8,8 +8,7 @@ require("jspanel4/dist/fonts/jsglyph.eot");
 const testPanelHTML = require("./TestDeviceManagerPanel.html").toString();
 require("./TestDeviceManagerPanel.css");
 class TestDeviceManagerPanel {
-    constructor() {
-        this._testManager = TestDeviceManager_1.TestDeviceManager.Get();
+    constructor(tdm) {
         this.currentLaunchPosition = { x: 0, y: 0 };
         this.lastPosition = 0;
         this.moveRadius = 0;
@@ -66,6 +65,7 @@ class TestDeviceManagerPanel {
             this.vibratorElement.style.right = `${this.currentVibratePosition.y}px`;
             requestAnimationFrame(this.vibrateAnimate);
         };
+        this._testManager = tdm;
         document.getElementById("vibratedisconnect").addEventListener("click", () => {
             this._testManager.VibrationDevice.Disconnect();
         });
@@ -84,15 +84,27 @@ class TestDeviceManagerPanel {
         this.fleshlightElement = document.getElementById("fleshlight-image");
         this.vibratorElement = document.getElementById("vibrator-image");
     }
-    static ShowTestDeviceManagerPanel() {
+    static ShowTestDeviceManagerPanel(buttplugServer) {
+        let tdm = null;
+        for (const mgr of buttplugServer.DeviceManagers) {
+            if (mgr.constructor.name === "TestDeviceManager") {
+                tdm = mgr;
+                break;
+            }
+        }
+        if (tdm === null) {
+            index_1.ButtplugLogger.Logger.Error("TestDeviceManagerPanel: Cannot get test device manager from server.");
+            throw new Error("Cannot get test device manager from server.");
+        }
         jsPanel.jsPanel.create({
+            id: () => "buttplug-test-device-manager-panel",
             theme: "primary",
             headerTitle: "Test Device Manager",
             position: "center-top 0 80",
             contentSize: "400 250",
             callback() {
                 this.content.innerHTML = testPanelHTML;
-                TestDeviceManagerPanel._panel = new TestDeviceManagerPanel();
+                TestDeviceManagerPanel._panel = new TestDeviceManagerPanel(tdm);
             },
         });
     }

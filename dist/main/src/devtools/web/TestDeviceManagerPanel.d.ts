@@ -1,5 +1,7 @@
+import { ButtplugServer } from "../../index";
+import { TestDeviceManager } from "../TestDeviceManager";
 export declare class TestDeviceManagerPanel {
-    static ShowTestDeviceManagerPanel(): void;
+    static ShowTestDeviceManagerPanel(buttplugServer: ButtplugServer): void;
     protected static _panel: TestDeviceManagerPanel;
     private _testManager;
     private fleshlightElement;
@@ -8,7 +10,7 @@ export declare class TestDeviceManagerPanel {
     private lastPosition;
     private moveRadius;
     private currentVibratePosition;
-    constructor();
+    constructor(tdm: TestDeviceManager);
     private launchMove;
     private launchAnimate;
     private moveDuration;
