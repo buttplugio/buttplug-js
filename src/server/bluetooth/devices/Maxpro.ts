@@ -51,7 +51,6 @@ export class Maxpro extends ButtplugBluetoothDevice {
       // Speed range for Maxpro toys are 10-100 for some reason.
       const speed = Math.floor(aMsg.Speed * 100);
       const data: Uint8Array = new Uint8Array([0x55, 0x04, 0x07, 0xff, 0xff, 0x3f, speed, 0x5f, speed, 0x00]);
-      console.log(data);
       const checksum = data.reduce((prev, cur) => prev + cur) & 0xFF;
       data[9] = checksum;
       await this._deviceImpl.WriteValue("tx", data);
