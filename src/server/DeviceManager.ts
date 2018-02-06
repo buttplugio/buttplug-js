@@ -106,6 +106,12 @@ export class DeviceManager extends EventEmitter {
   }
 
   private OnDeviceAdded = (device: IButtplugDevice) => {
+    for (const dev of this._devices.values()) {
+      if (dev.Id === device.Id) {
+        this._logger.Info(`DeviceManager: Device ${device.Name} (id: ${device.Id}) already added, ignoring.`);
+        return;
+      }
+    }
     const deviceIndex = this._deviceCounter;
     this._deviceCounter += 1;
     this._devices.set(deviceIndex, device);

@@ -45,6 +45,10 @@ export class ButtplugClient extends EventEmitter {
     await this.InitializeConnection();
   }
 
+  public get Connector(): IButtplugConnector | null {
+    return this._connector;
+  }
+
   public get Connected(): boolean {
     return this._connector !== null && this._connector.Connected;
   }

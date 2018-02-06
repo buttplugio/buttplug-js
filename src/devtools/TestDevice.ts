@@ -11,7 +11,7 @@ export class TestDevice extends ButtplugDevice {
   public constructor(name: string,
                      shouldVibrate: boolean = false,
                      shouldLinear: boolean = false) {
-    super(`Test Device - ${name}`);
+    super(`Test Device - ${name}`, "TestDevice" + (shouldVibrate ? "Vibrate" : "") + (shouldLinear ? "Linear" : ""));
     this.MsgFuncs.set(Messages.StopDeviceCmd.name, this.HandleStopDeviceCmd);
     if (shouldVibrate) {
       this.MsgFuncs.set(Messages.SingleMotorVibrateCmd.name, this.HandleSingleMotorVibrateCmd);
@@ -49,6 +49,7 @@ export class TestDevice extends ButtplugDevice {
   }
 
   public Disconnect() {
+    this._connected = false;
     this.emit("deviceremoved", this);
   }
 
@@ -111,5 +112,4 @@ export class TestDevice extends ButtplugDevice {
                                                                                            aMsg.DeviceIndex,
                                                                                            aMsg.Id));
     }
-
 }
