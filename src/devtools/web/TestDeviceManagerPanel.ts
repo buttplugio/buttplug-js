@@ -10,6 +10,17 @@ require("./TestDeviceManagerPanel.css");
 
 export class TestDeviceManagerPanel {
   public static ShowTestDeviceManagerPanel(buttplugServer: ButtplugServer) {
+    let tdm: TestDeviceManager | null = null;
+    for (const mgr of buttplugServer.DeviceManagers) {
+      if (mgr.constructor.name === "TestDeviceManager") {
+        tdm = (mgr as TestDeviceManager);
+        break;
+      }
+    }
+    if (tdm === null) {
+      ButtplugLogger.Logger.Error("TestDeviceManagerPanel: Cannot get test device manager from server.");
+      throw new Error("Cannot get test device manager from server.");
+    }
     jsPanel.jsPanel.create({
       id: () => "buttplug-test-device-manager-panel",
       theme:       "primary",
@@ -18,13 +29,13 @@ export class TestDeviceManagerPanel {
       contentSize: "400 250",
       callback() {
         this.content.innerHTML = testPanelHTML;
-        TestDeviceManagerPanel._panel = new TestDeviceManagerPanel(buttplugServer);
+        TestDeviceManagerPanel._panel = new TestDeviceManagerPanel(tdm!);
       },
     });
   }
 
   protected static _panel: TestDeviceManagerPanel;
-  private _testManager: TestDeviceManager | null = null;
+  private _testManager: TestDeviceManager;
   private fleshlightElement: HTMLElement;
   private vibratorElement: HTMLElement;
   private currentLaunchPosition: any = { x: 0, y: 0 };
@@ -32,16 +43,8 @@ export class TestDeviceManagerPanel {
   private moveRadius: number = 0;
   private currentVibratePosition: any = { x: 0, y: 0 };
 
-  constructor(buttplugServer: ButtplugServer) {
-    for (const mgr of buttplugServer.DeviceManagers) {
-      if (mgr.constructor.name === "TestDeviceManager") {
-        this._testManager = (mgr as TestDeviceManager);
-      }
-    }
-    if (this._testManager === null) {
-      ButtplugLogger.Logger.Error("TestDeviceManagerPanel: Cannot get test device manager from server.");
-      throw new Error("Cannot get test device manager from server.");
-    }
+  constructor(tdm: TestDeviceManager) {
+    this._testManager = tdm;
     document.getElementById("vibratedisconnect")!.addEventListener("click", () => {
       this._testManager!.VibrationDevice.Disconnect();
     });
