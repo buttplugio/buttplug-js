@@ -60,7 +60,7 @@ describe("Server Tests", async () => {
     // function.
     oldClient.addListener("clientmessages", (aMsgs) => {
       try {
-        expect(aMsgs).toEqual([new Messages.DeviceAddedVersion0(1,
+        expect(aMsgs).toEqual([new Messages.DeviceAddedVersion0(0,
                                                                 "Test Device - Test Vibration Device",
                                                                 ["VibrateCmd",
                                                                  "SingleMotorVibrateCmd",

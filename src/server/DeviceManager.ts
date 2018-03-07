@@ -9,7 +9,7 @@ import { ButtplugLogger } from "../core/Logging";
 export class DeviceManager extends EventEmitter {
   private _subtypeManagers: IDeviceSubtypeManager[] = [];
   private _devices: Map<number, IButtplugDevice> = new Map<number, IButtplugDevice>();
-  private _deviceCounter: number = 1;
+  private _deviceCounter: number = 0;
   private _logger = ButtplugLogger.Logger;
 
   constructor() {
