@@ -21,7 +21,8 @@ export class Lovense extends ButtplugBluetoothDevice {
                                   "LVS-Domi38": "Domi",
                                   "LVS-Domi39": "Domi",
                                   "LVS-P36": "Edge",
-                                  "LVS-Edge37": "Edge"};
+                                  "LVS-Edge37": "Edge",
+                                  "LVS-Edge38": "Edge"};
 
   public constructor(aDeviceImpl: IBluetoothDeviceImpl) {
     super(`Lovense ${aDeviceImpl.Name}`, aDeviceImpl);
@@ -108,7 +109,7 @@ export class LovenseRev5 {
 }
 
 export class LovenseRev6 {
-  public static readonly DeviceInfo = new BluetoothDeviceInfo(["LVS-Edge37"],
+  public static readonly DeviceInfo = new BluetoothDeviceInfo(["LVS-Edge37", "LVS-Edge38"],
                                                               ["50300001-0023-4bd4-bbd5-a6920e4c5653"],
                                                               {tx: "50300002-0023-4bd4-bbd5-a6920e4c5653",
                                                                // rx: "57300003-0023-4bd4-bbd5-a6920e4c5653"
