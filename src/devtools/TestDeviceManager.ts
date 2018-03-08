@@ -6,8 +6,9 @@ import { ButtplugLogger } from "../index";
 export class TestDeviceManager extends EventEmitter implements IDeviceSubtypeManager {
 
   private _isScanning = false;
-  private _testVibrationDevice = new TestDevice("Test Vibration Device", true, false);
-  private _testLinearDevice = new TestDevice("Test Linear Device", false, true);
+  private _testVibrationDevice = new TestDevice("Test Vibration Device", true, false, false);
+  private _testLinearDevice = new TestDevice("Test Linear Device", false, true, false);
+  private _testRotationDevice = new TestDevice("Test Rotation Device", false, false, true);
 
   public constructor() {
     super();
@@ -25,6 +26,12 @@ export class TestDeviceManager extends EventEmitter implements IDeviceSubtypeMan
     this.emit("deviceadded", this._testLinearDevice);
   }
 
+  public ConnectRotationDevice() {
+    ButtplugLogger.Logger.Debug("TestDeviceManager: Connecting Rotation Device");
+    this._testRotationDevice.Connected = true;
+    this.emit("deviceadded", this._testRotationDevice);
+  }
+
   public StartScanning(): void {
     ButtplugLogger.Logger.Debug("TestDeviceManager: Starting Scan");
     this._isScanning = true;
@@ -33,6 +40,7 @@ export class TestDeviceManager extends EventEmitter implements IDeviceSubtypeMan
     setTimeout(() =>  {
       this.ConnectVibrationDevice();
       this.ConnectLinearDevice();
+      this.ConnectRotationDevice();
     }, 50);
     setTimeout(() => this.StopScanning(), 100);
   }
@@ -43,6 +51,10 @@ export class TestDeviceManager extends EventEmitter implements IDeviceSubtypeMan
 
   public get LinearDevice() {
     return this._testLinearDevice;
+  }
+
+  public get RotationDevice() {
+    return this._testRotationDevice;
   }
 
   public StopScanning(): void {
