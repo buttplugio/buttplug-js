@@ -414,5 +414,10 @@ export class LinearCmd extends ButtplugDeviceMessage {
   get SchemaVersion() { return 1; }
 }
 
+export class MessageAttributes {
+  constructor(public FeatureCount: number) {
+  }
+}
+
 export { DeviceListVersion1 as DeviceList };
 export { DeviceAddedVersion1 as DeviceAdded };

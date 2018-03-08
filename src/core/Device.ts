@@ -11,6 +11,9 @@ export class Device {
                       aMsg.DeviceMessages);
   }
 
+  // Map of messages and their attributes (feature count, etc...)
+  private allowedMsgs: Map<string, Messages.MessageAttributes> = new Map<string, Messages.MessageAttributes>();
+
   /**
    * @param _index Index of the device, as created by the device manager.
    * @param _name Name of the device.
@@ -18,7 +21,10 @@ export class Device {
    */
   constructor(private index: number,
               private name: string,
-              private allowedMsgs: object) {
+              allowedMsgsObj: object) {
+    for (const k of Object.keys(allowedMsgsObj)) {
+      this.allowedMsgs.set(k, allowedMsgsObj[k]);
+    }
   }
 
   /**
@@ -39,6 +45,16 @@ export class Device {
    * Return a list of message types the device accepts.
    */
   public get AllowedMessages(): string[] {
-    return Object.keys(this.allowedMsgs);
+    return Array.from(this.allowedMsgs.keys());
+  }
+
+  /**
+   * Return the message attributes related to the given message
+   */
+  public MessageAttributes(messageName: string): Messages.MessageAttributes {
+    if (this.AllowedMessages.indexOf(messageName) === -1) {
+      throw new Error(`Message ${messageName} does not exist on device ${this.name}`);
+    }
+    return this.allowedMsgs.get(messageName)!;
   }
 }
