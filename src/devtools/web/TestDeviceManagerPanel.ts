@@ -2,9 +2,8 @@ import { ButtplugServer, ButtplugLogger } from "../../index";
 import { TestDeviceManager } from "../TestDeviceManager";
 import * as TWEEN from "@tweenjs/tween.js";
 
-const jsPanel = require("./jspanel.js");
-require("jspanel4/dist/jspanel.css");
-require("jspanel4/dist/fonts/jsglyph.eot");
+const jsPanel = require("jspanel4");
+require("../../../node_modules/jspanel4/dist/jspanel.css");
 const testPanelHTML = require("./TestDeviceManagerPanel.html").toString();
 require("./TestDeviceManagerPanel.css");
 
