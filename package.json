@@ -24,7 +24,7 @@
     "build:copy-schema": "copyfiles ./dependencies/buttplug-schema/schema/buttplug-schema.json ./dist/main/",
     "build:main": "tsc -p tsconfig.json && yarn build:copy-schema",
     "build:redist": "tsc -p tsconfig.json && yarn build:copy-schema",
-    "build:doc": "typedoc --options typedoc.json --out doc .",
+    "build:doc": "typedoc --options typedoc.js --out doc .",
     "build:web": "webpack",
     "build:web:release": "cross-env NODE_ENV=production webpack --progress --hide-modules",
     "tslint": "tslint -c tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
