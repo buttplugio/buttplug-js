@@ -33,10 +33,12 @@ module.exports = [{
       {
         test: /\.ts$/,
         exclude: /node_modules|vue\/src|tests|example/,
-        loader: 'ts-loader',
-        options: {
-          transpileOnly: true
-        }
+        use: [{
+          loader: 'ts-loader',
+          options: {
+            transpileOnly: true
+          }
+        }]
       }
     ]
   },
@@ -87,28 +89,35 @@ module.exports = [{
       {
         test: /\.ts$/,
         exclude: /node_modules|vue\/src|tests|example/,
-        loader: 'ts-loader',
-        options: {
-          transpileOnly: true
-        }
+        use: [{
+          loader: 'ts-loader',
+          options: {
+            transpileOnly: true
+          }
+        }]
       },
       {
         test: /\.(png|jpg|gif|svg|eot|woff|woff2|ttf)$/,
-        loader: 'url-loader',
-        options: {
-          limit: 100000,
-          name: '[name].[ext]?[hash]'
-        }
+        use: [{
+          loader: 'url-loader',
+          options: {
+            limit: 100000,
+            name: '[name].[ext]?[hash]'
+          }
+        }]
       },
       {
         test: /\.css$/,
-        loader: ['style-loader', 'css-loader']
+        use: [
+          { loader: 'style-loader' },
+          { loader: 'css-loader' },
+        ]
       },
       {
         test: /\.(html)$/,
-        use: {
+        use: [{
           loader: 'html-loader'
-        }
+        }]
       }
     ]
   },
