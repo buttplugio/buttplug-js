@@ -30,7 +30,7 @@
     "tslint": "tslint -c tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
     "tslint:fix": "tslint -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\"",
     "pretest": "yarn build:main",
-    "test": "jest && remap-istanbul --input coverage/coverage-final.json --type json --output coverage/coverage-final.json && istanbul report",
+    "test": "jest && istanbul report",
     "posttest": "codecov"
   },
   "dependencies": {
@@ -54,7 +54,6 @@
     "istanbul": "^0.4.5",
     "jest": "^22.4.2",
     "mock-socket": "^7.1.0",
-    "remap-istanbul": "^0.10.1",
     "style-loader": "^0.20.2",
     "trash": "^4.3.0",
     "trash-cli": "^1.4.0",
