@@ -11,12 +11,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const index_1 = require("../index");
 const Messages = require("../index");
 class TestDevice extends index_1.ButtplugDevice {
-    constructor(name, shouldVibrate = false, shouldLinear = false) {
+    constructor(name, shouldVibrate = false, shouldLinear = false, shouldRotate = false) {
         super(`Test Device - ${name}`, "TestDevice" + (shouldVibrate ? "Vibrate" : "") + (shouldLinear ? "Linear" : ""));
         this._connected = false;
         this._linearSpeed = 0;
         this._linearPosition = 0;
         this._vibrateSpeed = 0;
+        this._rotateSpeed = 0;
+        this._rotateClockwise = false;
         this.HandleStopDeviceCmd = (aMsg) => __awaiter(this, void 0, void 0, function* () {
             if (this.MsgFuncs.has(Messages.VibrateCmd.name)) {
                 this.emit("vibrate", 0);
@@ -34,6 +36,13 @@ class TestDevice extends index_1.ButtplugDevice {
         });
         this.HandleVibrateCmd = (aMsg) => __awaiter(this, void 0, void 0, function* () {
             return this.HandleSingleMotorVibrateCmd(new index_1.SingleMotorVibrateCmd(aMsg.Speeds[0].Speed, aMsg.DeviceIndex, aMsg.Id));
+        });
+        this.HandleRotateCmd = (aMsg) => __awaiter(this, void 0, void 0, function* () {
+            this._rotateSpeed = aMsg.Rotations[0].Speed;
+            this._rotateClockwise = aMsg.Rotations[0].Clockwise;
+            this.emit("vibrate", { speed: this._rotateSpeed,
+                clockwise: this._rotateClockwise });
+            return Promise.resolve(new Messages.Ok(aMsg.Id));
         });
         this.HandleFleshlightLaunchFW12Cmd = (aMsg) => __awaiter(this, void 0, void 0, function* () {
             this._linearPosition = aMsg.Position;
@@ -69,6 +78,9 @@ class TestDevice extends index_1.ButtplugDevice {
             this.MsgFuncs.set(Messages.FleshlightLaunchFW12Cmd.name, this.HandleFleshlightLaunchFW12Cmd);
             this.MsgFuncs.set(Messages.LinearCmd.name, this.HandleLinearCmd);
         }
+        if (shouldRotate) {
+            this.MsgFuncs.set(Messages.RotateCmd.name, this.HandleRotateCmd);
+        }
     }
     get Connected() {
         return this._connected;
@@ -79,7 +91,7 @@ class TestDevice extends index_1.ButtplugDevice {
     get MessageSpecifications() {
         if (this.MsgFuncs.has(Messages.VibrateCmd.name)) {
             return {
-                VibrateCmd: { FeatureCount: 1 },
+                VibrateCmd: { FeatureCount: 2 },
                 SingleMotorVibrateCmd: {},
                 StopDeviceCmd: {},
             };
@@ -88,6 +100,12 @@ class TestDevice extends index_1.ButtplugDevice {
             return {
                 LinearCmd: { FeatureCount: 1 },
                 FleshlightLaunchFW12Cmd: {},
+                StopDeviceCmd: {},
+            };
+        }
+        else if (this.MsgFuncs.has(Messages.RotateCmd.name)) {
+            return {
+                RotateCmd: { FeatureCount: 1 },
                 StopDeviceCmd: {},
             };
         }

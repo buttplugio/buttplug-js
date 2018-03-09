@@ -57,7 +57,7 @@ describe("Server Tests", () => __awaiter(this, void 0, void 0, function* () {
         // function.
         oldClient.addListener("clientmessages", (aMsgs) => {
             try {
-                expect(aMsgs).toEqual([new Messages.DeviceAddedVersion0(1, "Test Device - Test Vibration Device", ["VibrateCmd",
+                expect(aMsgs).toEqual([new Messages.DeviceAddedVersion0(0, "Test Device - Test Vibration Device", ["VibrateCmd",
                         "SingleMotorVibrateCmd",
                         "StopDeviceCmd"])]);
                 res();

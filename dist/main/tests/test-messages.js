@@ -1,8 +1,17 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const Messages = require("../src/core/Messages");
 const MessageUtils_1 = require("../src/core/MessageUtils");
 const utils_1 = require("./utils");
+const Messages_1 = require("../src/core/Messages");
 utils_1.SetupTestSuite();
 describe("Message", () => {
     it("Converts ok message to json correctly", () => {
@@ -58,5 +67,26 @@ describe("Message", () => {
         const jsonV1Str = '[{"RequestServerInfo":{"Id":2,"MessageVersion":1,"ClientName":"TestClient"}}]';
         expect(MessageUtils_1.FromJSON(jsonV1Str)).toEqual([new Messages.RequestServerInfo("TestClient", 1, 2)]);
     });
+    it("CreateSimple*Cmd tests", () => __awaiter(this, void 0, void 0, function* () {
+        let res;
+        let rej;
+        const p = new Promise((resolve, reject) => { res = resolve; rej = reject; });
+        const connector = yield utils_1.SetupTestServer();
+        connector.Client.on("scanningfinished", () => {
+            expect(MessageUtils_1.CreateSimpleVibrateCmd(connector.Client.Devices[0], 0.5))
+                .toEqual(new Messages.VibrateCmd([new Messages_1.SpeedSubcommand(0, 0.5),
+                new Messages_1.SpeedSubcommand(1, 0.5)]));
+            expect(() => MessageUtils_1.CreateSimpleVibrateCmd(connector.Client.Devices[1], 0.5)).toThrow();
+            expect(MessageUtils_1.CreateSimpleLinearCmd(connector.Client.Devices[1], 0.5, 100))
+                .toEqual(new Messages.LinearCmd([new Messages_1.VectorSubcommand(0, 0.5, 100)]));
+            expect(() => MessageUtils_1.CreateSimpleLinearCmd(connector.Client.Devices[0], 0.5, 100)).toThrow();
+            expect(MessageUtils_1.CreateSimpleRotateCmd(connector.Client.Devices[2], 0.5, true))
+                .toEqual(new Messages.RotateCmd([new Messages_1.RotateSubcommand(0, 0.5, true)]));
+            expect(() => MessageUtils_1.CreateSimpleRotateCmd(connector.Client.Devices[0], 0.5, true)).toThrow();
+            res();
+        });
+        yield connector.Client.StartScanning();
+        return p;
+    }));
 });
 //# sourceMappingURL=test-messages.js.map

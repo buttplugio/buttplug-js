@@ -5,14 +5,14 @@ import * as Messages from "./Messages";
 export declare class Device {
     private index;
     private name;
-    private allowedMsgs;
     static fromMsg(aMsg: Messages.DeviceAddedVersion1 | Messages.DeviceInfoWithSpecifications): Device;
+    private allowedMsgs;
     /**
      * @param _index Index of the device, as created by the device manager.
      * @param _name Name of the device.
      * @param _allowedMsgs Buttplug messages the device can receive.
      */
-    constructor(index: number, name: string, allowedMsgs: object);
+    constructor(index: number, name: string, allowedMsgsObj: object);
     /**
      * Return the name of the device.
      */
@@ -25,4 +25,8 @@ export declare class Device {
      * Return a list of message types the device accepts.
      */
     readonly AllowedMessages: string[];
+    /**
+     * Return the message attributes related to the given message
+     */
+    MessageAttributes(messageName: string): Messages.MessageAttributes;
 }

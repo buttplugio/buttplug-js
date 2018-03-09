@@ -18,7 +18,7 @@ class DeviceManager extends events_1.EventEmitter {
         super();
         this._subtypeManagers = [];
         this._devices = new Map();
-        this._deviceCounter = 1;
+        this._deviceCounter = 0;
         this._logger = Logging_1.ButtplugLogger.Logger;
         this.ClearDeviceManagers = () => {
             this._logger.Info("DeviceManager: Clearing device subtype managers");

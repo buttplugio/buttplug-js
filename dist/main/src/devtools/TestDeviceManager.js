@@ -7,8 +7,9 @@ class TestDeviceManager extends events_1.EventEmitter {
     constructor() {
         super();
         this._isScanning = false;
-        this._testVibrationDevice = new TestDevice_1.TestDevice("Test Vibration Device", true, false);
-        this._testLinearDevice = new TestDevice_1.TestDevice("Test Linear Device", false, true);
+        this._testVibrationDevice = new TestDevice_1.TestDevice("Test Vibration Device", true, false, false);
+        this._testLinearDevice = new TestDevice_1.TestDevice("Test Linear Device", false, true, false);
+        this._testRotationDevice = new TestDevice_1.TestDevice("Test Rotation Device", false, false, true);
     }
     ConnectVibrationDevice() {
         index_1.ButtplugLogger.Logger.Debug("TestDeviceManager: Connecting Vibration Device");
@@ -20,6 +21,11 @@ class TestDeviceManager extends events_1.EventEmitter {
         this._testLinearDevice.Connected = true;
         this.emit("deviceadded", this._testLinearDevice);
     }
+    ConnectRotationDevice() {
+        index_1.ButtplugLogger.Logger.Debug("TestDeviceManager: Connecting Rotation Device");
+        this._testRotationDevice.Connected = true;
+        this.emit("deviceadded", this._testRotationDevice);
+    }
     StartScanning() {
         index_1.ButtplugLogger.Logger.Debug("TestDeviceManager: Starting Scan");
         this._isScanning = true;
@@ -28,6 +34,7 @@ class TestDeviceManager extends events_1.EventEmitter {
         setTimeout(() => {
             this.ConnectVibrationDevice();
             this.ConnectLinearDevice();
+            this.ConnectRotationDevice();
         }, 50);
         setTimeout(() => this.StopScanning(), 100);
     }
@@ -36,6 +43,9 @@ class TestDeviceManager extends events_1.EventEmitter {
     }
     get LinearDevice() {
         return this._testLinearDevice;
+    }
+    get RotationDevice() {
+        return this._testRotationDevice;
     }
     StopScanning() {
         index_1.ButtplugLogger.Logger.Debug("TestDeviceManager: Stopping Scan");

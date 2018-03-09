@@ -252,5 +252,9 @@ export declare class LinearCmd extends ButtplugDeviceMessage {
     constructor(Vectors: VectorSubcommand[], DeviceIndex?: number, Id?: number);
     readonly SchemaVersion: number;
 }
+export declare class MessageAttributes {
+    FeatureCount: number;
+    constructor(FeatureCount: number);
+}
 export { DeviceListVersion1 as DeviceList };
 export { DeviceAddedVersion1 as DeviceAdded };

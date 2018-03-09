@@ -404,4 +404,10 @@ class LinearCmd extends ButtplugDeviceMessage {
     get SchemaVersion() { return 1; }
 }
 exports.LinearCmd = LinearCmd;
+class MessageAttributes {
+    constructor(FeatureCount) {
+        this.FeatureCount = FeatureCount;
+    }
+}
+exports.MessageAttributes = MessageAttributes;
 //# sourceMappingURL=Messages.js.map
