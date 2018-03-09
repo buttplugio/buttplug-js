@@ -19,3 +19,9 @@ deploy:
   github_token: $GITHUB_TOKEN
   on:
     branch: master
+deploy:
+  provider: npm
+  email: kyle@nonpolynomial.com
+  api_key: $NPM_TOKEN
+  on:
+    tags: true

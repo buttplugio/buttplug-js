@@ -1,6 +1,9 @@
 import * as Messages from "../src/core/Messages";
-import { FromJSON } from "../src/core/MessageUtils";
-import { SetupTestSuite } from "./utils";
+import { ButtplugClient } from "../src/client/Client";
+import { FromJSON, CreateSimpleVibrateCmd, CreateSimpleLinearCmd,
+         CreateSimpleRotateCmd } from "../src/core/MessageUtils";
+import { SetupTestSuite, SetupTestServer } from "./utils";
+import { SpeedSubcommand, VectorSubcommand, RotateSubcommand } from "../src/core/Messages";
 
 SetupTestSuite();
 
@@ -75,4 +78,26 @@ describe("Message", () => {
        expect(FromJSON(jsonV1Str)).toEqual([new Messages.RequestServerInfo("TestClient", 1, 2)]);
      });
 
+  it("CreateSimple*Cmd tests",
+     async () => {
+       let res;
+       let rej;
+       const p = new Promise((resolve, reject) => { res = resolve; rej = reject; });
+       const connector = await SetupTestServer();
+       connector.Client.on("scanningfinished", () => {
+         expect(CreateSimpleVibrateCmd(connector.Client.Devices[0], 0.5))
+           .toEqual(new Messages.VibrateCmd([new SpeedSubcommand(0, 0.5),
+                                             new SpeedSubcommand(1, 0.5)]));
+         expect(() => CreateSimpleVibrateCmd(connector.Client.Devices[1], 0.5)).toThrow();
+         expect(CreateSimpleLinearCmd(connector.Client.Devices[1], 0.5, 100))
+           .toEqual(new Messages.LinearCmd([new VectorSubcommand(0, 0.5, 100)]));
+         expect(() => CreateSimpleLinearCmd(connector.Client.Devices[0], 0.5, 100)).toThrow();
+         expect(CreateSimpleRotateCmd(connector.Client.Devices[2], 0.5, true))
+           .toEqual(new Messages.RotateCmd([new RotateSubcommand(0, 0.5, true)]));
+         expect(() => CreateSimpleRotateCmd(connector.Client.Devices[0], 0.5, true)).toThrow();
+         res();
+       });
+       await connector.Client.StartScanning();
+       return p;
+     });
 });

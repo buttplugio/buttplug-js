@@ -2,6 +2,7 @@
 import {plainToClass} from "class-transformer";
 import * as ajv from "ajv";
 import * as Messages from "./Messages";
+import { Device } from "./Device";
 const buttplugSchema = require("../../dependencies/buttplug-schema/schema/buttplug-schema.json");
 
 // Since we're still using the draft 06 schema, we now have to specifically add
@@ -40,4 +41,37 @@ export function FromJSON(str): Messages.ButtplugMessage[] {
 
 export function GetSchemaVersion(): number {
   return parseInt(buttplugSchema.version, 10);
+}
+
+export function CreateSimpleVibrateCmd(device: Device, speed: number): Messages.VibrateCmd {
+  if (device.AllowedMessages.indexOf("VibrateCmd") === -1) {
+    throw new Error("Device does not handle VibrateCmd!");
+  }
+  const commands: Messages.SpeedSubcommand[] = [];
+  for (let i = 0; i < device.MessageAttributes("VibrateCmd").FeatureCount; ++i) {
+    commands.push(new Messages.SpeedSubcommand(i, speed));
+  }
+  return new Messages.VibrateCmd(commands);
+}
+
+export function CreateSimpleLinearCmd(device: Device, position: number, duration: number): Messages.LinearCmd {
+  if (device.AllowedMessages.indexOf("LinearCmd") === -1) {
+    throw new Error("Device does not handle LinearCmd!");
+  }
+  const commands: Messages.VectorSubcommand[] = [];
+  for (let i = 0; i < device.MessageAttributes("LinearCmd").FeatureCount; ++i) {
+    commands.push(new Messages.VectorSubcommand(i, position, duration));
+  }
+  return new Messages.LinearCmd(commands);
+}
+
+export function CreateSimpleRotateCmd(device: Device, speed: number, clockwise: boolean): Messages.RotateCmd {
+  if (device.AllowedMessages.indexOf("RotateCmd") === -1) {
+    throw new Error("Device does not handle RotateCmd!");
+  }
+  const commands: Messages.RotateSubcommand[] = [];
+  for (let i = 0; i < device.MessageAttributes("RotateCmd").FeatureCount; ++i) {
+    commands.push(new Messages.RotateSubcommand(i, speed, clockwise));
+  }
+  return new Messages.RotateCmd(commands);
 }

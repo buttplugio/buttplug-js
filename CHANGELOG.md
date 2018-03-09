@@ -1,3 +1,10 @@
+# Version 0.6.1 - 2018/03/08
+
+- Expose feature counts of device command messages
+- Add CreateSimple*Cmd functions
+- Add new Lovense and WeVibe device names
+- Device counts now start at 0 instead of 1
+
 # Version 0.6.0 - 2018/02/05
 
 - Rolling version number due to devtools API change

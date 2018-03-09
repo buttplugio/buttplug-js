@@ -7,10 +7,13 @@ export class TestDevice extends ButtplugDevice {
   private _linearSpeed: number = 0;
   private _linearPosition: number = 0;
   private _vibrateSpeed: number = 0;
+  private _rotateSpeed: number = 0;
+  private _rotateClockwise: boolean = false;
 
   public constructor(name: string,
                      shouldVibrate: boolean = false,
-                     shouldLinear: boolean = false) {
+                     shouldLinear: boolean = false,
+                     shouldRotate: boolean = false) {
     super(`Test Device - ${name}`, "TestDevice" + (shouldVibrate ? "Vibrate" : "") + (shouldLinear ? "Linear" : ""));
     this.MsgFuncs.set(Messages.StopDeviceCmd.name, this.HandleStopDeviceCmd);
     if (shouldVibrate) {
@@ -20,6 +23,9 @@ export class TestDevice extends ButtplugDevice {
     if (shouldLinear) {
       this.MsgFuncs.set(Messages.FleshlightLaunchFW12Cmd.name, this.HandleFleshlightLaunchFW12Cmd);
       this.MsgFuncs.set(Messages.LinearCmd.name, this.HandleLinearCmd);
+    }
+    if (shouldRotate) {
+      this.MsgFuncs.set(Messages.RotateCmd.name, this.HandleRotateCmd);
     }
   }
 
@@ -34,7 +40,7 @@ export class TestDevice extends ButtplugDevice {
   public get MessageSpecifications(): object {
     if (this.MsgFuncs.has(Messages.VibrateCmd.name)) {
       return {
-        VibrateCmd: { FeatureCount: 1 },
+        VibrateCmd: { FeatureCount: 2 },
         SingleMotorVibrateCmd: {},
         StopDeviceCmd: {},
       };
@@ -42,6 +48,11 @@ export class TestDevice extends ButtplugDevice {
       return {
         LinearCmd: { FeatureCount: 1 },
         FleshlightLaunchFW12Cmd: {},
+        StopDeviceCmd: {},
+      };
+    } else if (this.MsgFuncs.has(Messages.RotateCmd.name)) {
+      return {
+        RotateCmd: { FeatureCount: 1 },
         StopDeviceCmd: {},
       };
     }
@@ -75,6 +86,15 @@ export class TestDevice extends ButtplugDevice {
       return this.HandleSingleMotorVibrateCmd(new SingleMotorVibrateCmd(aMsg.Speeds[0].Speed,
                                                                         aMsg.DeviceIndex,
                                                                         aMsg.Id));
+    }
+
+  private HandleRotateCmd =
+    async (aMsg: Messages.RotateCmd): Promise<Messages.ButtplugMessage> => {
+      this._rotateSpeed = aMsg.Rotations[0].Speed;
+      this._rotateClockwise = aMsg.Rotations[0].Clockwise;
+      this.emit("vibrate", { speed: this._rotateSpeed,
+                             clockwise: this._rotateClockwise });
+      return Promise.resolve(new Messages.Ok(aMsg.Id));
     }
 
   private HandleFleshlightLaunchFW12Cmd =
