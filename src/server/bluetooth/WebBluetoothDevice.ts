@@ -49,6 +49,10 @@ export class WebBluetoothDevice extends EventEmitter implements IBluetoothDevice
     }
   }
 
+  public Disconnect = async (): Promise<void> => {
+    this._server.disconnect();
+  }
+
   public OnDisconnect = () => {
     this._logger.Debug(`WebBluetoothDevice: ${this.constructor.name} disconnecting`);
     this._device.removeEventListener("gattserverdisconnected", this.OnDisconnect);

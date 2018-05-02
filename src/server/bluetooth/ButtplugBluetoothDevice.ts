@@ -6,6 +6,10 @@ export abstract class ButtplugBluetoothDevice extends ButtplugDevice {
     super(aName, _deviceImpl.Id);
   }
 
+  public Disconnect() {
+    this._deviceImpl.Disconnect();
+  }
+
   public OnDisconnect() {
     this.emit("deviceremoved", this);
   }

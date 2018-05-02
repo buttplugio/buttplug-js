@@ -29,6 +29,12 @@ export class DeviceManager extends EventEmitter {
     return this._subtypeManagers;
   }
 
+  public Shutdown = async () => {
+    for (const d of this._devices.values()) {
+      await d.Disconnect();
+    }
+  }
+
   public ClearDeviceManagers = () => {
     this._logger.Info("DeviceManager: Clearing device subtype managers");
     this._subtypeManagers = [];

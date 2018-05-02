@@ -94,7 +94,8 @@ export class ButtplugServer extends EventEmitter {
   }
 
   public Shutdown = async (): Promise<void> => {
-    return;
+    ServerMessageHub.Instance.removeListener("message", this.OnOutgoingMessage);
+    await this._deviceManager.Shutdown();
   }
 
   private OnLogMessage = (aMsg: LogMessage) => {

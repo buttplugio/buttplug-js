@@ -12,6 +12,8 @@ export abstract class ButtplugDevice extends EventEmitter implements IButtplugDe
 
   public abstract get MessageSpecifications(): object;
 
+  public abstract Disconnect();
+
   public get Name() {
     return this._name;
   }
