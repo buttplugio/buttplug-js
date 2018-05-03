@@ -1,3 +1,7 @@
+# Version 0.7.1 - 2018/05/02
+
+- Extra build config changes to fix webpack issues
+
 # Version 0.7.0 - 2018/05/02
 
 - Rolling version number due to device API change (added "Disconnect" method)
