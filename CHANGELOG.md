@@ -1,3 +1,10 @@
+# Version 0.7.0 - 2018/05/02
+
+- Rolling version number due to device API change (added "Disconnect" method)
+- Update to Webpack 4
+- Fix server cleanup on shutdown (remove listeners, disconnect devices)
+- Add more Lovense device names/info
+
 # Version 0.6.1 - 2018/03/08
 
 - Expose feature counts of device command messages
