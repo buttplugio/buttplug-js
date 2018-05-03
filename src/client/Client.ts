@@ -26,6 +26,25 @@ export class ButtplugClient extends EventEmitter {
     this._logger.Debug(`ButtplugClient: Client ${aClientName} created.`);
   }
 
+  public get Connector(): IButtplugConnector | null {
+    return this._connector;
+  }
+
+  public get Connected(): boolean {
+    return this._connector !== null && this._connector.Connected;
+  }
+
+  public get Devices(): Device[] {
+    // While this function doesn't actually send a message, if we don't have a
+    // connector, we shouldn't have devices.
+    this.CheckConnector();
+    const devices: Device[] = [];
+    this._devices.forEach((d, i) => {
+      devices.push(d);
+    });
+    return devices;
+  }
+
   public ConnectWebsocket = async (aAddress: string) => {
     this._logger.Info(`ButtplugClient: Connecting to ${aAddress}`);
     await this.Connect(new ButtplugBrowserWebsocketConnector(aAddress));
@@ -45,30 +64,11 @@ export class ButtplugClient extends EventEmitter {
     await this.InitializeConnection();
   }
 
-  public get Connector(): IButtplugConnector | null {
-    return this._connector;
-  }
-
-  public get Connected(): boolean {
-    return this._connector !== null && this._connector.Connected;
-  }
-
-  public Disconnect() {
+  public Disconnect = async () => {
     this._logger.Debug(`ButtplugClient: Disconnect called`);
     this.CheckConnector();
-    this.ShutdownConnection();
+    await this.ShutdownConnection();
     this._connector!.Disconnect();
-  }
-
-  public get Devices(): Device[] {
-    // While this function doesn't actually send a message, if we don't have a
-    // connector, we shouldn't have devices.
-    this.CheckConnector();
-    const devices: Device[] = [];
-    this._devices.forEach((d, i) => {
-      devices.push(d);
-    });
-    return devices;
   }
 
   public StartScanning = async (): Promise<void> => {
@@ -162,10 +162,10 @@ export class ButtplugClient extends EventEmitter {
         throw new Error("Server protocol version is older than client protocol version. Please update server.");
       }
       if (ping > 0) {
-        this._pingTimer = setInterval(() => {
+        this._pingTimer = setInterval(async () => {
           // If we've disconnected, stop trying to ping the server.
           if (!this.Connected) {
-            this.ShutdownConnection();
+            await this.ShutdownConnection();
             return;
           }
           this.SendMessage(new Messages.Ping(this._counter));
@@ -203,7 +203,8 @@ export class ButtplugClient extends EventEmitter {
     });
   }
 
-  protected ShutdownConnection = () => {
+  protected ShutdownConnection = async () => {
+    await this.StopAllDevices();
     if (this._pingTimer !== null) {
       clearInterval(this._pingTimer);
       this._pingTimer = null;

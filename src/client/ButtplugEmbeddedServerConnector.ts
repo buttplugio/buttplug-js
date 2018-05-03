@@ -34,6 +34,7 @@ export class ButtplugEmbeddedServerConnector extends EventEmitter implements IBu
     if (!this._connected) {
       return;
     }
+    this._server!.Shutdown();
     this._connected = false;
     this._server = null;
     this.emit("disconnect");
