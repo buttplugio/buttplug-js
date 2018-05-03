@@ -42,6 +42,12 @@ class ButtplugClient extends events_1.EventEmitter {
             this._connector.addListener("disconnect", this.DisconnectHandler);
             yield this.InitializeConnection();
         });
+        this.Disconnect = () => __awaiter(this, void 0, void 0, function* () {
+            this._logger.Debug(`ButtplugClient: Disconnect called`);
+            this.CheckConnector();
+            yield this.ShutdownConnection();
+            this._connector.Disconnect();
+        });
         this.StartScanning = () => __awaiter(this, void 0, void 0, function* () {
             this._logger.Debug(`ButtplugClient: StartScanning called`);
             return yield this.SendMsgExpectOk(new Messages.StartScanning());
@@ -80,14 +86,14 @@ class ButtplugClient extends events_1.EventEmitter {
                         throw new Error("Server protocol version is older than client protocol version. Please update server.");
                     }
                     if (ping > 0) {
-                        this._pingTimer = setInterval(() => {
+                        this._pingTimer = setInterval(() => __awaiter(this, void 0, void 0, function* () {
                             // If we've disconnected, stop trying to ping the server.
                             if (!this.Connected) {
-                                this.ShutdownConnection();
+                                yield this.ShutdownConnection();
                                 return;
                             }
                             this.SendMessage(new Messages.Ping(this._counter));
-                        }, Math.round(ping / 2));
+                        }), Math.round(ping / 2));
                     }
                     yield this.RequestDeviceList();
                     return true;
@@ -120,12 +126,13 @@ class ButtplugClient extends events_1.EventEmitter {
                 }
             });
         });
-        this.ShutdownConnection = () => {
+        this.ShutdownConnection = () => __awaiter(this, void 0, void 0, function* () {
+            yield this.StopAllDevices();
             if (this._pingTimer !== null) {
                 clearInterval(this._pingTimer);
                 this._pingTimer = null;
             }
-        };
+        });
         this.SendMsgExpectOk = (aMsg) => __awaiter(this, void 0, void 0, function* () {
             let res;
             let rej;
@@ -149,12 +156,6 @@ class ButtplugClient extends events_1.EventEmitter {
     }
     get Connected() {
         return this._connector !== null && this._connector.Connected;
-    }
-    Disconnect() {
-        this._logger.Debug(`ButtplugClient: Disconnect called`);
-        this.CheckConnector();
-        this.ShutdownConnection();
-        this._connector.Disconnect();
     }
     get Devices() {
         // While this function doesn't actually send a message, if we don't have a

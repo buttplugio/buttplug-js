@@ -7,4 +7,5 @@ export interface IButtplugDevice extends EventEmitter {
     readonly Name: string;
     readonly Id: string;
     ParseMessage(aMsg: Messages.ButtplugDeviceMessage): Promise<Messages.ButtplugMessage>;
+    Disconnect(): any;
 }

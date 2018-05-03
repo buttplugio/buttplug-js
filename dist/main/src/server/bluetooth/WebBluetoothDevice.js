@@ -26,6 +26,9 @@ class WebBluetoothDevice extends events_1.EventEmitter {
                 this._characteristics.set(name, yield this._service.getCharacteristic(this._deviceInfo.Characteristics[name]));
             }
         });
+        this.Disconnect = () => __awaiter(this, void 0, void 0, function* () {
+            this._server.disconnect();
+        });
         this.OnDisconnect = () => {
             this._logger.Debug(`WebBluetoothDevice: ${this.constructor.name} disconnecting`);
             this._device.removeEventListener("gattserverdisconnected", this.OnDisconnect);

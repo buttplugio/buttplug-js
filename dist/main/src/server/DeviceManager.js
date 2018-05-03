@@ -20,6 +20,11 @@ class DeviceManager extends events_1.EventEmitter {
         this._devices = new Map();
         this._deviceCounter = 0;
         this._logger = Logging_1.ButtplugLogger.Logger;
+        this.Shutdown = () => __awaiter(this, void 0, void 0, function* () {
+            for (const d of this._devices.values()) {
+                yield d.Disconnect();
+            }
+        });
         this.ClearDeviceManagers = () => {
             this._logger.Info("DeviceManager: Clearing device subtype managers");
             this._subtypeManagers = [];

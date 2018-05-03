@@ -6,6 +6,9 @@ class ButtplugBluetoothDevice extends ButtplugDevice_1.ButtplugDevice {
         super(aName, _deviceImpl.Id);
         this._deviceImpl = _deviceImpl;
     }
+    Disconnect() {
+        this._deviceImpl.Disconnect();
+    }
     OnDisconnect() {
         this.emit("deviceremoved", this);
     }

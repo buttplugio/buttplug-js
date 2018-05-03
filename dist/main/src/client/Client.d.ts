@@ -14,13 +14,13 @@ export declare class ButtplugClient extends EventEmitter {
     protected _logger: ButtplugLogger;
     protected _messageVersion: number;
     constructor(aClientName?: string);
+    readonly Connector: IButtplugConnector | null;
+    readonly Connected: boolean;
+    readonly Devices: Device[];
     ConnectWebsocket: (aAddress: string) => Promise<void>;
     ConnectLocal: () => Promise<void>;
     Connect: (aConnector: IButtplugConnector) => Promise<void>;
-    readonly Connector: IButtplugConnector | null;
-    readonly Connected: boolean;
-    Disconnect(): void;
-    readonly Devices: Device[];
+    Disconnect: () => Promise<void>;
     StartScanning: () => Promise<void>;
     StopScanning: () => Promise<void>;
     RequestLog: (aLogLevel: string) => Promise<void>;
@@ -31,7 +31,7 @@ export declare class ButtplugClient extends EventEmitter {
     protected ParseMessagesInternal(aMsgs: Messages.ButtplugMessage[]): void;
     protected InitializeConnection: () => Promise<boolean>;
     protected RequestDeviceList: () => Promise<void>;
-    protected ShutdownConnection: () => void;
+    protected ShutdownConnection: () => Promise<void>;
     protected SendMessage(aMsg: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage>;
     protected CheckConnector(): void;
     protected SendMsgExpectOk: (aMsg: Messages.ButtplugMessage) => Promise<void>;

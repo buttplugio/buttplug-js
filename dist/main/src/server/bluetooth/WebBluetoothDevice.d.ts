@@ -16,6 +16,7 @@ export declare class WebBluetoothDevice extends EventEmitter implements IBluetoo
     readonly Name: string;
     readonly Id: string;
     Connect: () => Promise<void>;
+    Disconnect: () => Promise<void>;
     OnDisconnect: () => void;
     WriteValue: (aCharacteristic: string, aValue: Uint8Array) => Promise<void>;
     ReadValue: (aCharacteristic: string) => Promise<BufferSource>;

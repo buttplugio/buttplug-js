@@ -27,6 +27,7 @@ class ButtplugEmbeddedServerConnector extends events_1.EventEmitter {
             if (!this._connected) {
                 return;
             }
+            this._server.Shutdown();
             this._connected = false;
             this._server = null;
             this.emit("disconnect");

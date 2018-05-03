@@ -8,6 +8,7 @@ export declare abstract class ButtplugDevice extends EventEmitter implements IBu
     protected readonly MsgFuncs: Map<string, (aMsg: Messages.ButtplugMessage) => Promise<Messages.ButtplugMessage>>;
     constructor(_name: string, _id: string);
     readonly abstract MessageSpecifications: object;
+    abstract Disconnect(): any;
     readonly Name: string;
     readonly Id: string;
     readonly AllowedMessageTypes: string[];

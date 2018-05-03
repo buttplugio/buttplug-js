@@ -53,12 +53,17 @@ Lovense._deviceNames = { "LVS-A011": "Nora",
     "LVS-Z36": "Hush",
     "LVS-Z001": "Hush",
     "LVS_Z001": "Hush",
+    "LVS-Hush41": "Hush",
     "LVS-Domi37": "Domi",
     "LVS-Domi38": "Domi",
     "LVS-Domi39": "Domi",
+    "LVS-Domi40": "Domi",
     "LVS-P36": "Edge",
     "LVS-Edge37": "Edge",
-    "LVS-Edge38": "Edge" };
+    "LVS-Edge38": "Edge",
+    "LVS-Edge39": "Edge",
+    "LVS-Edge40": "Edge",
+    "LVS-Lush41": "Lush" };
 exports.Lovense = Lovense;
 class LovenseRev1 {
 }
@@ -77,7 +82,7 @@ LovenseRev3.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["LVS-P36
 exports.LovenseRev3 = LovenseRev3;
 class LovenseRev4 {
 }
-LovenseRev4.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["LVS-Domi37", "LVS-Domi38", "LVS-Domi39"], ["57300001-0023-4bd4-bbd5-a6920e4c5653"], { tx: "57300002-0023-4bd4-bbd5-a6920e4c5653",
+LovenseRev4.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["LVS-Domi37", "LVS-Domi38", "LVS-Domi39", "LVS-Domi40"], ["57300001-0023-4bd4-bbd5-a6920e4c5653"], { tx: "57300002-0023-4bd4-bbd5-a6920e4c5653",
 }, Lovense.CreateInstance);
 exports.LovenseRev4 = LovenseRev4;
 class LovenseRev5 {
@@ -87,7 +92,7 @@ LovenseRev5.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["LVS-Z36
 exports.LovenseRev5 = LovenseRev5;
 class LovenseRev6 {
 }
-LovenseRev6.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["LVS-Edge37", "LVS-Edge38"], ["50300001-0023-4bd4-bbd5-a6920e4c5653"], { tx: "50300002-0023-4bd4-bbd5-a6920e4c5653",
+LovenseRev6.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["LVS-Edge37", "LVS-Edge38", "LVS-Edge39", "LVS-Edge40"], ["50300001-0023-4bd4-bbd5-a6920e4c5653"], { tx: "50300002-0023-4bd4-bbd5-a6920e4c5653",
 }, Lovense.CreateInstance);
 exports.LovenseRev6 = LovenseRev6;
 class LovenseRev7 {
@@ -95,4 +100,9 @@ class LovenseRev7 {
 LovenseRev7.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["LVS-S35"], ["53300001-0023-4bd4-bbd5-a6920e4c5653"], { tx: "53300002-0023-4bd4-bbd5-a6920e4c5653",
 }, Lovense.CreateInstance);
 exports.LovenseRev7 = LovenseRev7;
+class LovenseRev8 {
+}
+LovenseRev8.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["LVS-Hush41"], ["5a300001-0023-4bd4-bbd5-a6920e4c5653"], { tx: "5a300002-0023-4bd4-bbd5-a6920e4c5653",
+}, Lovense.CreateInstance);
+exports.LovenseRev8 = LovenseRev8;
 //# sourceMappingURL=Lovense.js.map

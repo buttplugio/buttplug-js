@@ -81,7 +81,8 @@ class ButtplugServer extends events_1.EventEmitter {
             return this._deviceManager.SendMessage(aMessage);
         });
         this.Shutdown = () => __awaiter(this, void 0, void 0, function* () {
-            return;
+            ServerMessageHub_1.ServerMessageHub.Instance.removeListener("message", this.OnOutgoingMessage);
+            yield this._deviceManager.Shutdown();
         });
         this.OnLogMessage = (aMsg) => {
             if (aMsg.LogLevel > this._outgoingLogLevel) {

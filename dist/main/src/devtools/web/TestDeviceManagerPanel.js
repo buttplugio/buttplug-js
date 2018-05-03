@@ -2,9 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const index_1 = require("../../index");
 const TWEEN = require("@tweenjs/tween.js");
-const jsPanel = require("./jspanel.js");
-require("jspanel4/dist/jspanel.css");
-require("jspanel4/dist/fonts/jsglyph.eot");
+const jsPanel = require("jspanel4");
+require("../../../node_modules/jspanel4/dist/jspanel.css");
 const testPanelHTML = require("./TestDeviceManagerPanel.html").toString();
 require("./TestDeviceManagerPanel.css");
 class TestDeviceManagerPanel {
