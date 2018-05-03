@@ -25,8 +25,8 @@
     "build:main": "tsc -p tsconfig.json && yarn build:copy-schema",
     "build:redist": "tsc -p tsconfig.json && yarn build:copy-schema",
     "build:doc": "typedoc --options typedoc.js --out doc .",
-    "build:web": "webpack --mode=development",
-    "build:web:release": "cross-env NODE_ENV=production webpack --progress --hide-modules --mode=production",
+    "build:web": "webpack --config=build/webpack.base.js",
+    "build:web:release": "webpack --progress --hide-modules --config=build/webpack.production.js",
     "tslint": "tslint -c tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
     "tslint:fix": "tslint -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\"",
     "pretest": "yarn build:main",
@@ -47,7 +47,6 @@
     "@types/web-bluetooth": "^0.0.4",
     "codecov": "^3.0.1",
     "copyfiles": "^2.0.0",
-    "cross-env": "^5.1.4",
     "css-loader": "^0.28.11",
     "fork-ts-checker-webpack-plugin": "^0.4.1",
     "html-loader": "^0.5.5",
@@ -68,6 +67,7 @@
     "web-bluetooth-mock": "^1.0.2",
     "webpack": "^4.6.0",
     "webpack-cli": "^2.1.2",
+    "webpack-merge": "^4.1.2",
     "yarn": "^1.6.0"
   },
   "jest": {

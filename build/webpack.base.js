@@ -6,8 +6,7 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = [{
   name: "library",
-  // Needed so tsconfig can be found
-  context: __dirname,
+  mode: "none",
   stats: {
     assets: false,
     colors: true,
@@ -17,10 +16,10 @@ module.exports = [{
     chunks: false,
     chunkModules: false
   },
-  entry: './src/index.ts',
+  entry: path.resolve('./src/index.ts'),
   output: {
-    path: path.resolve(__dirname, './dist/web'),
-    filename: 'buttplug',
+    path: path.resolve('./dist/web'),
+    filename: 'buttplug.js',
     libraryTarget: 'umd',
     library: {
       root: "Buttplug",
@@ -62,8 +61,7 @@ module.exports = [{
   }
 }, {
   name: "devtools",
-  // Needed so tsconfig can be found
-  context: __dirname,
+  mode: "none",
   stats: {
     assets: false,
     colors: true,
@@ -73,10 +71,10 @@ module.exports = [{
     chunks: false,
     chunkModules: false
   },
-  entry: './src/devtools/web/index.web.ts',
+  entry: path.resolve('./src/devtools/web/index.web.ts'),
   output: {
-    path: path.resolve(__dirname, './dist/web'),
-    filename: 'buttplug-devtools',
+    path: path.resolve('./dist/web'),
+    filename: 'buttplug-devtools.js',
     libraryTarget: 'umd',
     library: {
       root: "ButtplugDevTools",
@@ -156,39 +154,3 @@ module.exports = [{
   }
 }];
 
-if (process.env.NODE_ENV === 'production') {
-  for (const m of module.exports) {
-    m.devtool = '#source-map';
-    m.output.filename = `${m.output.filename}.min.js`;
-    // http://vue-loader.vuejs.org/en/workflow/production.html
-    m.plugins = (module.exports.plugins || []).concat([
-      new webpack.DefinePlugin({
-        'process.env': {
-          NODE_ENV: '"production"'
-        }
-      }),
-      new webpack.optimize.ModuleConcatenationPlugin(),
-      new UglifyJSPlugin({
-        sourceMap: true,
-        uglifyOptions: {
-          mangle: {
-            keep_classnames: true,
-            keep_fnames: true
-          },
-          compress: {
-            keep_classnames: true,
-            keep_fnames: true,
-            warnings: false
-          }
-        }
-      }),
-      new webpack.LoaderOptionsPlugin({
-        minimize: true
-      })
-    ]);
-  }
-} else {
-  for (const m of module.exports) {
-    m.output.filename = `${m.output.filename}.js`;
-  }
-}
