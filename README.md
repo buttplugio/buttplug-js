@@ -138,8 +138,7 @@ get invalid message errors, this may be why.
 - [buttplug-node-websockets](https://github.com/metafetish/buttplug-node-websockets) -
   Websocket client and server for native node applications.
 - [vue-buttplug-material-component](https://github.com/metafetish/vue-buttplug-material-component) -
-  Vue.js component using [Vue Material
-  Design](https://vuematerial.io). Provides a simple interface for
+  Vue.js component using [Vuetify](https://vuetifyjs.com). Provides a simple interface for
   Buttplug server connection, device management, etc.
 
 ## Applications Using Buttplug-js
@@ -157,7 +156,7 @@ get invalid message errors, this may be why.
 
 buttplug-js is BSD 3-Clause licensed.
 
-    Copyright (c) 2017, Metafetish
+    Copyright (c) 2017-2018, Nonpolynomial Labs LLC
     All rights reserved.
     
     Redistribution and use in source and binary forms, with or without
