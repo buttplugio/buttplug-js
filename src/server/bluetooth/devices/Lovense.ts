@@ -4,33 +4,57 @@ import { IBluetoothDeviceImpl } from "../IBluetoothDeviceImpl";
 import * as Messages from "../../../core/Messages";
 
 export class Lovense extends ButtplugBluetoothDevice {
+  public static readonly DeviceInfo = (() => {
+    // Start with the two non-standard UUIDs, which come from the original
+    // versions of the Max/Nora toys.
+    const uuids: string[] = ["0000fff0-0000-1000-8000-00805f9b34fb",
+                             "6e400001-b5a3-f393-e0a9-e50e24dcca9e"];
+    // Future-proofing for possible Lovense UUIDs, based on the pattern of the
+    // current firmware.
+    for (let i = 0; i < 16; ++i) {
+      uuids.push(`5${i.toString(16)}300001-0023-4bd4-bbd5-a6920e4c5653`);
+      uuids.push(`5${i.toString(16)}300001-0024-4bd4-bbd5-a6920e4c5653`);
+    }
+
+    return new BluetoothDeviceInfo([],
+                                   ["LVS"],
+                                   uuids,
+                                   {},
+                                   Lovense.CreateInstance);
+  })();
+
   public static CreateInstance(aDeviceImpl: IBluetoothDeviceImpl): Promise<ButtplugBluetoothDevice> {
     return Promise.resolve(new Lovense(aDeviceImpl));
   }
 
-  private static _deviceNames = { "LVS-A011": "Nora",
-                                  "LVS-C011": "Nora",
-                                  "LVS-B011": "Max",
-                                  "LVS-L009": "Ambi",
-                                  "LVS-S001": "Lush",
-                                  "LVS-S35": "Lush",
-                                  "LVS-Z36": "Hush",
-                                  "LVS-Z001": "Hush",
-                                  "LVS_Z001": "Hush",
-                                  "LVS-Hush41": "Hush",
-                                  "LVS-Domi37": "Domi",
-                                  "LVS-Domi38": "Domi",
-                                  "LVS-Domi39": "Domi",
-                                  "LVS-Domi40": "Domi",
-                                  "LVS-P36": "Edge",
-                                  "LVS-Edge37": "Edge",
-                                  "LVS-Edge38": "Edge",
-                                  "LVS-Edge39": "Edge",
-                                  "LVS-Edge40": "Edge",
-                                  "LVS-Lush41": "Lush"};
+  private static _deviceNames = {
+    "LVS-Edge": "Edge",
+    "LVS-Lush": "Lush",
+    "LVS-Ambi": "Ambi",
+    "LVS-Osci": "Osci",
+    "LVS-Hush": "Hush",
+    "LVS-Domi": "Domi",
+    "LVS-Max": "Max",
+    "LVS-Nora": "Nora",
+    "LVS-A": "Nora",
+    "LVS-C": "Nora",
+    "LVS-B": "Max",
+    "LVS-L": "Ambi",
+    "LVS-S": "Lush",
+    "LVS-Z": "Hush",
+    "LVS-P": "Edge",
+  };
 
   public constructor(aDeviceImpl: IBluetoothDeviceImpl) {
     super(`Lovense ${aDeviceImpl.Name}`, aDeviceImpl);
+    // Until we've implemented Lovense Protocol DeviceInfo checking, use this to
+    // make pretty names.
+    for (const n of Object.keys(Lovense._deviceNames)) {
+      if (aDeviceImpl.Name.indexOf(n) === 0) {
+        this._name = "Lovense " + Lovense._deviceNames[n];
+        break;
+      }
+    }
     this.MsgFuncs.set(Messages.StopDeviceCmd.name, this.HandleStopDeviceCmd);
     this.MsgFuncs.set(Messages.VibrateCmd.name, this.HandleVibrateCmd);
     this.MsgFuncs.set(Messages.SingleMotorVibrateCmd.name, this.HandleSingleMotorVibrateCmd);
@@ -66,76 +90,4 @@ export class Lovense extends ButtplugBluetoothDevice {
       await this._deviceImpl.WriteValue("tx", Buffer.from("Vibrate:" + speed + ";"));
       return new Messages.Ok(aMsg.Id);
     }
-}
-
-export class LovenseRev1 {
-  public static readonly DeviceInfo = new BluetoothDeviceInfo(["LVS-A011", "LVS-C011", "LVS-B011", "LVS-L009"],
-                                                              ["0000fff0-0000-1000-8000-00805f9b34fb"],
-                                                              {tx: "0000fff2-0000-1000-8000-00805f9b34fb",
-                                                               // rx: "0000fff1-0000-1000-8000-00805f9b34fb"
-                                                              },
-                                                              Lovense.CreateInstance);
-}
-
-export class LovenseRev2 {
-  public static readonly DeviceInfo = new BluetoothDeviceInfo(["LVS-S001", "LVS-Z001", "LVS_Z001"],
-                                                              ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"],
-                                                              {tx: "6e400002-b5a3-f393-e0a9-e50e24dcca9e",
-                                                               // rx: "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
-                                                              },
-                                                              Lovense.CreateInstance);
-}
-
-export class LovenseRev3 {
-  public static readonly DeviceInfo = new BluetoothDeviceInfo(["LVS-P36"],
-                                                              ["50300001-0024-4bd4-bbd5-a6920e4c5653"],
-                                                              {tx: "50300002-0024-4bd4-bbd5-a6920e4c5653",
-                                                               // rx: "50300003-0024-4bd4-bbd5-a6920e4c5653"
-                                                              },
-                                                              Lovense.CreateInstance);
-}
-
-export class LovenseRev4 {
-  public static readonly DeviceInfo = new BluetoothDeviceInfo(["LVS-Domi37", "LVS-Domi38", "LVS-Domi39", "LVS-Domi40"],
-                                                              ["57300001-0023-4bd4-bbd5-a6920e4c5653"],
-                                                              {tx: "57300002-0023-4bd4-bbd5-a6920e4c5653",
-                                                               // rx: "57300003-0023-4bd4-bbd5-a6920e4c5653"
-                                                              },
-                                                              Lovense.CreateInstance);
-}
-
-export class LovenseRev5 {
-  public static readonly DeviceInfo = new BluetoothDeviceInfo(["LVS-Z36"],
-                                                              ["5a300001-0024-4bd4-bbd5-a6920e4c5653"],
-                                                              {tx: "5a300002-0024-4bd4-bbd5-a6920e4c5653",
-                                                               // rx: "57300003-0023-4bd4-bbd5-a6920e4c5653"
-                                                              },
-                                                              Lovense.CreateInstance);
-}
-
-export class LovenseRev6 {
-  public static readonly DeviceInfo = new BluetoothDeviceInfo(["LVS-Edge37", "LVS-Edge38", "LVS-Edge39", "LVS-Edge40"],
-                                                              ["50300001-0023-4bd4-bbd5-a6920e4c5653"],
-                                                              {tx: "50300002-0023-4bd4-bbd5-a6920e4c5653",
-                                                               // rx: "57300003-0023-4bd4-bbd5-a6920e4c5653"
-                                                              },
-                                                              Lovense.CreateInstance);
-}
-
-export class LovenseRev7 {
-  public static readonly DeviceInfo = new BluetoothDeviceInfo(["LVS-S35"],
-                                                              ["53300001-0023-4bd4-bbd5-a6920e4c5653"],
-                                                              {tx: "53300002-0023-4bd4-bbd5-a6920e4c5653",
-                                                               // rx: "53300003-0023-4bd4-bbd5-a6920e4c5653"
-                                                              },
-                                                              Lovense.CreateInstance);
-}
-
-export class LovenseRev8 {
-  public static readonly DeviceInfo = new BluetoothDeviceInfo(["LVS-Hush41"],
-                                                              ["5a300001-0023-4bd4-bbd5-a6920e4c5653"],
-                                                              {tx: "5a300002-0023-4bd4-bbd5-a6920e4c5653",
-                                                               // rx: "57300003-0023-4bd4-bbd5-a6920e4c5653"
-                                                              },
-                                                              Lovense.CreateInstance);
 }

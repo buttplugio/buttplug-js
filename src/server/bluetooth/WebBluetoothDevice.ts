@@ -43,11 +43,43 @@ export class WebBluetoothDevice extends EventEmitter implements IBluetoothDevice
     this._logger.Debug(`WebBluetoothDevice: ${this.constructor.name} connecting`);
     this._device.addEventListener("gattserverdisconnected", this.OnDisconnect);
     this._server = await this._device.gatt!.connect();
-    this._service = await this._server.getPrimaryService(this._deviceInfo.Services[0]);
+
+    // We passed along a list of services we expect to work with all hardware as
+    // part of the connection filters, so only those services will be found when
+    // running getPrimaryServices
+    const services = await this._server.getPrimaryServices();
+    if (services.length === 0) {
+      this._logger.Error(`Cannot find gatt service to connect to on device ${this._device.name}`);
+      throw new Error(`Cannot find gatt service to connect to on device ${this._device.name}`);
+    }
+
+    // For now, we assume we're only using one service on each device. This will
+    // most likely change in the future.
+    this._service = services[0];
+
+    // If the device info contains characteristic address and identity
+    // information, use that to try and establish characteristic objects.
     for (const name of Object.getOwnPropertyNames(this._deviceInfo.Characteristics)) {
       this._characteristics.set(name, await this._service.getCharacteristic(this._deviceInfo.Characteristics[name]));
     }
-  }
+
+    // If no characteristics are present in the DeviceInfo block, we assume that
+    // we're connecting to a simple rx/tx service, and can query to figure out
+    // characteristics. Assume that the characteristics have tx/rx references.
+    if (this._characteristics.entries.length === 0) {
+      const characteristics = await this._service.getCharacteristics();
+      for (const char of characteristics) {
+        if (char.properties.write || char.properties.writeWithoutResponse || char.properties.reliableWrite) {
+          this._characteristics.set("tx", char);
+        } else if (char.properties.read || char.properties.broadcast) {
+          this._characteristics.set("rx", char);
+        }
+      }
+    }
+
+    // If at this point we still don't have any characteristics, something is
+    // wrong, error out.
+}
 
   public Disconnect = async (): Promise<void> => {
     this._server.disconnect();

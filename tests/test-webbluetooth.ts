@@ -3,7 +3,7 @@ import { ButtplugLogger, ButtplugLogLevel } from "../src/core/Logging";
 import { ButtplugClient } from "../src/client/Client";
 import { BPTestClient, SetupTestSuite, WebBluetoothMockObject, MakeMockWebBluetoothDevice } from "./utils";
 import { VibrateCmd, SpeedSubcommand } from "../src/index";
-import { LovenseRev5 } from "../src/server/bluetooth/devices/Lovense";
+import { Lovense } from "../src/server/bluetooth/devices/Lovense";
 
 SetupTestSuite();
 
@@ -18,7 +18,7 @@ describe("WebBluetooth library tests", () => {
   beforeEach(async () => {
     p = new Promise((resolve, reject) => { res = resolve; rej = reject; });
     // Mock an actual buttplug (Lovense Hush)!
-    mockBT = MakeMockWebBluetoothDevice(LovenseRev5.DeviceInfo);
+    mockBT = MakeMockWebBluetoothDevice(Lovense.DeviceInfo);
     const g = global as any;
     g.navigator = g.navigator || {};
     bluetooth = new WebBluetoothMock([mockBT.device]);

@@ -46,10 +46,28 @@ export class WebBluetoothMockObject {
 }
 
 export function MakeMockWebBluetoothDevice(deviceInfo: BluetoothDeviceInfo): WebBluetoothMockObject {
-  const device = new DeviceMock(deviceInfo.Names[0], [deviceInfo.Services[0]]);
+  let name: string;
+  if (deviceInfo.Names.length > 0) {
+    name = deviceInfo.Names[0];
+  } else if (deviceInfo.NamePrefixes.length > 0) {
+    name = deviceInfo.NamePrefixes[0] + "-test";
+  } else {
+    throw new Error("Cannot create mock device!");
+  }
+  const device = new DeviceMock(name, [deviceInfo.Services[0]]);
   const gatt = device.gatt;
   const service = device.getServiceMock(deviceInfo.Services[0]);
-  const tx = service.getCharacteristicMock((deviceInfo.Characteristics as any).tx);
+  let tx: CharacteristicMock;
+  if (Object.keys(deviceInfo.Characteristics).indexOf("tx") !== -1) {
+    tx = service.getCharacteristicMock((deviceInfo.Characteristics as any).tx);
+  } else {
+    // In this case, we are expected to query devices and find rx/tx
+    // characteristics. Since this is a test and we have no devices, we can't do
+    // that. Just make one up.
+    tx = service.getCharacteristicMock("55555555-5555-5555-5555-555555555555");
+    tx.properties.write = true;
+    tx.properties.writeWithoutResponse = true;
+  }
   return new WebBluetoothMockObject(device, gatt, service, tx);
 }
 

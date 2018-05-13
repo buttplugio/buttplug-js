@@ -5,8 +5,9 @@ import * as Messages from "../../../core/Messages";
 
 export class VorzeA10Cyclone extends ButtplugBluetoothDevice {
   public static readonly DeviceInfo = new BluetoothDeviceInfo(["CycSA"],
+                                                              [],
                                                               ["40ee1111-63ec-4b7f-8ce7-712efd55b90e"],
-                                                              { tx: "40ee2222-63ec-4b7f-8ce7-712efd55b90e"},
+                                                              {},
                                                               VorzeA10Cyclone.CreateInstance);
 
   public static async CreateInstance(aDeviceImpl: IBluetoothDeviceImpl): Promise<ButtplugBluetoothDevice> {

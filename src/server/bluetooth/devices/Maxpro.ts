@@ -6,9 +6,9 @@ import * as Messages from "../../../core/Messages";
 
 export class Maxpro extends ButtplugBluetoothDevice {
   public static readonly DeviceInfo = new BluetoothDeviceInfo(["M2"],
+                                                              [],
                                                               ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"],
-                                                              { tx: "6e400002-b5a3-f393-e0a9-e50e24dcca9e",
-                                                                rx: "6e400003-b5a3-f393-e0a9-e50e24dcca9e"},
+                                                              {},
                                                               Maxpro.CreateInstance);
 
   public static async CreateInstance(aDeviceImpl: IBluetoothDeviceImpl): Promise<ButtplugBluetoothDevice> {

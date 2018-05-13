@@ -5,7 +5,7 @@ import { BPTestClient, SetupTestSuite, WebBluetoothMockObject, MakeMockWebBlueto
 import { VibrateCmd, RotateCmd, SpeedSubcommand, LinearCmd, VectorSubcommand, FleshlightLaunchFW12Cmd,
          DeviceInfo, BluetoothDeviceInfo, SingleMotorVibrateCmd, RotateSubcommand,
          VorzeA10CycloneCmd } from "../src/index";
-import { LovenseRev5 } from "../src/server/bluetooth/devices/Lovense";
+import { Lovense } from "../src/server/bluetooth/devices/Lovense";
 import { WeVibe } from "../src/server/bluetooth/devices/WeVibe";
 import { FleshlightLaunch } from "../src/server/bluetooth/devices/FleshlightLaunch";
 import { VorzeA10Cyclone } from "../src/server/bluetooth/devices/VorzeA10Cyclone";
@@ -35,7 +35,7 @@ describe("WebBluetooth library tests", () => {
   };
 
   it("should convert lovense commands properly", async () => {
-    await SetupDevice(LovenseRev5.DeviceInfo);
+    await SetupDevice(Lovense.DeviceInfo);
     await bp.StartScanning();
     await bp.StopScanning();
     jest.spyOn(mockBT.txChar, "writeValue");
