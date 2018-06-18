@@ -1,6 +1,13 @@
 # buttplug-js
 
-[![npm](https://img.shields.io/npm/v/buttplug.svg)](https://npmjs.com/package/buttplug) [![Build Status](https://travis-ci.org/metafetish/buttplug-js.svg?branch=master)](https://travis-ci.org/metafetish/buttplug-js) [![codecov](https://codecov.io/gh/metafetish/buttplug-js/branch/master/graph/badge.svg)](https://codecov.io/gh/metafetish/buttplug-js) [![Patreon donate button](https://img.shields.io/badge/patreon-donate-yellow.svg)](https://www.patreon.com/qdot)
+[![npm](https://img.shields.io/npm/v/buttplug.svg)](https://npmjs.com/package/buttplug) 
+[![Build Status](https://travis-ci.org/metafetish/buttplug-js.svg?branch=master)](https://travis-ci.org/metafetish/buttplug-js) 
+[![codecov](https://codecov.io/gh/metafetish/buttplug-js/branch/master/graph/badge.svg)](https://codecov.io/gh/metafetish/buttplug-js) 
+
+[![Patreon donate button](https://img.shields.io/badge/patreon-donate-yellow.svg)](https://www.patreon.com/qdot)
+[![Discourse Forum](https://img.shields.io/badge/discourse-forum-blue.svg)](https://metafetish.club)
+[![Discord](https://img.shields.io/discord/353303527587708932.svg?logo=discord)](https://discord.gg/t9g9RuD)
+[![Twitter](https://img.shields.io/twitter/follow/buttplugio.svg?style=social&logo=twitter)](https://twitter.com/buttplugio)
 
 buttplug-js is a core implementation in Typescript for the Buttplug
 Sex Toy Control Protocol and Server Architecture. It contains the
@@ -78,13 +85,20 @@ start writing code!
 ## API Documentation
 
 buttplug-js API Documentation is available at
-[https://metafetish.github.io/buttplug-js](https://metafetish.github.io/buttplug-js).
+[https://buttplug-js.docs.buttplug.io](https://buttplug-js.docs.buttplug.io).
 
-The documentation is rebuilt on every commit/merge to master.
+The documentation is rebuilt on every commit/merge to release, and
+reflects the state of the latest released version on NPM. If you are
+using a dev version of the library (i.e. from the master branch of
+this repo), you can generate documentation by running
+
+```
+yarn build:doc
+```
 
 We highly recommend reading through the Buttplug Protocol Spec to get
 an idea of what messages are available. The Protocol Spec is available
-at [https://metafetish.github.io/buttplug](https://metafetish.github.io/buttplug).
+at [https://buttplug-spec.docs.buttplug.io](https://buttplug-spec.docs.buttplug.io).
 
 ## Usage Example
 
