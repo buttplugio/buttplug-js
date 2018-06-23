@@ -2,7 +2,7 @@ import { WebBluetoothMock, DeviceMock, CharacteristicMock, PrimaryServiceMock, G
 import { ButtplugLogger, ButtplugLogLevel } from "../src/core/Logging";
 import { ButtplugClient } from "../src/client/Client";
 import { BPTestClient, SetupTestSuite, WebBluetoothMockObject, MakeMockWebBluetoothDevice } from "./utils";
-import { VibrateCmd, SpeedSubcommand } from "../src/index";
+import { VibrateCmd, SpeedSubcommand, ErrorClass } from "../src/index";
 import { Lovense } from "../src/server/bluetooth/devices/Lovense";
 
 SetupTestSuite();
@@ -65,7 +65,8 @@ describe("WebBluetooth library tests", () => {
     mockBT.gatt.connect = () => {
       throw new Error("Connection error");
     };
-    await expect(bp.StartScanning()).rejects.toThrow();
+    // Make sure we at least have the right error code. Id and message may vary.
+    await expect(bp.StartScanning()).rejects.toHaveProperty("ErrorCode", ErrorClass.ERROR_DEVICE);
     return p;
   });
 
