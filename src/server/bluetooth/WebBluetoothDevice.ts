@@ -91,9 +91,13 @@ export class WebBluetoothDevice extends EventEmitter implements IBluetoothDevice
     this.emit("deviceremoved");
   }
 
+  public WriteString = async (aCharacteristic: string, aValue: string): Promise<void> => {
+    return await this.WriteValue(aCharacteristic, Buffer.from(aValue));
+  }
+
   public WriteValue = async (aCharacteristic: string, aValue: Uint8Array): Promise<void> => {
     if (!this._characteristics.has(aCharacteristic)) {
-      return;
+      throw new Error("Tried to access wrong characteristic!");
     }
     const chr = this._characteristics.get(aCharacteristic)!;
     this._logger.Trace(`WebBluetoothDevice: ${this.constructor.name} writing ${aValue} to ${chr.uuid}`);
