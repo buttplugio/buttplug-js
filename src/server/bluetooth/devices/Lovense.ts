@@ -23,8 +23,10 @@ export class Lovense extends ButtplugBluetoothDevice {
                                    Lovense.CreateInstance);
   })();
 
-  public static CreateInstance(aDeviceImpl: IBluetoothDeviceImpl): Promise<ButtplugBluetoothDevice> {
-    return Promise.resolve(new Lovense(aDeviceImpl));
+  public static async CreateInstance(aDeviceImpl: IBluetoothDeviceImpl): Promise<ButtplugBluetoothDevice> {
+    const dev = new Lovense(aDeviceImpl);
+    await dev.Initialize();
+    return dev;
   }
 
   private static _deviceNames = {
@@ -45,6 +47,9 @@ export class Lovense extends ButtplugBluetoothDevice {
     "LVS-P": "Edge",
   };
 
+  private _initResolve: (() => void) | undefined;
+  private _initPromise = new Promise((res, rej) => { this._initResolve = res; });
+
   public constructor(aDeviceImpl: IBluetoothDeviceImpl) {
     super(`Lovense ${aDeviceImpl.Name}`, aDeviceImpl);
     // Until we've implemented Lovense Protocol DeviceInfo checking, use this to
@@ -60,12 +65,29 @@ export class Lovense extends ButtplugBluetoothDevice {
     this.MsgFuncs.set(Messages.SingleMotorVibrateCmd.name, this.HandleSingleMotorVibrateCmd);
   }
 
+  public Initialize = async (): Promise<void> => {
+    this._deviceImpl.addListener("characteristicvaluechanged", this.OnValueChanged);
+    await this._deviceImpl.Subscribe("rx");
+    await this._deviceImpl.WriteString("tx", "DeviceType;");
+    await this._initPromise;
+  }
+
   public get MessageSpecifications(): object {
     return {
       VibrateCmd: { FeatureCount: 1 },
       SingleMotorVibrateCmd: {},
       StopDeviceCmd: {},
     };
+  }
+
+  private OnValueChanged = async (aCharacteristic: string, aValue: Buffer) => {
+    // If we haven't initialized yet, consider this to be the first read, for the device info.
+    if (this._initResolve !== undefined) {
+      const res = this._initResolve;
+      this._initResolve = undefined;
+      res();
+      return;
+    }
   }
 
   private HandleVibrateCmd = async (aMsg: Messages.VibrateCmd): Promise<Messages.ButtplugMessage> => {
@@ -87,7 +109,7 @@ export class Lovense extends ButtplugBluetoothDevice {
   private HandleSingleMotorVibrateCmd =
     async (aMsg: Messages.SingleMotorVibrateCmd): Promise<Messages.ButtplugMessage> => {
       const speed = Math.floor(20 * aMsg.Speed);
-      await this._deviceImpl.WriteValue("tx", Buffer.from("Vibrate:" + speed + ";"));
+      await this._deviceImpl.WriteString("tx", "Vibrate:" + speed + ";");
       return new Messages.Ok(aMsg.Id);
     }
 }
