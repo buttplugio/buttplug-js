@@ -3,6 +3,7 @@ import { IBluetoothDeviceImpl } from "./IBluetoothDeviceImpl";
 import { BluetoothDeviceInfo } from "./BluetoothDeviceInfo";
 import { ButtplugBluetoothDevice } from "./ButtplugBluetoothDevice";
 import { EventEmitter } from "events";
+import { StringDecoder } from "string_decoder";
 
 export class WebBluetoothDevice extends EventEmitter implements IBluetoothDeviceImpl {
 
@@ -20,9 +21,11 @@ export class WebBluetoothDevice extends EventEmitter implements IBluetoothDevice
     return device;
   }
 
+  private _notificationHandlers = new Map<string, (Event) => void>();
   private _logger = ButtplugLogger.Logger;
   private _server: BluetoothRemoteGATTServer;
   private _service: BluetoothRemoteGATTService;
+  private _decoder = new StringDecoder("utf-8");
   private _characteristics: Map<string, BluetoothRemoteGATTCharacteristic> =
     new Map<string, BluetoothRemoteGATTCharacteristic>();
 
@@ -69,9 +72,14 @@ export class WebBluetoothDevice extends EventEmitter implements IBluetoothDevice
     if (this._characteristics.entries.length === 0) {
       const characteristics = await this._service.getCharacteristics();
       for (const char of characteristics) {
-        if (char.properties.write || char.properties.writeWithoutResponse || char.properties.reliableWrite) {
+        if (char.properties.write ||
+            char.properties.writeWithoutResponse ||
+            char.properties.reliableWrite) {
           this._characteristics.set("tx", char);
-        } else if (char.properties.read || char.properties.broadcast) {
+        } else if (char.properties.read ||
+                   char.properties.broadcast ||
+                   char.properties.notify ||
+                   char.properties.indicate) {
           this._characteristics.set("rx", char);
         }
       }
@@ -82,6 +90,9 @@ export class WebBluetoothDevice extends EventEmitter implements IBluetoothDevice
 }
 
   public Disconnect = async (): Promise<void> => {
+    for (const chr of this._notificationHandlers.keys()) {
+      this.Unsubscribe(chr);
+    }
     this._server.disconnect();
   }
 
@@ -104,6 +115,11 @@ export class WebBluetoothDevice extends EventEmitter implements IBluetoothDevice
     await chr.writeValue(aValue);
   }
 
+  public ReadString = async (aCharacteristic: string): Promise<string> => {
+    const value = await this.ReadValue(aCharacteristic);
+    return this._decoder.end(Buffer.from(value as ArrayBuffer));
+  }
+
   public ReadValue = async (aCharacteristic: string): Promise<BufferSource> => {
     if (!this._characteristics.has(aCharacteristic)) {
       throw new Error("Tried to access wrong characteristic!");
@@ -111,5 +127,41 @@ export class WebBluetoothDevice extends EventEmitter implements IBluetoothDevice
     const chr = this._characteristics.get(aCharacteristic)!;
     this._logger.Trace(`WebBluetoothDevice: ${this.constructor.name} reading from ${chr.uuid}`);
     return await chr.readValue();
+  }
+
+  public Subscribe = async (aCharacteristic: string): Promise<void> => {
+    if (!this._characteristics.has(aCharacteristic)) {
+      throw new Error("Tried to access wrong characteristic!");
+    }
+    if (this._notificationHandlers.has(aCharacteristic)) {
+      throw new Error("Already listening on this characteristic!");
+    }
+    const chr = this._characteristics.get(aCharacteristic)!;
+    this._logger.Trace(`WebBluetoothDevice: ${this.constructor.name} subscribing to updates from ${chr.uuid}`);
+    await chr.startNotifications();
+    this._notificationHandlers.set(aCharacteristic, (event: Event) => {
+      this.CharacteristicValueChanged(event, aCharacteristic);
+    });
+    chr.addEventListener("characteristicvaluechanged", this._notificationHandlers.get(aCharacteristic)!);
+  }
+
+  public Unsubscribe = async (aCharacteristic: string): Promise<void> => {
+    if (!this._characteristics.has(aCharacteristic)) {
+      throw new Error("Tried to access wrong characteristic!");
+    }
+    if (!this._notificationHandlers.has(aCharacteristic)) {
+      throw new Error("Not listening on this characteristic!");
+    }
+    const chr = this._characteristics.get(aCharacteristic)!;
+    this._logger.Trace(`WebBluetoothDevice: ${this.constructor.name} unsubscribing to updates from ${chr.uuid}`);
+    chr.removeEventListener("characteristicvaluechanged", this._notificationHandlers.get(aCharacteristic)!);
+    this._notificationHandlers.delete(aCharacteristic);
+    await chr.stopNotifications();
+  }
+
+  protected CharacteristicValueChanged = (aEvent: Event, aCharacteristic: string) => {
+    // For some reason this EventTarget doesn't have a value prop?
+    const eventValue = (aEvent.target! as BluetoothRemoteGATTCharacteristic).value;
+    this.emit("characteristicvaluechanged", aCharacteristic, Buffer.from(eventValue!.buffer));
   }
 }
