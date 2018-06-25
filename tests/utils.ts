@@ -29,11 +29,28 @@ export class BPTestClient extends ButtplugClient {
   }
 }
 
+export function SetupLovenseTestDevice(mockBT: WebBluetoothMockObject, deviceLetter: string = "W") {
+  const oldWrite = mockBT.txChar.writeValue;
+  mockBT.txChar.writeValue = async (): Promise<void> => {
+    const infoBuf = Buffer.from(`${deviceLetter}:01:000000000000`);
+    const arrBuf = new ArrayBuffer(infoBuf.length);
+    // If we don't convert and load into a view, the buffer conversion later
+    // won't work.
+    const view = new Uint8Array(arrBuf);
+    for (let i = 0; i < infoBuf.length; ++i) {
+      view[i] = infoBuf[i];
+    }
+    mockBT.rxChar.value = new DataView(arrBuf);
+    mockBT.rxChar.dispatchEvent(new CustomEvent("characteristicvaluechanged"));
+    mockBT.txChar.writeValue = oldWrite;
+  };
+}
+
 export function SetupTestSuite() {
   // None of our tests should take very long.
   jest.setTimeout(1000);
-  process.on("unhandledRejection", (error) => {
-    throw new Error(`Unhandled Promise rejection! ${error}`);
+  process.on("unhandledRejection", (reason, p) => {
+    throw new Error(`Unhandled Promise rejection!\n---\n${reason.stack}\n---\n`);
   });
 }
 
@@ -41,7 +58,8 @@ export class WebBluetoothMockObject {
   constructor(public device: DeviceMock,
               public gatt: GattMock,
               public service: PrimaryServiceMock,
-              public txChar: CharacteristicMock) {
+              public txChar: CharacteristicMock,
+              public rxChar: CharacteristicMock) {
   }
 }
 
@@ -68,7 +86,17 @@ export function MakeMockWebBluetoothDevice(deviceInfo: BluetoothDeviceInfo): Web
     tx.properties.write = true;
     tx.properties.writeWithoutResponse = true;
   }
-  return new WebBluetoothMockObject(device, gatt, service, tx);
+  let rx: CharacteristicMock;
+  if (Object.keys(deviceInfo.Characteristics).indexOf("rx") !== -1) {
+    rx = service.getCharacteristicMock((deviceInfo.Characteristics as any).rx);
+  } else {
+    // In this case, we are expected to query devices and find rx/tx
+    // characteristics. Since this is a test and we have no devices, we can't do
+    // that. Just make one up.
+    rx = service.getCharacteristicMock("55555556-5555-5555-5555-555555555555");
+    rx.properties.notify = true;
+  }
+  return new WebBluetoothMockObject(device, gatt, service, tx, rx);
 }
 
 export async function SetupTestServer(): Promise<any> {
