@@ -11,8 +11,6 @@ export class VorzeA10Cyclone extends ButtplugBluetoothDevice {
                                                               VorzeA10Cyclone.CreateInstance);
 
   public static async CreateInstance(aDeviceImpl: IBluetoothDeviceImpl): Promise<ButtplugBluetoothDevice> {
-    // Send initializer byte
-    aDeviceImpl.WriteValue("cmd", new Uint8Array([0x00]));
     return new VorzeA10Cyclone(aDeviceImpl);
   }
 
