@@ -2,6 +2,8 @@ import { BluetoothDeviceInfo } from "../BluetoothDeviceInfo";
 import { ButtplugBluetoothDevice } from "../ButtplugBluetoothDevice";
 import { IBluetoothDeviceImpl } from "../IBluetoothDeviceImpl";
 import * as Messages from "../../../core/Messages";
+import * as MessageUtils from "../../../core/MessageUtils";
+import { RotateSubcommand } from "../../../core/Messages";
 
 export class Lovense extends ButtplugBluetoothDevice {
   public static readonly DeviceInfo = (() => {
@@ -30,39 +32,29 @@ export class Lovense extends ButtplugBluetoothDevice {
   }
 
   private static _deviceNames = {
-    "LVS-Edge": "Edge",
-    "LVS-Lush": "Lush",
-    "LVS-Ambi": "Ambi",
-    "LVS-Osci": "Osci",
-    "LVS-Hush": "Hush",
-    "LVS-Domi": "Domi",
-    "LVS-Max": "Max",
-    "LVS-Nora": "Nora",
-    "LVS-A": "Nora",
-    "LVS-C": "Nora",
-    "LVS-B": "Max",
-    "LVS-L": "Ambi",
-    "LVS-S": "Lush",
-    "LVS-Z": "Hush",
-    "LVS-P": "Edge",
+    A: "Nora",
+    B: "Max",
+    C: "Nora",
+    L: "Ambi",
+    O: "Osci",
+    P: "Edge",
+    S: "Lush",
+    W: "Domi",
+    Z: "Hush",
+    0: "Unknown",
   };
 
   private _initResolve: (() => void) | undefined;
   private _initPromise = new Promise((res, rej) => { this._initResolve = res; });
+  private _isClockwise = false;
+  private _specs: any = {
+    VibrateCmd: { FeatureCount: 1 },
+    SingleMotorVibrateCmd: {},
+    StopDeviceCmd: {},
+  };
 
   public constructor(aDeviceImpl: IBluetoothDeviceImpl) {
     super(`Lovense ${aDeviceImpl.Name}`, aDeviceImpl);
-    // Until we've implemented Lovense Protocol DeviceInfo checking, use this to
-    // make pretty names.
-    for (const n of Object.keys(Lovense._deviceNames)) {
-      if (aDeviceImpl.Name.indexOf(n) === 0) {
-        this._name = "Lovense " + Lovense._deviceNames[n];
-        break;
-      }
-    }
-    this.MsgFuncs.set(Messages.StopDeviceCmd.name, this.HandleStopDeviceCmd);
-    this.MsgFuncs.set(Messages.VibrateCmd.name, this.HandleVibrateCmd);
-    this.MsgFuncs.set(Messages.SingleMotorVibrateCmd.name, this.HandleSingleMotorVibrateCmd);
   }
 
   public Initialize = async (): Promise<void> => {
@@ -73,43 +65,101 @@ export class Lovense extends ButtplugBluetoothDevice {
   }
 
   public get MessageSpecifications(): object {
-    return {
-      VibrateCmd: { FeatureCount: 1 },
-      SingleMotorVibrateCmd: {},
-      StopDeviceCmd: {},
-    };
+    return this._specs;
+  }
+
+  private ParseDeviceType(aDeviceType: string) {
+    // Typescript gets angry if we try to destructure this into consts/lets
+    // differently or all lets (since deviceVersion never changes and
+    // deviceAddress isn't used), and I don't wanna deal with assigning to const
+    // then let, so this works well enough.
+    let deviceLetter;
+    let deviceVersion;
+    let deviceAddress;
+    [deviceLetter, deviceVersion, deviceAddress] = aDeviceType.split(":");
+
+    if (!Lovense._deviceNames.hasOwnProperty(deviceLetter)) {
+      deviceLetter = "0";
+    }
+
+    this._name = `Lovense ${Lovense._deviceNames[deviceLetter]} v${deviceVersion}`;
+
+    this.MsgFuncs.set(Messages.StopDeviceCmd.name, this.HandleStopDeviceCmd);
+    this.MsgFuncs.set(Messages.VibrateCmd.name, this.HandleVibrateCmd);
+    this.MsgFuncs.set(Messages.SingleMotorVibrateCmd.name, this.HandleSingleMotorVibrateCmd);
+
+    if (deviceLetter === "P") {
+      // Edge has 2 motors
+      this._specs.VibrateCmd = { FeatureCount: 2 };
+    } else if (deviceLetter === "A" || deviceLetter === "C") {
+      // Nora has rotation
+      this._specs.RotateCmd = { FeatureCount: 1 };
+      this.MsgFuncs.set(Messages.RotateCmd.name, this.HandleRotateCmd);
+    }
   }
 
   private OnValueChanged = async (aCharacteristic: string, aValue: Buffer) => {
     // If we haven't initialized yet, consider this to be the first read, for the device info.
     if (this._initResolve !== undefined) {
+      this.ParseDeviceType(aValue.toString());
       const res = this._initResolve;
       this._initResolve = undefined;
       res();
       return;
     }
-  }
-
-  private HandleVibrateCmd = async (aMsg: Messages.VibrateCmd): Promise<Messages.ButtplugMessage> => {
-    if (aMsg.Speeds.length !== 1) {
-      return new Messages.Error(`Lovense devices require VibrateCmd to have 1 speed command, ` +
-                                `${aMsg.Speeds.length} sent.`,
-                                Messages.ErrorClass.ERROR_DEVICE,
-                                aMsg.Id);
-    }
-    return await this.HandleSingleMotorVibrateCmd(new Messages.SingleMotorVibrateCmd(aMsg.Speeds[0].Speed,
-                                                                                     aMsg.DeviceIndex,
-                                                                                     aMsg.Id));
+    // TODO Fill in battery/accelerometer/etc reads
   }
 
   private HandleStopDeviceCmd = async (aMsg: Messages.StopDeviceCmd): Promise<Messages.ButtplugMessage> => {
-    return await this.HandleSingleMotorVibrateCmd(new Messages.SingleMotorVibrateCmd(0, aMsg.DeviceIndex, aMsg.Id));
+    await this.HandleSingleMotorVibrateCmd(new Messages.SingleMotorVibrateCmd(0, aMsg.DeviceIndex, aMsg.Id));
+    if (this._specs.hasOwnProperty("RotateCmd")) {
+      this.HandleRotateCmd(new Messages.RotateCmd([new RotateSubcommand(0, 0, this._isClockwise)], 0, aMsg.Id));
+    }
+    return new Messages.Ok(aMsg.Id);
   }
 
   private HandleSingleMotorVibrateCmd =
     async (aMsg: Messages.SingleMotorVibrateCmd): Promise<Messages.ButtplugMessage> => {
-      const speed = Math.floor(20 * aMsg.Speed);
-      await this._deviceImpl.WriteString("tx", "Vibrate:" + speed + ";");
-      return new Messages.Ok(aMsg.Id);
+      const speeds: Messages.SpeedSubcommand[] = [];
+      for (let i = 0; i < this._specs.VibrateCmd.FeatureCount; i++) {
+        speeds.push(new Messages.SpeedSubcommand(i, aMsg.Speed));
+      }
+      return await this.HandleVibrateCmd(new Messages.VibrateCmd(speeds, aMsg.DeviceIndex, aMsg.Id));
     }
+
+  private HandleVibrateCmd = async (aMsg: Messages.VibrateCmd): Promise<Messages.ButtplugMessage> => {
+    if (aMsg.Speeds.length > this._specs.VibrateCmd.FeatureCount) {
+      return new Messages.Error(`Lovense devices require VibrateCmd to have at most ` +
+                                `${this._specs.VibrateCmd.FeatureCount} speed commands, ` +
+                                `${aMsg.Speeds.length} sent.`,
+                                Messages.ErrorClass.ERROR_DEVICE,
+                                aMsg.Id);
+    }
+    for (const cmd of aMsg.Speeds) {
+      const index = cmd.Index > 0 ? (cmd.Index + 1).toString(10) : "";
+      const speed = Math.floor(20 * cmd.Speed);
+      await this._deviceImpl.WriteString("tx", `Vibrate${index}:${speed};`);
+    }
+    return new Messages.Ok(aMsg.Id);
+  }
+
+  private HandleRotateCmd = async (aMsg: Messages.RotateCmd): Promise<Messages.ButtplugMessage> => {
+    if (aMsg.Rotations.length !== 1) {
+      return new Messages.Error(`Lovense devices require RotateCmd to have 1 rotate command, ` +
+                                `${aMsg.Rotations.length} sent.`,
+                                Messages.ErrorClass.ERROR_DEVICE,
+                                aMsg.Id);
+    }
+    const rotateCmd = aMsg.Rotations[0];
+    if (rotateCmd.Index !== 0) {
+      return new Messages.Error("Rotation command sent for invalid index.");
+    }
+    if (rotateCmd.Clockwise !== this._isClockwise) {
+      await this._deviceImpl.WriteString("tx", "RotateChange;");
+    }
+    const speed = Math.floor(20 * rotateCmd.Speed);
+    await this._deviceImpl.WriteString("tx", `Rotate:${speed};`);
+    return new Messages.Ok(aMsg.Id);
+  }
+
 }
