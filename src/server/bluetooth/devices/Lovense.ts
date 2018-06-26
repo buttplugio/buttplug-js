@@ -136,7 +136,7 @@ export class Lovense extends ButtplugBluetoothDevice {
                                 aMsg.Id);
     }
     for (const cmd of aMsg.Speeds) {
-      const index = cmd.Index > 0 ? (cmd.Index + 1).toString(10) : "";
+      const index = this._specs.VibrateCmd.FeatureCount > 1 ? (cmd.Index + 1).toString(10) : "";
       const speed = Math.floor(20 * cmd.Speed);
       await this._deviceImpl.WriteString("tx", `Vibrate${index}:${speed};`);
     }

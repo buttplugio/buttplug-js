@@ -69,13 +69,13 @@ describe("WebBluetooth library tests", () => {
       .rejects
       .toHaveProperty("ErrorCode", ErrorClass.ERROR_DEVICE);
     await bp.SendDeviceMessage(bp.Devices[0], new VibrateCmd([new SpeedSubcommand(0, 1), new SpeedSubcommand(1, .5)]));
-    expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate:20;"));
+    expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate1:20;"));
     expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate2:10;"));
     await bp.SendDeviceMessage(bp.Devices[0], new SingleMotorVibrateCmd(.5));
-    expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate:10;"));
+    expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate1:10;"));
     expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate2:10;"));
     await bp.StopAllDevices();
-    expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate:0;"));
+    expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate1:0;"));
     expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate2:0;"));
   });
 
