@@ -1,19 +1,19 @@
-main {
-    width:100%;
+buttplug-devtools-main {
+    width: 100%;
     height: 100%;
 }
 
-section {
+buttplug-devtools-main section {
     display: none;
     padding: 20px;
     border-top: 1px solid #ddd;
 }
 
-input {
+buttplug-devtools-main input {
     display: none;
 }
 
-label {
+buttplug-devtools-main label {
     display: inline-block;
     margin: 0 0 -1px;
     padding: 5px 10px;
@@ -23,47 +23,47 @@ label {
     border: 1px solid transparent;
 }
 
-label:before {
+buttplug-devtools-main label:before {
     font-family: fontawesome;
     font-weight: normal;
     margin-right: 10px;
 }
 
-label:hover {
+buttplug-devtools-main label:hover {
     color: #888;
     cursor: pointer;
 }
 
-input:checked + label {
+buttplug-devtools-main input:checked + label {
     color: #555;
     border: 1px solid #ddd;
     border-top: 2px solid orange;
     border-bottom: 1px solid #fff;
 }
 
-#tab1:checked ~ #content1,
-#tab2:checked ~ #content2,
-#tab3:checked ~ #content3,
-#tab4:checked ~ #content4 {
+buttplug-devtools-main #tab1:checked ~ #content1,
+buttplug-devtools-main #tab2:checked ~ #content2,
+buttplug-devtools-main #tab3:checked ~ #content3,
+buttplug-devtools-main #tab4:checked ~ #content4 {
     display: block;
 }
 
-#content1 {
+buttplug-devtools-main #content1 {
     height: 100%;
 }
 
-#content2 {
+buttplug-devtools-main #content2 {
     height: 100%;
 }
 
-#simulator {
+buttplug-devtools-main #simulator {
     display: flex;
     width: 100%;
     height: calc(100% - 60px);
     flex-direction: row;
 }
 
-.fleshlight-sim {
+buttplug-devtools-main .fleshlight-sim {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -73,12 +73,12 @@ input:checked + label {
     justify-content: center;
 }
 
-div.c-fleshlight {
+buttplug-devtools-main div.c-fleshlight {
     display: flex;
     flex: 1;
 }
 
-div.c-fleshlight img {
+buttplug-devtools-main div.c-fleshlight img {
     height: 100%;
     width: auto;
 	  image-rendering: -moz-crisp-edges;
@@ -87,12 +87,12 @@ div.c-fleshlight img {
 	  image-rendering: pixelated;
 }
 
-div.c-fleshlight .o-fleshlight {
+buttplug-devtools-main div.c-fleshlight .o-fleshlight {
     position: relative;
     height: 77%;
 }
 
-.vibrator-simulator-component {
+buttplug-devtools-main .vibrator-simulator-component {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -102,12 +102,12 @@ div.c-fleshlight .o-fleshlight {
     justify-content: center;
 }
 
-div.vibrator {
+buttplug-devtools-main div.vibrator {
     flex: 1 1;
     align-items: center;
 }
 
-div.vibrator-simulator-component img {
+buttplug-devtools-main div.vibrator-simulator-component img {
     height: calc(100% - 40px);
     width: auto;
     position: relative;
@@ -117,11 +117,11 @@ div.vibrator-simulator-component img {
 	  image-rendering: pixelated;
 }
 
-div.vibrator-info {
+buttplug-devtools-main div.vibrator-info {
     flex: 0;
 }
 
-.simulator-divider {
+buttplug-devtools-main .simulator-divider {
     border-left: 1px #000 dashed;
     height: 100%;
 }
