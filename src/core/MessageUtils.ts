@@ -54,7 +54,7 @@ export function CreateSimpleVibrateCmd(device: Device, speed: number): Messages.
   for (let i = 0; i < device.MessageAttributes("VibrateCmd").FeatureCount; ++i) {
     commands.push(new Messages.SpeedSubcommand(i, speed));
   }
-  return new Messages.VibrateCmd(commands);
+  return new Messages.VibrateCmd(commands, device.Index);
 }
 
 export function CreateSimpleLinearCmd(device: Device, position: number, duration: number): Messages.LinearCmd {
@@ -68,7 +68,7 @@ export function CreateSimpleLinearCmd(device: Device, position: number, duration
   for (let i = 0; i < device.MessageAttributes("LinearCmd").FeatureCount; ++i) {
     commands.push(new Messages.VectorSubcommand(i, position, duration));
   }
-  return new Messages.LinearCmd(commands);
+  return new Messages.LinearCmd(commands, device.Index);
 }
 
 export function CreateSimpleRotateCmd(device: Device, speed: number, clockwise: boolean): Messages.RotateCmd {
@@ -82,5 +82,5 @@ export function CreateSimpleRotateCmd(device: Device, speed: number, clockwise: 
   for (let i = 0; i < device.MessageAttributes("RotateCmd").FeatureCount; ++i) {
     commands.push(new Messages.RotateSubcommand(i, speed, clockwise));
   }
-  return new Messages.RotateCmd(commands);
+  return new Messages.RotateCmd(commands, device.Index);
 }
