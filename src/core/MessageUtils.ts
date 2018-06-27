@@ -47,6 +47,9 @@ export function CreateSimpleVibrateCmd(device: Device, speed: number): Messages.
   if (device.AllowedMessages.indexOf("VibrateCmd") === -1) {
     throw new Error("Device does not handle VibrateCmd!");
   }
+  if (speed > 1.0 || speed < 0.0) {
+    throw new Error("Speed must be 0.0 <= x <= 1.0!");
+  }
   const commands: Messages.SpeedSubcommand[] = [];
   for (let i = 0; i < device.MessageAttributes("VibrateCmd").FeatureCount; ++i) {
     commands.push(new Messages.SpeedSubcommand(i, speed));
@@ -58,6 +61,9 @@ export function CreateSimpleLinearCmd(device: Device, position: number, duration
   if (device.AllowedMessages.indexOf("LinearCmd") === -1) {
     throw new Error("Device does not handle LinearCmd!");
   }
+  if (position > 1.0 || position < 0.0) {
+    throw new Error("Position must be 0.0 <= x <= 1.0!");
+  }
   const commands: Messages.VectorSubcommand[] = [];
   for (let i = 0; i < device.MessageAttributes("LinearCmd").FeatureCount; ++i) {
     commands.push(new Messages.VectorSubcommand(i, position, duration));
@@ -68,6 +74,9 @@ export function CreateSimpleLinearCmd(device: Device, position: number, duration
 export function CreateSimpleRotateCmd(device: Device, speed: number, clockwise: boolean): Messages.RotateCmd {
   if (device.AllowedMessages.indexOf("RotateCmd") === -1) {
     throw new Error("Device does not handle RotateCmd!");
+  }
+  if (speed > 1.0 || speed < 0.0) {
+    throw new Error("Speed must be 0.0 <= x <= 1.0!");
   }
   const commands: Messages.RotateSubcommand[] = [];
   for (let i = 0; i < device.MessageAttributes("RotateCmd").FeatureCount; ++i) {
