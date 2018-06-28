@@ -19,8 +19,13 @@ export class WebBluetoothDeviceManager extends EventEmitter implements IDeviceSu
       for (const deviceName of deviceInfo.Names) {
         filters.filters.push({name: deviceName});
       }
+      for (const deviceNamePrefix of deviceInfo.NamePrefixes) {
+        filters.filters.push({namePrefix: deviceNamePrefix});
+      }
       filters.optionalServices = [...filters.optionalServices, ...deviceInfo.Services];
     }
+
+    ButtplugLogger.Logger.Trace("Bluetooth filter set: " + filters);
 
     // At some point, we should use navigator.bluetooth.getAvailability() to
     // check whether we have a radio to use. However, no browser currently
@@ -70,6 +75,12 @@ export class WebBluetoothDeviceManager extends EventEmitter implements IDeviceSu
       if (di.Names.indexOf(aDevice.name!) >= 0) {
         deviceInfo = di;
         break;
+      }
+      for (const namePrefix of di.NamePrefixes) {
+        if (aDevice.name!.indexOf(namePrefix) !== -1) {
+          deviceInfo = di;
+          break;
+        }
       }
     }
     if (deviceInfo === null) {

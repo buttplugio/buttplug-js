@@ -3,6 +3,7 @@ import { ButtplugBluetoothDevice } from "./ButtplugBluetoothDevice";
 
 export class BluetoothDeviceInfo {
   constructor(private _names: string[],
+              private _namePrefixes: string[],
               private _services: string[],
               private _characteristics: object,
               private _createFunc: (aDeviceImpl: IBluetoothDeviceImpl) => Promise<ButtplugBluetoothDevice>) {
@@ -10,6 +11,10 @@ export class BluetoothDeviceInfo {
 
   public get Names() {
     return this._names;
+  }
+
+  public get NamePrefixes() {
+    return this._namePrefixes;
   }
 
   public get Services() {

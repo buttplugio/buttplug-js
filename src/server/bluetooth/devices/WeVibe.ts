@@ -6,9 +6,9 @@ import * as Messages from "../../../core/Messages";
 export class WeVibe extends ButtplugBluetoothDevice {
   public static readonly DeviceInfo = new BluetoothDeviceInfo(["4 Plus", "Ditto", "Nova", "Wish",
                                                                "Pivot", "Verge", "Cougar", "Sync"],
+                                                              [],
                                                               ["f000bb03-0451-4000-b000-000000000000"],
-                                                              { tx: "f000c000-0451-4000-b000-000000000000",
-                                                                rx: "f000b000-0451-4000-b000-000000000000"},
+                                                              {},
                                                               WeVibe.CreateInstance);
 
   public static async CreateInstance(aDeviceImpl: IBluetoothDeviceImpl): Promise<ButtplugBluetoothDevice> {

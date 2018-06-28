@@ -104,7 +104,9 @@ describe("Client Tests", async () => {
         rej();
       }
 
-      await expect(bp.SendDeviceMessage(bp.Devices[0], new Messages.KiirooCmd("2"))).rejects.toThrow();
+      await expect(bp.SendDeviceMessage(bp.Devices[0], new Messages.KiirooCmd("2")))
+        .rejects
+        .toHaveProperty("ErrorCode", Messages.ErrorClass.ERROR_DEVICE);
       res();
     });
     await bp.StartScanning();
@@ -114,7 +116,9 @@ describe("Client Tests", async () => {
   it("Should reject schema violating message", async () => {
     const bp = (await SetupTestServer()).Client;
     bp.on("scanningfinished", async (x) => {
-      await (expect(bp.SendDeviceMessage(bp.Devices[0], new Messages.SingleMotorVibrateCmd(50))).rejects.toThrow());
+      await expect(bp.SendDeviceMessage(bp.Devices[0], new Messages.SingleMotorVibrateCmd(50)))
+        .rejects
+        .toHaveProperty("ErrorCode", Messages.ErrorClass.ERROR_DEVICE);
       res();
     });
     await bp.StartScanning();
@@ -144,7 +148,9 @@ describe("Client Tests", async () => {
     const bplocal = new ButtplugClient("Test Client");
     bplocal.addListener("disconnect", () => { res(); });
     await bplocal.ConnectLocal();
-    await expect(bplocal.StartScanning()).rejects.toThrow();
+    await expect(bplocal.StartScanning())
+      .rejects
+      .toHaveProperty("ErrorCode", Messages.ErrorClass.ERROR_DEVICE);
     bplocal.Disconnect();
   });
 });

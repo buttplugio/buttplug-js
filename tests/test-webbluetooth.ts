@@ -1,9 +1,10 @@
 import { WebBluetoothMock, DeviceMock, CharacteristicMock, PrimaryServiceMock, GattMock } from "web-bluetooth-mock";
 import { ButtplugLogger, ButtplugLogLevel } from "../src/core/Logging";
 import { ButtplugClient } from "../src/client/Client";
-import { BPTestClient, SetupTestSuite, WebBluetoothMockObject, MakeMockWebBluetoothDevice } from "./utils";
-import { VibrateCmd, SpeedSubcommand } from "../src/index";
-import { LovenseRev5 } from "../src/server/bluetooth/devices/Lovense";
+import { BPTestClient, SetupTestSuite, WebBluetoothMockObject, MakeMockWebBluetoothDevice,
+         SetupLovenseTestDevice } from "./utils";
+import { VibrateCmd, SpeedSubcommand, ErrorClass } from "../src/index";
+import { Lovense } from "../src/server/bluetooth/devices/Lovense";
 
 SetupTestSuite();
 
@@ -11,14 +12,15 @@ describe("WebBluetooth library tests", () => {
   let p;
   let res;
   let rej;
-  let bp;
+  let bp: ButtplugClient;
   let mockBT: WebBluetoothMockObject;
   let bluetooth: WebBluetoothMock;
 
   beforeEach(async () => {
     p = new Promise((resolve, reject) => { res = resolve; rej = reject; });
-    // Mock an actual buttplug (Lovense Hush)!
-    mockBT = MakeMockWebBluetoothDevice(LovenseRev5.DeviceInfo);
+    // We assume we're using a lovense device for all tests here so set it up.
+    mockBT = MakeMockWebBluetoothDevice(Lovense.DeviceInfo);
+    SetupLovenseTestDevice(mockBT);
     const g = global as any;
     g.navigator = g.navigator || {};
     bluetooth = new WebBluetoothMock([mockBT.device]);
@@ -65,8 +67,18 @@ describe("WebBluetooth library tests", () => {
     mockBT.gatt.connect = () => {
       throw new Error("Connection error");
     };
-    await expect(bp.StartScanning()).rejects.toThrow();
+    // Make sure we at least have the right error code. Id and message may vary.
+    await expect(bp.StartScanning()).rejects.toHaveProperty("ErrorCode", ErrorClass.ERROR_DEVICE);
     return p;
   });
 
+  it("should subscribe on connect for lovense device, unsubscribe on disconnect", async () => {
+    jest.spyOn(mockBT.rxChar, "startNotifications");
+    jest.spyOn(mockBT.rxChar, "stopNotifications");
+    await bp.StartScanning();
+    await bp.StopScanning();
+    expect(mockBT.rxChar.startNotifications).toBeCalled();
+    await bp.Disconnect();
+    expect(mockBT.rxChar.stopNotifications).toBeCalled();
+  });
 });

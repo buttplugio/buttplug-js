@@ -1,3 +1,11 @@
+# Version 0.8.0 - 2018/06/27
+
+- Add BLE GATT Characteristic reading functions
+- Add ability to derive Lovense hardware info from device queries (no more name/UUID chasing)
+- Namespace devtools CSS rules to fix issue with CSS conflicts in devtools
+- Change Signature of CreateSimple*Message functions (breaking change)
+- Add IsScanning boolean getter to Client
+
 # Version 0.7.1 - 2018/05/02
 
 - Extra build config changes to fix webpack issues

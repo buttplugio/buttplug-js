@@ -1,11 +1,12 @@
 import { WebBluetoothMock, DeviceMock, CharacteristicMock, PrimaryServiceMock, GattMock } from "web-bluetooth-mock";
 import { ButtplugLogger, ButtplugLogLevel } from "../src/core/Logging";
 import { ButtplugClient } from "../src/client/Client";
-import { BPTestClient, SetupTestSuite, WebBluetoothMockObject, MakeMockWebBluetoothDevice } from "./utils";
+import { BPTestClient, SetupTestSuite, WebBluetoothMockObject, MakeMockWebBluetoothDevice,
+         SetupLovenseTestDevice } from "./utils";
 import { VibrateCmd, RotateCmd, SpeedSubcommand, LinearCmd, VectorSubcommand, FleshlightLaunchFW12Cmd,
          DeviceInfo, BluetoothDeviceInfo, SingleMotorVibrateCmd, RotateSubcommand,
-         VorzeA10CycloneCmd } from "../src/index";
-import { LovenseRev5 } from "../src/server/bluetooth/devices/Lovense";
+         VorzeA10CycloneCmd, ErrorClass } from "../src/index";
+import { Lovense } from "../src/server/bluetooth/devices/Lovense";
 import { WeVibe } from "../src/server/bluetooth/devices/WeVibe";
 import { FleshlightLaunch } from "../src/server/bluetooth/devices/FleshlightLaunch";
 import { VorzeA10Cyclone } from "../src/server/bluetooth/devices/VorzeA10Cyclone";
@@ -16,7 +17,7 @@ describe("WebBluetooth library tests", () => {
   let p;
   let res;
   let rej;
-  let bp;
+  let bp: ButtplugClient;
   let mockBT: WebBluetoothMockObject;
   let bluetooth: WebBluetoothMock;
 
@@ -35,12 +36,17 @@ describe("WebBluetooth library tests", () => {
   };
 
   it("should convert lovense commands properly", async () => {
-    await SetupDevice(LovenseRev5.DeviceInfo);
+    await SetupDevice(Lovense.DeviceInfo);
+    SetupLovenseTestDevice(mockBT);
     await bp.StartScanning();
     await bp.StopScanning();
+    expect(bp.Devices[0].Name).toEqual("Lovense Domi v01");
     jest.spyOn(mockBT.txChar, "writeValue");
-    await expect(bp.SendDeviceMessage(bp.Devices[0], new VibrateCmd([new SpeedSubcommand(0, 1),
-                                                                     new SpeedSubcommand(0, 2)]))).rejects.toThrow();
+    await expect(bp.SendDeviceMessage(bp.Devices[0],
+                                      new VibrateCmd([new SpeedSubcommand(0, 1),
+                                                      new SpeedSubcommand(1, 1)])))
+      .rejects
+      .toHaveProperty("ErrorCode", ErrorClass.ERROR_DEVICE);
     await bp.SendDeviceMessage(bp.Devices[0], new VibrateCmd([new SpeedSubcommand(0, 1)]));
     expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate:20;"));
     await bp.SendDeviceMessage(bp.Devices[0], new SingleMotorVibrateCmd(.5));
@@ -49,13 +55,62 @@ describe("WebBluetooth library tests", () => {
     expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate:0;"));
   });
 
+  it("should convert lovense edge vibrate commands properly", async () => {
+    await SetupDevice(Lovense.DeviceInfo);
+    SetupLovenseTestDevice(mockBT, "P");
+    await bp.StartScanning();
+    await bp.StopScanning();
+    expect(bp.Devices[0].Name).toEqual("Lovense Edge v01");
+    jest.spyOn(mockBT.txChar, "writeValue");
+    await expect(bp.SendDeviceMessage(bp.Devices[0],
+                                      new VibrateCmd([new SpeedSubcommand(0, 1),
+                                                      new SpeedSubcommand(1, 1),
+                                                      new SpeedSubcommand(2, 1)])))
+      .rejects
+      .toHaveProperty("ErrorCode", ErrorClass.ERROR_DEVICE);
+    await bp.SendDeviceMessage(bp.Devices[0], new VibrateCmd([new SpeedSubcommand(0, 1), new SpeedSubcommand(1, .5)]));
+    expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate1:20;"));
+    expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate2:10;"));
+    await bp.SendDeviceMessage(bp.Devices[0], new SingleMotorVibrateCmd(.5));
+    expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate1:10;"));
+    expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate2:10;"));
+    await bp.StopAllDevices();
+    expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate1:0;"));
+    expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate2:0;"));
+  });
+
+  it("should convert lovense nora rotate commands properly", async () => {
+    await SetupDevice(Lovense.DeviceInfo);
+    SetupLovenseTestDevice(mockBT, "A");
+    await bp.StartScanning();
+    await bp.StopScanning();
+    expect(bp.Devices[0].Name).toEqual("Lovense Nora v01");
+    jest.spyOn(mockBT.txChar, "writeValue");
+    await expect(bp.SendDeviceMessage(bp.Devices[0],
+                                      new RotateCmd([new RotateSubcommand(0, 1, true),
+                                                     new RotateSubcommand(1, 1, true)])))
+      .rejects
+      .toHaveProperty("ErrorCode", ErrorClass.ERROR_DEVICE);
+    await bp.SendDeviceMessage(bp.Devices[0], new RotateCmd([new RotateSubcommand(0, 1, false)]));
+    expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Rotate:20;"));
+    await bp.SendDeviceMessage(bp.Devices[0], new RotateCmd([new RotateSubcommand(0, 0.5, true)]));
+    expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("RotateChange;"));
+    expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Rotate:10;"));
+    await bp.StopAllDevices();
+    expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate:0;"));
+    expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Rotate:0;"));
+  });
+
   it("should convert wevibe commands properly", async () => {
     await SetupDevice(WeVibe.DeviceInfo);
     await bp.StartScanning();
     await bp.StopScanning();
     jest.spyOn(mockBT.txChar, "writeValue");
-    await expect(bp.SendDeviceMessage(bp.Devices[0], new VibrateCmd([new SpeedSubcommand(0, 1),
-                                                                     new SpeedSubcommand(1, 1)]))).rejects.toThrow();
+    await expect(bp.SendDeviceMessage(bp.Devices[0],
+                                      new VibrateCmd([new SpeedSubcommand(0, 1),
+                                                      new SpeedSubcommand(1, 1)])))
+      .rejects
+      .toHaveProperty("ErrorCode", ErrorClass.ERROR_DEVICE);
     await bp.SendDeviceMessage(bp.Devices[0], new VibrateCmd([new SpeedSubcommand(0, 1)]));
     expect(mockBT.txChar.writeValue).toBeCalledWith(new Uint8Array([0x0f, 0x03, 0x00, 0xff, 0x00, 0x03, 0x00, 0x00]));
     await bp.SendDeviceMessage(bp.Devices[0], new SingleMotorVibrateCmd(.5));
@@ -71,7 +126,9 @@ describe("WebBluetooth library tests", () => {
     jest.spyOn(mockBT.txChar, "writeValue");
     await expect(bp.SendDeviceMessage(bp.Devices[0],
                                       new LinearCmd([new VectorSubcommand(0, 1, 1),
-                                                     new VectorSubcommand(1, 1, 1)]))).rejects.toThrow();
+                                                     new VectorSubcommand(1, 1, 1)])))
+      .rejects
+      .toHaveProperty("ErrorCode", ErrorClass.ERROR_DEVICE);
     await bp.SendDeviceMessage(bp.Devices[0], new FleshlightLaunchFW12Cmd(99, 99));
     expect(mockBT.txChar.writeValue).toBeCalledWith(new Uint8Array([99, 99]));
     // We should expect to be at position 99 here, so calculate time and
@@ -89,7 +146,9 @@ describe("WebBluetooth library tests", () => {
     jest.spyOn(mockBT.txChar, "writeValue");
     await expect(bp.SendDeviceMessage(bp.Devices[0],
                                       new RotateCmd([new RotateSubcommand(0, 1, true),
-                                                     new RotateSubcommand(1, 1, false)]))).rejects.toThrow();
+                                                     new RotateSubcommand(1, 1, false)])))
+      .rejects
+      .toHaveProperty("ErrorCode", ErrorClass.ERROR_DEVICE);
     await bp.SendDeviceMessage(bp.Devices[0], new RotateCmd([new RotateSubcommand(0, 1, true)]));
     expect(mockBT.txChar.writeValue).toBeCalledWith(new Uint8Array([0x01, 0x01, (100 | (0x80)) & 0xff]));
     await bp.SendDeviceMessage(bp.Devices[0], new VorzeA10CycloneCmd(50, false));

@@ -5,6 +5,7 @@ import * as Messages from "../../../core/Messages";
 
 export class FleshlightLaunch extends ButtplugBluetoothDevice {
   public static readonly DeviceInfo = new BluetoothDeviceInfo(["Launch"],
+                                                              [],
                                                               ["88f80580-0000-01e6-aace-0002a5d5c51b"],
                                                               { cmd: "88f80583-0000-01e6-aace-0002a5d5c51b",
                                                                 // rx: "88f80582-0000-01e6-aace-0002a5d5c51b",
@@ -13,8 +14,9 @@ export class FleshlightLaunch extends ButtplugBluetoothDevice {
 
   public static async CreateInstance(aDeviceImpl: IBluetoothDeviceImpl): Promise<ButtplugBluetoothDevice> {
     // Send initializer byte
-    await aDeviceImpl.WriteValue("cmd", new Uint8Array([0x00]));
-    return new FleshlightLaunch(aDeviceImpl);
+    const dev = new FleshlightLaunch(aDeviceImpl);
+    await dev.Initialize();
+    return dev;
   }
 
   private _lastPosition: number = 0;
@@ -25,6 +27,11 @@ export class FleshlightLaunch extends ButtplugBluetoothDevice {
     this.MsgFuncs.set(Messages.FleshlightLaunchFW12Cmd.name, this.HandleFleshlightLaunchFW12Cmd);
     this.MsgFuncs.set(Messages.LinearCmd.name, this.HandleLinearCmd);
   }
+
+  public Initialize =
+    async (): Promise<void> => {
+      await this._deviceImpl.WriteValue("cmd", new Uint8Array([0x00]));
+    }
 
   public get MessageSpecifications(): object {
     return {
