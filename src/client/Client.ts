@@ -17,6 +17,7 @@ export class ButtplugClient extends EventEmitter {
   protected _waitingMsgs: Map<number, (val: Messages.ButtplugMessage) => void> = new Map();
   protected _clientName: string;
   protected _logger = ButtplugLogger.Logger;
+  protected _isScanning = false;
   // TODO This should be set on schema load
   protected _messageVersion: number = 1;
 
@@ -43,6 +44,10 @@ export class ButtplugClient extends EventEmitter {
       devices.push(d);
     });
     return devices;
+  }
+
+  public get IsScanning(): boolean {
+    return this._isScanning;
   }
 
   public ConnectWebsocket = async (aAddress: string) => {
@@ -73,11 +78,13 @@ export class ButtplugClient extends EventEmitter {
 
   public StartScanning = async (): Promise<void> => {
     this._logger.Debug(`ButtplugClient: StartScanning called`);
+    this._isScanning = true;
     return await this.SendMsgExpectOk(new Messages.StartScanning());
   }
 
   public StopScanning = async (): Promise<void> => {
     this._logger.Debug(`ButtplugClient: StopScanning called`);
+    this._isScanning = false;
     return await this.SendMsgExpectOk(new Messages.StopScanning());
   }
 
@@ -141,6 +148,7 @@ export class ButtplugClient extends EventEmitter {
           }
           break;
         case "ScanningFinished":
+          this._isScanning = false;
           this.emit("scanningfinished", x);
           break;
       }
