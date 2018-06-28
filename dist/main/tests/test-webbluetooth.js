@@ -23,8 +23,9 @@ describe("WebBluetooth library tests", () => {
     let bluetooth;
     beforeEach(() => __awaiter(this, void 0, void 0, function* () {
         p = new Promise((resolve, reject) => { res = resolve; rej = reject; });
-        // Mock an actual buttplug (Lovense Hush)!
-        mockBT = utils_1.MakeMockWebBluetoothDevice(Lovense_1.LovenseRev5.DeviceInfo);
+        // We assume we're using a lovense device for all tests here so set it up.
+        mockBT = utils_1.MakeMockWebBluetoothDevice(Lovense_1.Lovense.DeviceInfo);
+        utils_1.SetupLovenseTestDevice(mockBT);
         const g = global;
         g.navigator = g.navigator || {};
         bluetooth = new web_bluetooth_mock_1.WebBluetoothMock([mockBT.device]);
@@ -66,8 +67,18 @@ describe("WebBluetooth library tests", () => {
         mockBT.gatt.connect = () => {
             throw new Error("Connection error");
         };
-        yield expect(bp.StartScanning()).rejects.toThrow();
+        // Make sure we at least have the right error code. Id and message may vary.
+        yield expect(bp.StartScanning()).rejects.toHaveProperty("ErrorCode", index_1.ErrorClass.ERROR_DEVICE);
         return p;
+    }));
+    it("should subscribe on connect for lovense device, unsubscribe on disconnect", () => __awaiter(this, void 0, void 0, function* () {
+        jest.spyOn(mockBT.rxChar, "startNotifications");
+        jest.spyOn(mockBT.rxChar, "stopNotifications");
+        yield bp.StartScanning();
+        yield bp.StopScanning();
+        expect(mockBT.rxChar.startNotifications).toBeCalled();
+        yield bp.Disconnect();
+        expect(mockBT.rxChar.stopNotifications).toBeCalled();
     }));
 });
 //# sourceMappingURL=test-webbluetooth.js.map

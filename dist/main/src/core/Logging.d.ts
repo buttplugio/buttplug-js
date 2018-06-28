@@ -12,7 +12,7 @@ export declare enum ButtplugLogLevel {
     Warn = 3,
     Info = 4,
     Debug = 5,
-    Trace = 6,
+    Trace = 6
 }
 /**
  * Representation of log messages for the internal logging utility.
@@ -72,15 +72,15 @@ export declare class ButtplugLogger extends EventEmitter {
      * Set the maximum log level to output to console.
      */
     /**
-     * Get the maximum log level to output to console.
-     */
+    * Get the maximum log level to output to console.
+    */
     MaximumConsoleLogLevel: ButtplugLogLevel;
     /**
      * Set the global maximum log level
      */
     /**
-     * Get the global maximum log level
-     */
+    * Get the global maximum log level
+    */
     MaximumEventLogLevel: ButtplugLogLevel;
     /**
      * Log a message, then create a Error buttplug message with the log message.

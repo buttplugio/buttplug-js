@@ -104,7 +104,9 @@ describe("Client Tests", () => __awaiter(this, void 0, void 0, function* () {
             catch (e) {
                 rej();
             }
-            yield expect(bp.SendDeviceMessage(bp.Devices[0], new Messages.KiirooCmd("2"))).rejects.toThrow();
+            yield expect(bp.SendDeviceMessage(bp.Devices[0], new Messages.KiirooCmd("2")))
+                .rejects
+                .toHaveProperty("ErrorCode", Messages.ErrorClass.ERROR_DEVICE);
             res();
         }));
         yield bp.StartScanning();
@@ -113,7 +115,9 @@ describe("Client Tests", () => __awaiter(this, void 0, void 0, function* () {
     it("Should reject schema violating message", () => __awaiter(this, void 0, void 0, function* () {
         const bp = (yield utils_1.SetupTestServer()).Client;
         bp.on("scanningfinished", (x) => __awaiter(this, void 0, void 0, function* () {
-            yield (expect(bp.SendDeviceMessage(bp.Devices[0], new Messages.SingleMotorVibrateCmd(50))).rejects.toThrow());
+            yield expect(bp.SendDeviceMessage(bp.Devices[0], new Messages.SingleMotorVibrateCmd(50)))
+                .rejects
+                .toHaveProperty("ErrorCode", Messages.ErrorClass.ERROR_DEVICE);
             res();
         }));
         yield bp.StartScanning();
@@ -140,7 +144,9 @@ describe("Client Tests", () => __awaiter(this, void 0, void 0, function* () {
         const bplocal = new index_1.ButtplugClient("Test Client");
         bplocal.addListener("disconnect", () => { res(); });
         yield bplocal.ConnectLocal();
-        yield expect(bplocal.StartScanning()).rejects.toThrow();
+        yield expect(bplocal.StartScanning())
+            .rejects
+            .toHaveProperty("ErrorCode", Messages.ErrorClass.ERROR_DEVICE);
         bplocal.Disconnect();
     }));
 }));

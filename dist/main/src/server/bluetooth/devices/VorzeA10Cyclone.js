@@ -35,8 +35,6 @@ class VorzeA10Cyclone extends ButtplugBluetoothDevice_1.ButtplugBluetoothDevice 
     }
     static CreateInstance(aDeviceImpl) {
         return __awaiter(this, void 0, void 0, function* () {
-            // Send initializer byte
-            aDeviceImpl.WriteValue("cmd", new Uint8Array([0x00]));
             return new VorzeA10Cyclone(aDeviceImpl);
         });
     }
@@ -48,6 +46,6 @@ class VorzeA10Cyclone extends ButtplugBluetoothDevice_1.ButtplugBluetoothDevice 
         };
     }
 }
-VorzeA10Cyclone.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["CycSA"], ["40ee1111-63ec-4b7f-8ce7-712efd55b90e"], { tx: "40ee2222-63ec-4b7f-8ce7-712efd55b90e" }, VorzeA10Cyclone.CreateInstance);
+VorzeA10Cyclone.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["CycSA"], [], ["40ee1111-63ec-4b7f-8ce7-712efd55b90e"], {}, VorzeA10Cyclone.CreateInstance);
 exports.VorzeA10Cyclone = VorzeA10Cyclone;
 //# sourceMappingURL=VorzeA10Cyclone.js.map

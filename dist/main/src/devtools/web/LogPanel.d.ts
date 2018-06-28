@@ -5,5 +5,5 @@ export declare class LogPanel {
     private panelLevelSelect;
     private consoleLevelSelect;
     constructor();
-    private addLogMessage(msg);
+    private addLogMessage;
 }

@@ -15,6 +15,9 @@ class FleshlightLaunch extends ButtplugBluetoothDevice_1.ButtplugBluetoothDevice
     constructor(aDeviceImpl) {
         super("Fleshlight Launch", aDeviceImpl);
         this._lastPosition = 0;
+        this.Initialize = () => __awaiter(this, void 0, void 0, function* () {
+            yield this._deviceImpl.WriteValue("cmd", new Uint8Array([0x00]));
+        });
         this.HandleStopDeviceCmd = (aMsg) => __awaiter(this, void 0, void 0, function* () {
             return yield this.HandleFleshlightLaunchFW12Cmd(new Messages.FleshlightLaunchFW12Cmd(0, 0, aMsg.DeviceIndex, aMsg.Id));
         });
@@ -48,8 +51,9 @@ class FleshlightLaunch extends ButtplugBluetoothDevice_1.ButtplugBluetoothDevice
     static CreateInstance(aDeviceImpl) {
         return __awaiter(this, void 0, void 0, function* () {
             // Send initializer byte
-            yield aDeviceImpl.WriteValue("cmd", new Uint8Array([0x00]));
-            return new FleshlightLaunch(aDeviceImpl);
+            const dev = new FleshlightLaunch(aDeviceImpl);
+            yield dev.Initialize();
+            return dev;
         });
     }
     get MessageSpecifications() {
@@ -60,7 +64,7 @@ class FleshlightLaunch extends ButtplugBluetoothDevice_1.ButtplugBluetoothDevice
         };
     }
 }
-FleshlightLaunch.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["Launch"], ["88f80580-0000-01e6-aace-0002a5d5c51b"], { cmd: "88f80583-0000-01e6-aace-0002a5d5c51b",
+FleshlightLaunch.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["Launch"], [], ["88f80580-0000-01e6-aace-0002a5d5c51b"], { cmd: "88f80583-0000-01e6-aace-0002a5d5c51b",
     // rx: "88f80582-0000-01e6-aace-0002a5d5c51b",
     tx: "88f80581-0000-01e6-aace-0002a5d5c51b" }, FleshlightLaunch.CreateInstance);
 exports.FleshlightLaunch = FleshlightLaunch;

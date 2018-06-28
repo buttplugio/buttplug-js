@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const Logging_1 = require("../../core/Logging");
 const BluetoothDevices_1 = require("./BluetoothDevices");
 const events_1 = require("events");
 const WebBluetoothDevice_1 = require("./WebBluetoothDevice");
@@ -26,6 +27,12 @@ class WebBluetoothDeviceManager extends events_1.EventEmitter {
                 if (di.Names.indexOf(aDevice.name) >= 0) {
                     deviceInfo = di;
                     break;
+                }
+                for (const namePrefix of di.NamePrefixes) {
+                    if (aDevice.name.indexOf(namePrefix) !== -1) {
+                        deviceInfo = di;
+                        break;
+                    }
                 }
             }
             if (deviceInfo === null) {
@@ -49,8 +56,12 @@ class WebBluetoothDeviceManager extends events_1.EventEmitter {
                 for (const deviceName of deviceInfo.Names) {
                     filters.filters.push({ name: deviceName });
                 }
+                for (const deviceNamePrefix of deviceInfo.NamePrefixes) {
+                    filters.filters.push({ namePrefix: deviceNamePrefix });
+                }
                 filters.optionalServices = [...filters.optionalServices, ...deviceInfo.Services];
             }
+            Logging_1.ButtplugLogger.Logger.Trace("Bluetooth filter set: " + filters);
             // At some point, we should use navigator.bluetooth.getAvailability() to
             // check whether we have a radio to use. However, no browser currently
             // implements this. Instead, see if requestDevice throws;

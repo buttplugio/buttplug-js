@@ -12,11 +12,13 @@ export declare class ButtplugClient extends EventEmitter {
     protected _waitingMsgs: Map<number, (val: Messages.ButtplugMessage) => void>;
     protected _clientName: string;
     protected _logger: ButtplugLogger;
+    protected _isScanning: boolean;
     protected _messageVersion: number;
     constructor(aClientName?: string);
     readonly Connector: IButtplugConnector | null;
     readonly Connected: boolean;
     readonly Devices: Device[];
+    readonly IsScanning: boolean;
     ConnectWebsocket: (aAddress: string) => Promise<void>;
     ConnectLocal: () => Promise<void>;
     Connect: (aConnector: IButtplugConnector) => Promise<void>;

@@ -24,6 +24,7 @@ class ButtplugClient extends events_1.EventEmitter {
         this._counter = 1;
         this._waitingMsgs = new Map();
         this._logger = Logging_1.ButtplugLogger.Logger;
+        this._isScanning = false;
         // TODO This should be set on schema load
         this._messageVersion = 1;
         this.ConnectWebsocket = (aAddress) => __awaiter(this, void 0, void 0, function* () {
@@ -50,10 +51,12 @@ class ButtplugClient extends events_1.EventEmitter {
         });
         this.StartScanning = () => __awaiter(this, void 0, void 0, function* () {
             this._logger.Debug(`ButtplugClient: StartScanning called`);
+            this._isScanning = true;
             return yield this.SendMsgExpectOk(new Messages.StartScanning());
         });
         this.StopScanning = () => __awaiter(this, void 0, void 0, function* () {
             this._logger.Debug(`ButtplugClient: StopScanning called`);
+            this._isScanning = false;
             return yield this.SendMsgExpectOk(new Messages.StopScanning());
         });
         this.RequestLog = (aLogLevel) => __awaiter(this, void 0, void 0, function* () {
@@ -167,6 +170,9 @@ class ButtplugClient extends events_1.EventEmitter {
         });
         return devices;
     }
+    get IsScanning() {
+        return this._isScanning;
+    }
     SendDeviceMessage(aDevice, aDeviceMsg) {
         return __awaiter(this, void 0, void 0, function* () {
             this.CheckConnector();
@@ -209,6 +215,7 @@ class ButtplugClient extends events_1.EventEmitter {
                     }
                     break;
                 case "ScanningFinished":
+                    this._isScanning = false;
                     this.emit("scanningfinished", x);
                     break;
             }

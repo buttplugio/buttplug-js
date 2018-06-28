@@ -50,7 +50,6 @@ class Maxpro extends ButtplugBluetoothDevice_1.ButtplugBluetoothDevice {
         };
     }
 }
-Maxpro.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["M2"], ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"], { tx: "6e400002-b5a3-f393-e0a9-e50e24dcca9e",
-    rx: "6e400003-b5a3-f393-e0a9-e50e24dcca9e" }, Maxpro.CreateInstance);
+Maxpro.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["M2"], [], ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"], {}, Maxpro.CreateInstance);
 exports.Maxpro = Maxpro;
 //# sourceMappingURL=Maxpro.js.map

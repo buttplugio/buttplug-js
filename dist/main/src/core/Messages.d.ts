@@ -2,7 +2,7 @@ import "reflect-metadata";
 export declare abstract class ButtplugMessage {
     Id: number;
     constructor(Id: number);
-    readonly abstract SchemaVersion: number;
+    abstract readonly SchemaVersion: number;
     DowngradeMessage(): ButtplugMessage;
     /***
      * Returns the message type name
@@ -52,7 +52,7 @@ export declare enum ErrorClass {
     ERROR_INIT = 1,
     ERROR_PING = 2,
     ERROR_MSG = 3,
-    ERROR_DEVICE = 4,
+    ERROR_DEVICE = 4
 }
 export declare class Error extends ButtplugSystemMessage {
     ErrorMessage: string;

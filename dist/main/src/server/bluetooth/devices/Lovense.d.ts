@@ -2,35 +2,20 @@ import { BluetoothDeviceInfo } from "../BluetoothDeviceInfo";
 import { ButtplugBluetoothDevice } from "../ButtplugBluetoothDevice";
 import { IBluetoothDeviceImpl } from "../IBluetoothDeviceImpl";
 export declare class Lovense extends ButtplugBluetoothDevice {
+    static readonly DeviceInfo: BluetoothDeviceInfo;
     static CreateInstance(aDeviceImpl: IBluetoothDeviceImpl): Promise<ButtplugBluetoothDevice>;
     private static _deviceNames;
+    private _initResolve;
+    private _initPromise;
+    private _isClockwise;
+    private _specs;
     constructor(aDeviceImpl: IBluetoothDeviceImpl);
+    Initialize: () => Promise<void>;
     readonly MessageSpecifications: object;
-    private HandleVibrateCmd;
+    private ParseDeviceType;
+    private OnValueChanged;
     private HandleStopDeviceCmd;
     private HandleSingleMotorVibrateCmd;
-}
-export declare class LovenseRev1 {
-    static readonly DeviceInfo: BluetoothDeviceInfo;
-}
-export declare class LovenseRev2 {
-    static readonly DeviceInfo: BluetoothDeviceInfo;
-}
-export declare class LovenseRev3 {
-    static readonly DeviceInfo: BluetoothDeviceInfo;
-}
-export declare class LovenseRev4 {
-    static readonly DeviceInfo: BluetoothDeviceInfo;
-}
-export declare class LovenseRev5 {
-    static readonly DeviceInfo: BluetoothDeviceInfo;
-}
-export declare class LovenseRev6 {
-    static readonly DeviceInfo: BluetoothDeviceInfo;
-}
-export declare class LovenseRev7 {
-    static readonly DeviceInfo: BluetoothDeviceInfo;
-}
-export declare class LovenseRev8 {
-    static readonly DeviceInfo: BluetoothDeviceInfo;
+    private HandleVibrateCmd;
+    private HandleRotateCmd;
 }

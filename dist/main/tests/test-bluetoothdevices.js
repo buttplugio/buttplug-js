@@ -37,12 +37,16 @@ describe("WebBluetooth library tests", () => {
         yield bp.ConnectLocal();
     });
     it("should convert lovense commands properly", () => __awaiter(this, void 0, void 0, function* () {
-        yield SetupDevice(Lovense_1.LovenseRev5.DeviceInfo);
+        yield SetupDevice(Lovense_1.Lovense.DeviceInfo);
+        utils_1.SetupLovenseTestDevice(mockBT);
         yield bp.StartScanning();
         yield bp.StopScanning();
+        expect(bp.Devices[0].Name).toEqual("Lovense Domi v01");
         jest.spyOn(mockBT.txChar, "writeValue");
         yield expect(bp.SendDeviceMessage(bp.Devices[0], new index_1.VibrateCmd([new index_1.SpeedSubcommand(0, 1),
-            new index_1.SpeedSubcommand(0, 2)]))).rejects.toThrow();
+            new index_1.SpeedSubcommand(1, 1)])))
+            .rejects
+            .toHaveProperty("ErrorCode", index_1.ErrorClass.ERROR_DEVICE);
         yield bp.SendDeviceMessage(bp.Devices[0], new index_1.VibrateCmd([new index_1.SpeedSubcommand(0, 1)]));
         expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate:20;"));
         yield bp.SendDeviceMessage(bp.Devices[0], new index_1.SingleMotorVibrateCmd(.5));
@@ -50,13 +54,57 @@ describe("WebBluetooth library tests", () => {
         yield bp.StopAllDevices();
         expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate:0;"));
     }));
+    it("should convert lovense edge vibrate commands properly", () => __awaiter(this, void 0, void 0, function* () {
+        yield SetupDevice(Lovense_1.Lovense.DeviceInfo);
+        utils_1.SetupLovenseTestDevice(mockBT, "P");
+        yield bp.StartScanning();
+        yield bp.StopScanning();
+        expect(bp.Devices[0].Name).toEqual("Lovense Edge v01");
+        jest.spyOn(mockBT.txChar, "writeValue");
+        yield expect(bp.SendDeviceMessage(bp.Devices[0], new index_1.VibrateCmd([new index_1.SpeedSubcommand(0, 1),
+            new index_1.SpeedSubcommand(1, 1),
+            new index_1.SpeedSubcommand(2, 1)])))
+            .rejects
+            .toHaveProperty("ErrorCode", index_1.ErrorClass.ERROR_DEVICE);
+        yield bp.SendDeviceMessage(bp.Devices[0], new index_1.VibrateCmd([new index_1.SpeedSubcommand(0, 1), new index_1.SpeedSubcommand(1, .5)]));
+        expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate1:20;"));
+        expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate2:10;"));
+        yield bp.SendDeviceMessage(bp.Devices[0], new index_1.SingleMotorVibrateCmd(.5));
+        expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate1:10;"));
+        expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate2:10;"));
+        yield bp.StopAllDevices();
+        expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate1:0;"));
+        expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate2:0;"));
+    }));
+    it("should convert lovense nora rotate commands properly", () => __awaiter(this, void 0, void 0, function* () {
+        yield SetupDevice(Lovense_1.Lovense.DeviceInfo);
+        utils_1.SetupLovenseTestDevice(mockBT, "A");
+        yield bp.StartScanning();
+        yield bp.StopScanning();
+        expect(bp.Devices[0].Name).toEqual("Lovense Nora v01");
+        jest.spyOn(mockBT.txChar, "writeValue");
+        yield expect(bp.SendDeviceMessage(bp.Devices[0], new index_1.RotateCmd([new index_1.RotateSubcommand(0, 1, true),
+            new index_1.RotateSubcommand(1, 1, true)])))
+            .rejects
+            .toHaveProperty("ErrorCode", index_1.ErrorClass.ERROR_DEVICE);
+        yield bp.SendDeviceMessage(bp.Devices[0], new index_1.RotateCmd([new index_1.RotateSubcommand(0, 1, false)]));
+        expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Rotate:20;"));
+        yield bp.SendDeviceMessage(bp.Devices[0], new index_1.RotateCmd([new index_1.RotateSubcommand(0, 0.5, true)]));
+        expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("RotateChange;"));
+        expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Rotate:10;"));
+        yield bp.StopAllDevices();
+        expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate:0;"));
+        expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Rotate:0;"));
+    }));
     it("should convert wevibe commands properly", () => __awaiter(this, void 0, void 0, function* () {
         yield SetupDevice(WeVibe_1.WeVibe.DeviceInfo);
         yield bp.StartScanning();
         yield bp.StopScanning();
         jest.spyOn(mockBT.txChar, "writeValue");
         yield expect(bp.SendDeviceMessage(bp.Devices[0], new index_1.VibrateCmd([new index_1.SpeedSubcommand(0, 1),
-            new index_1.SpeedSubcommand(1, 1)]))).rejects.toThrow();
+            new index_1.SpeedSubcommand(1, 1)])))
+            .rejects
+            .toHaveProperty("ErrorCode", index_1.ErrorClass.ERROR_DEVICE);
         yield bp.SendDeviceMessage(bp.Devices[0], new index_1.VibrateCmd([new index_1.SpeedSubcommand(0, 1)]));
         expect(mockBT.txChar.writeValue).toBeCalledWith(new Uint8Array([0x0f, 0x03, 0x00, 0xff, 0x00, 0x03, 0x00, 0x00]));
         yield bp.SendDeviceMessage(bp.Devices[0], new index_1.SingleMotorVibrateCmd(.5));
@@ -70,7 +118,9 @@ describe("WebBluetooth library tests", () => {
         yield bp.StopScanning();
         jest.spyOn(mockBT.txChar, "writeValue");
         yield expect(bp.SendDeviceMessage(bp.Devices[0], new index_1.LinearCmd([new index_1.VectorSubcommand(0, 1, 1),
-            new index_1.VectorSubcommand(1, 1, 1)]))).rejects.toThrow();
+            new index_1.VectorSubcommand(1, 1, 1)])))
+            .rejects
+            .toHaveProperty("ErrorCode", index_1.ErrorClass.ERROR_DEVICE);
         yield bp.SendDeviceMessage(bp.Devices[0], new index_1.FleshlightLaunchFW12Cmd(99, 99));
         expect(mockBT.txChar.writeValue).toBeCalledWith(new Uint8Array([99, 99]));
         // We should expect to be at position 99 here, so calculate time and
@@ -86,7 +136,9 @@ describe("WebBluetooth library tests", () => {
         yield bp.StopScanning();
         jest.spyOn(mockBT.txChar, "writeValue");
         yield expect(bp.SendDeviceMessage(bp.Devices[0], new index_1.RotateCmd([new index_1.RotateSubcommand(0, 1, true),
-            new index_1.RotateSubcommand(1, 1, false)]))).rejects.toThrow();
+            new index_1.RotateSubcommand(1, 1, false)])))
+            .rejects
+            .toHaveProperty("ErrorCode", index_1.ErrorClass.ERROR_DEVICE);
         yield bp.SendDeviceMessage(bp.Devices[0], new index_1.RotateCmd([new index_1.RotateSubcommand(0, 1, true)]));
         expect(mockBT.txChar.writeValue).toBeCalledWith(new Uint8Array([0x01, 0x01, (100 | (0x80)) & 0xff]));
         yield bp.SendDeviceMessage(bp.Devices[0], new index_1.VorzeA10CycloneCmd(50, false));

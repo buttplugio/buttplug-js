@@ -44,33 +44,42 @@ function CreateSimpleVibrateCmd(device, speed) {
     if (device.AllowedMessages.indexOf("VibrateCmd") === -1) {
         throw new Error("Device does not handle VibrateCmd!");
     }
+    if (speed > 1.0 || speed < 0.0) {
+        throw new Error("Speed must be 0.0 <= x <= 1.0!");
+    }
     const commands = [];
     for (let i = 0; i < device.MessageAttributes("VibrateCmd").FeatureCount; ++i) {
         commands.push(new Messages.SpeedSubcommand(i, speed));
     }
-    return new Messages.VibrateCmd(commands);
+    return new Messages.VibrateCmd(commands, device.Index);
 }
 exports.CreateSimpleVibrateCmd = CreateSimpleVibrateCmd;
 function CreateSimpleLinearCmd(device, position, duration) {
     if (device.AllowedMessages.indexOf("LinearCmd") === -1) {
         throw new Error("Device does not handle LinearCmd!");
     }
+    if (position > 1.0 || position < 0.0) {
+        throw new Error("Position must be 0.0 <= x <= 1.0!");
+    }
     const commands = [];
     for (let i = 0; i < device.MessageAttributes("LinearCmd").FeatureCount; ++i) {
         commands.push(new Messages.VectorSubcommand(i, position, duration));
     }
-    return new Messages.LinearCmd(commands);
+    return new Messages.LinearCmd(commands, device.Index);
 }
 exports.CreateSimpleLinearCmd = CreateSimpleLinearCmd;
 function CreateSimpleRotateCmd(device, speed, clockwise) {
     if (device.AllowedMessages.indexOf("RotateCmd") === -1) {
         throw new Error("Device does not handle RotateCmd!");
     }
+    if (speed > 1.0 || speed < 0.0) {
+        throw new Error("Speed must be 0.0 <= x <= 1.0!");
+    }
     const commands = [];
     for (let i = 0; i < device.MessageAttributes("RotateCmd").FeatureCount; ++i) {
         commands.push(new Messages.RotateSubcommand(i, speed, clockwise));
     }
-    return new Messages.RotateCmd(commands);
+    return new Messages.RotateCmd(commands, device.Index);
 }
 exports.CreateSimpleRotateCmd = CreateSimpleRotateCmd;
 //# sourceMappingURL=MessageUtils.js.map

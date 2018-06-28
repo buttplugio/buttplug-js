@@ -9,13 +9,15 @@ export declare class BPTestClient extends ButtplugClient {
     SendCheckedMessage(aMsg: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage>;
     SendUncheckedMessage(aMsg: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage>;
 }
+export declare function SetupLovenseTestDevice(mockBT: WebBluetoothMockObject, deviceLetter?: string): void;
 export declare function SetupTestSuite(): void;
 export declare class WebBluetoothMockObject {
     device: DeviceMock;
     gatt: GattMock;
     service: PrimaryServiceMock;
     txChar: CharacteristicMock;
-    constructor(device: DeviceMock, gatt: GattMock, service: PrimaryServiceMock, txChar: CharacteristicMock);
+    rxChar: CharacteristicMock;
+    constructor(device: DeviceMock, gatt: GattMock, service: PrimaryServiceMock, txChar: CharacteristicMock, rxChar: CharacteristicMock);
 }
 export declare function MakeMockWebBluetoothDevice(deviceInfo: BluetoothDeviceInfo): WebBluetoothMockObject;
 export declare function SetupTestServer(): Promise<any>;

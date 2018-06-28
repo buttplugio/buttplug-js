@@ -11,5 +11,5 @@ export declare class ButtplugBrowserWebsocketConnector extends EventEmitter impl
     Disconnect: () => void;
     Send: (aMsg: ButtplugMessage) => void;
     private ParseIncomingMessage;
-    private OnReaderLoad(aEvent);
+    private OnReaderLoad;
 }

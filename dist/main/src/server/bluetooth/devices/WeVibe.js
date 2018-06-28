@@ -48,7 +48,6 @@ class WeVibe extends ButtplugBluetoothDevice_1.ButtplugBluetoothDevice {
     }
 }
 WeVibe.DeviceInfo = new BluetoothDeviceInfo_1.BluetoothDeviceInfo(["4 Plus", "Ditto", "Nova", "Wish",
-    "Pivot", "Verge", "Cougar", "Sync"], ["f000bb03-0451-4000-b000-000000000000"], { tx: "f000c000-0451-4000-b000-000000000000",
-    rx: "f000b000-0451-4000-b000-000000000000" }, WeVibe.CreateInstance);
+    "Pivot", "Verge", "Cougar", "Sync"], [], ["f000bb03-0451-4000-b000-000000000000"], {}, WeVibe.CreateInstance);
 exports.WeVibe = WeVibe;
 //# sourceMappingURL=WeVibe.js.map
