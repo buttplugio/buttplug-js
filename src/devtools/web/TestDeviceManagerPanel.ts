@@ -51,12 +51,12 @@ export class TestDeviceManagerPanel {
       this._testManager!.LinearDevice.Disconnect();
     });
     this._testManager.VibrationDevice.addListener("vibrate", (speed) => {
-      document.getElementById("vibrationspeed")!.innerHTML = speed;
+      document.getElementById("vibrationspeed")!.innerHTML = (speed * 100).toFixed(1);
       this.vibrateMove(speed);
     });
     this._testManager.LinearDevice.addListener("linear", (linearobj: any) => {
-      document.getElementById("linearposition")!.innerHTML = linearobj.position;
-      document.getElementById("linearspeed")!.innerHTML = linearobj.speed;
+      document.getElementById("linearposition")!.innerHTML = (linearobj.position);
+      document.getElementById("linearspeed")!.innerHTML = (linearobj.speed);
       this.launchMove(linearobj.position, linearobj.speed);
     });
     this.fleshlightElement = document.getElementById("fleshlight-image")!;
