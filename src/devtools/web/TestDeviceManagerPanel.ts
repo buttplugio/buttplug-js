@@ -34,6 +34,8 @@ export class TestDeviceManagerPanel {
   }
 
   protected static _panel: TestDeviceManagerPanel;
+  private vibratorTween: TWEEN.Tween | null = null;
+  private launchTween: TWEEN.Tween | null = null;
   private _testManager: TestDeviceManager;
   private fleshlightElement: HTMLElement;
   private vibratorElement: HTMLElement;
@@ -42,6 +44,7 @@ export class TestDeviceManagerPanel {
   private moveRadius: number = 0;
   private currentVibratePosition: any = { x: 0, y: 0 };
   private elementObserver: MutationObserver | null = null;
+  private hasRAFBeenCalled = false;
 
   constructor(tdm: TestDeviceManager) {
     this._testManager = tdm;
@@ -86,21 +89,40 @@ export class TestDeviceManagerPanel {
     });
   }
 
+  private requestAnimate = () => {
+    if (this.hasRAFBeenCalled) {
+      return;
+    }
+    this.hasRAFBeenCalled = true;
+    requestAnimationFrame(this.animate);
+  }
+
+  private animate = (currentTime: number) => {
+    this.hasRAFBeenCalled = false;
+    if (this.vibratorTween && !this.vibratorTween.update(currentTime)) {
+      if (this.moveRadius !== 0) {
+        this.vibrateMove(this.moveRadius);
+      } else {
+        this.vibratorTween = null;
+      }
+    }
+    if (this.launchTween && !this.launchTween.update(currentTime)) {
+      this.launchTween = null;
+    } else {
+      this.requestAnimate();
+    }
+    this.vibratorElement.style.top = `${this.currentVibratePosition.x}px`;
+    this.vibratorElement.style.right = `${this.currentVibratePosition.y}px`;
+    this.fleshlightElement.style.bottom = `${this.currentLaunchPosition.y}%`;
+  }
+
   private launchMove = (position, speed) => {
     const p = -((100 - position) * 0.22);
     const duration = this.moveDuration(position, speed);
-    new TWEEN.Tween(this.currentLaunchPosition)
+    this.launchTween = new TWEEN.Tween(this.currentLaunchPosition)
       .to({x: 0, y: p}, duration)
       .start();
-    requestAnimationFrame(this.launchAnimate);
-  }
-
-  private launchAnimate = (timestamp: number) => {
-    if (!TWEEN.update()) {
-      return;
-    }
-    this.fleshlightElement.style.bottom = `${this.currentLaunchPosition.y}%`;
-    requestAnimationFrame(this.launchAnimate);
+    this.requestAnimate();
   }
 
   // moveDuration returns the time in milliseconds it will take to move
@@ -125,24 +147,12 @@ export class TestDeviceManagerPanel {
 
   private vibrateMove = (speed) => {
     this.moveRadius = speed;
-    requestAnimationFrame(this.vibrateAnimate);
-  }
-
-  private vibrateAnimate = (timestamp: number) => {
-    if (!TWEEN.update()) {
-      if (this.moveRadius !== 0) {
-        new TWEEN.Tween(this.currentVibratePosition)
-          .to({x: Math.floor(Math.random() * this.moveRadius * 20),
-               y: Math.floor(Math.random() * this.moveRadius * 20)}
-              , 34)
-          .start();
-        requestAnimationFrame(this.vibrateAnimate);
-      }
-      return;
-    }
-    this.vibratorElement.style.top = `${this.currentVibratePosition.x}px`;
-    this.vibratorElement.style.right = `${this.currentVibratePosition.y}px`;
-    requestAnimationFrame(this.vibrateAnimate);
+    this.vibratorTween = new TWEEN.Tween(this.currentVibratePosition)
+      .to({x: Math.floor(Math.random() * this.moveRadius * 20),
+           y: Math.floor(Math.random() * this.moveRadius * 20)}
+          , 34)
+      .start();
+    this.requestAnimate();
   }
 }
 
