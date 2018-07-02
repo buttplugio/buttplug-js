@@ -9,3 +9,11 @@ export function CreateLoggerPanel() {
 export function CreateDeviceManagerPanel(buttplugServer: ButtplugServer) {
   TestDeviceManagerPanel.ShowTestDeviceManagerPanel(buttplugServer);
 }
+
+export function RemoveDeviceManagerPanel() {
+  const el = document.getElementById("buttplug-test-device-manager-panel");
+  if (!el || !el.parentNode) {
+    return;
+  }
+  el.parentNode.removeChild(el);
+}
