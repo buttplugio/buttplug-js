@@ -1,7 +1,8 @@
 import { SetupTestSuite, SetupTestServer } from "./utils";
 import { TestDeviceManager, CreateDevToolsClient } from "../src/devtools/index";
 import { SingleMotorVibrateCmd, FleshlightLaunchFW12Cmd, LinearCmd, VibrateCmd,
-         SpeedSubcommand, VectorSubcommand } from "../src/index";
+         SpeedSubcommand, VectorSubcommand, ButtplugServer, ButtplugEmbeddedServerConnector,
+         ButtplugClient, Device } from "../src/index";
 
 describe("devtools tests", () => {
   let p;
@@ -78,5 +79,24 @@ describe("devtools tests", () => {
     });
     await bp.StopAllDevices();
     await expect(p).resolves.toEqual({position: 27, speed: 16});
+  });
+
+  it("should list allowed messages correctly when devices are added manually", async () => {
+    const server = new ButtplugServer();
+    const serverConnector = new ButtplugEmbeddedServerConnector();
+    const testDeviceManager = new TestDeviceManager();
+    server.AddDeviceManager(testDeviceManager);
+    serverConnector.Server = server;
+
+    testDeviceManager.ConnectVibrationDevice();
+
+    const buttplug = new ButtplugClient("Test Name");
+    buttplug.addListener("deviceadded", (d: Device) => {
+      expect(d.AllowedMessages).toEqual(["VibrateCmd", "SingleMotorVibrateCmd", "StopDeviceCmd"]);
+      res();
+    });
+    await buttplug.Connect(serverConnector);
+
+    await p;
   });
 });
