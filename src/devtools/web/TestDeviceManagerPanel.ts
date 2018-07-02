@@ -41,6 +41,7 @@ export class TestDeviceManagerPanel {
   private lastPosition: number = 0;
   private moveRadius: number = 0;
   private currentVibratePosition: any = { x: 0, y: 0 };
+  private elementObserver: MutationObserver | null = null;
 
   constructor(tdm: TestDeviceManager) {
     this._testManager = tdm;
@@ -50,17 +51,39 @@ export class TestDeviceManagerPanel {
     document.getElementById("lineardisconnect")!.addEventListener("click", () => {
       this._testManager!.LinearDevice.Disconnect();
     });
-    this._testManager.VibrationDevice.addListener("vibrate", (speed) => {
+    const speedHandler = (speed) => {
       document.getElementById("vibrationspeed")!.innerHTML = (speed * 100).toFixed(1);
       this.vibrateMove(speed);
-    });
-    this._testManager.LinearDevice.addListener("linear", (linearobj: any) => {
+    };
+    this._testManager.VibrationDevice.addListener("vibrate", speedHandler);
+
+    const positionHandler = (linearobj: any) => {
       document.getElementById("linearposition")!.innerHTML = (linearobj.position);
       document.getElementById("linearspeed")!.innerHTML = (linearobj.speed);
       this.launchMove(linearobj.position, linearobj.speed);
-    });
+    };
+
+    this._testManager.LinearDevice.addListener("linear", positionHandler);
     this.fleshlightElement = document.getElementById("fleshlight-image")!;
     this.vibratorElement = document.getElementById("vibrator-image")!;
+
+    // After the node has been created, attach a mutation observer to disconnect
+    // events when the panel is closed, otherwise we'll get events going to
+    // elements that no longer exist.
+    process.nextTick(() => {
+      const el = document.getElementById("buttplug-test-device-manager-panel");
+      if (!el) {
+        return;
+      }
+      const observer = new MutationObserver((mutations) => {
+        if (!document.getElementById("buttplug-test-device-manager-panel")) {
+          this._testManager.VibrationDevice.removeListener("vibrate", speedHandler);
+          this._testManager.LinearDevice.removeListener("linear", positionHandler);
+          observer.disconnect();
+        }
+      });
+      observer.observe(el!.parentNode!, { childList: true });
+    });
   }
 
   private launchMove = (position, speed) => {
