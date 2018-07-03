@@ -29,6 +29,7 @@
     "build:doc": "typedoc --options typedoc.js --out doc .",
     "build:web": "webpack --config=build/webpack.base.js",
     "build:web:release": "webpack --progress --hide-modules --config=build/webpack.production.js",
+    "build:analyze": "webpack --hide-modules --config=build/webpack.analyzer.js",
     "tslint": "tslint -c tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
     "tslint:fix": "tslint -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\"",
     "pretest": "yarn build:main",
@@ -68,6 +69,7 @@
     "url-loader": "^1.0.1",
     "web-bluetooth-mock": "^1.0.2",
     "webpack": "^4.12.2",
+    "webpack-bundle-analyzer": "^2.13.1",
     "webpack-cli": "^3.0.8",
     "webpack-merge": "^4.1.3",
     "yarn": "^1.7.0"
