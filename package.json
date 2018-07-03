@@ -1,6 +1,6 @@
 {
   "name": "buttplug",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Javascript library for creating or accessing Buttplug Intimate Hardware Protocol servers/clients, for node or web",
   "repository": {
     "type": "git",
@@ -21,9 +21,11 @@
   "scripts": {
     "build": "trash dist dist-bundle && yarn build:all",
     "build:all": "yarn build:main && yarn build:web && yarn build:web:release",
+    "build:copy-devtools": "copyfiles ./src/devtools/web/*.html ./src/devtools/web/*.css ./src/devtools/web/*.png ./dist/main",
     "build:copy-schema": "copyfiles ./dependencies/buttplug-schema/schema/buttplug-schema.json ./dist/main/",
-    "build:main": "tsc -p tsconfig.json && yarn build:copy-schema",
-    "build:redist": "tsc -p tsconfig.json && yarn build:copy-schema",
+    "build:copy-all": "yarn build:copy-schema && yarn build:copy-devtools",
+    "build:main": "tsc -p tsconfig.json && yarn build:copy-all",
+    "build:redist": "tsc -p tsconfig.json && yarn build:copy-all",
     "build:doc": "typedoc --options typedoc.js --out doc .",
     "build:web": "webpack --config=build/webpack.base.js",
     "build:web:release": "webpack --progress --hide-modules --config=build/webpack.production.js",

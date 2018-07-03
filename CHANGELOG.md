@@ -1,3 +1,11 @@
+# Version 0.8.1 - 2018/07/02
+
+- Make DevTools/Simulator loadable as a module
+- Fix bug in characteristic map calculation (caused Fleshlight Launch to stop working on 0.8.0)
+- Fix output of speed/position values in Simulator
+- Fix bug in DeviceList message construction in Server
+- Various other Simulator fixes.
+
 # Version 0.8.0 - 2018/06/27
 
 - Add BLE GATT Characteristic reading functions

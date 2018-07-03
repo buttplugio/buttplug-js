@@ -110,7 +110,7 @@ The example is also available for remix on
 [Glitch](https://glitch.com) at
 [https://how-to-buttplug.glitch.me/](https://how-to-buttplug.glitch.me/).
 
-## Web Application Developer Tools
+## Web Application Developer Tools/Simulator
 
 buttplug-js includes a set of developer tools for building web
 applications, including a log viewer and a device simulator. These can
@@ -122,6 +122,18 @@ be accessed by loading the following script:
 
 For more information on using Buttplug DevTools, see our glitch tutorial at
 [https://how-to-buttplug-devtools.glitch.me](https://how-to-buttplug-devtools.glitch.me).
+
+To bring the DevTools/Simulator in as a node module (for building
+webapps in node), you can use a long import path instead of the default:
+
+```javascript
+import { CreateDevToolsClient } from "buttplug/dist/main/src/devtools";
+import { CreateDeviceManagerPanel, RemoveDeviceManagerPanel } from "buttplug/dist/main/src/devtools/web/index.web";
+```
+
+Note that the web module brings in html/css/pngs, so if you are using
+a bundler like webpack or rollup, you'll need the correct loaders to
+pack the assets.
 
 ## Buttplug and Uglify
 
