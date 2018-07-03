@@ -75,7 +75,7 @@ class DeviceManager extends events_1.EventEmitter {
                     this._logger.Debug(`DeviceManager: Sending device list`);
                     const devices = [];
                     this._devices.forEach((v, k) => {
-                        devices.push(new Messages.DeviceInfo(k, v.Name, v.AllowedMessageTypes));
+                        devices.push(new Messages.DeviceInfoWithSpecifications(k, v.Name, v.MessageSpecifications));
                     });
                     return new Messages.DeviceList(devices, id);
             }

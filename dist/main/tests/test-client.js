@@ -104,9 +104,7 @@ describe("Client Tests", () => __awaiter(this, void 0, void 0, function* () {
             catch (e) {
                 rej();
             }
-            yield expect(bp.SendDeviceMessage(bp.Devices[0], new Messages.KiirooCmd("2")))
-                .rejects
-                .toHaveProperty("ErrorCode", Messages.ErrorClass.ERROR_DEVICE);
+            expect(yield bp.SendDeviceMessage(bp.Devices[0], new Messages.KiirooCmd("2"))).toThrow();
             res();
         }));
         yield bp.StartScanning();
@@ -115,10 +113,11 @@ describe("Client Tests", () => __awaiter(this, void 0, void 0, function* () {
     it("Should reject schema violating message", () => __awaiter(this, void 0, void 0, function* () {
         const bp = (yield utils_1.SetupTestServer()).Client;
         bp.on("scanningfinished", (x) => __awaiter(this, void 0, void 0, function* () {
-            yield expect(bp.SendDeviceMessage(bp.Devices[0], new Messages.SingleMotorVibrateCmd(50)))
-                .rejects
-                .toHaveProperty("ErrorCode", Messages.ErrorClass.ERROR_DEVICE);
-            res();
+            expect(bp.Devices.length).toBeGreaterThan(0);
+            process.nextTick(() => __awaiter(this, void 0, void 0, function* () {
+                expect(yield bp.SendDeviceMessage(bp.Devices[0], new Messages.SingleMotorVibrateCmd(50))).toThrow();
+                res();
+            }));
         }));
         yield bp.StartScanning();
         return p;

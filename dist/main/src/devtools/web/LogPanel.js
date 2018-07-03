@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const index_1 = require("../../index");
 const jsPanel = require("jspanel4");
-require("../../../node_modules/jspanel4/dist/jspanel.css");
+require("jspanel4/dist/jspanel.css");
 const logPanelHTML = require("./LogPanel.html").toString();
 require("./LogPanel.css");
 class LogPanel {

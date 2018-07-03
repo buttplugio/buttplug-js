@@ -43,7 +43,7 @@ class WebBluetoothDevice extends events_1.EventEmitter {
             // If no characteristics are present in the DeviceInfo block, we assume that
             // we're connecting to a simple rx/tx service, and can query to figure out
             // characteristics. Assume that the characteristics have tx/rx references.
-            if (this._characteristics.entries.length === 0) {
+            if (this._characteristics.size === 0) {
                 const characteristics = yield this._service.getCharacteristics();
                 for (const char of characteristics) {
                     if (char.properties.write ||
