@@ -18,6 +18,7 @@ export class VorzeA10Cyclone extends ButtplugBluetoothDevice {
 
   public constructor(aDeviceImpl: IBluetoothDeviceImpl) {
     super(aDeviceImpl.Name === "CycSA" ? "Vorze A10 Cyclone" : "Vorze UFO SA", aDeviceImpl);
+    this.IsCyclone = aDeviceImpl.Name === "CycSA";
     this.MsgFuncs.set(Messages.StopDeviceCmd.name, this.HandleStopDeviceCmd);
     this.MsgFuncs.set(Messages.VorzeA10CycloneCmd.name, this.HandleVorzeA10CycloneCmd);
     this.MsgFuncs.set(Messages.RotateCmd.name, this.HandleRotateCmd);
