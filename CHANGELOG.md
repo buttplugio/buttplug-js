@@ -1,3 +1,7 @@
+# Version 0.8.2 - 2018/07/12
+
+- Add Vorze UFO SA support
+
 # Version 0.8.1 - 2018/07/02
 
 - Make DevTools/Simulator loadable as a module
