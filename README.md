@@ -33,7 +33,7 @@ additions.
 - [API Documentation](#api-documentation)
 - [Usage Example](#usage-example)
 - [Web Application Developer Tools](#web-application-developer-tools)
-- [Buttplug and Uglify](@buttplug-and-uglify)
+- [Buttplug and Uglify](#buttplug-and-uglify)
 - [Helper Libraries](#helper-libraries)
 - [Applications Using Buttplug-JS](#applications-using-buttplug-js)
 - [License](#license)
