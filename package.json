@@ -1,6 +1,6 @@
 {
   "name": "buttplug",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "description": "Javascript library for creating or accessing Buttplug Intimate Hardware Protocol servers/clients, for node or web",
   "repository": {
     "type": "git",
