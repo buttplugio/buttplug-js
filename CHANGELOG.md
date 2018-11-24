@@ -1,3 +1,8 @@
+# Version 0.8.3 - 2018/11/24
+
+- Added Lovense Osci support
+- Updated schema with bugfixes to generic commands
+
 # Version 0.8.2 - 2018/07/12
 
 - Add Vorze UFO SA support
