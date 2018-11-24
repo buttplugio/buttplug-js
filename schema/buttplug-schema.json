@@ -149,6 +149,7 @@
           "description": "Array of device ids and names.",
           "type": "array",
           "items": {
+            "type": "object",
             "properties": {
               "DeviceName": { "$ref": "#/components/DeviceName" },
               "DeviceIndex": { "$ref": "#/components/DeviceIndex" },
@@ -167,7 +168,9 @@
               "DeviceIndex",
               "DeviceMessages"
             ]
-          }
+
+          },
+          "minItems": 0
         }
       },
       "minProperties": 2,
@@ -513,25 +516,29 @@
           "description": "Device vibration speeds (floating point, 0 < x < 1) keyed on vibrator number, stepping will be device specific.",
           "type": "array",
           "items": {
-            "Index": {
-              "description": "Vibrator number.",
-              "type": "integer",
-              "minimum": 0
+            "type": "object",
+            "properties": {
+              "Index": {
+                "description": "Vibrator number.",
+                "type": "integer",
+                "minimum": 0
+              },
+              "Speed": {
+                "description": "Vibration speed (floating point, 0 < x < 1), stepping will be device specific.",
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
             },
-            "Speed": {
-              "description": "Vibration speed (floating point, 0 < x < 1), stepping will be device specific.",
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1
-            }
+            "minProperties": 2,
+            "maxProperties": 2,
+            "additionalProperties": false,
+            "required": [
+              "Index",
+              "Speed"
+            ]
           },
-          "minProperties": 2,
-          "maxProperties": 2,
-          "additionalProperties": false,
-          "required": [
-            "Index",
-            "Speed"
-          ]
+          "minItems": 1
         }
       },
       "minProperties": 3,
@@ -553,30 +560,34 @@
           "description": "Device rotation speeds (floating point, 0 < x < 1) keyed on rotator number, stepping will be device specific.",
           "type": "array",
           "items": {
-            "Index": {
-              "description": "Rotator number.",
-              "type": "integer",
-              "minimum": 0
+            "type": "object",
+            "properties": {
+              "Index": {
+                "description": "Rotator number.",
+                "type": "integer",
+                "minimum": 0
+              },
+              "Speed": {
+                "description": "Rotation speed (floating point, 0 < x < 1), stepping will be device specific.",
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "Clockwise": {
+                "description": "Rotation direction (boolean). Not all devices have a concept of actual clockwise.",
+                "type": "boolean"
+              }
             },
-            "Speed": {
-              "description": "Rotation speed (floating point, 0 < x < 1), stepping will be device specific.",
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1
-            },
-            "Clockwise": {
-              "description": "Rotation direction (boolean). Not all devices have a concept of actual clockwise.",
-              "type": "boolean"
-            }
+            "minProperties": 3,
+            "maxProperties": 3,
+            "additionalProperties": false,
+            "required": [
+              "Index",
+              "Speed",
+              "Clockwise"
+            ]
           },
-          "minProperties": 3,
-          "maxProperties": 3,
-          "additionalProperties": false,
-          "required": [
-            "Index",
-            "Speed",
-            "Clockwise"
-          ]
+          "minItems": 1
         }
       },
       "minProperties": 3,
@@ -598,31 +609,34 @@
           "description": "Device linear movement times (milliseconds) and positions (floating point, 0 < x < 1) keyed on linear actuator number, stepping will be device specific.",
           "type": "array",
           "items": {
-            "Index": {
-              "description": "Linear actuator number.",
-              "type": "integer",
-              "minimum": 0
+            "type": "object",
+            "properties": {
+              "Index": {
+                "description": "Linear actuator number.",
+                "type": "integer",
+                "minimum": 0
+              },
+              "Duration": {
+                "description": "Linear movement time in milliseconds.",
+                "type": "number",
+                "minimum": 0
+              },
+              "Position": {
+                "description": "Linear movement position (floating point, 0 < x < 1), stepping will be device specific.",
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
             },
-            "Duration": {
-              "description": "Linear movement time in milliseconds.",
-              "type": "number",
-              "minimum": 0
-            },
-            "Position": {
-              "description": "Linear movement position (floating point, 0 < x < 1), stepping will be device specific.",
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1
-            }
-          },
-          "minProperties": 3,
-          "maxProperties": 3,
-          "additionalProperties": false,
-          "required": [
-            "Index",
-            "Speed",
-            "Position"
-          ]
+            "minProperties": 3,
+            "maxProperties": 3,
+            "additionalProperties": false,
+            "required": [
+              "Index",
+              "Duration",
+              "Position"
+            ]
+          }
         }
       },
       "minProperties": 3,
