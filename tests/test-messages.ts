@@ -66,8 +66,8 @@ describe("Message", () => {
      });
   it("Handles Device Commands with Subcommand arrays correctly",
      () => {
-       const jsonStr = '[{"VibrateCmd":{"Id":2, "DeviceIndex": 3, "Speeds": [{ "Index": 0, "Speed": 100}, {"Index": 1, "Speed": 50}]}}]';
-       expect(FromJSON(jsonStr)).toEqual([new Messages.VibrateCmd([{Index: 0, Speed: 100}, {Index: 1, Speed: 50}], 3, 2)]);
+       const jsonStr = '[{"VibrateCmd":{"Id":2, "DeviceIndex": 3, "Speeds": [{ "Index": 0, "Speed": 1.0}, {"Index": 1, "Speed": 0.5}]}}]';
+       expect(FromJSON(jsonStr)).toEqual([new Messages.VibrateCmd([{Index: 0, Speed: 1.0}, {Index: 1, Speed: 0.5}], 3, 2)]);
      });
 
   it("Handles RequestServerInfo correctly across multiple schema versions",
