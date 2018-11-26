@@ -1,5 +1,6 @@
 "use strict";
 import * as Messages from "./Messages";
+import { ButtplugDeviceException } from "./Exceptions";
 
 /**
  * Represents an abstract device, capable of taking certain kinds of messages.
@@ -53,7 +54,7 @@ export class Device {
    */
   public MessageAttributes(messageName: string): Messages.MessageAttributes {
     if (this.AllowedMessages.indexOf(messageName) === -1) {
-      throw new Error(`Message ${messageName} does not exist on device ${this.name}`);
+      throw new ButtplugDeviceException(`Message ${messageName} does not exist on device ${this.name}`);
     }
     return this.allowedMsgs.get(messageName)!;
   }

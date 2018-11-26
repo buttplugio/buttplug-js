@@ -2,6 +2,7 @@
 "use strict";
 
 import {classToPlain, plainToClass} from "class-transformer";
+import { ButtplugMessageException } from "./Exceptions";
 import "reflect-metadata";
 
 export const SYSTEM_MESSAGE_ID = 0;
@@ -15,9 +16,8 @@ export abstract class ButtplugMessage {
   abstract get SchemaVersion(): number;
 
   public DowngradeMessage(): ButtplugMessage {
-    return new Error("Message version downgrade required, but not defined for this message type.",
-                     ErrorClass.ERROR_MSG,
-                     this.Id);
+    throw new ButtplugMessageException("Message version downgrade required, but not defined for this message type.",
+                                       this.Id);
   }
 
   /***

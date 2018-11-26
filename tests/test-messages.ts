@@ -40,7 +40,7 @@ describe("Message", () => {
   it("Throws an error when trying to parse a message that breaks schema",
      () => {
        const jsonStr = '[{"DeviceAdded":{"Id":1,"DeviceIndex":0,"DeviceName":"Test","DeviceMessages":["Ok","Ping"]}}]';
-       expect(FromJSON(jsonStr)[0].constructor.name).toEqual("Error");
+       expect(() => FromJSON(jsonStr)).toThrow();
      });
   it("Handles KiirooCmd messages correctly",
      () => {

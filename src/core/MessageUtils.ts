@@ -3,6 +3,7 @@ import {plainToClass} from "class-transformer";
 import * as ajv from "ajv";
 import * as Messages from "./Messages";
 import { Device } from "./Device";
+import { ButtplugMessageException } from "./Exceptions";
 const buttplugSchema = require("../../dependencies/buttplug-schema/schema/buttplug-schema.json");
 
 // Since we're still using the draft 06 schema, we now have to specifically add
@@ -17,7 +18,7 @@ export function CheckMessage(aMsgObj: Messages.ButtplugMessage) {
   }
   // Relay validator errors as an error message locally.
   const errorString = jsonValidator.errors!.map((error) => error.message).join("; ");
-  throw new Error(errorString);
+  throw new ButtplugMessageException(errorString);
 }
 
 export function FromJSON(str): Messages.ButtplugMessage[] {
@@ -25,7 +26,7 @@ export function FromJSON(str): Messages.ButtplugMessage[] {
   if (!jsonValidator(msgarray)) {
     // Relay validator errors as an error message locally.
     const errorString = jsonValidator.errors!.map((error) => error.message).join("; ");
-    return [new Messages.Error(errorString, Messages.ErrorClass.ERROR_MSG, 0)];
+    throw new ButtplugMessageException(errorString);
   }
   const msgs: Messages.ButtplugMessage[] = [];
   for (const x of Array.from(msgarray)) {
@@ -45,10 +46,10 @@ export function GetSchemaVersion(): number {
 
 export function CreateSimpleVibrateCmd(device: Device, speed: number): Messages.VibrateCmd {
   if (device.AllowedMessages.indexOf("VibrateCmd") === -1) {
-    throw new Error("Device does not handle VibrateCmd!");
+    throw new ButtplugMessageException("Device does not handle VibrateCmd!");
   }
   if (speed > 1.0 || speed < 0.0) {
-    throw new Error("Speed must be 0.0 <= x <= 1.0!");
+    throw new ButtplugMessageException("Speed must be 0.0 <= x <= 1.0!");
   }
   const commands: Messages.SpeedSubcommand[] = [];
   for (let i = 0; i < device.MessageAttributes("VibrateCmd").FeatureCount; ++i) {
@@ -59,10 +60,10 @@ export function CreateSimpleVibrateCmd(device: Device, speed: number): Messages.
 
 export function CreateSimpleLinearCmd(device: Device, position: number, duration: number): Messages.LinearCmd {
   if (device.AllowedMessages.indexOf("LinearCmd") === -1) {
-    throw new Error("Device does not handle LinearCmd!");
+    throw new ButtplugMessageException("Device does not handle LinearCmd!");
   }
   if (position > 1.0 || position < 0.0) {
-    throw new Error("Position must be 0.0 <= x <= 1.0!");
+    throw new ButtplugMessageException("Position must be 0.0 <= x <= 1.0!");
   }
   const commands: Messages.VectorSubcommand[] = [];
   for (let i = 0; i < device.MessageAttributes("LinearCmd").FeatureCount; ++i) {
@@ -73,10 +74,10 @@ export function CreateSimpleLinearCmd(device: Device, position: number, duration
 
 export function CreateSimpleRotateCmd(device: Device, speed: number, clockwise: boolean): Messages.RotateCmd {
   if (device.AllowedMessages.indexOf("RotateCmd") === -1) {
-    throw new Error("Device does not handle RotateCmd!");
+    throw new ButtplugMessageException("Device does not handle RotateCmd!");
   }
   if (speed > 1.0 || speed < 0.0) {
-    throw new Error("Speed must be 0.0 <= x <= 1.0!");
+    throw new ButtplugMessageException("Speed must be 0.0 <= x <= 1.0!");
   }
   const commands: Messages.RotateSubcommand[] = [];
   for (let i = 0; i < device.MessageAttributes("RotateCmd").FeatureCount; ++i) {
