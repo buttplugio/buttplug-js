@@ -4,6 +4,8 @@ import { EventEmitter } from "events";
 import { ButtplugMessage } from "../core/Messages";
 import { IButtplugConnector } from "./IButtplugConnector";
 import { ButtplugServer } from "../server/ButtplugServer";
+import { ButtplugException } from "../core/Exceptions";
+import { ButtplugClientConnectorException } from "./ButtplugClientConnectorException";
 
 export class ButtplugEmbeddedServerConnector extends EventEmitter implements IButtplugConnector {
   private _connected: boolean = false;
@@ -21,7 +23,7 @@ export class ButtplugEmbeddedServerConnector extends EventEmitter implements IBu
     return this._connected;
   }
 
-  public Connect = async (): Promise<void> => {
+  public Connect = (): Promise<void> => {
     this._connected = true;
     if (this._server === null) {
       this._server = new ButtplugServer();
@@ -40,12 +42,11 @@ export class ButtplugEmbeddedServerConnector extends EventEmitter implements IBu
     this.emit("disconnect");
   }
 
-  public Send = async (aMsg: ButtplugMessage) => {
+  public Send = async (aMsg: ButtplugMessage): Promise<ButtplugMessage> => {
     if (!this._connected) {
-      throw new Error("ButtplugClient not connected");
+      return Promise.reject(new ButtplugClientConnectorException("Client not connected."));
     }
-    const returnMsg = await this._server!.SendMessage(aMsg);
-    this.emit("message", [returnMsg]);
+    return await this._server!.SendMessage(aMsg);
   }
 
   private OnMessageReceived = (aMsg: ButtplugMessage) => {

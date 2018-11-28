@@ -25,6 +25,14 @@ export class ButtplugException extends Error {
     return this.messageId;
   }
 
+  public static LogAndError<T extends ButtplugException>(aConstructor: new(string, number) => T,
+                                                         aLogger: ButtplugLogger,
+                                                         aMessage: string,
+                                                         aId: number = Messages.SYSTEM_MESSAGE_ID) : T {
+    aLogger.Error(aMessage);
+    return new aConstructor(aMessage, aId);
+  }
+
   public static FromError(aError: Messages.Error) {
     switch (aError.ErrorCode) {
       case Messages.ErrorClass.ERROR_DEVICE:

@@ -6,7 +6,7 @@ import { ButtplugDeviceException } from "./Exceptions";
  * Represents an abstract device, capable of taking certain kinds of messages.
  */
 export class Device {
-  public static fromMsg(aMsg: Messages.DeviceAddedVersion1 | Messages.DeviceInfoWithSpecifications): Device {
+  public static fromMsg(aMsg: Messages.DeviceAdded | Messages.DeviceInfoWithSpecifications): Device {
     return new Device(aMsg.DeviceIndex,
                       aMsg.DeviceName,
                       aMsg.DeviceMessages);

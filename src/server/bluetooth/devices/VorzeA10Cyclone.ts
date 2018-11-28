@@ -2,6 +2,7 @@ import { BluetoothDeviceInfo } from "../BluetoothDeviceInfo";
 import { ButtplugBluetoothDevice } from "../ButtplugBluetoothDevice";
 import { IBluetoothDeviceImpl } from "../IBluetoothDeviceImpl";
 import * as Messages from "../../../core/Messages";
+import { ButtplugDeviceException } from "../../../core/Exceptions";
 
 export class VorzeA10Cyclone extends ButtplugBluetoothDevice {
   public static readonly DeviceInfo = new BluetoothDeviceInfo(["CycSA", "UFOSA"],
@@ -19,9 +20,9 @@ export class VorzeA10Cyclone extends ButtplugBluetoothDevice {
   public constructor(aDeviceImpl: IBluetoothDeviceImpl) {
     super(aDeviceImpl.Name === "CycSA" ? "Vorze A10 Cyclone" : "Vorze UFO SA", aDeviceImpl);
     this.IsCyclone = aDeviceImpl.Name === "CycSA";
-    this.MsgFuncs.set(Messages.StopDeviceCmd.name, this.HandleStopDeviceCmd);
-    this.MsgFuncs.set(Messages.VorzeA10CycloneCmd.name, this.HandleVorzeA10CycloneCmd);
-    this.MsgFuncs.set(Messages.RotateCmd.name, this.HandleRotateCmd);
+    this.MsgFuncs.set(Messages.StopDeviceCmd, this.HandleStopDeviceCmd);
+    this.MsgFuncs.set(Messages.VorzeA10CycloneCmd, this.HandleVorzeA10CycloneCmd);
+    this.MsgFuncs.set(Messages.RotateCmd, this.HandleRotateCmd);
   }
 
   public get MessageSpecifications(): object {
@@ -34,10 +35,9 @@ export class VorzeA10Cyclone extends ButtplugBluetoothDevice {
 
   private HandleRotateCmd = async (aMsg: Messages.RotateCmd): Promise<Messages.ButtplugMessage> => {
     if (aMsg.Rotations.length !== 1) {
-      return new Messages.Error(`Vorze A10 Cyclone devices require RotateCmd to have 1 rotation command,` +
-                                ` ${aMsg.Rotations.length} sent.`,
-                                Messages.ErrorClass.ERROR_DEVICE,
-                                aMsg.Id);
+      throw new ButtplugDeviceException(`Vorze A10 Cyclone devices require RotateCmd to have 1 rotation command,` +
+                                        ` ${aMsg.Rotations.length} sent.`,
+                                        aMsg.Id);
     }
     return await this.HandleVorzeA10CycloneCmd(new Messages.VorzeA10CycloneCmd(aMsg.Rotations[0].Speed * 100,
                                                                                aMsg.Rotations[0].Clockwise,

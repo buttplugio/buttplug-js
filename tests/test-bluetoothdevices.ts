@@ -5,7 +5,7 @@ import { BPTestClient, SetupTestSuite, WebBluetoothMockObject, MakeMockWebBlueto
          SetupLovenseTestDevice } from "./utils";
 import { VibrateCmd, RotateCmd, SpeedSubcommand, LinearCmd, VectorSubcommand, FleshlightLaunchFW12Cmd,
          DeviceInfo, BluetoothDeviceInfo, SingleMotorVibrateCmd, RotateSubcommand,
-         VorzeA10CycloneCmd, ErrorClass } from "../src/index";
+         VorzeA10CycloneCmd, ErrorClass, ButtplugDeviceException } from "../src/index";
 import { Lovense } from "../src/server/bluetooth/devices/Lovense";
 import { WeVibe } from "../src/server/bluetooth/devices/WeVibe";
 import { FleshlightLaunch } from "../src/server/bluetooth/devices/FleshlightLaunch";
@@ -13,7 +13,7 @@ import { VorzeA10Cyclone } from "../src/server/bluetooth/devices/VorzeA10Cyclone
 
 SetupTestSuite();
 
-describe("WebBluetooth library tests", () => {
+describe("Bluetooth device tests", () => {
   let p;
   let res;
   let rej;
@@ -46,7 +46,7 @@ describe("WebBluetooth library tests", () => {
                                       new VibrateCmd([new SpeedSubcommand(0, 1),
                                                       new SpeedSubcommand(1, 1)])))
       .rejects
-      .toHaveProperty("ErrorCode", ErrorClass.ERROR_DEVICE);
+      .toBeInstanceOf(ButtplugDeviceException);
     await bp.SendDeviceMessage(bp.Devices[0], new VibrateCmd([new SpeedSubcommand(0, 1)]));
     expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate:20;"));
     await bp.SendDeviceMessage(bp.Devices[0], new SingleMotorVibrateCmd(.5));
@@ -67,7 +67,7 @@ describe("WebBluetooth library tests", () => {
                                                       new SpeedSubcommand(1, 1),
                                                       new SpeedSubcommand(2, 1)])))
       .rejects
-      .toHaveProperty("ErrorCode", ErrorClass.ERROR_DEVICE);
+      .toBeInstanceOf(ButtplugDeviceException);
     await bp.SendDeviceMessage(bp.Devices[0], new VibrateCmd([new SpeedSubcommand(0, 1), new SpeedSubcommand(1, .5)]));
     expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate1:20;"));
     expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Vibrate2:10;"));
@@ -90,7 +90,7 @@ describe("WebBluetooth library tests", () => {
                                       new RotateCmd([new RotateSubcommand(0, 1, true),
                                                      new RotateSubcommand(1, 1, true)])))
       .rejects
-      .toHaveProperty("ErrorCode", ErrorClass.ERROR_DEVICE);
+      .toBeInstanceOf(ButtplugDeviceException);
     await bp.SendDeviceMessage(bp.Devices[0], new RotateCmd([new RotateSubcommand(0, 1, false)]));
     expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("Rotate:20;"));
     await bp.SendDeviceMessage(bp.Devices[0], new RotateCmd([new RotateSubcommand(0, 0.5, true)]));
@@ -110,7 +110,7 @@ describe("WebBluetooth library tests", () => {
                                       new VibrateCmd([new SpeedSubcommand(0, 1),
                                                       new SpeedSubcommand(1, 1)])))
       .rejects
-      .toHaveProperty("ErrorCode", ErrorClass.ERROR_DEVICE);
+      .toBeInstanceOf(ButtplugDeviceException);
     await bp.SendDeviceMessage(bp.Devices[0], new VibrateCmd([new SpeedSubcommand(0, 1)]));
     expect(mockBT.txChar.writeValue).toBeCalledWith(new Uint8Array([0x0f, 0x03, 0x00, 0xff, 0x00, 0x03, 0x00, 0x00]));
     await bp.SendDeviceMessage(bp.Devices[0], new SingleMotorVibrateCmd(.5));
@@ -128,7 +128,7 @@ describe("WebBluetooth library tests", () => {
                                       new LinearCmd([new VectorSubcommand(0, 1, 1),
                                                      new VectorSubcommand(1, 1, 1)])))
       .rejects
-      .toHaveProperty("ErrorCode", ErrorClass.ERROR_DEVICE);
+      .toBeInstanceOf(ButtplugDeviceException);
     await bp.SendDeviceMessage(bp.Devices[0], new FleshlightLaunchFW12Cmd(99, 99));
     expect(mockBT.txChar.writeValue).toBeCalledWith(new Uint8Array([99, 99]));
     // We should expect to be at position 99 here, so calculate time and
@@ -148,7 +148,7 @@ describe("WebBluetooth library tests", () => {
                                       new RotateCmd([new RotateSubcommand(0, 1, true),
                                                      new RotateSubcommand(1, 1, false)])))
       .rejects
-      .toHaveProperty("ErrorCode", ErrorClass.ERROR_DEVICE);
+      .toBeInstanceOf(ButtplugDeviceException);
     await bp.SendDeviceMessage(bp.Devices[0], new RotateCmd([new RotateSubcommand(0, 1, true)]));
     expect(mockBT.txChar.writeValue).toBeCalledWith(new Uint8Array([0x01, 0x01, (100 | (0x80)) & 0xff]));
     await bp.SendDeviceMessage(bp.Devices[0], new VorzeA10CycloneCmd(50, false));

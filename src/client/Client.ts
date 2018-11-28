@@ -8,13 +8,13 @@ import { ButtplugBrowserWebsocketConnector } from "./ButtplugBrowserWebsocketCon
 import { ButtplugEmbeddedServerConnector } from "./ButtplugEmbeddedServerConnector";
 import * as Messages from "../core/Messages";
 import { CheckMessage } from "../core/MessageUtils";
+import { ButtplugDeviceException, ButtplugException, ButtplugInitException, ButtplugMessageException } from "../core/Exceptions";
+import { ButtplugClientConnectorException } from "./ButtplugClientConnectorException";
 
 export class ButtplugClient extends EventEmitter {
   protected _pingTimer: NodeJS.Timer | null = null;
   protected _connector: IButtplugConnector | null = null;
   protected _devices: Map<number, Device> = new Map();
-  protected _counter: number = 1;
-  protected _waitingMsgs: Map<number, (val: Messages.ButtplugMessage) => void> = new Map();
   protected _clientName: string;
   protected _logger = ButtplugLogger.Logger;
   protected _isScanning = false;
@@ -76,41 +76,43 @@ export class ButtplugClient extends EventEmitter {
     this._connector!.Disconnect();
   }
 
-  public StartScanning = async (): Promise<void> => {
+  public StartScanning = async () => {
     this._logger.Debug(`ButtplugClient: StartScanning called`);
     this._isScanning = true;
-    return await this.SendMsgExpectOk(new Messages.StartScanning());
+    await this.SendMsgExpectOk(new Messages.StartScanning());
   }
 
-  public StopScanning = async (): Promise<void> => {
+  public StopScanning = async () => {
     this._logger.Debug(`ButtplugClient: StopScanning called`);
     this._isScanning = false;
-    return await this.SendMsgExpectOk(new Messages.StopScanning());
+    await this.SendMsgExpectOk(new Messages.StopScanning());
   }
 
-  public RequestLog = async (aLogLevel: string): Promise<void> => {
+  public RequestLog = async (aLogLevel: string) => {
     this._logger.Debug(`ButtplugClient: RequestLog called with level ${aLogLevel}`);
-    return await this.SendMsgExpectOk(new Messages.RequestLog(aLogLevel));
+    await this.SendMsgExpectOk(new Messages.RequestLog(aLogLevel));
   }
 
-  public StopAllDevices = async (): Promise<void> => {
+  public StopAllDevices = async () => {
     this._logger.Debug(`ButtplugClient: StopAllDevices`);
-    return await this.SendMsgExpectOk(new Messages.StopAllDevices());
+    await this.SendMsgExpectOk(new Messages.StopAllDevices());
   }
 
-  public async SendDeviceMessage(aDevice: Device, aDeviceMsg: Messages.ButtplugDeviceMessage): Promise<void> {
+  public async SendDeviceMessage(aDevice: Device, aDeviceMsg: Messages.ButtplugDeviceMessage) {
     this.CheckConnector();
     const dev = this._devices.get(aDevice.Index);
     if (dev === undefined) {
-      this._logger.Error(`Device ${aDevice.Index} not available.`);
-      return Promise.reject(new Error("Device not available."));
+      throw ButtplugException.LogAndError(ButtplugDeviceException,
+                                          this._logger,
+                                          `Device ${aDevice.Index} not available.`);
     }
-    if (dev.AllowedMessages.indexOf(aDeviceMsg.Type) === -1) {
-      this._logger.Error(`Device ${aDevice.Name} does not accept message type ${aDeviceMsg.Type}.`);
-      return Promise.reject(new Error(`Device ${aDevice.Name} does not accept message type ${aDeviceMsg.Type}.`));
+    if (dev.AllowedMessages.indexOf(aDeviceMsg.Type.name) === -1) {
+      throw ButtplugException.LogAndError(ButtplugDeviceException,
+                                          this._logger,
+                                          `Device ${aDevice.Name} does not accept message type ${aDeviceMsg.Type}.`);
     }
     aDeviceMsg.DeviceIndex = aDevice.Index;
-    return await this.SendMsgExpectOk(aDeviceMsg);
+    await this.SendMsgExpectOk(aDeviceMsg);
   }
 
   public ParseMessages = (aMsgs: Messages.ButtplugMessage[]) => {
@@ -124,22 +126,17 @@ export class ButtplugClient extends EventEmitter {
 
   protected ParseMessagesInternal(aMsgs: Messages.ButtplugMessage[]) {
     for (const x of aMsgs) {
-      if (x.Id > 0 && this._waitingMsgs.has(x.Id)) {
-        const res = this._waitingMsgs.get(x.Id);
-        res!(x);
-        return;
-      }
-      switch (x.Type) {
-        case "Log":
+      switch (x.constructor) {
+        case Messages.Log:
           this.emit("log", x);
           break;
-        case "DeviceAdded":
+        case Messages.DeviceAdded:
           const addedMsg = x as Messages.DeviceAdded;
           const addedDevice = Device.fromMsg(addedMsg);
           this._devices.set(addedMsg.DeviceIndex, addedDevice);
           this.emit("deviceadded", addedDevice);
           break;
-        case "DeviceRemoved":
+        case Messages.DeviceRemoved:
           const removedMsg = x as Messages.DeviceRemoved;
           if (this._devices.has(removedMsg.DeviceIndex)) {
             const removedDevice = this._devices.get(removedMsg.DeviceIndex);
@@ -147,7 +144,7 @@ export class ButtplugClient extends EventEmitter {
             this.emit("deviceremoved", removedDevice);
           }
           break;
-        case "ScanningFinished":
+        case Messages.ScanningFinished:
           this._isScanning = false;
           this.emit("scanningfinished", x);
           break;
@@ -158,8 +155,8 @@ export class ButtplugClient extends EventEmitter {
   protected InitializeConnection = async (): Promise<boolean> => {
     this.CheckConnector();
     const msg = await this.SendMessage(new Messages.RequestServerInfo(this._clientName, 1));
-    switch (msg.Type) {
-      case "ServerInfo": {
+    switch (msg.constructor) {
+      case Messages.ServerInfo: {
         const serverinfo = msg as Messages.ServerInfo;
         this._logger.Info(`ButtplugClient: Connected to Server ${serverinfo.ServerName}`);
         // TODO: maybe store server name, do something with message template version?
@@ -167,7 +164,9 @@ export class ButtplugClient extends EventEmitter {
         if (serverinfo.MessageVersion < this._messageVersion) {
           // Disconnect and throw an exception explaining the version mismatch problem.
           this._connector!.Disconnect();
-          throw new Error("Server protocol version is older than client protocol version. Please update server.");
+          throw ButtplugException.LogAndError(ButtplugInitException,
+                                              this._logger,
+                                              "Server protocol version is older than client protocol version. Please update server.");
         }
         if (ping > 0) {
           this._pingTimer = setInterval(async () => {
@@ -176,20 +175,21 @@ export class ButtplugClient extends EventEmitter {
               await this.ShutdownConnection();
               return;
             }
-            this.SendMessage(new Messages.Ping(this._counter));
+            this.SendMessage(new Messages.Ping());
           } , Math.round(ping / 2));
         }
         await this.RequestDeviceList();
         return true;
       }
-      case "Error": {
-        const err = msg as Messages.Error;
-        this._logger.Error(`ButtplugClient: Cannot connect to server. ${err.ErrorMessage}`);
+      case Messages.Error: {
         // Disconnect and throw an exception with the error message we got back.
         // This will usually only error out if we have a version mismatch that the
         // server has detected.
         this._connector!.Disconnect();
-        throw new Error((msg as Messages.Error).ErrorMessage);
+        const err = msg as Messages.Error;
+        throw ButtplugException.LogAndError(ButtplugInitException,
+                                            this._logger,
+                                            `Cannot connect to server. ${err.ErrorMessage}`);
       }
     }
     return false;
@@ -223,34 +223,26 @@ export class ButtplugClient extends EventEmitter {
     this.CheckConnector();
     // This will throw if our message is invalid
     CheckMessage(aMsg);
-    let res;
-    aMsg.Id = this._counter;
-    const msgPromise = new Promise<Messages.ButtplugMessage>((resolve) => { res = resolve; });
-    this._waitingMsgs.set(this._counter, res);
-    this._counter += 1;
-    this._connector!.Send(aMsg);
-    return await msgPromise;
+    return await this._connector!.Send(aMsg);
   }
 
   protected CheckConnector() {
     if (!this.Connected) {
-      throw new Error("ButtplugClient not connected");
+      throw new ButtplugClientConnectorException("ButtplugClient not connected");
     }
   }
 
-  protected SendMsgExpectOk = async (aMsg: Messages.ButtplugMessage): Promise<void> => {
-    let res;
-    let rej;
+  protected SendMsgExpectOk = async (aMsg: Messages.ButtplugMessage) => {
     const msg = await this.SendMessage(aMsg);
-    const p = new Promise<void>((resolve, reject) => { res = resolve; rej = reject; });
-    switch (msg.Type) {
-      case "Ok":
-        res();
-        break;
+    switch (msg.constructor) {
+      case Messages.Ok:
+        return;
+      case Messages.Error:
+        throw ButtplugException.FromError(msg as Messages.Error);
       default:
-        rej(msg);
-        break;
+        throw ButtplugException.LogAndError(ButtplugMessageException,
+                                            this._logger,
+                                            `Message type ${msg.constructor} not handled bySendMsgExpectOk`);
     }
-    return p;
   }
 }

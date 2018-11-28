@@ -4,6 +4,7 @@ import { IBluetoothDeviceImpl } from "../IBluetoothDeviceImpl";
 import * as Messages from "../../../core/Messages";
 import * as MessageUtils from "../../../core/MessageUtils";
 import { RotateSubcommand } from "../../../core/Messages";
+import { ButtplugDeviceException } from "../../../core/Exceptions";
 
 export class Lovense extends ButtplugBluetoothDevice {
   public static readonly DeviceInfo = (() => {
@@ -85,9 +86,9 @@ export class Lovense extends ButtplugBluetoothDevice {
 
     this._name = `Lovense ${Lovense._deviceNames[deviceLetter]} v${deviceVersion}`;
 
-    this.MsgFuncs.set(Messages.StopDeviceCmd.name, this.HandleStopDeviceCmd);
-    this.MsgFuncs.set(Messages.VibrateCmd.name, this.HandleVibrateCmd);
-    this.MsgFuncs.set(Messages.SingleMotorVibrateCmd.name, this.HandleSingleMotorVibrateCmd);
+    this.MsgFuncs.set(Messages.StopDeviceCmd, this.HandleStopDeviceCmd);
+    this.MsgFuncs.set(Messages.VibrateCmd, this.HandleVibrateCmd);
+    this.MsgFuncs.set(Messages.SingleMotorVibrateCmd, this.HandleSingleMotorVibrateCmd);
 
     if (deviceLetter === "P") {
       // Edge has 2 motors
@@ -95,7 +96,7 @@ export class Lovense extends ButtplugBluetoothDevice {
     } else if (deviceLetter === "A" || deviceLetter === "C") {
       // Nora has rotation
       this._specs.RotateCmd = { FeatureCount: 1 };
-      this.MsgFuncs.set(Messages.RotateCmd.name, this.HandleRotateCmd);
+      this.MsgFuncs.set(Messages.RotateCmd, this.HandleRotateCmd);
     }
   }
 
@@ -130,11 +131,10 @@ export class Lovense extends ButtplugBluetoothDevice {
 
   private HandleVibrateCmd = async (aMsg: Messages.VibrateCmd): Promise<Messages.ButtplugMessage> => {
     if (aMsg.Speeds.length > this._specs.VibrateCmd.FeatureCount) {
-      return new Messages.Error(`Lovense devices require VibrateCmd to have at most ` +
-                                `${this._specs.VibrateCmd.FeatureCount} speed commands, ` +
-                                `${aMsg.Speeds.length} sent.`,
-                                Messages.ErrorClass.ERROR_DEVICE,
-                                aMsg.Id);
+      throw new ButtplugDeviceException(`Lovense devices require VibrateCmd to have at most ` +
+                                        `${this._specs.VibrateCmd.FeatureCount} speed commands, ` +
+                                        `${aMsg.Speeds.length} sent.`,
+                                        aMsg.Id);
     }
     for (const cmd of aMsg.Speeds) {
       const index = this._specs.VibrateCmd.FeatureCount > 1 ? (cmd.Index + 1).toString(10) : "";
@@ -146,14 +146,13 @@ export class Lovense extends ButtplugBluetoothDevice {
 
   private HandleRotateCmd = async (aMsg: Messages.RotateCmd): Promise<Messages.ButtplugMessage> => {
     if (aMsg.Rotations.length !== 1) {
-      return new Messages.Error(`Lovense devices require RotateCmd to have 1 rotate command, ` +
-                                `${aMsg.Rotations.length} sent.`,
-                                Messages.ErrorClass.ERROR_DEVICE,
-                                aMsg.Id);
+      throw new ButtplugDeviceException(`Lovense devices require RotateCmd to have 1 rotate command, ` +
+                                        `${aMsg.Rotations.length} sent.`,
+                                        aMsg.Id);
     }
     const rotateCmd = aMsg.Rotations[0];
     if (rotateCmd.Index !== 0) {
-      return new Messages.Error("Rotation command sent for invalid index.");
+      throw new ButtplugDeviceException("Rotation command sent for invalid index.");
     }
     if (rotateCmd.Clockwise !== this._isClockwise) {
       await this._deviceImpl.WriteString("tx", "RotateChange;");

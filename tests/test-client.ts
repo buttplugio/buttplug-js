@@ -3,6 +3,7 @@ import { Device, ButtplugClient, FromJSON, ButtplugLogger, CheckMessage,
 import { TestDeviceManager, CreateDevToolsClient } from "../src/devtools/index";
 import * as Messages from "../src/core/Messages";
 import { BPTestClient, SetupTestSuite, SetupTestServer } from "./utils";
+import { ButtplugMessageException, ButtplugDeviceException } from "../src/core/Exceptions";
 
 SetupTestSuite();
 
@@ -23,9 +24,9 @@ describe("Client Tests", async () => {
 
   it("Should return a test message.", async () => {
     const bp = await SetupServer();
-    await expect(bp.SendCheckedMessage(new Messages.Test("Test")))
+    await expect(bp.SendMessage(new Messages.Test("Test")))
       .resolves
-      .toEqual(new Messages.Test("Test", 3));
+      .toEqual(new Messages.Test("Test"));
   });
 
   it("Should emit a log message on requestlog (testing basic event emitters)", async () => {
@@ -104,7 +105,7 @@ describe("Client Tests", async () => {
         rej();
       }
 
-      expect(await bp.SendDeviceMessage(bp.Devices[0], new Messages.KiirooCmd("2"))).toThrow();
+      await expect(bp.SendDeviceMessage(bp.Devices[0], new Messages.KiirooCmd("2"))).rejects.toBeInstanceOf(ButtplugDeviceException);
       res();
     });
     await bp.StartScanning();
@@ -115,10 +116,8 @@ describe("Client Tests", async () => {
     const bp: ButtplugClient = (await SetupTestServer()).Client;
     bp.on("scanningfinished", async (x) => {
       expect(bp.Devices.length).toBeGreaterThan(0);
-      process.nextTick(async () => {
-        expect(await bp.SendDeviceMessage(bp.Devices[0], new Messages.SingleMotorVibrateCmd(50))).toThrow();
-        res();
-      });
+      await expect(bp.SendDeviceMessage(bp.Devices[0], new Messages.SingleMotorVibrateCmd(50))).rejects.toBeInstanceOf(ButtplugMessageException);
+      res();
     });
     await bp.StartScanning();
     return p;
@@ -145,11 +144,7 @@ describe("Client Tests", async () => {
 
   it("Should get error on scanning when no device managers available.", async () => {
     const bplocal = new ButtplugClient("Test Client");
-    bplocal.addListener("disconnect", () => { res(); });
     await bplocal.ConnectLocal();
-    await expect(bplocal.StartScanning())
-      .rejects
-      .toHaveProperty("ErrorCode", Messages.ErrorClass.ERROR_DEVICE);
-    bplocal.Disconnect();
+    await expect(bplocal.StartScanning()).rejects.toBeInstanceOf(ButtplugDeviceException);
   });
 });

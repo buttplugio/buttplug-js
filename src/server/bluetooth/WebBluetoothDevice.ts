@@ -1,4 +1,5 @@
 import { ButtplugLogger } from "../../core/Logging";
+import { ButtplugException, ButtplugDeviceException } from "../../core/Exceptions";
 import { IBluetoothDeviceImpl } from "./IBluetoothDeviceImpl";
 import { BluetoothDeviceInfo } from "./BluetoothDeviceInfo";
 import { ButtplugBluetoothDevice } from "./ButtplugBluetoothDevice";
@@ -52,8 +53,9 @@ export class WebBluetoothDevice extends EventEmitter implements IBluetoothDevice
     // running getPrimaryServices
     const services = await this._server.getPrimaryServices();
     if (services.length === 0) {
-      this._logger.Error(`Cannot find gatt service to connect to on device ${this._device.name}`);
-      throw new Error(`Cannot find gatt service to connect to on device ${this._device.name}`);
+      throw ButtplugException.LogAndError(ButtplugDeviceException,
+                                          this._logger,
+                                          `Cannot find gatt service to connect to on device ${this._device.name}`);
     }
 
     // For now, we assume we're only using one service on each device. This will
@@ -108,7 +110,9 @@ export class WebBluetoothDevice extends EventEmitter implements IBluetoothDevice
 
   public WriteValue = async (aCharacteristic: string, aValue: Uint8Array): Promise<void> => {
     if (!this._characteristics.has(aCharacteristic)) {
-      throw new Error("Tried to access wrong characteristic!");
+      throw ButtplugException.LogAndError(ButtplugDeviceException,
+                                          this._logger,
+                                          "Tried to access wrong characteristic!");
     }
     const chr = this._characteristics.get(aCharacteristic)!;
     this._logger.Trace(`WebBluetoothDevice: ${this.constructor.name} writing ${aValue} to ${chr.uuid}`);
@@ -122,7 +126,9 @@ export class WebBluetoothDevice extends EventEmitter implements IBluetoothDevice
 
   public ReadValue = async (aCharacteristic: string): Promise<BufferSource> => {
     if (!this._characteristics.has(aCharacteristic)) {
-      throw new Error("Tried to access wrong characteristic!");
+      throw ButtplugException.LogAndError(ButtplugDeviceException,
+                                          this._logger,
+                                          "Tried to access wrong characteristic!");
     }
     const chr = this._characteristics.get(aCharacteristic)!;
     this._logger.Trace(`WebBluetoothDevice: ${this.constructor.name} reading from ${chr.uuid}`);
@@ -131,10 +137,14 @@ export class WebBluetoothDevice extends EventEmitter implements IBluetoothDevice
 
   public Subscribe = async (aCharacteristic: string): Promise<void> => {
     if (!this._characteristics.has(aCharacteristic)) {
-      throw new Error("Tried to access wrong characteristic!");
+      throw ButtplugException.LogAndError(ButtplugDeviceException,
+                                          this._logger,
+                                          "Tried to access wrong characteristic!");
     }
     if (this._notificationHandlers.has(aCharacteristic)) {
-      throw new Error("Already listening on this characteristic!");
+      throw ButtplugException.LogAndError(ButtplugDeviceException,
+                                          this._logger,
+                                          "Already listening on this characteristic!");
     }
     const chr = this._characteristics.get(aCharacteristic)!;
     this._logger.Trace(`WebBluetoothDevice: ${this.constructor.name} subscribing to updates from ${chr.uuid}`);
@@ -147,10 +157,14 @@ export class WebBluetoothDevice extends EventEmitter implements IBluetoothDevice
 
   public Unsubscribe = async (aCharacteristic: string): Promise<void> => {
     if (!this._characteristics.has(aCharacteristic)) {
-      throw new Error("Tried to access wrong characteristic!");
+      throw ButtplugException.LogAndError(ButtplugDeviceException,
+                                          this._logger,
+                                          "Tried to access wrong characteristic!");
     }
     if (!this._notificationHandlers.has(aCharacteristic)) {
-      throw new Error("Not listening on this characteristic!");
+      throw ButtplugException.LogAndError(ButtplugDeviceException,
+                                          this._logger,
+                                          "Not listening on this characteristic!");
     }
     const chr = this._characteristics.get(aCharacteristic)!;
     this._logger.Trace(`WebBluetoothDevice: ${this.constructor.name} unsubscribing to updates from ${chr.uuid}`);

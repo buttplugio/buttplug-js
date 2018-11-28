@@ -133,16 +133,6 @@ export class ButtplugLogger extends EventEmitter {
   }
 
   /**
-   * Log a message, then create a Error buttplug message with the log message.
-   * Used when an operation has errored out and status needs to be both logged
-   * and returned to the client as an Error Message type.
-   */
-  public LogAndError(aMsg: string, aErrorClass: Messages.ErrorClass, aMsgId: number): Messages.ButtplugMessage {
-    this.Error(aMsg);
-    return new Messages.Error(aMsg, aErrorClass, aMsgId);
-  }
-
-  /**
    * Log new message at Fatal level.
    */
   public Fatal(aMsg: string) {

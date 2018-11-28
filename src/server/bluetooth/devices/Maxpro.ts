@@ -1,8 +1,8 @@
-
 import { BluetoothDeviceInfo } from "../BluetoothDeviceInfo";
 import { ButtplugBluetoothDevice } from "../ButtplugBluetoothDevice";
 import { IBluetoothDeviceImpl } from "../IBluetoothDeviceImpl";
 import * as Messages from "../../../core/Messages";
+import { ButtplugDeviceException } from "../../../core/Exceptions";
 
 export class Maxpro extends ButtplugBluetoothDevice {
   public static readonly DeviceInfo = new BluetoothDeviceInfo(["M2"],
@@ -17,9 +17,9 @@ export class Maxpro extends ButtplugBluetoothDevice {
 
   public constructor(aDeviceImpl: IBluetoothDeviceImpl) {
     super(`Maxpro ${aDeviceImpl.Name}` , aDeviceImpl);
-    this.MsgFuncs.set(Messages.StopDeviceCmd.name, this.HandleStopDeviceCmd);
-    this.MsgFuncs.set(Messages.SingleMotorVibrateCmd.name, this.HandleSingleMotorVibrateCmd);
-    this.MsgFuncs.set(Messages.VibrateCmd.name, this.HandleVibrateCmd);
+    this.MsgFuncs.set(Messages.StopDeviceCmd, this.HandleStopDeviceCmd);
+    this.MsgFuncs.set(Messages.SingleMotorVibrateCmd, this.HandleSingleMotorVibrateCmd);
+    this.MsgFuncs.set(Messages.VibrateCmd, this.HandleVibrateCmd);
   }
 
   public get MessageSpecifications(): object {
@@ -32,10 +32,9 @@ export class Maxpro extends ButtplugBluetoothDevice {
 
   private HandleVibrateCmd = async (aMsg: Messages.VibrateCmd): Promise<Messages.ButtplugMessage> => {
     if (aMsg.Speeds.length !== 1) {
-      return new Messages.Error(`Maxpro devices require VibrateCmd to have 1 speed command, ` +
-                                `${aMsg.Speeds.length} sent.`,
-                                Messages.ErrorClass.ERROR_DEVICE,
-                                aMsg.Id);
+      throw new ButtplugDeviceException(`Maxpro devices require VibrateCmd to have 1 speed command, ` +
+                                        `${aMsg.Speeds.length} sent.`,
+                                        aMsg.Id);
     }
     return await this.HandleSingleMotorVibrateCmd(new Messages.SingleMotorVibrateCmd(aMsg.Speeds[0].Speed,
                                                                                      aMsg.DeviceIndex,

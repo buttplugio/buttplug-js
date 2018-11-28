@@ -15,17 +15,17 @@ export class TestDevice extends ButtplugDevice {
                      shouldLinear: boolean = false,
                      shouldRotate: boolean = false) {
     super(`Test Device - ${name}`, "TestDevice" + (shouldVibrate ? "Vibrate" : "") + (shouldLinear ? "Linear" : ""));
-    this.MsgFuncs.set(Messages.StopDeviceCmd.name, this.HandleStopDeviceCmd);
+    this.MsgFuncs.set(Messages.StopDeviceCmd, this.HandleStopDeviceCmd);
     if (shouldVibrate) {
-      this.MsgFuncs.set(Messages.SingleMotorVibrateCmd.name, this.HandleSingleMotorVibrateCmd);
-      this.MsgFuncs.set(Messages.VibrateCmd.name, this.HandleVibrateCmd);
+      this.MsgFuncs.set(Messages.SingleMotorVibrateCmd, this.HandleSingleMotorVibrateCmd);
+      this.MsgFuncs.set(Messages.VibrateCmd, this.HandleVibrateCmd);
     }
     if (shouldLinear) {
-      this.MsgFuncs.set(Messages.FleshlightLaunchFW12Cmd.name, this.HandleFleshlightLaunchFW12Cmd);
-      this.MsgFuncs.set(Messages.LinearCmd.name, this.HandleLinearCmd);
+      this.MsgFuncs.set(Messages.FleshlightLaunchFW12Cmd, this.HandleFleshlightLaunchFW12Cmd);
+      this.MsgFuncs.set(Messages.LinearCmd, this.HandleLinearCmd);
     }
     if (shouldRotate) {
-      this.MsgFuncs.set(Messages.RotateCmd.name, this.HandleRotateCmd);
+      this.MsgFuncs.set(Messages.RotateCmd, this.HandleRotateCmd);
     }
   }
 
@@ -38,19 +38,19 @@ export class TestDevice extends ButtplugDevice {
   }
 
   public get MessageSpecifications(): object {
-    if (this.MsgFuncs.has(Messages.VibrateCmd.name)) {
+    if (this.MsgFuncs.has(Messages.VibrateCmd)) {
       return {
         VibrateCmd: { FeatureCount: 2 },
         SingleMotorVibrateCmd: {},
         StopDeviceCmd: {},
       };
-    } else if (this.MsgFuncs.has(Messages.LinearCmd.name)) {
+    } else if (this.MsgFuncs.has(Messages.LinearCmd)) {
       return {
         LinearCmd: { FeatureCount: 1 },
         FleshlightLaunchFW12Cmd: {},
         StopDeviceCmd: {},
       };
-    } else if (this.MsgFuncs.has(Messages.RotateCmd.name)) {
+    } else if (this.MsgFuncs.has(Messages.RotateCmd)) {
       return {
         RotateCmd: { FeatureCount: 1 },
         StopDeviceCmd: {},
@@ -65,9 +65,9 @@ export class TestDevice extends ButtplugDevice {
   }
 
   private HandleStopDeviceCmd = async (aMsg: Messages.StopDeviceCmd): Promise<Messages.ButtplugMessage> => {
-    if (this.MsgFuncs.has(Messages.VibrateCmd.name)) {
+    if (this.MsgFuncs.has(Messages.VibrateCmd)) {
       this.emit("vibrate", 0);
-    } else if (this.MsgFuncs.has(Messages.LinearCmd.name)) {
+    } else if (this.MsgFuncs.has(Messages.LinearCmd)) {
       this.emit("linear", { position: this._linearPosition,
                             speed: this._linearSpeed});
     }

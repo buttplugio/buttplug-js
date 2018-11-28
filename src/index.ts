@@ -5,6 +5,7 @@ export * from "./core/Messages";
 export * from "./core/MessageUtils";
 export * from "./core/Device";
 export * from "./core/Logging";
+export * from "./core/Exceptions";
 export * from "./server/ButtplugServer";
 export * from "./server/ButtplugDevice";
 export * from "./server/IDeviceSubtypeManager";

@@ -5,19 +5,19 @@ import { BPTestClient, SetupTestSuite, WebBluetoothMockObject, MakeMockWebBlueto
          SetupLovenseTestDevice } from "./utils";
 import { VibrateCmd, SpeedSubcommand, ErrorClass } from "../src/index";
 import { Lovense } from "../src/server/bluetooth/devices/Lovense";
+import { ButtplugDeviceException } from "../src/core/Exceptions";
 
 SetupTestSuite();
 
 describe("WebBluetooth library tests", () => {
   let p;
   let res;
-  let rej;
   let bp: ButtplugClient;
   let mockBT: WebBluetoothMockObject;
   let bluetooth: WebBluetoothMock;
 
   beforeEach(async () => {
-    p = new Promise((resolve, reject) => { res = resolve; rej = reject; });
+    p = new Promise((resolve) => { res = resolve; });
     // We assume we're using a lovense device for all tests here so set it up.
     mockBT = MakeMockWebBluetoothDevice(Lovense.DeviceInfo);
     SetupLovenseTestDevice(mockBT);
@@ -56,7 +56,7 @@ describe("WebBluetooth library tests", () => {
   it("should stop scanning on requestdevice being cancelled", async () => {
     bp.on("scanningfinished", () => res());
     bluetooth.requestDevice = () => {
-      throw new Error("User cancelled");
+      throw new ButtplugDeviceException("User cancelled");
     };
     await bp.StartScanning();
     return p;
@@ -65,10 +65,10 @@ describe("WebBluetooth library tests", () => {
   it("should stop scanning on device not opening", async () => {
     bp.on("scanningfinished", () => res());
     mockBT.gatt.connect = () => {
-      throw new Error("Connection error");
+      throw new Error("Injected connection error");
     };
     // Make sure we at least have the right error code. Id and message may vary.
-    await expect(bp.StartScanning()).rejects.toHaveProperty("ErrorCode", ErrorClass.ERROR_DEVICE);
+    await expect(bp.StartScanning()).rejects.toEqual(new Error("Cannot open device LVS-test: Error: Injected connection error"));
     return p;
   });
 

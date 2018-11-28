@@ -29,15 +29,15 @@ export abstract class ButtplugMessage {
    * and DeviceAddedVersion1), we will need to override this to set the message
    * name.
    */
-  public get Type(): string {
-    return this.constructor.name;
+  public get Type(): Function {
+    return this.constructor;
   }
 
   /***
    * [DEPRECATED] Function version of the this.Type getter
    *
    */
-  public getType(): string {
+  public getType(): Function {
     return this.Type;
   }
 
@@ -47,7 +47,7 @@ export abstract class ButtplugMessage {
 
   public toProtocolFormat(): object {
     const jsonObj = {};
-    jsonObj[this.Type] = classToPlain(this);
+    jsonObj[this.Type.name] = classToPlain(this);
     return jsonObj;
   }
 }
@@ -66,7 +66,7 @@ export abstract class ButtplugSystemMessage extends ButtplugMessage {
 }
 
 export class Ok extends ButtplugSystemMessage {
-  constructor(public Id: number) {
+  constructor(public Id: number = DEFAULT_MESSAGE_ID) {
     super(Id);
   }
 
@@ -75,7 +75,7 @@ export class Ok extends ButtplugSystemMessage {
 }
 
 export class Ping extends ButtplugMessage {
-  constructor(public Id: number) {
+  constructor(public Id: number = DEFAULT_MESSAGE_ID) {
     super(Id);
   }
 
@@ -128,8 +128,8 @@ export class DeviceListVersion0 extends ButtplugSystemMessage {
     super();
   }
 
-  public get Type(): string {
-    return "DeviceList";
+  public get Type(): Function {
+    return DeviceList.constructor;
   }
   get SchemaVersion() { return 0; }
 }
@@ -141,14 +141,10 @@ export class DeviceInfoWithSpecifications {
   }
 }
 
-export class DeviceListVersion1 extends ButtplugSystemMessage {
+export class DeviceList extends ButtplugSystemMessage {
   constructor(public Devices: DeviceInfoWithSpecifications[],
               public Id: number) {
     super();
-  }
-
-  public get Type(): string {
-    return "DeviceList";
   }
 
   public DowngradeMessage(): ButtplugMessage {
@@ -173,21 +169,21 @@ export class DeviceAddedVersion0 extends ButtplugSystemMessage {
     super();
   }
 
-  public get Type(): string {
-    return "DeviceAdded";
+  // This is used to fool our type checkers into thinking we're the canonical
+  // version of the message. Gross, but necessary unless we want to use strings
+  // (which we don't).
+  public get Type(): Function {
+    return DeviceAdded.constructor;
   }
+
   get SchemaVersion() { return 0; }
 }
 
-export class DeviceAddedVersion1 extends ButtplugSystemMessage {
+export class DeviceAdded extends ButtplugSystemMessage {
   constructor(public DeviceIndex: number,
               public DeviceName: string,
               public DeviceMessages: object) {
     super();
-  }
-
-  public get Type(): string {
-    return "DeviceAdded";
   }
 
   get SchemaVersion() { return 1; }
@@ -421,6 +417,3 @@ export class MessageAttributes {
   constructor(public FeatureCount: number) {
   }
 }
-
-export { DeviceListVersion1 as DeviceList };
-export { DeviceAddedVersion1 as DeviceAdded };

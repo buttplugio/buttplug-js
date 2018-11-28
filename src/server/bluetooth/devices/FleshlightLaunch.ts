@@ -2,6 +2,7 @@ import { BluetoothDeviceInfo } from "../BluetoothDeviceInfo";
 import { ButtplugBluetoothDevice } from "../ButtplugBluetoothDevice";
 import { IBluetoothDeviceImpl } from "../IBluetoothDeviceImpl";
 import * as Messages from "../../../core/Messages";
+import { ButtplugException, ButtplugDeviceException } from "../../../core/Exceptions";
 
 export class FleshlightLaunch extends ButtplugBluetoothDevice {
   public static readonly DeviceInfo = new BluetoothDeviceInfo(["Launch"],
@@ -23,9 +24,9 @@ export class FleshlightLaunch extends ButtplugBluetoothDevice {
 
   public constructor(aDeviceImpl: IBluetoothDeviceImpl) {
     super("Fleshlight Launch", aDeviceImpl);
-    this.MsgFuncs.set(Messages.StopDeviceCmd.name, this.HandleStopDeviceCmd);
-    this.MsgFuncs.set(Messages.FleshlightLaunchFW12Cmd.name, this.HandleFleshlightLaunchFW12Cmd);
-    this.MsgFuncs.set(Messages.LinearCmd.name, this.HandleLinearCmd);
+    this.MsgFuncs.set(Messages.StopDeviceCmd, this.HandleStopDeviceCmd);
+    this.MsgFuncs.set(Messages.FleshlightLaunchFW12Cmd, this.HandleFleshlightLaunchFW12Cmd);
+    this.MsgFuncs.set(Messages.LinearCmd, this.HandleLinearCmd);
   }
 
   public Initialize =
@@ -59,9 +60,8 @@ export class FleshlightLaunch extends ButtplugBluetoothDevice {
   private HandleLinearCmd =
     async (aMsg: Messages.LinearCmd): Promise<Messages.ButtplugMessage> => {
       if (aMsg.Vectors.length !== 1) {
-        return new Messages.Error("LinearCmd requires 1 vector for this device.",
-                                  Messages.ErrorClass.ERROR_DEVICE,
-                                  aMsg.Id);
+        throw new ButtplugDeviceException("LinearCmd requires 1 vector for this device.",
+                                          aMsg.Id);
       }
       // Move between 5/95, otherwise we'll allow the device to smack into hard
       // stops because of braindead firmware.
