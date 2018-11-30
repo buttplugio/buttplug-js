@@ -2,7 +2,7 @@
 
 import { ButtplugLogger } from "../core/Logging";
 import { EventEmitter } from "events";
-import { Device } from "../core/Device";
+import { ButtplugClientDevice } from "./ButtplugClientDevice";
 import { IButtplugConnector } from "./IButtplugConnector";
 import { ButtplugBrowserWebsocketConnector } from "./ButtplugBrowserWebsocketConnector";
 import { ButtplugEmbeddedServerConnector } from "./ButtplugEmbeddedServerConnector";
@@ -14,7 +14,7 @@ import { ButtplugClientConnectorException } from "./ButtplugClientConnectorExcep
 export class ButtplugClient extends EventEmitter {
   protected _pingTimer: NodeJS.Timer | null = null;
   protected _connector: IButtplugConnector | null = null;
-  protected _devices: Map<number, Device> = new Map();
+  protected _devices: Map<number, ButtplugClientDevice> = new Map();
   protected _clientName: string;
   protected _logger = ButtplugLogger.Logger;
   protected _isScanning = false;
@@ -35,11 +35,11 @@ export class ButtplugClient extends EventEmitter {
     return this._connector !== null && this._connector.Connected;
   }
 
-  public get Devices(): Device[] {
+  public get Devices(): ButtplugClientDevice[] {
     // While this function doesn't actually send a message, if we don't have a
     // connector, we shouldn't have devices.
     this.CheckConnector();
-    const devices: Device[] = [];
+    const devices: ButtplugClientDevice[] = [];
     this._devices.forEach((d, i) => {
       devices.push(d);
     });
@@ -98,7 +98,7 @@ export class ButtplugClient extends EventEmitter {
     await this.SendMsgExpectOk(new Messages.StopAllDevices());
   }
 
-  public async SendDeviceMessage(aDevice: Device, aDeviceMsg: Messages.ButtplugDeviceMessage) {
+  public async SendDeviceMessage(aDevice: ButtplugClientDevice, aDeviceMsg: Messages.ButtplugDeviceMessage) {
     this.CheckConnector();
     const dev = this._devices.get(aDevice.Index);
     if (dev === undefined) {
@@ -132,7 +132,7 @@ export class ButtplugClient extends EventEmitter {
           break;
         case Messages.DeviceAdded:
           const addedMsg = x as Messages.DeviceAdded;
-          const addedDevice = Device.fromMsg(addedMsg);
+          const addedDevice = ButtplugClientDevice.fromMsg(addedMsg);
           this._devices.set(addedMsg.DeviceIndex, addedDevice);
           this.emit("deviceadded", addedDevice);
           break;
@@ -201,7 +201,7 @@ export class ButtplugClient extends EventEmitter {
     const deviceList = (await this.SendMessage(new Messages.RequestDeviceList())) as Messages.DeviceList;
     deviceList.Devices.forEach((d) => {
       if (!this._devices.has(d.DeviceIndex)) {
-        const device = Device.fromMsg(d);
+        const device = ButtplugClientDevice.fromMsg(d);
         this._logger.Debug(`ButtplugClient: Adding Device: ${device}`);
         this._devices.set(d.DeviceIndex, device);
         this.emit("deviceadded", device);

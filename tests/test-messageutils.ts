@@ -1,19 +1,19 @@
 import { SetupTestSuite } from "./utils";
 import { CreateSimpleLinearCmd, CreateSimpleVibrateCmd, CreateSimpleRotateCmd,
-         Device, VibrateCmd, RotateCmd, LinearCmd, VectorSubcommand,
+         ButtplugClientDevice, VibrateCmd, RotateCmd, LinearCmd, VectorSubcommand,
          RotateSubcommand, SpeedSubcommand } from "../src/index";
 
 SetupTestSuite();
 
 describe("Message Utils Tests", () => {
 
-  const testVibrateDevice = new Device(0, "Test Vibrate Device", {
+  const testVibrateDevice = new ButtplugClientDevice(0, "Test Vibrate Device", {
     VibrateCmd: { FeatureCount: 2 },
   });
-  const testRotateDevice = new Device(0, "Test Rotate Device", {
+  const testRotateDevice = new ButtplugClientDevice(0, "Test Rotate Device", {
     RotateCmd: { FeatureCount: 1 },
   });
-  const testLinearDevice = new Device(0, "Test Linear Device", {
+  const testLinearDevice = new ButtplugClientDevice(0, "Test Linear Device", {
     LinearCmd: { FeatureCount: 1 },
   });
 

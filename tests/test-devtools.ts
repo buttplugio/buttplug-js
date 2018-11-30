@@ -2,7 +2,7 @@ import { SetupTestSuite, SetupTestServer } from "./utils";
 import { TestDeviceManager, CreateDevToolsClient } from "../src/devtools/index";
 import { SingleMotorVibrateCmd, FleshlightLaunchFW12Cmd, LinearCmd, VibrateCmd,
          SpeedSubcommand, VectorSubcommand, ButtplugServer, ButtplugEmbeddedServerConnector,
-         ButtplugClient, Device } from "../src/index";
+         ButtplugClient, ButtplugClientDevice } from "../src/index";
 
 describe("devtools tests", () => {
   let p;
@@ -91,7 +91,7 @@ describe("devtools tests", () => {
     testDeviceManager.ConnectVibrationDevice();
 
     const buttplug = new ButtplugClient("Test Name");
-    buttplug.addListener("deviceadded", (d: Device) => {
+    buttplug.addListener("deviceadded", (d: ButtplugClientDevice) => {
       expect(d.AllowedMessages).toEqual(["VibrateCmd", "SingleMotorVibrateCmd", "StopDeviceCmd"]);
       res();
     });

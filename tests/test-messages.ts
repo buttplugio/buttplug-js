@@ -1,7 +1,8 @@
 import * as Messages from "../src/core/Messages";
 import { ButtplugClient } from "../src/client/Client";
-import { FromJSON, CreateSimpleVibrateCmd, CreateSimpleLinearCmd,
-         CreateSimpleRotateCmd } from "../src/core/MessageUtils";
+import { FromJSON } from "../src/core/MessageUtils";
+import { CreateSimpleVibrateCmd, CreateSimpleLinearCmd,
+         CreateSimpleRotateCmd } from "../src/client/Utils";
 import { SetupTestSuite, SetupTestServer } from "./utils";
 import { SpeedSubcommand, VectorSubcommand, RotateSubcommand } from "../src/core/Messages";
 

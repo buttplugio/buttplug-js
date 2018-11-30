@@ -1,4 +1,4 @@
-import { Device, ButtplugClient, FromJSON, ButtplugLogger, CheckMessage,
+import { ButtplugClientDevice, ButtplugClient, FromJSON, ButtplugLogger, CheckMessage,
          ButtplugLogLevel, ButtplugServer, ButtplugEmbeddedServerConnector } from "../src/index";
 import { TestDeviceManager, CreateDevToolsClient } from "../src/devtools/index";
 import * as Messages from "../src/core/Messages";
