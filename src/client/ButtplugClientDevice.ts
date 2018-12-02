@@ -138,7 +138,7 @@ export class ButtplugClientDevice {
 
   public async SendFleshlightLaunchFW12Cmd(aSpeed: number, aPosition: number) {
     this.CheckAllowedMessageType(Messages.FleshlightLaunchFW12Cmd.name);
-    await this.SendMessageAsync(new Messages.FleshlightLaunchFW12Cmd(this._index, aSpeed, aPosition));
+    await this.SendMessageAsync(new Messages.FleshlightLaunchFW12Cmd(aSpeed, aPosition, this._index));
   }
 
   public async SendLovenseCmd(aDeviceCmd: string) {
@@ -151,13 +151,13 @@ export class ButtplugClientDevice {
     await this.SendMessageAsync(new Messages.VorzeA10CycloneCmd(aSpeed, aClockwise, this._index));
   }
 
-  public async StopDeviceCmd() {
+  public async SendStopDeviceCmd() {
     // Every message should support this, but it doesn't hurt to check
     this.CheckAllowedMessageType(Messages.StopDeviceCmd.name);
     await this.SendMessageAsync(new Messages.StopDeviceCmd(this._index));
   }
 
-  public async KiirooCmd(aPosition: number) {
+  public async SendKiirooCmd(aPosition: number) {
     this.CheckAllowedMessageType(Messages.KiirooCmd.name);
     await this.SendMessageAsync(new Messages.KiirooCmd(aPosition, this._index));
   }
