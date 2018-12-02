@@ -1,8 +1,6 @@
 import * as Messages from "../src/core/Messages";
 import { ButtplugClient } from "../src/client/Client";
 import { FromJSON } from "../src/core/MessageUtils";
-import { CreateSimpleVibrateCmd, CreateSimpleLinearCmd,
-         CreateSimpleRotateCmd } from "../src/client/Utils";
 import { SetupTestSuite, SetupTestServer } from "./utils";
 import { SpeedSubcommand, VectorSubcommand, RotateSubcommand } from "../src/core/Messages";
 
@@ -49,7 +47,7 @@ describe("Message", () => {
        expect(FromJSON(jsonStr)[0].constructor.name).toEqual("KiirooCmd");
        const msg = FromJSON(jsonStr)[0];
        expect((msg as Messages.KiirooCmd).Command).toEqual("3");
-       expect((msg as Messages.KiirooCmd).GetPosition()).toEqual(3);
+       expect((msg as Messages.KiirooCmd).Position).toEqual(3);
 
        const msg2 = new Messages.KiirooCmd();
        msg2.Id = 2;
@@ -57,11 +55,11 @@ describe("Message", () => {
 
        msg2.Command = "foo";
        expect(msg2.Command).toEqual("foo");
-       expect(msg2.GetPosition()).toEqual(0);
+       expect(msg2.Position).toEqual(0);
 
-       msg2.SetPosition(4);
+       msg2.Position = 4;
        expect(msg2.Command).toEqual("4");
-       expect(msg2.GetPosition()).toEqual(4);
+       expect(msg2.Position).toEqual(4);
 
        expect(msg2.toJSON()).toEqual('{"KiirooCmd":{"Id":2,"DeviceIndex":3,"Command":"4"}}');
      });

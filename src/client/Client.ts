@@ -132,7 +132,7 @@ export class ButtplugClient extends EventEmitter {
           break;
         case Messages.DeviceAdded:
           const addedMsg = x as Messages.DeviceAdded;
-          const addedDevice = ButtplugClientDevice.fromMsg(addedMsg);
+          const addedDevice = ButtplugClientDevice.fromMsg(addedMsg, this.SendDeviceMessageClosure);
           this._devices.set(addedMsg.DeviceIndex, addedDevice);
           this.emit("deviceadded", addedDevice);
           break;
@@ -201,7 +201,7 @@ export class ButtplugClient extends EventEmitter {
     const deviceList = (await this.SendMessage(new Messages.RequestDeviceList())) as Messages.DeviceList;
     deviceList.Devices.forEach((d) => {
       if (!this._devices.has(d.DeviceIndex)) {
-        const device = ButtplugClientDevice.fromMsg(d);
+        const device = ButtplugClientDevice.fromMsg(d, this.SendDeviceMessageClosure);
         this._logger.Debug(`ButtplugClient: Adding Device: ${device}`);
         this._devices.set(d.DeviceIndex, device);
         this.emit("deviceadded", device);
@@ -244,5 +244,9 @@ export class ButtplugClient extends EventEmitter {
                                             this._logger,
                                             `Message type ${msg.constructor} not handled bySendMsgExpectOk`);
     }
+  }
+
+  protected SendDeviceMessageClosure = async (aDevice: ButtplugClientDevice, aMsg: Messages.ButtplugDeviceMessage) => {
+    this.SendDeviceMessage(aDevice, aMsg);
   }
 }

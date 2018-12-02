@@ -7,6 +7,7 @@ import "reflect-metadata";
 
 export const SYSTEM_MESSAGE_ID = 0;
 export const DEFAULT_MESSAGE_ID = 1;
+export const MAX_ID = 4294967295;
 
 export abstract class ButtplugMessage {
 
@@ -289,13 +290,15 @@ export class FleshlightLaunchFW12Cmd extends ButtplugDeviceMessage {
 }
 
 export class KiirooCmd extends ButtplugDeviceMessage {
-  constructor(public Command: string = "0",
+  public Command: string = "0";
+  constructor(aCommand: number = 0,
               public DeviceIndex: number = -1,
               public Id: number = DEFAULT_MESSAGE_ID) {
     super(DeviceIndex, Id);
+    this.Command = String(aCommand);
   }
 
-  public SetPosition(aPos: number) {
+  public set Position(aPos: number) {
     if (aPos >= 0 && aPos <= 4) {
       this.Command = String(Math.round(aPos));
     } else {
@@ -303,7 +306,7 @@ export class KiirooCmd extends ButtplugDeviceMessage {
     }
   }
 
-  public GetPosition(): number {
+  public get Position(): number {
     const pos: number = Number(this.Command) ? Number(this.Command) : 0;
     if (pos < 0 || pos > 4 ) {
       return 0;
@@ -363,9 +366,14 @@ export class VorzeA10CycloneCmd extends ButtplugDeviceMessage {
   get SchemaVersion() { return 0; }
 }
 
-export class SpeedSubcommand {
-  constructor(public Index: number,
+export class GenericMessageSubcommand {
+  protected constructor(public Index: number) {}
+}
+
+export class SpeedSubcommand extends GenericMessageSubcommand {
+  constructor(Index: number,
               public Speed: number) {
+    super(Index);
   }
 }
 
@@ -377,12 +385,41 @@ export class VibrateCmd extends ButtplugDeviceMessage {
   }
 
   get SchemaVersion() { return 1; }
+
+  public static Create(aDeviceIndex: number,
+                       aSpeeds: number[]): VibrateCmd
+  {
+    let cmdList: SpeedSubcommand[] = new Array<SpeedSubcommand>();
+
+    let i = 0;
+    for (let speed of aSpeeds) {
+      cmdList.push(new SpeedSubcommand(i, speed));
+      ++i;
+    }
+
+    return new VibrateCmd(cmdList, aDeviceIndex, DEFAULT_MESSAGE_ID);
+  }
 }
 
-export class RotateSubcommand {
-  constructor(public Index: number,
+export class RotateSubcommand extends GenericMessageSubcommand {
+  constructor(Index: number,
               public Speed: number,
               public Clockwise: boolean) {
+    super(Index);
+  }
+
+  public static Create(aDeviceIndex: number,
+                       aSpeeds: number[]): VibrateCmd
+  {
+    let cmdList: SpeedSubcommand[] = new Array<SpeedSubcommand>();
+
+    let i = 0;
+    for (let speed of aSpeeds) {
+      cmdList.push(new SpeedSubcommand(i, speed));
+      ++i;
+    }
+
+    return new VibrateCmd(cmdList, aDeviceIndex);
   }
 }
 
@@ -394,12 +431,27 @@ export class RotateCmd extends ButtplugDeviceMessage {
   }
 
   get SchemaVersion() { return 1; }
+
+  public static Create(aDeviceIndex: number,
+                       aCommands: [number, boolean][]): RotateCmd
+  {
+    let cmdList: RotateSubcommand[] = new Array<RotateSubcommand>();
+
+    let i = 0;
+    for (let cmd of aCommands) {
+      cmdList.push(new RotateSubcommand(i, cmd[0], cmd[1]));
+      ++i;
+    }
+
+    return new RotateCmd(cmdList, aDeviceIndex);
+  }
 }
 
-export class VectorSubcommand {
-  constructor(public Index: number,
+export class VectorSubcommand extends GenericMessageSubcommand {
+  constructor(Index: number,
               public Position: number,
               public Duration: number) {
+    super(Index);
   }
 }
 
@@ -411,6 +463,20 @@ export class LinearCmd extends ButtplugDeviceMessage {
   }
 
   get SchemaVersion() { return 1; }
+
+  public static Create(aDeviceIndex: number,
+                       aCommands: [number, number][]): LinearCmd
+  {
+    let cmdList: VectorSubcommand[] = new Array<VectorSubcommand>();
+
+    let i = 0;
+    for (let cmd of aCommands) {
+      cmdList.push(new VectorSubcommand(i, cmd[0], cmd[1]));
+      ++i;
+    }
+
+    return new LinearCmd(cmdList, aDeviceIndex);
+  }
 }
 
 export class MessageAttributes {

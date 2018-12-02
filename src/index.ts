@@ -2,7 +2,6 @@ export * from "./client/Client";
 export * from "./client/ButtplugClientDevice";
 export * from "./client/IButtplugConnector";
 export * from "./client/ButtplugEmbeddedServerConnector";
-export * from "./client/Utils";
 export * from "./core/Messages";
 export * from "./core/MessageUtils";
 export * from "./core/Logging";
