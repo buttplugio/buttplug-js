@@ -18,6 +18,7 @@ export class ButtplugServer extends EventEmitter {
   private _receivedRequestServerInfo: boolean = false;
   private _logger = ButtplugLogger.Logger;
   private _outgoingLogLevel = ButtplugLogLevel.Off;
+  private _connected: boolean = false;
 
   constructor(private _serverName: string = "Buttplug JS Internal Server",
               private _maxPingTime: number = 0) {
@@ -38,7 +39,22 @@ export class ButtplugServer extends EventEmitter {
     this._deviceManager.ClearDeviceManagers();
   }
 
+  public Disconnect = () => {
+    this._connected = false;
+  }
+
+  public CheckConnection = () => {
+    if (!this._connected) {
+      // This doesn't even get a class because if we're not connected, we have
+      // nothing to pass through objects. It's just a straight up error.
+      throw new Error("Server not connected to client.");
+    }
+  }
+
   public SendMessage = async (aMessage: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage> => {
+    if (!(aMessage instanceof RequestServerInfo)) {
+      this.CheckConnection();
+    }
     const id = aMessage.Id;
     this._logger.Trace(`Server: Got Message: ${aMessage}`);
     if (id === 0) {
@@ -91,6 +107,7 @@ export class ButtplugServer extends EventEmitter {
         this._clientSchemaVersion = msg.MessageVersion;
         this._clientName = msg.ClientName;
         // TODO: Figure out how to encode this from the package version?
+        this._connected = true;
         return new Messages.ServerInfo(0, 0, 0, GetSchemaVersion(), this._maxPingTime, this._serverName, id);
       case Messages.Test:
         this._logger.Debug(`Server: Test received.`);
@@ -101,6 +118,7 @@ export class ButtplugServer extends EventEmitter {
   }
 
   public Shutdown = async (): Promise<void> => {
+    this.Disconnect();
     await this._deviceManager.Shutdown();
   }
 
@@ -112,9 +130,7 @@ export class ButtplugServer extends EventEmitter {
   }
 
   private SendOutgoingMessage = (msg: Messages.ButtplugMessage) => {
-    // We can use existence of client name as a signifier for whether we should
-    // actually send messages. No name, no message.
-    if (this._clientName === undefined) {
+    if (!this._connected) {
       return;
     }
     if (this._clientSchemaVersion === -1) {

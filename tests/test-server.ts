@@ -47,6 +47,10 @@ describe("Server Tests", async () => {
     bpServer.AddDeviceManager(new TestDeviceManager());
   });
 
+  it("Should throw connection error if message sent without connecting", async () => {
+    await expect(bpServer.SendMessage(new Messages.SingleMotorVibrateCmd(50, 0))).rejects.toBeInstanceOf(Error);
+  });
+
   it("Should downgrade messages", async () => {
     const bpConnector = new ButtplugEmbeddedServerConnector();
     bpConnector.Server = bpServer;
