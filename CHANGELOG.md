@@ -1,3 +1,12 @@
+# Version 0.9.0 - 2018/12/02
+
+- Move core/Device to client/ButtplugClientDevice, since only client uses it.
+- Create convenience Device command functions on ButtplugClientDevice.
+- Add specific Buttplug exception types.
+- Fix up error handling to always throw exceptions.
+- Add connection semantics to server.
+- Update dependencies.
+
 # Version 0.8.3 - 2018/11/24
 
 - Added Lovense Osci support

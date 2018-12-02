@@ -135,10 +135,11 @@ Note that the web module brings in html/css/pngs, so if you are using
 a bundler like webpack or rollup, you'll need the correct loaders to
 pack the assets.
 
-## Buttplug and Uglify
+## Buttplug and Uglify/Terser
 
-When using Buttplug with an application that will uses Uglify for
-compression and minifying, make sure to set the following options:
+When using Buttplug with an application that will uses terser or
+Uglify for compression and minifying, make sure to set the following
+options:
 
 ```javascript
 uglifyOptions: {
