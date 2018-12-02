@@ -75,4 +75,3 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter implements I
     this.emit("message", emitMsgs);
   }
 }
-

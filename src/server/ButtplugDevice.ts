@@ -4,7 +4,9 @@ import { IButtplugDevice } from "./IButtplugDevice";
 import { ButtplugMessageException } from "../core/Exceptions";
 
 export abstract class ButtplugDevice extends EventEmitter implements IButtplugDevice {
+  // tslint:disable-next-line:ban-types
   protected readonly MsgFuncs: Map<Function, (aMsg: Messages.ButtplugMessage) => Promise<Messages.ButtplugMessage>> =
+    // tslint:disable-next-line:ban-types
     new Map<Function, (aMsg: Messages.ButtplugMessage) => Promise<Messages.ButtplugMessage>>();
 
   public constructor(protected _name: string, protected _id: string) {

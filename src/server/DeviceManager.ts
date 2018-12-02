@@ -72,9 +72,9 @@ export class DeviceManager extends EventEmitter {
             } catch (e) {
               // Something is wrong. Stop all other managers and rethrow.
               // TODO Should this only fail on the bad manager, or all managers?
-              for (const manager of this._subtypeManagers) {
-                if (manager.IsScanning) {
-                  manager.StopScanning();
+              for (const mgr of this._subtypeManagers) {
+                if (mgr.IsScanning) {
+                  mgr.StopScanning();
                 }
               }
               throw e;

@@ -2,16 +2,6 @@ import * as Messages from "./Messages";
 import { ButtplugLogger } from "./Logging";
 
 export class ButtplugException extends Error {
-  errorClass: Messages.ErrorClass = Messages.ErrorClass.ERROR_UNKNOWN;
-  innerError: Error | undefined;
-  messageId: number | undefined;
-
-  protected constructor(aMessage: string, aErrorClass: Messages.ErrorClass, aId: number = Messages.SYSTEM_MESSAGE_ID, aInner: Error | undefined = undefined) {
-    super(aMessage);
-    this.errorClass = aErrorClass;
-    this.innerError = aInner;
-    this.messageId = aId;
-  }
 
   public get ErrorClass(): Messages.ErrorClass {
     return this.errorClass;
@@ -25,10 +15,10 @@ export class ButtplugException extends Error {
     return this.messageId;
   }
 
-  public static LogAndError<T extends ButtplugException>(aConstructor: new(string, number) => T,
+  public static LogAndError<T extends ButtplugException>(aConstructor: new(aStr: string, aNum: number) => T,
                                                          aLogger: ButtplugLogger,
                                                          aMessage: string,
-                                                         aId: number = Messages.SYSTEM_MESSAGE_ID) : T {
+                                                         aId: number = Messages.SYSTEM_MESSAGE_ID): T {
     aLogger.Error(aMessage);
     return new aConstructor(aMessage, aId);
   }
@@ -49,39 +39,47 @@ export class ButtplugException extends Error {
         throw new Error(`Message type ${aError.ErrorCode} not handled`);
     }
   }
+  public errorClass: Messages.ErrorClass = Messages.ErrorClass.ERROR_UNKNOWN;
+  public innerError: Error | undefined;
+  public messageId: number | undefined;
+
+  protected constructor(aMessage: string,
+                        aErrorClass: Messages.ErrorClass,
+                        aId: number = Messages.SYSTEM_MESSAGE_ID,
+                        aInner?: Error) {
+    super(aMessage);
+    this.errorClass = aErrorClass;
+    this.innerError = aInner;
+    this.messageId = aId;
+  }
 }
 
 export class ButtplugInitException extends ButtplugException {
-  public constructor(aMessage: string, aId: number = Messages.SYSTEM_MESSAGE_ID)
-  {
+  public constructor(aMessage: string, aId: number = Messages.SYSTEM_MESSAGE_ID) {
     super(aMessage, Messages.ErrorClass.ERROR_INIT, aId);
   }
 }
 
 export class ButtplugDeviceException extends ButtplugException {
-  public constructor(aMessage: string, aId: number = Messages.SYSTEM_MESSAGE_ID)
-  {
+  public constructor(aMessage: string, aId: number = Messages.SYSTEM_MESSAGE_ID) {
     super(aMessage, Messages.ErrorClass.ERROR_DEVICE, aId);
   }
 }
 
 export class ButtplugMessageException extends ButtplugException {
-  public constructor(aMessage: string, aId: number = Messages.SYSTEM_MESSAGE_ID)
-  {
+  public constructor(aMessage: string, aId: number = Messages.SYSTEM_MESSAGE_ID) {
     super(aMessage, Messages.ErrorClass.ERROR_MSG, aId);
   }
 }
 
 export class ButtplugPingException extends ButtplugException {
-  public constructor(aMessage: string, aId: number = Messages.SYSTEM_MESSAGE_ID)
-  {
+  public constructor(aMessage: string, aId: number = Messages.SYSTEM_MESSAGE_ID) {
     super(aMessage, Messages.ErrorClass.ERROR_PING, aId);
   }
 }
 
 export class ButtplugUnknownException extends ButtplugException {
-  public constructor(aMessage: string, aId: number = Messages.SYSTEM_MESSAGE_ID)
-  {
+  public constructor(aMessage: string, aId: number = Messages.SYSTEM_MESSAGE_ID) {
     super(aMessage, Messages.ErrorClass.ERROR_UNKNOWN, aId);
   }
 }

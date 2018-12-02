@@ -73,4 +73,3 @@ describe("Websocket Client Tests", async () => {
     await expect(bp.RequestLog("Debug")).rejects.toBeInstanceOf(ButtplugMessageException);
   });
 });
-

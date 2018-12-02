@@ -19,8 +19,8 @@ export class ButtplugMessageSorter {
   public ParseIncomingMessages(aMsgs: Messages.ButtplugMessage[]): Messages.ButtplugMessage[] {
     const noMatch: Messages.ButtplugMessage[] = [];
     for (const x of aMsgs) {
-      if (x.Id != Messages.SYSTEM_MESSAGE_ID && this._waitingMsgs.has(x.Id)) {
-        let [res, rej] = this._waitingMsgs.get(x.Id)!;
+      if (x.Id !== Messages.SYSTEM_MESSAGE_ID && this._waitingMsgs.has(x.Id)) {
+        const [res, rej] = this._waitingMsgs.get(x.Id)!;
         // If we've gotten back an error, reject the related promise using a
         // ButtplugException derived type.
         if (x.Type === Messages.Error) {

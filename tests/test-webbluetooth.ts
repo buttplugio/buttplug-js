@@ -68,7 +68,9 @@ describe("WebBluetooth library tests", () => {
       throw new Error("Injected connection error");
     };
     // Make sure we at least have the right error code. Id and message may vary.
-    await expect(bp.StartScanning()).rejects.toEqual(new Error("Cannot open device LVS-test: Error: Injected connection error"));
+    await expect(bp.StartScanning())
+      .rejects
+      .toEqual(new Error("Cannot open device LVS-test: Error: Injected connection error"));
     return p;
   });
 

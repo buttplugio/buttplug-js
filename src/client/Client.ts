@@ -8,7 +8,8 @@ import { ButtplugBrowserWebsocketConnector } from "./ButtplugBrowserWebsocketCon
 import { ButtplugEmbeddedServerConnector } from "./ButtplugEmbeddedServerConnector";
 import * as Messages from "../core/Messages";
 import { CheckMessage } from "../core/MessageUtils";
-import { ButtplugDeviceException, ButtplugException, ButtplugInitException, ButtplugMessageException } from "../core/Exceptions";
+import { ButtplugDeviceException, ButtplugException,
+         ButtplugInitException, ButtplugMessageException } from "../core/Exceptions";
 import { ButtplugClientConnectorException } from "./ButtplugClientConnectorException";
 
 export class ButtplugClient extends EventEmitter {
@@ -164,9 +165,10 @@ export class ButtplugClient extends EventEmitter {
         if (serverinfo.MessageVersion < this._messageVersion) {
           // Disconnect and throw an exception explaining the version mismatch problem.
           this._connector!.Disconnect();
-          throw ButtplugException.LogAndError(ButtplugInitException,
-                                              this._logger,
-                                              "Server protocol version is older than client protocol version. Please update server.");
+          throw ButtplugException.LogAndError(
+            ButtplugInitException,
+            this._logger,
+            "Server protocol version is older than client protocol version. Please update server.");
         }
         if (ping > 0) {
           this._pingTimer = setInterval(async () => {

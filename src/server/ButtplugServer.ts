@@ -5,7 +5,8 @@ import { EventEmitter } from "events";
 import { IDeviceSubtypeManager } from "./IDeviceSubtypeManager";
 import { ButtplugLogger, ButtplugLogLevel, LogMessage } from "../core/Logging";
 import { RequestServerInfo, ButtplugMessage } from "../core/Messages";
-import { ButtplugMessageException, ButtplugException, ButtplugPingException, ButtplugInitException } from "../core/Exceptions";
+import { ButtplugMessageException, ButtplugException,
+         ButtplugPingException, ButtplugInitException } from "../core/Exceptions";
 
 export class ButtplugServer extends EventEmitter {
 
@@ -43,7 +44,7 @@ export class ButtplugServer extends EventEmitter {
     if (id === 0) {
       throw ButtplugException.LogAndError(ButtplugMessageException,
                                           this._logger,
-                                          "Message Id 0 is reserved for outgoing system messages. Please use another Id.",
+                                          "Message Id 0 is reserved for outgoing system messages. Use another Id.",
                                           id);
     }
     if (this._pingTimedOut) {
@@ -82,8 +83,8 @@ export class ButtplugServer extends EventEmitter {
           // Client automatically disconnects on error message.
           throw ButtplugException.LogAndError(ButtplugInitException,
                                               this._logger,
-                                              `Client schema (${this._clientSchemaVersion}) newer than server schema (1). ` +
-                                              "Please upgrade server.",
+                                              `Client schema (${this._clientSchemaVersion}) newer than ` +
+                                              "server schema (1). Please upgrade server.",
                                               id);
         }
         this._receivedRequestServerInfo = true;

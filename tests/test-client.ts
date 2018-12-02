@@ -105,7 +105,9 @@ describe("Client Tests", async () => {
         rej();
       }
 
-      await expect(bp.SendDeviceMessage(bp.Devices[0], new Messages.KiirooCmd(2))).rejects.toBeInstanceOf(ButtplugDeviceException);
+      await expect(bp.SendDeviceMessage(bp.Devices[0], new Messages.KiirooCmd(2)))
+        .rejects
+        .toBeInstanceOf(ButtplugDeviceException);
       res();
     });
     await bp.StartScanning();
@@ -116,7 +118,9 @@ describe("Client Tests", async () => {
     const bp: ButtplugClient = (await SetupTestServer()).Client;
     bp.on("scanningfinished", async (x) => {
       expect(bp.Devices.length).toBeGreaterThan(0);
-      await expect(bp.SendDeviceMessage(bp.Devices[0], new Messages.SingleMotorVibrateCmd(50))).rejects.toBeInstanceOf(ButtplugMessageException);
+      await expect(bp.SendDeviceMessage(bp.Devices[0], new Messages.SingleMotorVibrateCmd(50)))
+        .rejects
+        .toBeInstanceOf(ButtplugMessageException);
       res();
     });
     await bp.StartScanning();

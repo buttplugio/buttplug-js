@@ -30,6 +30,7 @@ export abstract class ButtplugMessage {
    * and DeviceAddedVersion1), we will need to override this to set the message
    * name.
    */
+  // tslint:disable-next-line:ban-types
   public get Type(): Function {
     return this.constructor;
   }
@@ -38,6 +39,7 @@ export abstract class ButtplugMessage {
    * [DEPRECATED] Function version of the this.Type getter
    *
    */
+  // tslint:disable-next-line:ban-types
   public getType(): Function {
     return this.Type;
   }
@@ -129,6 +131,7 @@ export class DeviceListVersion0 extends ButtplugSystemMessage {
     super();
   }
 
+  // tslint:disable-next-line:ban-types
   public get Type(): Function {
     return DeviceList.constructor;
   }
@@ -173,6 +176,7 @@ export class DeviceAddedVersion0 extends ButtplugSystemMessage {
   // This is used to fool our type checkers into thinking we're the canonical
   // version of the message. Gross, but necessary unless we want to use strings
   // (which we don't).
+  // tslint:disable-next-line:ban-types
   public get Type(): Function {
     return DeviceAdded.constructor;
   }
@@ -378,72 +382,69 @@ export class SpeedSubcommand extends GenericMessageSubcommand {
 }
 
 export class VibrateCmd extends ButtplugDeviceMessage {
-  constructor(public Speeds: SpeedSubcommand[],
-              public DeviceIndex: number = -1,
-              public Id: number = DEFAULT_MESSAGE_ID) {
-    super(DeviceIndex, Id);
-  }
 
   get SchemaVersion() { return 1; }
 
   public static Create(aDeviceIndex: number,
-                       aSpeeds: number[]): VibrateCmd
-  {
-    let cmdList: SpeedSubcommand[] = new Array<SpeedSubcommand>();
+                       aSpeeds: number[]): VibrateCmd {
+    const cmdList: SpeedSubcommand[] = new Array<SpeedSubcommand>();
 
     let i = 0;
-    for (let speed of aSpeeds) {
+    for (const speed of aSpeeds) {
       cmdList.push(new SpeedSubcommand(i, speed));
       ++i;
     }
 
     return new VibrateCmd(cmdList, aDeviceIndex, DEFAULT_MESSAGE_ID);
   }
+  constructor(public Speeds: SpeedSubcommand[],
+              public DeviceIndex: number = -1,
+              public Id: number = DEFAULT_MESSAGE_ID) {
+    super(DeviceIndex, Id);
+  }
 }
 
 export class RotateSubcommand extends GenericMessageSubcommand {
-  constructor(Index: number,
-              public Speed: number,
-              public Clockwise: boolean) {
-    super(Index);
-  }
 
   public static Create(aDeviceIndex: number,
-                       aSpeeds: number[]): VibrateCmd
-  {
-    let cmdList: SpeedSubcommand[] = new Array<SpeedSubcommand>();
+                       aSpeeds: number[]): VibrateCmd {
+    const cmdList: SpeedSubcommand[] = new Array<SpeedSubcommand>();
 
     let i = 0;
-    for (let speed of aSpeeds) {
+    for (const speed of aSpeeds) {
       cmdList.push(new SpeedSubcommand(i, speed));
       ++i;
     }
 
     return new VibrateCmd(cmdList, aDeviceIndex);
   }
+  constructor(Index: number,
+              public Speed: number,
+              public Clockwise: boolean) {
+    super(Index);
+  }
 }
 
 export class RotateCmd extends ButtplugDeviceMessage {
-  constructor(public Rotations: RotateSubcommand[],
-              public DeviceIndex: number = -1,
-              public Id: number = DEFAULT_MESSAGE_ID) {
-    super(DeviceIndex, Id);
-  }
 
   get SchemaVersion() { return 1; }
 
   public static Create(aDeviceIndex: number,
-                       aCommands: [number, boolean][]): RotateCmd
-  {
-    let cmdList: RotateSubcommand[] = new Array<RotateSubcommand>();
+                       aCommands: Array<[number, boolean]>): RotateCmd {
+    const cmdList: RotateSubcommand[] = new Array<RotateSubcommand>();
 
     let i = 0;
-    for (let cmd of aCommands) {
+    for (const cmd of aCommands) {
       cmdList.push(new RotateSubcommand(i, cmd[0], cmd[1]));
       ++i;
     }
 
     return new RotateCmd(cmdList, aDeviceIndex);
+  }
+  constructor(public Rotations: RotateSubcommand[],
+              public DeviceIndex: number = -1,
+              public Id: number = DEFAULT_MESSAGE_ID) {
+    super(DeviceIndex, Id);
   }
 }
 
@@ -456,26 +457,25 @@ export class VectorSubcommand extends GenericMessageSubcommand {
 }
 
 export class LinearCmd extends ButtplugDeviceMessage {
-  constructor(public Vectors: VectorSubcommand[],
-              public DeviceIndex: number = -1,
-              public Id: number = DEFAULT_MESSAGE_ID) {
-    super(DeviceIndex, Id);
-  }
 
   get SchemaVersion() { return 1; }
 
   public static Create(aDeviceIndex: number,
-                       aCommands: [number, number][]): LinearCmd
-  {
-    let cmdList: VectorSubcommand[] = new Array<VectorSubcommand>();
+                       aCommands: Array<[number, number]>): LinearCmd {
+    const cmdList: VectorSubcommand[] = new Array<VectorSubcommand>();
 
     let i = 0;
-    for (let cmd of aCommands) {
+    for (const cmd of aCommands) {
       cmdList.push(new VectorSubcommand(i, cmd[0], cmd[1]));
       ++i;
     }
 
     return new LinearCmd(cmdList, aDeviceIndex);
+  }
+  constructor(public Vectors: VectorSubcommand[],
+              public DeviceIndex: number = -1,
+              public Id: number = DEFAULT_MESSAGE_ID) {
+    super(DeviceIndex, Id);
   }
 }
 
