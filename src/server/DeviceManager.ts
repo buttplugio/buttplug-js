@@ -11,9 +11,9 @@ export class DeviceManager extends EventEmitter {
   private _devices: Map<number, IButtplugDevice> = new Map<number, IButtplugDevice>();
   private _deviceCounter: number = 0;
   private _logger = ButtplugLogger.Logger;
-  private _msgClosure: (ButtplugMessage) => void;
+  private _msgClosure: (aMsg: Messages.ButtplugMessage) => void;
 
-  constructor(aMsgClosure: (ButtplugMessage) => void) {
+  constructor(aMsgClosure: (aMsg: Messages.ButtplugMessage) => void) {
     super();
     this._logger.Debug("DeviceManager: Starting Device Manager");
     // If we have a bluetooth object on navigator, load the device manager
