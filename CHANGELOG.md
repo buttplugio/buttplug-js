@@ -1,3 +1,8 @@
+# Version 0.10.0 - 2018/12/03
+
+- Add way to pass loggers into DeviceSubtypeManagers (to bridge module scope issues)
+- Fix type error for Device Manager message callbacks
+
 # Version 0.9.0 - 2018/12/02
 
 - Move core/Device to client/ButtplugClientDevice, since only client uses it.
