@@ -1,4 +1,5 @@
 import { ButtplugLogger } from "../../core/Logging";
+import { ButtplugException, ButtplugDeviceException } from "../../core/Exceptions";
 import { DeviceAdded } from "../../core/Messages";
 import { IDeviceSubtypeManager } from "../IDeviceSubtypeManager";
 import { BluetoothDevices } from "./BluetoothDevices";
@@ -7,8 +8,18 @@ import { EventEmitter } from "events";
 import { WebBluetoothDevice } from "./WebBluetoothDevice";
 
 export class WebBluetoothDeviceManager extends EventEmitter implements IDeviceSubtypeManager {
-  public async StartScanning() {
+  private _logger: ButtplugLogger;
 
+  constructor(aLogger: ButtplugLogger | undefined) {
+    super();
+    this.SetLogger(aLogger !== undefined ? aLogger : ButtplugLogger.Logger);
+  }
+
+  public SetLogger(aLogger: ButtplugLogger) {
+    this._logger = aLogger;
+  }
+
+  public async StartScanning() {
     // Form scanning filters
     const info = BluetoothDevices.GetDeviceInfo();
     const filters = {
@@ -25,7 +36,7 @@ export class WebBluetoothDeviceManager extends EventEmitter implements IDeviceSu
       filters.optionalServices = [...filters.optionalServices, ...deviceInfo.Services];
     }
 
-    ButtplugLogger.Logger.Trace("Bluetooth filter set: " + filters);
+    this._logger.Trace("Bluetooth filter set: " + filters);
 
     // At some point, we should use navigator.bluetooth.getAvailability() to
     // check whether we have a radio to use. However, no browser currently
@@ -42,14 +53,19 @@ export class WebBluetoothDeviceManager extends EventEmitter implements IDeviceSu
       if (e.message.indexOf("User cancelled") !== -1) {
         return;
       }
-      throw new Error("Bluetooth scanning interrupted. " +
-                      "Either user cancelled out of dialog, or bluetooth radio is not available. Exception: " + e);
+      throw ButtplugException.LogAndError(ButtplugDeviceException,
+                                          this._logger,
+                                          "Bluetooth scanning interrupted. " +
+                                          "Either user cancelled out of dialog, " +
+                                          "or bluetooth radio is not available. Exception: " + e);
     }
     try {
       await this.OpenDevice(device);
     } catch (e) {
       this.emit("scanningfinished");
-      throw new Error(`Cannot open device ${device.name}: ${e}`);
+      throw ButtplugException.LogAndError(ButtplugDeviceException,
+                                          this._logger,
+                                          `Cannot open device ${device.name}: ${e}`);
     }
     this.emit("scanningfinished");
   }
