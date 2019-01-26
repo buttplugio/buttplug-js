@@ -114,9 +114,9 @@ describe("Bluetooth device tests", () => {
     await bp.SendDeviceMessage(bp.Devices[0], new VibrateCmd([new SpeedSubcommand(0, 1)]));
     expect(mockBT.txChar.writeValue).toBeCalledWith(new Uint8Array([0x0f, 0x03, 0x00, 0xff, 0x00, 0x03, 0x00, 0x00]));
     await bp.SendDeviceMessage(bp.Devices[0], new SingleMotorVibrateCmd(.5));
-    expect(mockBT.txChar.writeValue).toBeCalledWith(new Uint8Array([0x0f, 0x03, 0x00, 0x77, 0x00, 0x03, 0x00, 0x00]));
+    expect(mockBT.txChar.writeValue).toBeCalledWith(new Uint8Array([0x0f, 0x03, 0x00, 0x88, 0x00, 0x03, 0x00, 0x00]));
     await bp.StopAllDevices();
-    expect(mockBT.txChar.writeValue).toBeCalledWith(new Uint8Array([0x0f, 0x03, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00]));
+    expect(mockBT.txChar.writeValue).toBeCalledWith(new Uint8Array([0x0f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]));
   });
 
   it("should convert fleshlight commands properly", async () => {
