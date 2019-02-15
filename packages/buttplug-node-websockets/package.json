@@ -27,9 +27,6 @@
     "ws": "^4.0.0"
   },
   "peerDependencies": {
-    "buttplug": ">=0.6.x"
-  },
-  "devDependencies": {
     "buttplug": "file:../buttplug"
   },
   "jest": {

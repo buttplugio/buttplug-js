@@ -26,9 +26,6 @@
     "noble-uwp": "^0.6.2"
   },
   "peerDependencies": {
-    "buttplug": ">=0.10.0"
-  },
-  "devDependencies": {
     "buttplug": "file:../buttplug"
   }
 }

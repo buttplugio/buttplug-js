@@ -18,7 +18,6 @@
     "@types/tween.js": "^17.2.0",
     "@types/web-bluetooth": "^0.0.4",
     "@types/ws": "^6.0.1",
-    "buttplug": "file:../buttplug",
     "chai": "^4.2.0",
     "codecov": "^3.2.0",
     "commander": "^2.19.0",
