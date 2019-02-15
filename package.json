@@ -7,5 +7,49 @@
   },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "devDependencies": {
+    "@types/jest": "^24.0.5",
+    "@types/node": "^11.9.4",
+    "@types/tween.js": "^17.2.0",
+    "@types/web-bluetooth": "^0.0.4",
+    "buttplug": ">=0.6.x",
+    "codecov": "^3.2.0",
+    "commander": "^2.14.1",
+    "copyfiles": "^2.1.0",
+    "cross-env": "^5.2.0",
+    "css-loader": "^2.1.0",
+    "fork-ts-checker-webpack-plugin": "^0.5.2",
+    "html-loader": "^0.5.5",
+    "istanbul": "^0.4.5",
+    "jest": "^24.1.0",
+    "lerna": "^3.13.0",
+    "mock-socket": "^7.1.0",
+    "remap-istanbul": "^0.10.1",
+    "selfsigned": "^1.10.2",
+    "style-loader": "^0.23.1",
+    "terser": "^3.16.1",
+    "terser-webpack-plugin": "^1.2.2",
+    "tmp": "^0.0.33",
+    "trash": "^4.3.0",
+    "trash-cli": "^1.4.0",
+    "ts-jest": "^23.10.5",
+    "ts-loader": "^5.x",
+    "ts-node": "^8.0.2",
+    "tslint": "^5.12.1",
+    "typedoc": "^0.14.2",
+    "typescript": "^3.3.3",
+    "url-loader": "^1.1.2",
+    "web-bluetooth-mock": "^1.0.2",
+    "webpack": "^4.29.3",
+    "webpack-bundle-analyzer": "^3.0.4",
+    "webpack-cli": "^3.2.3",
+    "webpack-merge": "^4.2.1",
+    "yarn": "^1.13.0"
+  },
+  "dependencies": {
+    "buttplug": "file:packages/buttplug",
+    "buttplug-node-bluetoothle-manager": "file:packages/buttplug-node-bluetoothle-manager",
+    "buttplug-node-websockets": "file:packages/buttplug-node-websockets"
+  }
 }
