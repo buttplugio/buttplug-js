@@ -42,7 +42,7 @@ additions.
 
 If you find this project helpful, you
 can
-[support Metafetish projects via Patreon](http://patreon.com/qdot)!
+[support Buttplug projects via Patreon](http://patreon.com/qdot)!
 Every donation helps us afford more hardware to reverse, document, and
 write code for!
 
