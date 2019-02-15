@@ -1,0 +1,71 @@
+{
+  "name": "buttplug-websocket-server",
+  "version": "0.0.1",
+  "description": "Node.js Websocket Server frontend for Buttplug",
+  "repository": "https://github.com/metafetish/buttplug-js-websocket-server",
+  "author": "Kyle Machulis <kyle@nonpolynomial.com>",
+  "license": "BSD-3-Clause",
+  "main": "./dist/index.js",
+  "types": "./dist/types/index.d.ts",
+  "scripts": {
+    "build": "trash dist dist-bundle && yarn build:main",
+    "build:main": "tsc -p tsconfig.json",
+    "tslint": "tslint -c tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "tslint:fix": "tslint -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "pretest": "yarn build:main",
+    "start": "node dist/index.js",
+    "test": "nyc mocha \"tests/**/*.ts\"",
+    "posttest": "nyc report && codecov -f coverage/*.json",
+    "freeze:win": "pkg dist/index.js --targets node8-win-x86 --output buttplug-node-server/buttplug-node-server.exe",
+    "package:win": "yarn freeze:win && copy node_modules\\bluetooth-hci-socket\\build\\Release\\binding.node buttplug-node-server && copy node_modules\\usb\\src\\binding\\usb_bindings.node buttplug-node-server && 7z a buttplug-node-server.7z buttplug-node-server\\*"
+  },
+  "dependencies": {
+    "buttplug": "^0.10.0",
+    "buttplug-node-bluetoothle-manager": "^0.1.0",
+    "commander": "^2.19.0",
+    "selfsigned": "^1.10.4",
+    "ws": "^6.1.2"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/commander": "^2.12.2",
+    "@types/mocha": "^5.2.5",
+    "@types/noble": "^0.0.38",
+    "@types/node": "^10.12.18",
+    "@types/ws": "^6.0.1",
+    "chai": "^4.2.0",
+    "codecov": "^3.1.0",
+    "copyfiles": "^2.1.0",
+    "mocha": "^5.2.0",
+    "mock-socket": "^8.0.5",
+    "nyc": "^13.1.0",
+    "pkg": "^4.3.5",
+    "trash-cli": "^1.4.0",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.12.0",
+    "typescript": "^3.2.2",
+    "yarn": "^1.12.3"
+  },
+  "nyc": {
+    "extension": [
+      ".ts"
+    ],
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": [
+      "**/*.d.ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "text",
+      "json",
+      "html"
+    ],
+    "sourceMap": true,
+    "instrument": true,
+    "all": true
+  }
+}
