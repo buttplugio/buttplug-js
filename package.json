@@ -29,7 +29,7 @@
     "jest": "^24.1.0",
     "lerna": "^3.13.0",
     "mocha": "^5.2.0",
-    "mock-socket": "^8.0.5",
+    "mock-socket": "^7.1.0",
     "nyc": "^13.3.0",
     "pkg": "^4.3.7",
     "remap-istanbul": "^0.13.0",
