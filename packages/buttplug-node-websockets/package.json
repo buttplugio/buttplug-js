@@ -1,0 +1,52 @@
+{
+  "name": "buttplug-node-websockets",
+  "version": "0.0.3",
+  "description": "Node Websocket Client/Server for buttplug-js",
+  "main": "dist/src/index.js",
+  "scripts": {
+    "build": "trash dist dist-bundle && yarn build:main",
+    "build:main": "tsc -p tsconfig.json",
+    "build:doc": "typedoc --options typedoc.js --out doc .",
+    "tslint": "tslint -c tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "tslint:fix": "tslint -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "pretest": "yarn build:main",
+    "test": "jest && remap-istanbul --input coverage/coverage-final.json --type json --output coverage/coverage-final.json && istanbul report",
+    "posttest": "codecov"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/metafetish/buttplug-node-websockets.git"
+  },
+  "author": "Kyle Machulis <kyle@machul.is>",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/metafetish/buttplug-node-websockets/issues"
+  },
+  "homepage": "https://github.com/metafetish/buttplug-node-websockets#readme",
+  "dependencies": {
+    "ws": "^4.0.0"
+  },
+  "peerDependencies": {
+    "buttplug": ">=0.6.x"
+  },
+  "devDependencies": {
+    "buttplug": "file:../buttplug"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "testMatch": [
+      "<rootDir>/tests/**/test-*.ts"
+    ],
+    "coverageDirectory": "./coverage/",
+    "coverageReporters": [
+      "json"
+    ],
+    "collectCoverage": true
+  }
+}
