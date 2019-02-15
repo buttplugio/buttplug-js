@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "name": "buttplug",
+  "scripts": {
+    "azure:build:all": "yarn install && yarn build:all",
+    "build:all": "yarn workspace buttplug build"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}
