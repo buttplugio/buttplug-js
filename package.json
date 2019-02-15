@@ -9,13 +9,19 @@
     "packages/*"
   ],
   "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/commander": "^2.12.2",
     "@types/jest": "^24.0.5",
+    "@types/mocha": "^5.2.6",
+    "@types/noble": "^0.0.39",
     "@types/node": "^11.9.4",
     "@types/tween.js": "^17.2.0",
     "@types/web-bluetooth": "^0.0.4",
-    "buttplug": ">=0.6.x",
+    "@types/ws": "^6.0.1",
+    "buttplug": "file:../buttplug",
+    "chai": "^4.2.0",
     "codecov": "^3.2.0",
-    "commander": "^2.14.1",
+    "commander": "^2.19.0",
     "copyfiles": "^2.1.0",
     "cross-env": "^5.2.0",
     "css-loader": "^2.1.0",
@@ -24,9 +30,12 @@
     "istanbul": "^0.4.5",
     "jest": "^24.1.0",
     "lerna": "^3.13.0",
-    "mock-socket": "^7.1.0",
-    "remap-istanbul": "^0.10.1",
-    "selfsigned": "^1.10.2",
+    "mocha": "^5.2.0",
+    "mock-socket": "^8.0.5",
+    "nyc": "^13.3.0",
+    "pkg": "^4.3.7",
+    "remap-istanbul": "^0.13.0",
+    "selfsigned": "^1.10.4",
     "style-loader": "^0.23.1",
     "terser": "^3.16.1",
     "terser-webpack-plugin": "^1.2.2",
@@ -50,6 +59,7 @@
   "dependencies": {
     "buttplug": "file:packages/buttplug",
     "buttplug-node-bluetoothle-manager": "file:packages/buttplug-node-bluetoothle-manager",
-    "buttplug-node-websockets": "file:packages/buttplug-node-websockets"
+    "buttplug-node-websockets": "file:packages/buttplug-node-websockets",
+    "buttplug-websocket-server": "file:packages/buttplug-server-cli"
   }
 }
