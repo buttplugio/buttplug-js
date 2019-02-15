@@ -15,6 +15,10 @@ export class ButtplugException extends Error {
     return this.messageId;
   }
 
+  public get ErrorMessage(): Messages.ButtplugMessage {
+    return new Messages.Error(this.message, this.ErrorClass, this.Id);
+  }
+
   public static LogAndError<T extends ButtplugException>(aConstructor: new(aStr: string, aNum: number) => T,
                                                          aLogger: ButtplugLogger,
                                                          aMessage: string,
@@ -39,6 +43,7 @@ export class ButtplugException extends Error {
         throw new Error(`Message type ${aError.ErrorCode} not handled`);
     }
   }
+
   public errorClass: Messages.ErrorClass = Messages.ErrorClass.ERROR_UNKNOWN;
   public innerError: Error | undefined;
   public messageId: number | undefined;
