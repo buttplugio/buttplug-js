@@ -16,3 +16,4 @@ steps:
     yarn build
     yarn test
   displayName: 'yarn install and build'
+  env: { "CI": "true" }
