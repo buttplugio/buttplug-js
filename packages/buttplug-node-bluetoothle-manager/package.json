@@ -1,0 +1,41 @@
+{
+  "name": "buttplug-node-bluetoothle-manager",
+  "version": "0.1.0",
+  "description": "Bluetooth LE Manager (using Noble) for native node Buttplug servers",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/metafetish/buttplug-node-bluetoothle-manager.git"
+  },
+  "author": "The Metafetish Project",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/metafetish/buttplug-node-bluetoothle-manager/issues"
+  },
+  "homepage": "https://github.com/metafetish/buttplug-node-bluetoothle-manager#readme",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "trash dist dist-bundle && yarn build:all",
+    "build:all": "tsc -p tsconfig.json",
+    "build:doc": "typedoc --options typedoc.js --out doc .",
+    "tslint": "tslint -c tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "tslint:fix": "tslint -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\""
+  },
+  "dependencies": {
+    "bluetooth-hci-socket": "https://github.com/jrobeson/node-bluetooth-hci-socket/#fix-builds-for-node-10",
+    "noble-uwp": "^0.6.2"
+  },
+  "peerDependencies": {
+    "buttplug": ">=0.10.0"
+  },
+  "devDependencies": {
+    "buttplug": ">=0.10.0",
+    "cross-env": "^5.2.0",
+    "trash": "^4.3.0",
+    "trash-cli": "^1.4.0",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.12.0",
+    "typedoc": "^0.13.0",
+    "typescript": "^3.2.2"
+  }
+}
