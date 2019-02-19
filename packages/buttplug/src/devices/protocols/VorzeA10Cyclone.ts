@@ -6,28 +6,17 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-import { BluetoothDeviceInfo } from "../BluetoothDeviceInfo";
-import { ButtplugBluetoothDevice } from "../ButtplugBluetoothDevice";
-import { IBluetoothDeviceImpl } from "../IBluetoothDeviceImpl";
-import * as Messages from "../../../core/Messages";
-import { ButtplugDeviceException } from "../../../core/Exceptions";
+import * as Messages from "../../core/Messages";
+import { ButtplugDeviceException } from "../../core/Exceptions";
+import { ButtplugDeviceProtocol } from "../ButtplugDeviceProtocol";
+import { IButtplugDeviceImpl } from "../IButtplugDeviceImpl";
 
-export class VorzeA10Cyclone extends ButtplugBluetoothDevice {
-  public static readonly DeviceInfo = new BluetoothDeviceInfo(["CycSA", "UFOSA"],
-                                                              [],
-                                                              ["40ee1111-63ec-4b7f-8ce7-712efd55b90e"],
-                                                              {},
-                                                              VorzeA10Cyclone.CreateInstance);
+export class VorzeA10Cyclone extends ButtplugDeviceProtocol {
+  private _isCyclone = false;
 
-  public static async CreateInstance(aDeviceImpl: IBluetoothDeviceImpl): Promise<ButtplugBluetoothDevice> {
-    return new VorzeA10Cyclone(aDeviceImpl);
-  }
-
-  private IsCyclone = false;
-
-  public constructor(aDeviceImpl: IBluetoothDeviceImpl) {
+  public constructor(aDeviceImpl: IButtplugDeviceImpl) {
     super(aDeviceImpl.Name === "CycSA" ? "Vorze A10 Cyclone" : "Vorze UFO SA", aDeviceImpl);
-    this.IsCyclone = aDeviceImpl.Name === "CycSA";
+    this._isCyclone = aDeviceImpl.Name === "CycSA";
     this.MsgFuncs.set(Messages.StopDeviceCmd, this.HandleStopDeviceCmd);
     this.MsgFuncs.set(Messages.VorzeA10CycloneCmd, this.HandleVorzeA10CycloneCmd);
     this.MsgFuncs.set(Messages.RotateCmd, this.HandleRotateCmd);
@@ -64,7 +53,7 @@ export class VorzeA10Cyclone extends ButtplugBluetoothDevice {
   private HandleVorzeA10CycloneCmd =
     async (aMsg: Messages.VorzeA10CycloneCmd): Promise<Messages.ButtplugMessage> => {
       const rawSpeed = (((aMsg.Clockwise ? 1 : 0) << 7) | aMsg.Speed) & 0xff;
-      await this._deviceImpl.WriteValue("tx", new Uint8Array([this.IsCyclone ? 0x01 : 0x02, 0x01, rawSpeed]));
+      await this._device.WriteValue(Buffer.from([this._isCyclone ? 0x01 : 0x02, 0x01, rawSpeed]));
       return new Messages.Ok(aMsg.Id);
     }
 }

@@ -6,40 +6,14 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-import { BluetoothDeviceInfo } from "../BluetoothDeviceInfo";
-import { ButtplugBluetoothDevice } from "../ButtplugBluetoothDevice";
-import { IBluetoothDeviceImpl } from "../IBluetoothDeviceImpl";
-import * as Messages from "../../../core/Messages";
-import * as MessageUtils from "../../../core/MessageUtils";
-import { RotateSubcommand } from "../../../core/Messages";
-import { ButtplugDeviceException } from "../../../core/Exceptions";
+import * as MessageUtils from "../../core/MessageUtils";
+import * as Messages from "../../core/Messages";
+import { ButtplugDeviceException } from "../../core/Exceptions";
+import { ButtplugDeviceProtocol } from "../ButtplugDeviceProtocol";
+import { IButtplugDeviceImpl } from "../IButtplugDeviceImpl";
+import { Endpoints } from "devices/Endpoints";
 
-export class Lovense extends ButtplugBluetoothDevice {
-  public static readonly DeviceInfo = (() => {
-    // Start with the two non-standard UUIDs, which come from the original
-    // versions of the Max/Nora toys.
-    const uuids: string[] = ["0000fff0-0000-1000-8000-00805f9b34fb",
-                             "6e400001-b5a3-f393-e0a9-e50e24dcca9e",
-                             "4f300001-0023-4bd4-bbd5-a6920e4c5653"];
-    // Future-proofing for possible Lovense UUIDs, based on the pattern of the
-    // current firmware.
-    for (let i = 0; i < 16; ++i) {
-      uuids.push(`5${i.toString(16)}300001-0023-4bd4-bbd5-a6920e4c5653`);
-      uuids.push(`5${i.toString(16)}300001-0024-4bd4-bbd5-a6920e4c5653`);
-    }
-
-    return new BluetoothDeviceInfo([],
-                                   ["LVS"],
-                                   uuids,
-                                   {},
-                                   Lovense.CreateInstance);
-  })();
-
-  public static async CreateInstance(aDeviceImpl: IBluetoothDeviceImpl): Promise<ButtplugBluetoothDevice> {
-    const dev = new Lovense(aDeviceImpl);
-    await dev.Initialize();
-    return dev;
-  }
+export class Lovense extends ButtplugDeviceProtocol {
 
   private static _deviceNames = {
     A: "Nora",
@@ -55,7 +29,7 @@ export class Lovense extends ButtplugBluetoothDevice {
   };
 
   private _initResolve: (() => void) | undefined;
-  private _initPromise = new Promise((res, rej) => { this._initResolve = res; });
+  private _initPromise = new Promise((res) => { this._initResolve = res; });
   private _isClockwise = false;
   private _specs: any = {
     VibrateCmd: { FeatureCount: 1 },
@@ -63,14 +37,14 @@ export class Lovense extends ButtplugBluetoothDevice {
     StopDeviceCmd: {},
   };
 
-  public constructor(aDeviceImpl: IBluetoothDeviceImpl) {
+  public constructor(aDeviceImpl: IButtplugDeviceImpl) {
     super(`Lovense ${aDeviceImpl.Name}`, aDeviceImpl);
   }
 
   public Initialize = async (): Promise<void> => {
-    this._deviceImpl.addListener("characteristicvaluechanged", this.OnValueChanged);
-    await this._deviceImpl.Subscribe("rx");
-    await this._deviceImpl.WriteString("tx", "DeviceType;");
+    this._device.addListener("updateReceived", this.OnValueChanged);
+    await this._device.SubscribeToUpdates();
+    await this.WriteStringToDevice("DeviceType;");
     await this._initPromise;
   }
 
@@ -108,10 +82,10 @@ export class Lovense extends ButtplugBluetoothDevice {
     }
   }
 
-  private OnValueChanged = async (aCharacteristic: string, aValue: Buffer) => {
+  private OnValueChanged = async ([aEndpoint, aValue]: [Endpoints, Buffer]) => {
     // If we haven't initialized yet, consider this to be the first read, for the device info.
     if (this._initResolve !== undefined) {
-      this.ParseDeviceType(aValue.toString());
+      this.ParseDeviceType(aValue.toString('utf8'));
       const res = this._initResolve;
       this._initResolve = undefined;
       res();
@@ -123,7 +97,7 @@ export class Lovense extends ButtplugBluetoothDevice {
   private HandleStopDeviceCmd = async (aMsg: Messages.StopDeviceCmd): Promise<Messages.ButtplugMessage> => {
     await this.HandleSingleMotorVibrateCmd(new Messages.SingleMotorVibrateCmd(0, aMsg.DeviceIndex, aMsg.Id));
     if (this._specs.hasOwnProperty("RotateCmd")) {
-      this.HandleRotateCmd(new Messages.RotateCmd([new RotateSubcommand(0, 0, this._isClockwise)], 0, aMsg.Id));
+      this.HandleRotateCmd(new Messages.RotateCmd([new Messages.RotateSubcommand(0, 0, this._isClockwise)], 0, aMsg.Id));
     }
     return new Messages.Ok(aMsg.Id);
   }
@@ -147,7 +121,7 @@ export class Lovense extends ButtplugBluetoothDevice {
     for (const cmd of aMsg.Speeds) {
       const index = this._specs.VibrateCmd.FeatureCount > 1 ? (cmd.Index + 1).toString(10) : "";
       const speed = Math.floor(20 * cmd.Speed);
-      await this._deviceImpl.WriteString("tx", `Vibrate${index}:${speed};`);
+      await this.WriteStringToDevice(`Vibrate${index}:${speed};`);
     }
     return new Messages.Ok(aMsg.Id);
   }
@@ -163,10 +137,10 @@ export class Lovense extends ButtplugBluetoothDevice {
       throw new ButtplugDeviceException("Rotation command sent for invalid index.");
     }
     if (rotateCmd.Clockwise !== this._isClockwise) {
-      await this._deviceImpl.WriteString("tx", "RotateChange;");
+      await this.WriteStringToDevice("RotateChange;");
     }
     const speed = Math.floor(20 * rotateCmd.Speed);
-    await this._deviceImpl.WriteString("tx", `Rotate:${speed};`);
+    await this.WriteStringToDevice(`Rotate:${speed};`);
     return new Messages.Ok(aMsg.Id);
   }
 

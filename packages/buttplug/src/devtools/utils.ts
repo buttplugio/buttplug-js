@@ -7,13 +7,13 @@
  */
 
 import { ButtplugClient, ButtplugEmbeddedServerConnector, ButtplugServer } from "../index";
-import { TestDeviceManager } from "./TestDeviceManager";
+import { TestDeviceSubtypeManager } from "./TestDeviceSubtypeManager";
 
 export async function CreateDevToolsClient(): Promise<ButtplugClient> {
   const client = new ButtplugClient("Test Client");
   const server = new ButtplugServer("Test Server");
   server.ClearDeviceManagers();
-  server.AddDeviceManager(new TestDeviceManager());
+  server.AddDeviceManager(new TestDeviceSubtypeManager());
   const localConnector = new ButtplugEmbeddedServerConnector();
   localConnector.Server = server;
   await client.Connect(localConnector);

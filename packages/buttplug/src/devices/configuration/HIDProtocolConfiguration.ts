@@ -6,9 +6,14 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-export * from "../TestDevice";
-export * from "../TestDeviceManager";
-export * from "../utils";
-export * from "./LogPanel";
-export * from "./TestDeviceManagerPanel";
-export * from "./utils.web";
+export class HIDProtocolConfiguration implements IProtocolConfiguration {
+  public constructor(aObj: object) {
+  }
+
+  public Matches(aConfig: IProtocolConfiguration) : boolean {
+    return false;
+  }
+
+  public Merge(aConfig: IProtocolConfiguration) : void {
+  }
+}

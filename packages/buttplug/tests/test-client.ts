@@ -1,6 +1,6 @@
-import { ButtplugClientDevice, ButtplugClient, FromJSON, ButtplugLogger, CheckMessage,
-         ButtplugLogLevel, ButtplugServer, ButtplugEmbeddedServerConnector } from "../src/index";
-import { TestDeviceManager, CreateDevToolsClient } from "../src/devtools/index";
+import { ButtplugClient, ButtplugLogger,
+         ButtplugServer, ButtplugEmbeddedServerConnector } from "../src/index";
+import { TestDeviceSubtypeManager, CreateDevToolsClient } from "../src/devtools/index";
 import * as Messages from "../src/core/Messages";
 import { BPTestClient, SetupTestSuite, SetupTestServer } from "./utils";
 import { ButtplugMessageException, ButtplugDeviceException } from "../src/core/Exceptions";
@@ -58,15 +58,14 @@ describe("Client Tests", async () => {
   it("Should emit a device on addition", async () => {
     const connector = await SetupTestServer();
     const tdm = connector.TestDeviceManager;
-    const server = connector.Server;
-    const bp = connector.Client;
-    bp.on("deviceadded", (x) => {
+    const bpClient = connector.Client;
+    bpClient.on("deviceadded", (x) => {
       tdm.VibrationDevice.Disconnect();
     });
-    bp.on("deviceremoved", (x) => {
+    bpClient.on("deviceremoved", (x) => {
       res();
     });
-    await bp.StartScanning();
+    await bpClient.StartScanning();
     return p;
   });
 
@@ -76,7 +75,7 @@ describe("Client Tests", async () => {
       res();
     });
     const server = new ButtplugServer("Test Server");
-    const tdm = new TestDeviceManager();
+    const tdm = new TestDeviceSubtypeManager();
     server.AddDeviceManager(tdm);
     tdm.ConnectLinearDevice();
     const localConnector = new ButtplugEmbeddedServerConnector();
@@ -100,7 +99,7 @@ describe("Client Tests", async () => {
 
     bp.on("scanningfinished", async () => {
       try {
-        await bp.SendDeviceMessage(bp.Devices[0], new Messages.SingleMotorVibrateCmd(1.0));
+        await bp.Devices[0].SendVibrateCmd(1);
       } catch (e) {
         rej();
       }

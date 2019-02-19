@@ -6,8 +6,14 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-export * from "./TestDeviceImpl";
-export * from "./TestDeviceProtocol";
-export * from "./TestDeviceSubtypeManager";
-export * from "./utils";
+export class SerialProtocolConfiguration implements IProtocolConfiguration {
+  public constructor(aObj: object) {
+  }
 
+  public Matches(aConfig: IProtocolConfiguration) : boolean {
+    return false;
+  }
+
+  public Merge(aConfig: IProtocolConfiguration) : void {
+  }
+}

@@ -11,7 +11,7 @@ import {plainToClass} from "class-transformer";
 import * as ajv from "ajv";
 import * as Messages from "./Messages";
 import { ButtplugMessageException } from "./Exceptions";
-const buttplugSchema = require("../../dependencies/buttplug-schema/schema/buttplug-schema.json");
+import * as buttplugSchema from "../../dependencies/buttplug-schema/schema/buttplug-schema.json";
 
 // Since we're still using the draft 06 schema, we now have to specifically add
 // it to ajv, which defaults to 7.
@@ -48,5 +48,5 @@ export function FromJSON(str): Messages.ButtplugMessage[] {
 }
 
 export function GetSchemaVersion(): number {
-  return parseInt(buttplugSchema.version, 10);
+  return parseInt((buttplugSchema as any).version, 10);
 }

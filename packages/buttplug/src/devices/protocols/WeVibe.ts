@@ -6,33 +6,18 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-import { BluetoothDeviceInfo } from "../BluetoothDeviceInfo";
-import { ButtplugBluetoothDevice } from "../ButtplugBluetoothDevice";
-import { IBluetoothDeviceImpl } from "../IBluetoothDeviceImpl";
-import * as Messages from "../../../core/Messages";
-import { ButtplugDeviceException } from "../../../core/Exceptions";
+import * as Messages from "../../core/Messages";
+import { ButtplugDeviceException } from "../../core/Exceptions";
+import { ButtplugDeviceProtocol } from "../ButtplugDeviceProtocol";
+import { IButtplugDeviceImpl } from "../IButtplugDeviceImpl";
 
-export class WeVibe extends ButtplugBluetoothDevice {
-  public static readonly DeviceInfo = new BluetoothDeviceInfo(["Cougar", "4 Plus", "4plus", "Bloom",
-                                                               "classic", "Classic", "Ditto", "Gala",
-                                                               "Jive", "Nova", "NOVAV2", "Pivot",
-                                                               "Rave", "Sync", "Verge", "Wish"],
-                                                              [],
-                                                              ["f000bb03-0451-4000-b000-000000000000"],
-                                                              {},
-                                                              WeVibe.CreateInstance);
-
+export class WeVibe extends ButtplugDeviceProtocol {
   public static readonly DualVibes: string[] = ["Cougar", "4 Plus", "4plus", "classic", "Classic",
-                                       "Gala", "Nova", "NOVAV2", "Sync"];
-
-  public static async CreateInstance(aDeviceImpl: IBluetoothDeviceImpl): Promise<ButtplugBluetoothDevice> {
-    return new WeVibe(aDeviceImpl);
-  }
-
+                                                "Gala", "Nova", "NOVAV2", "Sync"];
   private readonly _vibratorCount: number = 1;
   private _vibratorSpeed = [ 0.0, 0.0 ];
 
-  public constructor(aDeviceImpl: IBluetoothDeviceImpl) {
+  public constructor(aDeviceImpl: IButtplugDeviceImpl) {
     super(`WeVibe ${aDeviceImpl.Name}` , aDeviceImpl);
     this._vibratorCount = WeVibe.DualVibes.find((x) => x === this.Name) ? 2 : 1;
     this.MsgFuncs.set(Messages.StopDeviceCmd, this.HandleStopDeviceCmd);
@@ -55,7 +40,7 @@ export class WeVibe extends ButtplugBluetoothDevice {
                                         aMsg.Id);
     }
 
-    let changed;
+    let changed = false;
     for (const cmd of aMsg.Speeds) {
       if (!(Math.abs(cmd.Speed - this._vibratorSpeed[cmd.Index]) > 0.001)) {
         continue;
@@ -71,14 +56,14 @@ export class WeVibe extends ButtplugBluetoothDevice {
 
     const rSpeedInt = Math.round(this._vibratorSpeed[0] * 15);
     const rSpeedExt = Math.round(this._vibratorSpeed[this._vibratorCount - 1] * 15);
-    const data: Uint8Array = new Uint8Array([0x0f, 0x03, 0x00, (rSpeedInt << 4) | (rSpeedExt), 0x00, 0x03, 0x00, 0x00]);
+    const data = Buffer.from([0x0f, 0x03, 0x00, (rSpeedInt << 4) | (rSpeedExt), 0x00, 0x03, 0x00, 0x00]);
 
     if (rSpeedInt === 0 && rSpeedExt === 0) {
       data[1] = 0x00;
       data[5] = 0x00;
     }
 
-    await this._deviceImpl.WriteValue("tx", data);
+    await this._device.WriteValue(data);
     return new Messages.Ok(aMsg.Id);
   }
 

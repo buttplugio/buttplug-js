@@ -11,9 +11,11 @@ import { EventEmitter } from "events";
 
 export interface IButtplugDevice extends EventEmitter {
   readonly MessageSpecifications: object;
-  readonly AllowedMessageTypes: string[];
+  readonly AllowedMessageTypes: Function[];
   readonly Name: string;
   readonly Id: string;
+  readonly Connected: boolean;
+  Initialize(): Promise<void>;
   ParseMessage(aMsg: Messages.ButtplugDeviceMessage): Promise<Messages.ButtplugMessage>;
-  Disconnect();
+  Disconnect(): void;
 }

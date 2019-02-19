@@ -7,9 +7,9 @@
  */
 
 import * as Messages from "../core/Messages";
-import { IButtplugDevice } from "./IButtplugDevice";
+import { IButtplugDevice } from "../devices/IButtplugDevice";
 import { IDeviceSubtypeManager } from "./IDeviceSubtypeManager";
-import { WebBluetoothDeviceManager } from "./bluetooth/WebBluetoothDeviceManager";
+import { WebBluetoothDeviceManager } from "./managers/webbluetooth/WebBluetoothDeviceManager";
 import { EventEmitter } from "events";
 import { ButtplugLogger } from "../core/Logging";
 import { ButtplugException, ButtplugDeviceException, ButtplugMessageException } from "../core/Exceptions";
@@ -55,6 +55,7 @@ export class DeviceManager extends EventEmitter {
     aManager.SetLogger(this._logger);
     this._subtypeManagers.push(aManager);
     aManager.addListener("deviceadded", this.OnDeviceAdded);
+    // TODO why is this listening for remove? Managers never emit that.
     aManager.addListener("deviceremoved", this.OnDeviceRemoved);
     aManager.addListener("scanningfinished", this.OnScanningFinished);
   }
@@ -127,16 +128,17 @@ export class DeviceManager extends EventEmitter {
                                           id);
     }
     const device = this._devices.get(deviceMsg.DeviceIndex)!;
-    if (device.AllowedMessageTypes.indexOf(aMessage.Type.name) < 0) {
+    if (device.AllowedMessageTypes.indexOf(aMessage.Type) < 0) {
       throw ButtplugException.LogAndError(ButtplugDeviceException,
                                           this._logger,
-                                          `Device ${device.Name} does not take message type ${aMessage.Type}`,
+                                          `Device ${device.Name} does not take message type ${aMessage.Type.name}`,
                                           id);
     }
     this._logger.Trace(`DeviceManager: Sending ${deviceMsg.Type} to ${device.Name} (${deviceMsg.Id})`);
     return await device.ParseMessage(deviceMsg);
   }
 
+  // Expects to get a connected, initialized device.
   private OnDeviceAdded = (device: IButtplugDevice) => {
     for (const dev of this._devices.values()) {
       if (dev.Id === device.Id) {
@@ -154,20 +156,20 @@ export class DeviceManager extends EventEmitter {
                                               device.MessageSpecifications));
   }
 
-  private OnDeviceRemoved = (device: IButtplugDevice) => {
+  private OnDeviceRemoved = (deviceRemoved: IButtplugDevice) => {
     let deviceIndex: number | null = null;
-    for (const entry of Array.from(this._devices.entries())) {
-      if (entry[1] === device) {
-        deviceIndex = entry[0];
+    for (const [index, device] of Array.from(this._devices.entries())) {
+      if (device === deviceRemoved) {
+        deviceIndex = index;
         break;
       }
     }
     if (deviceIndex === null) {
       return;
     }
-    device.removeAllListeners("deviceremoved");
+    deviceRemoved.removeAllListeners("deviceremoved");
     this._devices.delete(deviceIndex);
-    this._logger.Info(`DeviceManager: Device Removed: ${device.Name} (${deviceIndex})`);
+    this._logger.Info(`DeviceManager: Device Removed: ${deviceRemoved.Name} (${deviceIndex})`);
     this._msgClosure(new Messages.DeviceRemoved(deviceIndex));
   }
 

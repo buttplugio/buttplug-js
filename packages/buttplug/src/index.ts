@@ -15,10 +15,14 @@ export * from "./core/Messages";
 export * from "./core/MessageUtils";
 export * from "./core/Logging";
 export * from "./core/Exceptions";
+export * from "./devices/IButtplugDevice";
+export * from "./devices/IButtplugDeviceImpl";
+export * from "./devices/IButtplugDeviceProtocol"
+export * from "./devices/ButtplugDevice";
+export * from "./devices/ButtplugDeviceImpl";
+export * from "./devices/ButtplugDeviceProtocol"
+export * from "./devices/Endpoints";
+export * from "./devices/configuration/DeviceConfigurationManager";
 export * from "./server/ButtplugServer";
-export * from "./server/ButtplugDevice";
 export * from "./server/IDeviceSubtypeManager";
-export * from "./server/bluetooth/ButtplugBluetoothDevice";
-export * from "./server/bluetooth/BluetoothDeviceInfo";
-export * from "./server/bluetooth/BluetoothDevices";
-export * from "./server/bluetooth/IBluetoothDeviceImpl";
+

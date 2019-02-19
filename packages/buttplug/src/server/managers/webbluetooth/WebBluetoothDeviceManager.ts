@@ -6,14 +6,15 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-import { ButtplugLogger } from "../../core/Logging";
-import { ButtplugException, ButtplugDeviceException } from "../../core/Exceptions";
-import { DeviceAdded } from "../../core/Messages";
-import { IDeviceSubtypeManager } from "../IDeviceSubtypeManager";
-import { BluetoothDevices } from "./BluetoothDevices";
-import { BluetoothDeviceInfo } from "./BluetoothDeviceInfo";
+import { ButtplugLogger } from "../../../core/Logging";
+import { ButtplugException, ButtplugDeviceException } from "../../../core/Exceptions";
+import { DeviceAdded } from "../../../core/Messages";
+import { IDeviceSubtypeManager } from "../../IDeviceSubtypeManager";
 import { EventEmitter } from "events";
+import { DeviceConfigurationManager } from "../../../devices/configuration/DeviceConfigurationManager";
+import { BluetoothLEProtocolConfiguration } from "../../../devices/configuration/BluetoothLEProtocolConfiguration";
 import { WebBluetoothDevice } from "./WebBluetoothDevice";
+import { ButtplugDevice } from "../../../devices/ButtplugDevice";
 
 export class WebBluetoothDeviceManager extends EventEmitter implements IDeviceSubtypeManager {
   private _logger: ButtplugLogger;
@@ -29,19 +30,27 @@ export class WebBluetoothDeviceManager extends EventEmitter implements IDeviceSu
 
   public async StartScanning() {
     // Form scanning filters
-    const info = BluetoothDevices.GetDeviceInfo();
+    // TODO Get bluetooth device info from device configuration manager here.
+
     const filters = {
       filters: new Array<BluetoothRequestDeviceFilter>(),
       optionalServices: new Array<BluetoothServiceUUID>(),
     };
-    for (const deviceInfo of info) {
-      for (const deviceName of deviceInfo.Names) {
+
+    // If the DeviceConfigurationManager hasn't been built yet, we've got a
+    // problem. So just expect we'll get one back.
+    let confMgr = DeviceConfigurationManager.Manager;
+
+    let bluetoothConfigs = confMgr.GetAllConfigsOfType(BluetoothLEProtocolConfiguration);
+
+    for (const config of bluetoothConfigs) {
+      for (const deviceName of config.Names) {
+        if (deviceName.endsWith("*")) {
+          filters.filters.push({namePrefix: deviceName.substr(0, deviceName.length - 1)});
+        }
         filters.filters.push({name: deviceName});
       }
-      for (const deviceNamePrefix of deviceInfo.NamePrefixes) {
-        filters.filters.push({namePrefix: deviceNamePrefix});
-      }
-      filters.optionalServices = [...filters.optionalServices, ...deviceInfo.Services];
+      filters.optionalServices = [...filters.optionalServices, ...config.Services.keys()];
     }
 
     this._logger.Trace("Bluetooth filter set: " + filters);
@@ -92,28 +101,27 @@ export class WebBluetoothDeviceManager extends EventEmitter implements IDeviceSu
       // TODO Throw here?
       return;
     }
-    // Find the related info for the device
-    const info = BluetoothDevices.GetDeviceInfo();
-    let deviceInfo: BluetoothDeviceInfo | null = null;
-    for (const di of info) {
-      if (di.Names.indexOf(aDevice.name!) >= 0) {
-        deviceInfo = di;
-        break;
-      }
-      for (const namePrefix of di.NamePrefixes) {
-        if (aDevice.name!.indexOf(namePrefix) !== -1) {
-          deviceInfo = di;
-          break;
-        }
-      }
-    }
-    if (deviceInfo === null) {
-      // TODO Throw here?
-      // We somehow got a device we don't know what to do with?
+    // TODO Use DeviceConfigurationManager to get a device factory here.
+    let mgr = DeviceConfigurationManager.Manager;
+
+    let searchConfig = new BluetoothLEProtocolConfiguration([aDevice.name!]);
+
+    let matchSpec = mgr.Find(searchConfig);
+
+    if (matchSpec === undefined) {
+      // TODO For WebBluetooth, we should never get here and should probably throw.
       return;
     }
 
-    const device = await WebBluetoothDevice.CreateDevice(deviceInfo, aDevice);
+    let [matchConfig, matchProtocolType] = matchSpec!;
+
+    const webBtDevice = new WebBluetoothDevice(matchConfig as BluetoothLEProtocolConfiguration, aDevice);
+    await webBtDevice.Connect();
+
+    const protocol = new matchProtocolType(webBtDevice);
+
+    const device = new ButtplugDevice(protocol, webBtDevice);
+    await device.Initialize();
     this.emit("deviceadded", device);
   }
 }

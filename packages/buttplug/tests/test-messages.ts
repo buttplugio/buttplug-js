@@ -1,7 +1,7 @@
 import * as Messages from "../src/core/Messages";
 import { ButtplugClient } from "../src/client/Client";
 import { FromJSON } from "../src/core/MessageUtils";
-import { SetupTestSuite, SetupTestServer } from "./utils";
+import { SetupTestSuite } from "./utils";
 import { SpeedSubcommand, VectorSubcommand, RotateSubcommand } from "../src/core/Messages";
 
 SetupTestSuite();

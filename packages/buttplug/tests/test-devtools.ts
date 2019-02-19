@@ -1,8 +1,8 @@
-import { SetupTestSuite, SetupTestServer } from "./utils";
-import { TestDeviceManager, CreateDevToolsClient } from "../src/devtools/index";
+import { SetupTestServer } from "./utils";
 import { SingleMotorVibrateCmd, FleshlightLaunchFW12Cmd, LinearCmd, VibrateCmd,
          SpeedSubcommand, VectorSubcommand, ButtplugServer, ButtplugEmbeddedServerConnector,
          ButtplugClient, ButtplugClientDevice } from "../src/index";
+import { TestDeviceSubtypeManager } from "../src/devtools";
 
 describe("devtools tests", () => {
   let p;
@@ -30,8 +30,8 @@ describe("devtools tests", () => {
     });
     await bp.StartScanning();
     await p;
-    const vibrateDevice = tdm.VibrationDevice;
-    const linearDevice = tdm.LinearDevice;
+    const vibrateDevice = tdm.VibrationProtocol;
+    const linearDevice = tdm.LinearProtocol;
     resetTestPromise();
 
     vibrateDevice.on("vibrate", (speed) => {
@@ -84,7 +84,7 @@ describe("devtools tests", () => {
   it("should list allowed messages correctly when devices are added manually", async () => {
     const server = new ButtplugServer();
     const serverConnector = new ButtplugEmbeddedServerConnector();
-    const testDeviceManager = new TestDeviceManager();
+    const testDeviceManager = new TestDeviceSubtypeManager();
     server.AddDeviceManager(testDeviceManager);
     serverConnector.Server = server;
 

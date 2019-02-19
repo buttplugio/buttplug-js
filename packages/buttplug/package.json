@@ -23,7 +23,8 @@
     "build:all": "yarn build:main && yarn build:web && yarn build:web:release",
     "build:copy-devtools": "copyfiles ./src/devtools/web/*.html ./src/devtools/web/*.css ./src/devtools/web/*.png ./dist/main",
     "build:copy-schema": "copyfiles ./dependencies/buttplug-schema/schema/buttplug-schema.json ./dist/main/",
-    "build:copy-all": "yarn build:copy-schema && yarn build:copy-devtools",
+    "build:copy-device-config": "copyfiles ./dependencies/buttplug-device-config/buttplug-device-config.json ./dist/main/",
+    "build:copy-all": "yarn build:copy-schema && yarn build:copy-devtools && yarn build:copy-device-config",
     "build:main": "tsc -p tsconfig.json && yarn build:copy-all",
     "build:redist": "tsc -p tsconfig.json && yarn build:copy-all",
     "build:doc": "typedoc --options typedoc.js --out doc .",
@@ -33,13 +34,13 @@
     "tslint": "tslint -c tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
     "tslint:fix": "tslint -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\"",
     "pretest": "yarn build:main",
-    "test": "jest && istanbul report",
-    "posttest": "codecov"
+    "test": "jest && istanbul report"
   },
   "dependencies": {
     "@tweenjs/tween.js": "^17.3.0",
     "ajv": "^6.9.1",
     "class-transformer": "^0.2.0",
+    "js-yaml": "^3.12.1",
     "jspanel4": "^4.5.0",
     "reflect-metadata": "^0.1.13"
   },
@@ -49,7 +50,8 @@
       "js"
     ],
     "transform": {
-      "^.+\\.ts$": "ts-jest"
+      "^.+\\.ts$": "ts-jest",
+      "^.+\\.(yaml|yml)$": "jest-raw-loader"
     },
     "testMatch": [
       "<rootDir>/tests/**/test-*.ts"

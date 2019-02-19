@@ -2,12 +2,11 @@ import { Server } from "mock-socket";
 import { IDeviceSubtypeManager } from "../src/server/IDeviceSubtypeManager";
 import { ButtplugEmbeddedServerConnector } from "../src/client/ButtplugEmbeddedServerConnector";
 import { ButtplugServer } from "../src/server/ButtplugServer";
-import { IButtplugDevice } from "../src/server/IButtplugDevice";
 import * as Messages from "../src/core/Messages";
 import { FromJSON } from "../src/core/MessageUtils";
 import { EventEmitter } from "events";
 import { ButtplugClient } from "../src/index";
-import { TestDeviceManager } from "../src/devtools";
+import { TestDeviceSubtypeManager } from "../src/devtools";
 import { SetupTestSuite } from "./utils";
 import { ButtplugLogger, ButtplugLogLevel } from "../src/core/Logging";
 import { ButtplugDeviceException } from "../src/core/Exceptions";
@@ -44,7 +43,7 @@ describe("Server Tests", async () => {
   let bpServer: ButtplugServer;
   beforeEach(async () => {
     bpServer = new ButtplugServer("Test Server", 0);
-    bpServer.AddDeviceManager(new TestDeviceManager());
+    bpServer.AddDeviceManager(new TestDeviceSubtypeManager());
   });
 
   it("Should throw connection error if message sent without connecting", async () => {

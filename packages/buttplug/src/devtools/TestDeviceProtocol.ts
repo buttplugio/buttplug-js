@@ -6,43 +6,52 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-import { ButtplugDevice, SingleMotorVibrateCmd, FleshlightLaunchFW12Cmd } from "../index";
+import { SingleMotorVibrateCmd, FleshlightLaunchFW12Cmd } from "../index";
 import * as Messages from "../index";
+import { ButtplugDeviceProtocol } from "../devices/ButtplugDeviceProtocol";
+import { IButtplugDeviceImpl } from "../devices/IButtplugDeviceImpl";
+import { TestDeviceImpl } from "./TestDeviceImpl";
+import { ButtplugDeviceException } from "../core/Exceptions";
 
-export class TestDevice extends ButtplugDevice {
+export class TestDeviceProtocol extends ButtplugDeviceProtocol {
 
-  private _connected: boolean = false;
   private _linearSpeed: number = 0;
   private _linearPosition: number = 0;
   private _vibrateSpeed: number = 0;
   private _rotateSpeed: number = 0;
   private _rotateClockwise: boolean = false;
+  private _shouldVibrate = false;
+  private _shouldRotate = false;
+  private _shouldLinear = false;
 
   public constructor(name: string,
-                     shouldVibrate: boolean = false,
-                     shouldLinear: boolean = false,
-                     shouldRotate: boolean = false) {
-    super(`Test Device - ${name}`, "TestDevice" + (shouldVibrate ? "Vibrate" : "") + (shouldLinear ? "Linear" : ""));
+                     deviceImpl: IButtplugDeviceImpl,
+                     aShouldVibrate: boolean,
+                     aShouldLinear: boolean,
+                     aShouldRotate: boolean) {
+    super(`Test Device - ${name}`, deviceImpl);
+    this._shouldVibrate = aShouldVibrate;
+    this._shouldLinear = aShouldLinear;
+    this._shouldRotate = aShouldRotate;
+
     this.MsgFuncs.set(Messages.StopDeviceCmd, this.HandleStopDeviceCmd);
-    if (shouldVibrate) {
+
+    if (!(deviceImpl instanceof TestDeviceImpl)) {
+      throw new ButtplugDeviceException("TestDeviceProtocol can only be constructed with a TestDeviceImpl");
+    }
+
+    // This sort of mimics how we decide on features via BLE names.
+    if (this._shouldVibrate) {
       this.MsgFuncs.set(Messages.SingleMotorVibrateCmd, this.HandleSingleMotorVibrateCmd);
       this.MsgFuncs.set(Messages.VibrateCmd, this.HandleVibrateCmd);
     }
-    if (shouldLinear) {
+    if (this._shouldLinear) {
       this.MsgFuncs.set(Messages.FleshlightLaunchFW12Cmd, this.HandleFleshlightLaunchFW12Cmd);
       this.MsgFuncs.set(Messages.LinearCmd, this.HandleLinearCmd);
     }
-    if (shouldRotate) {
+    if (this._shouldRotate) {
       this.MsgFuncs.set(Messages.RotateCmd, this.HandleRotateCmd);
     }
-  }
-
-  public get Connected() {
-    return this._connected;
-  }
-
-  public set Connected(connected: boolean) {
-    this._connected = connected;
   }
 
   public get MessageSpecifications(): object {
@@ -65,11 +74,6 @@ export class TestDevice extends ButtplugDevice {
       };
     }
     return {};
-  }
-
-  public Disconnect() {
-    this._connected = false;
-    this.emit("deviceremoved", this);
   }
 
   private HandleStopDeviceCmd = async (aMsg: Messages.StopDeviceCmd): Promise<Messages.ButtplugMessage> => {
@@ -141,3 +145,4 @@ export class TestDevice extends ButtplugDevice {
                                                                                            aMsg.Id));
     }
 }
+

@@ -6,8 +6,14 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-export * from "./TestDeviceImpl";
-export * from "./TestDeviceProtocol";
-export * from "./TestDeviceSubtypeManager";
-export * from "./utils";
+import { Endpoints } from "./Endpoints";
 
+export class ButtplugDeviceWriteOptions
+{
+  public Endpoint: Endpoints = Endpoints.Tx;
+  public WriteWithResponse: boolean = false;
+
+  public constructor(init?:Partial<ButtplugDeviceWriteOptions>) {
+    Object.assign(this, init);
+  }
+}

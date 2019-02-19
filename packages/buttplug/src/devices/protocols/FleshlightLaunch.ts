@@ -6,31 +6,17 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-import { BluetoothDeviceInfo } from "../BluetoothDeviceInfo";
-import { ButtplugBluetoothDevice } from "../ButtplugBluetoothDevice";
-import { IBluetoothDeviceImpl } from "../IBluetoothDeviceImpl";
-import * as Messages from "../../../core/Messages";
-import { ButtplugException, ButtplugDeviceException } from "../../../core/Exceptions";
+import * as Messages from "../../core/Messages";
+import { ButtplugDeviceException } from "../../core/Exceptions";
+import { ButtplugDeviceProtocol } from "../ButtplugDeviceProtocol";
+import { IButtplugDeviceImpl } from "../IButtplugDeviceImpl";
+import { Endpoints } from "../Endpoints";
+import { ButtplugDeviceWriteOptions } from "../ButtplugDeviceWriteOptions";
 
-export class FleshlightLaunch extends ButtplugBluetoothDevice {
-  public static readonly DeviceInfo = new BluetoothDeviceInfo(["Launch"],
-                                                              [],
-                                                              ["88f80580-0000-01e6-aace-0002a5d5c51b"],
-                                                              { cmd: "88f80583-0000-01e6-aace-0002a5d5c51b",
-                                                                // rx: "88f80582-0000-01e6-aace-0002a5d5c51b",
-                                                                tx: "88f80581-0000-01e6-aace-0002a5d5c51b"},
-                                                              FleshlightLaunch.CreateInstance);
-
-  public static async CreateInstance(aDeviceImpl: IBluetoothDeviceImpl): Promise<ButtplugBluetoothDevice> {
-    // Send initializer byte
-    const dev = new FleshlightLaunch(aDeviceImpl);
-    await dev.Initialize();
-    return dev;
-  }
-
+export class FleshlightLaunch extends ButtplugDeviceProtocol {
   private _lastPosition: number = 0;
 
-  public constructor(aDeviceImpl: IBluetoothDeviceImpl) {
+  public constructor(aDeviceImpl: IButtplugDeviceImpl) {
     super("Fleshlight Launch", aDeviceImpl);
     this.MsgFuncs.set(Messages.StopDeviceCmd, this.HandleStopDeviceCmd);
     this.MsgFuncs.set(Messages.FleshlightLaunchFW12Cmd, this.HandleFleshlightLaunchFW12Cmd);
@@ -39,7 +25,7 @@ export class FleshlightLaunch extends ButtplugBluetoothDevice {
 
   public Initialize =
     async (): Promise<void> => {
-      await this._deviceImpl.WriteValue("cmd", new Uint8Array([0x00]));
+      await this._device.WriteValue(Buffer.from([0x00]), new ButtplugDeviceWriteOptions({ Endpoint: Endpoints.Command }));
     }
 
   public get MessageSpecifications(): object {
@@ -61,7 +47,7 @@ export class FleshlightLaunch extends ButtplugBluetoothDevice {
   private HandleFleshlightLaunchFW12Cmd =
     async (aMsg: Messages.FleshlightLaunchFW12Cmd): Promise<Messages.ButtplugMessage> => {
       this._lastPosition = aMsg.Position;
-      await this._deviceImpl.WriteValue("tx", new Uint8Array([aMsg.Position, aMsg.Speed]));
+      await this._device.WriteValue(Buffer.from([aMsg.Position, aMsg.Speed]));
       return new Messages.Ok(aMsg.Id);
     }
 

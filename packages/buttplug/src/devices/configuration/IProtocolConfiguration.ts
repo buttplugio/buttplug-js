@@ -6,8 +6,7 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-export * from "./TestDeviceImpl";
-export * from "./TestDeviceProtocol";
-export * from "./TestDeviceSubtypeManager";
-export * from "./utils";
-
+interface IProtocolConfiguration {
+  Matches(aConfig: IProtocolConfiguration): boolean;
+  Merge(aConfig: IProtocolConfiguration): void;
+}
