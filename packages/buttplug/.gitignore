@@ -49,3 +49,5 @@ dist-bundle
 
 # typedoc output
 doc/**
+
+dependencies/buttplug-device-config/buttplug-device-config.json
