@@ -50,8 +50,7 @@
       "js"
     ],
     "transform": {
-      "^.+\\.ts$": "ts-jest",
-      "^.+\\.(yaml|yml)$": "jest-raw-loader"
+      "^.+\\.ts$": "ts-jest"
     },
     "testMatch": [
       "<rootDir>/tests/**/test-*.ts"
