@@ -33,34 +33,5 @@ module.exports = merge.multiple(common, [
         minimize: true
       })
     ]
-  },
-  {
-    mode: "none",
-    output: {
-      filename: `buttplug-devtools.min.js`
-    },
-    optimization: {
-      minimize: false
-    },
-    devtool: '#source-map',
-    plugins: [
-      new TerserPlugin({
-        sourceMap: true,
-        parallel: true,
-        terserOptions: {
-          mangle: {
-            keep_classnames: true,
-            keep_fnames: true
-          },
-          compress: {
-            keep_fnames: true,
-            keep_classnames: true,
-          }
-        }
-      }),
-      new webpack.LoaderOptionsPlugin({
-        minimize: true
-      })
-    ]
   }]);
 

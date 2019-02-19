@@ -8,14 +8,12 @@ module.exports = {
   plugins: [
     new BundleAnalyzerPlugin()
   ]
-}
+};
 
 module.exports = merge.multiple(production, [
   {
     plugins: [
       new BundleAnalyzerPlugin()
     ]
-  },
-  {
   }]);
 
