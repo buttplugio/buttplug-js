@@ -1784,8 +1784,10 @@ builtins@^1.0.3:
 "buttplug-node-bluetoothle-manager@file:packages/buttplug-node-bluetoothle-manager":
   version "0.1.0"
   dependencies:
-    bluetooth-hci-socket "https://github.com/jrobeson/node-bluetooth-hci-socket/#fix-builds-for-node-10"
     noble-uwp "^0.6.2"
+    uuid-parse "^1.0.0"
+  optionalDependencies:
+    bluetooth-hci-socket "https://github.com/jrobeson/node-bluetooth-hci-socket/#fix-builds-for-node-10"
 
 "buttplug-node-websockets@file:packages/buttplug-node-websockets":
   version "0.0.3"
@@ -1795,8 +1797,8 @@ builtins@^1.0.3:
 "buttplug-websocket-server@file:packages/buttplug-server-cli":
   version "0.0.1"
   dependencies:
-    buttplug "file:../../../.cache/yarn/v4/npm-buttplug-websocket-server-0.0.1-740cad51-1466-402c-ab89-aca26aba6893-1550346155653/node_modules/buttplug"
-    buttplug-node-bluetoothle-manager "file:../../../.cache/yarn/v4/npm-buttplug-websocket-server-0.0.1-740cad51-1466-402c-ab89-aca26aba6893-1550346155653/node_modules/buttplug-node-bluetoothle-manager"
+    buttplug "file:../../../.cache/yarn/v4/npm-buttplug-websocket-server-0.0.1-afd0e23e-4d0e-4c87-8e57-2dc72ae29343-1550632091636/node_modules/buttplug"
+    buttplug-node-bluetoothle-manager "file:../../../.cache/yarn/v4/npm-buttplug-websocket-server-0.0.1-afd0e23e-4d0e-4c87-8e57-2dc72ae29343-1550632091636/node_modules/buttplug-node-bluetoothle-manager"
     commander "^2.19.0"
     selfsigned "^1.10.4"
     ws "^6.1.2"
@@ -3404,13 +3406,6 @@ findup-sync@^2.0.0:
     micromatch "^3.0.4"
     resolve-dir "^1.0.1"
 
-flat@^4.0.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/flat/-/flat-4.1.0.tgz#090bec8b05e39cba309747f1d588f04dbaf98db2"
-  integrity sha512-Px/TiLIznH7gEDlPXcUD4KnBusa6kR6ayRUVcnEAbreRIuhkqow/mun59BuRXwoYk7ZQOLW1ZM05ilIvK38hFw==
-  dependencies:
-    is-buffer "~2.0.3"
-
 flush-write-stream@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/flush-write-stream/-/flush-write-stream-1.0.2.tgz#c81b90d8746766f1a609a46809946c45dd8ae417"
@@ -4334,11 +4329,6 @@ is-buffer@^1.1.5:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/is-buffer/-/is-buffer-1.1.5.tgz#1f3b26ef613b214b88cbca23cc6c01d87961eecc"
 
-is-buffer@~2.0.3:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/is-buffer/-/is-buffer-2.0.3.tgz#4ecf3fcf749cbd1e472689e109ac66261a25e725"
-  integrity sha512-U15Q7MXTuZlrbymiz95PJpZxu8IlipAp4dtS3wOdgPXx3mqBnslrWU14kxfHB+Py/+2PVKSr37dMAgM2A4uArw==
-
 is-builtin-module@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/is-builtin-module/-/is-builtin-module-1.0.0.tgz#540572d34f7ac3119f8f76c30cbc1b1e037affbe"
@@ -4849,11 +4839,6 @@ jest-mock@^24.0.0:
   resolved "https://registry.yarnpkg.com/jest-mock/-/jest-mock-24.0.0.tgz#9a4b53e01d66a0e780f7d857462d063e024c617d"
   integrity sha512-sQp0Hu5fcf5NZEh1U9eIW2qD0BwJZjb63Yqd98PQJFvf/zzUTBoUAwv/Dc/HFeNHIw1f3hl/48vNn+j3STaI7A==
 
-jest-raw-loader@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/jest-raw-loader/-/jest-raw-loader-1.0.1.tgz#ce9f56d54650f157c4a7d16d224ba5d613bcd626"
-  integrity sha1-zp9W1UZQ8VfEp9FtIkul1hO81iY=
-
 jest-regex-util@^24.0.0:
   version "24.0.0"
   resolved "https://registry.yarnpkg.com/jest-regex-util/-/jest-regex-util-24.0.0.tgz#4feee8ec4a358f5bee0a654e94eb26163cb9089a"
@@ -4988,14 +4973,6 @@ jest-worker@^24.0.0:
     merge-stream "^1.0.1"
     supports-color "^6.1.0"
 
-jest-yaml-transform@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/jest-yaml-transform/-/jest-yaml-transform-0.2.0.tgz#7e14ed59e563283b73be7e8f387f352e669147a4"
-  integrity sha512-Pu1KyURgi0Qfi0QrUr2xwV7SlYRxasLS+bPZfLxFks93LCIYFHdGnQ7pNxvqOrZdyBNXthCUT98JBjo4UCWflQ==
-  dependencies:
-    flat "^4.0.0"
-    js-yaml "^3.9.1"
-
 jest@^24.1.0:
   version "24.1.0"
   resolved "https://registry.yarnpkg.com/jest/-/jest-24.1.0.tgz#b1e1135caefcf2397950ecf7f90e395fde866fd2"
@@ -5028,7 +5005,7 @@ js-yaml@^3.12.0:
     argparse "^1.0.7"
     esprima "^4.0.0"
 
-js-yaml@^3.12.1, js-yaml@^3.9.0, js-yaml@^3.9.1:
+js-yaml@^3.12.1, js-yaml@^3.9.0:
   version "3.12.1"
   resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.12.1.tgz#295c8632a18a23e054cf5c9d3cecafe678167600"
   integrity sha512-um46hB9wNOKlwkHgiuyEVAybXBjwFUV0Z/RaHJblRd9DXltue9FTYvzCr9ErQrK9Adz5MU4gHWVaNUfdmrC8qA==
@@ -8870,6 +8847,11 @@ util@0.10.3, util@^0.10.3:
 utils-merge@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
+
+uuid-parse@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/uuid-parse/-/uuid-parse-1.0.0.tgz#f4657717624b0e4b88af36f98d89589a5bbee569"
+  integrity sha1-9GV3F2JLDkuIrzb5jYlYmlu+5Wk=
 
 uuid@^2.0.1:
   version "2.0.3"
