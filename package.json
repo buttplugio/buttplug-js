@@ -2,7 +2,7 @@
   "private": true,
   "name": "buttplug",
   "scripts": {
-    "build": "yarn workspace buttplug build",
+    "build": "yarn workspace buttplug build && yarn workspace buttplug-node-bluetoothle-manager build",
     "test": "yarn workspace buttplug test"
   },
   "workspaces": [
