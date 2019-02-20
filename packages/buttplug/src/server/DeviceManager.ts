@@ -13,6 +13,7 @@ import { WebBluetoothDeviceManager } from "./managers/webbluetooth/WebBluetoothD
 import { EventEmitter } from "events";
 import { ButtplugLogger } from "../core/Logging";
 import { ButtplugException, ButtplugDeviceException, ButtplugMessageException } from "../core/Exceptions";
+import { DeviceConfigurationManager } from "../devices/configuration/DeviceConfigurationManager";
 
 export class DeviceManager extends EventEmitter {
   private _subtypeManagers: IDeviceSubtypeManager[] = [];
@@ -24,6 +25,13 @@ export class DeviceManager extends EventEmitter {
   constructor(aMsgClosure: (aMsg: Messages.ButtplugMessage) => void) {
     super();
     this._logger.Debug("DeviceManager: Starting Device Manager");
+    try {
+      // If getting this throws, it means we should just load the internal file.
+      DeviceConfigurationManager.Manager;
+    } catch (e) {
+      DeviceConfigurationManager.LoadFromInternalConfig();
+    }
+
     // If we have a bluetooth object on navigator, load the device manager
     if (typeof(window) !== "undefined" &&
         typeof(window.navigator) !== "undefined" &&

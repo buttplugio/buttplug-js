@@ -165,7 +165,7 @@ export class WebBluetoothDevice extends ButtplugDeviceImpl {
     let view = (aEvent.target! as BluetoothRemoteGATTCharacteristic).value!
     let arrBuf = view.buffer;
     let buf = Buffer.from(arrBuf, view.byteOffset, view.byteLength);
-    this.emit("updateReceived", [aCharacteristic, buf]);
+    this.UpdateReceived(aCharacteristic, buf)
   }
 }
 

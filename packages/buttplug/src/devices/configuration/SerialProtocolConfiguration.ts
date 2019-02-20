@@ -6,6 +6,8 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
+import { IProtocolConfiguration } from "./IProtocolConfiguration";
+
 export class SerialProtocolConfiguration implements IProtocolConfiguration {
   public constructor(aObj: object) {
   }

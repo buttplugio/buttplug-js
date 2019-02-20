@@ -8,6 +8,7 @@
 
 import { Endpoints, GetEndpoint } from "../Endpoints";
 import { ButtplugDeviceException } from "../../core/Exceptions";
+import { IProtocolConfiguration } from "./IProtocolConfiguration";
 
 export class BluetoothLEProtocolConfiguration implements IProtocolConfiguration {
   private _names: string[] = [];

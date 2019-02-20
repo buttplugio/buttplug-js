@@ -16,7 +16,8 @@ import { WeVibe } from "../protocols/WeVibe";
 import { VorzeA10Cyclone } from "../protocols/VorzeA10Cyclone";
 import { Maxpro } from "../protocols/Maxpro";
 import { FleshlightLaunch } from "../protocols/FleshlightLaunch";
-import { ButtplugDeviceProtocolType } from "devices/ButtplugDeviceProtocol";
+import { ButtplugDeviceProtocolType } from "../ButtplugDeviceProtocol";
+import { IProtocolConfiguration } from "./IProtocolConfiguration";
 const defaultDeviceConfig = require("../../../dependencies/buttplug-device-config/buttplug-device-config.json");
 
 export class DeviceConfigurationManager {

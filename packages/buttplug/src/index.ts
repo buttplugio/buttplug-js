@@ -21,8 +21,13 @@ export * from "./devices/IButtplugDeviceProtocol"
 export * from "./devices/ButtplugDevice";
 export * from "./devices/ButtplugDeviceImpl";
 export * from "./devices/ButtplugDeviceProtocol"
+export * from "./devices/ButtplugDeviceReadOptions";
+export * from "./devices/ButtplugDeviceWriteOptions";
 export * from "./devices/Endpoints";
+export * from "./devices/configuration/IProtocolConfiguration";
 export * from "./devices/configuration/DeviceConfigurationManager";
+export * from "./devices/configuration/BluetoothLEProtocolConfiguration";
+export * from "./devices/configuration/SerialProtocolConfiguration";
+export * from "./devices/configuration/HIDProtocolConfiguration";
 export * from "./server/ButtplugServer";
 export * from "./server/IDeviceSubtypeManager";
-

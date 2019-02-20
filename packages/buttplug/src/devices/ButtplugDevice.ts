@@ -11,6 +11,7 @@ import { EventEmitter } from "events";
 import { IButtplugDevice } from "./IButtplugDevice";
 import { IButtplugDeviceProtocol } from "./IButtplugDeviceProtocol";
 import { IButtplugDeviceImpl } from "./IButtplugDeviceImpl";
+import { Endpoints } from "./Endpoints";
 
 export class ButtplugDevice extends EventEmitter implements IButtplugDevice {
   protected _protocol: IButtplugDeviceProtocol;

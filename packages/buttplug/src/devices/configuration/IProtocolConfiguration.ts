@@ -6,7 +6,7 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-interface IProtocolConfiguration {
+export interface IProtocolConfiguration {
   Matches(aConfig: IProtocolConfiguration): boolean;
   Merge(aConfig: IProtocolConfiguration): void;
 }

@@ -11,6 +11,7 @@ import { EventEmitter } from "events";
 import { ButtplugDeviceWriteOptions } from "./ButtplugDeviceWriteOptions";
 import { ButtplugDeviceReadOptions } from "./ButtplugDeviceReadOptions";
 import { IButtplugDeviceImpl } from "./IButtplugDeviceImpl";
+import { Endpoints } from "./Endpoints";
 
 export abstract class ButtplugDeviceImpl extends EventEmitter implements IButtplugDeviceImpl
 {
@@ -60,4 +61,8 @@ export abstract class ButtplugDeviceImpl extends EventEmitter implements IButtpl
   public abstract WriteValueInternal(aValue: Buffer, aOptions: ButtplugDeviceWriteOptions): Promise<void>;
   public abstract ReadValueInternal(aOptions: ButtplugDeviceReadOptions): Promise<Buffer>;
   public abstract SubscribeToUpdatesInternal(aOptions: ButtplugDeviceReadOptions): void;
+
+  protected UpdateReceived(aEndpoint: Endpoints, aData: Buffer) {
+    this.emit("updateReceived", [aEndpoint, aData]);
+  }
 }
