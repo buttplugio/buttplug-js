@@ -6,14 +6,9 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-import { DeviceAdded, IDeviceSubtypeManager, BluetoothDevices, BluetoothDeviceInfo, ButtplugLogger } from "buttplug";
+import { IDeviceSubtypeManager, ButtplugLogger, DeviceConfigurationManager, BluetoothLEProtocolConfiguration, ButtplugDevice } from "buttplug";
 import { EventEmitter } from "events";
-let noble;
-try {
-  noble = require("noble-uwp");
-} catch (e) {
-  noble = require("noble");
-}
+import * as noble from "noble-uwp";
 import { ButtplugNodeBluetoothLEDevice } from "./ButtplugNodeBluetoothLEDevice";
 
 export class ButtplugNodeBluetoothLEDeviceManager extends EventEmitter implements IDeviceSubtypeManager {
@@ -25,7 +20,7 @@ export class ButtplugNodeBluetoothLEDeviceManager extends EventEmitter implement
 
   constructor() {
     super();
-    noble.on("discover", (d: any) => {
+    noble.on("discover", (d: noble.Peripheral) => {
       this.OpenDevice(d);
     });
   }
@@ -66,7 +61,7 @@ export class ButtplugNodeBluetoothLEDeviceManager extends EventEmitter implement
     this.logger = aLogger;
   }
 
-  private OpenDevice = async (device: any): Promise<void> => {
+  private OpenDevice = async (device: noble.Peripheral): Promise<void> => {
     if (device === undefined) {
       // TODO Throw here?
       return;
@@ -75,20 +70,19 @@ export class ButtplugNodeBluetoothLEDeviceManager extends EventEmitter implement
     if (device.advertisement.localName === undefined) {
       return;
     }
-    for (const deviceInfo of BluetoothDevices.GetDeviceInfo()) {
-      if (deviceInfo.Names.indexOf(device.advertisement.localName) > -1) {
-        const bpdevice = await ButtplugNodeBluetoothLEDevice.CreateDevice(deviceInfo, device);
-        this.emit("deviceadded", bpdevice);
-        return;
-      }
-      for (const namePrefix of deviceInfo.NamePrefixes) {
-        if (device.advertisement.localName.indexOf(namePrefix) !== -1) {
-          const bpdevice = await ButtplugNodeBluetoothLEDevice.CreateDevice(deviceInfo, device);
-          this.emit("deviceadded", bpdevice);
-          return;
-        }
-      }
+    const devConfig = new BluetoothLEProtocolConfiguration([device.advertisement.localName]);
+    const foundConfig = DeviceConfigurationManager.Manager.Find(devConfig);
+    if (foundConfig === undefined) {
+      return;
     }
-
+    const [config, protocolType] = foundConfig;
+    const bpDevImpl = new ButtplugNodeBluetoothLEDevice(config as BluetoothLEProtocolConfiguration, device);
+    await bpDevImpl.Connect();
+    const bpProtocol = new protocolType(bpDevImpl);
+    const bpDevice = new ButtplugDevice(bpProtocol, bpDevImpl);
+    console.log("initializing");
+    await bpDevice.Initialize();
+    console.log("initialize");
+    this.emit("deviceadded", bpDevice);
   }
 }

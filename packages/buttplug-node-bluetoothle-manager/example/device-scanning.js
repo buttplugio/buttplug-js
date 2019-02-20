@@ -16,6 +16,7 @@ let main = async () => {
   console.log("Scanning for devices...");
   client.on("deviceadded", (device) => {
     console.log(device.Name);
+    device.SendVibrateCmd(1);
   });
 
   await client.StartScanning();
