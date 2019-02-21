@@ -1,7 +1,8 @@
 {
   "compilerOptions" : {
-    "lib": ["ES2015", "dom"],
-    "target": "es5",
+    "baseUrl": "./src",
+    "lib": ["es2015", "dom", "es6"],
+    "target": "es6",
     "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": true,
@@ -10,12 +11,12 @@
     "strictNullChecks": true,
     "noImplicitThis": true,
     "declaration": true,
-    "outDir": "./dist/"
+    "outDir": "./dist/",
+    "resolveJsonModule": true
   },
   "include": [
     "./src/*.ts",
     "./src/**/*.ts",
-    "./tests/**/*.ts",
-    "./example/*.ts"
+    "./tests/**/*.ts"
   ]
 }

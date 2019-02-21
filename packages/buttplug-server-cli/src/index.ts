@@ -7,14 +7,15 @@
  */
 
 import * as commander from "commander";
-import * as ws from "ws";
-import * as fs from "fs";
-import * as util from "util";
-import * as https from "https";
-import * as http from "http";
-import { ButtplugServer, ButtplugMessage, FromJSON } from "buttplug";
+import { ButtplugServer, ButtplugLogger, ButtplugLogLevel } from "buttplug";
 import { ButtplugNodeBluetoothLEDeviceManager } from "buttplug-node-bluetoothle-manager";
-const selfsigned = require("selfsigned");
+import { ButtplugNodeWebsocketServer } from "buttplug-node-websockets";
+
+import * as packageinfo from "../package.json";
+
+function InitServer(aServer: ButtplugServer) {
+  aServer.AddDeviceManager(new ButtplugNodeBluetoothLEDeviceManager());
+}
 
 async function main() {
   process.on("unhandledRejection", (reason, p) => {
@@ -23,64 +24,61 @@ async function main() {
   });
 
   commander
-    .version("0.0.1-alpha")
-    .option("-p, --port <number>", "Port to listen on, defaults to 12345.", 12345)
-    .option("--nossl", "If passed, do not use SSL. Needed for ScriptPlayer. SSL on by default otherwise.", false)
+    .version(packageinfo.version)
+    .option("--servername <name>", "Name of server to pass to connecting clients", "Buttplug Server")
+    .option("--serverversion", "Print version and exit")
+    .option("--deviceconfig <filename>", "Device configuration file (if none specified, will use internal version)")
+    .option("--userdeviceconfig <filename>", "User device configuration file")
+    .option("--websocketserver", "Run websocket server")
+    .option("--host <hostname>", "Host for websocket server.", "localhost")
+    .option("--port <number>", "Port to listen on, defaults to 12345.", 12345)
+    .option("--certfile <filename>", "Cert file to load for SSL")
+    .option("--privfile <filename>", "Private key file to load for SSL")
+    .option("--ipcserver", "Run IPC server")
+    .option("--ipcpipe", "IPC Pipe Name for IPC Server IO")
+    .option("--guipipe", "IPC Pipe Name for GUI Info Output")
+    .option("--pingtime <ping>", "Ping timeout maximum for server (in milliseconds, 0 = off/infinite ping)", 0)
+    .option("--stayopen", "If passed, server will stay running after client disconnection")
+    .option("--log <loglevel>", "Prints logs to console at specified log level.", "Off")
     .parse(process.argv);
 
-  let wsServer;
-  if (commander.nossl) {
-    console.log("Not using SSL.");
-    const server = http.createServer().listen(commander.port);
-    wsServer = new ws.Server({server});
-  } else {
-    console.log("Using SSL.");
-    const attrs = [{
-      name: "commonName",
-      value: "buttplug.localhost",
-    }, {
-      name: "organizationName",
-      value: "Metafetish",
-    }];
-
-    let pems: any = {};
-    const existsAsync = util.promisify(fs.exists);
-
-    if (await existsAsync("cert.pem") && await existsAsync("private.pem")) {
-      console.log("Loading keys");
-      pems.cert = fs.readFileSync("cert.pem");
-      pems.private = fs.readFileSync("private.pem");
-    } else {
-      console.log("Creating keys");
-      pems = selfsigned.generate(undefined, { days: 365 });
-      fs.writeFileSync("cert.pem", pems.cert);
-      fs.writeFileSync("private.pem", pems.private);
-    }
-
-    const server = https.createServer({
-      cert: pems.cert,
-      key: pems.private,
-    }).listen(commander.port);
-    wsServer = new ws.Server({server});
+  if (commander.serverversion) {
+    console.log(packageinfo.version);
+    return;
   }
 
-  console.log("Listening on port " + commander.port);
-  const bs = new ButtplugServer();
-  bs.AddDeviceManager(new ButtplugNodeBluetoothLEDeviceManager());
+  let server: ButtplugServer;
 
-  wsServer.on("connection", function connection(client) {
-    client.on("message", async (message) => {
-      const msg = FromJSON(message);
-      for (const m of msg) {
-        const outgoing = await bs.SendMessage(m);
-        client.send("[" + outgoing.toJSON() + "]");
-      }
-    });
+  if (commander.websocketserver && commander.ipcserver) {
+    console.log("Server cannot run ipc and websocket at the same time");
+    return;
+  }
 
-    bs.on("message", function outgoing(message) {
-      client.send("[" + message.toJSON() + "]");
-    });
-  });
+  if (commander.log !== "Off") {
+    ButtplugLogger.Logger.MaximumConsoleLogLevel = ButtplugLogLevel[commander.log as string];
+  }
+
+  if (commander.websocketserver) {
+    let wsServer = new ButtplugNodeWebsocketServer(commander.servername, commander.pingtime)
+    if (commander.certfile !== undefined && commander.privfile !== undefined) {
+      console.log("Starting secure websocket server");
+      wsServer.StartSecureServer(commander.certfile, commander.privfile, commander.port, commander.host);
+    } else {
+      console.log("Starting insecure websocket server");
+      wsServer.StartInsecureServer(commander.port, commander.host);
+    }
+    server = wsServer;
+    InitServer(server);
+    console.log("Listening on port " + commander.port);
+  } else if (commander.ipcserver) {
+    // Probably need to actually implement an IPC server now, huh.
+    console.log("ipc not yet implemented");
+    return;
+  } else {
+    console.log("Server must run in either ipc or websocket mode");
+    return;
+  }
+
 
   if (process.platform === "win32") {
     const rl = require("readline").createInterface({
@@ -94,7 +92,10 @@ async function main() {
   }
 
   process.on("SIGINT", () => {
-
+    server.Disconnect();
+    if (commander.websocketserver) {
+      (server as ButtplugNodeWebsocketServer).StopServer();
+    }
     process.exit();
   });
 }
