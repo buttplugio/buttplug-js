@@ -2,6 +2,20 @@
   "name": "buttplug-node-websockets",
   "version": "0.0.3",
   "description": "Node Websocket Client/Server for buttplug-js",
+  "homepage": "https://github.com/buttplugio/buttplug-js/packages/buttplug-node-websockets#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/buttplugio/buttplug-js.git"
+  },
+  "author": "The Buttplug Project Team",
+  "keywords": [
+    "teledildonics",
+    "hardware"
+  ],
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/buttplugio/buttplug-js/issues"
+  },
   "main": "dist/src/index.js",
   "scripts": {
     "build": "trash dist dist-bundle && yarn build:main",
@@ -16,12 +30,6 @@
     "type": "git",
     "url": "git+https://github.com/metafetish/buttplug-node-websockets.git"
   },
-  "author": "Kyle Machulis <kyle@machul.is>",
-  "license": "BSD-3-Clause",
-  "bugs": {
-    "url": "https://github.com/metafetish/buttplug-node-websockets/issues"
-  },
-  "homepage": "https://github.com/metafetish/buttplug-node-websockets#readme",
   "dependencies": {
     "buttplug": "file:../buttplug",
     "ws": "^4.0.0"

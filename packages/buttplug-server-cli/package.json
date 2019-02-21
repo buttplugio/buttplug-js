@@ -1,10 +1,17 @@
 {
-  "name": "buttplug-websocket-server",
+  "name": "buttplug-server-cli",
   "version": "0.0.1",
-  "description": "Node.js Websocket Server frontend for Buttplug",
-  "repository": "https://github.com/metafetish/buttplug-js-websocket-server",
-  "author": "Kyle Machulis <kyle@nonpolynomial.com>",
+  "description": "Node.js Server Frontend for Buttplug",
+  "homepage": "https://github.com/buttplugio/buttplug-js/packages/buttplug-server-cli#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/buttplugio/buttplug-js.git"
+  },
+  "author": "The Buttplug Project Team",
   "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/buttplugio/buttplug-js/issues"
+  },
   "main": "./dist/index.js",
   "types": "./dist/types/index.d.ts",
   "scripts": {
@@ -19,30 +26,8 @@
   "dependencies": {
     "buttplug": "file:../buttplug",
     "buttplug-node-bluetoothle-manager": "file:../buttplug-node-bluetoothle-manager",
+    "buttplug-node-websockets": "file:../buttplug-node-websockets",
     "commander": "^2.19.0",
-    "selfsigned": "^1.10.4",
-    "ws": "^6.1.2"
-  },
-  "nyc": {
-    "extension": [
-      ".ts"
-    ],
-    "include": [
-      "src/**/*.ts"
-    ],
-    "exclude": [
-      "**/*.d.ts"
-    ],
-    "require": [
-      "ts-node/register"
-    ],
-    "reporter": [
-      "text",
-      "json",
-      "html"
-    ],
-    "sourceMap": true,
-    "instrument": true,
-    "all": true
+    "selfsigned": "^1.10.4"
   }
 }

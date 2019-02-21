@@ -2,16 +2,20 @@
   "name": "buttplug-node-bluetoothle-manager",
   "version": "0.1.0",
   "description": "Bluetooth LE Manager (using Noble) for native node Buttplug servers",
+  "homepage": "https://github.com/buttplugio/buttplug-js/packages/buttplug-node-bluetoothle-manager#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/metafetish/buttplug-node-bluetoothle-manager.git"
+    "url": "git+https://github.com/buttplugio/buttplug-js.git"
   },
-  "author": "The Metafetish Project",
+  "author": "The Buttplug Project Team",
+  "keywords": [
+    "teledildonics",
+    "hardware"
+  ],
   "license": "BSD-3-Clause",
   "bugs": {
-    "url": "https://github.com/metafetish/buttplug-node-bluetoothle-manager/issues"
+    "url": "https://github.com/buttplugio/buttplug-js/issues"
   },
-  "homepage": "https://github.com/metafetish/buttplug-node-bluetoothle-manager#readme",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
