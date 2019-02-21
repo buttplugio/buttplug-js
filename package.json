@@ -49,10 +49,5 @@
     "webpack-merge": "^4.2.1",
     "yarn": "^1.13.0"
   },
-  "dependencies": {
-    "buttplug": "file:packages/buttplug",
-    "buttplug-node-bluetoothle-manager": "file:packages/buttplug-node-bluetoothle-manager",
-    "buttplug-node-websockets": "file:packages/buttplug-node-websockets",
-    "buttplug-websocket-server": "file:packages/buttplug-server-cli"
-  }
+  "dependencies": {}
 }
