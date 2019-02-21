@@ -9,7 +9,7 @@
 import { ButtplugDeviceImpl } from "../devices/ButtplugDeviceImpl";
 import { ButtplugDeviceReadOptions } from "../devices/ButtplugDeviceReadOptions";
 import { ButtplugDeviceWriteOptions } from "../devices/ButtplugDeviceWriteOptions";
-import { Endpoints } from "devices/Endpoints";
+import { Endpoints } from "../devices/Endpoints";
 
 export class TestDeviceImpl extends ButtplugDeviceImpl {
   private _connected = true;
