@@ -11,9 +11,10 @@ steps:
     versionSpec: '11.x'
   displayName: 'Install Node.js'
 
+# Initial build will most likely fail on some platforms because noble
+# won't build correctly, so don't && it against build/test steps.
 - script: |
     yarn
-    yarn build
-    yarn test
+    yarn build && yarn test
   displayName: 'yarn install and build'
   env: { "CI": "true" }
