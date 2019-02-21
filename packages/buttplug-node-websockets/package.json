@@ -23,9 +23,7 @@
   },
   "homepage": "https://github.com/metafetish/buttplug-node-websockets#readme",
   "dependencies": {
-    "ws": "^4.0.0"
-  },
-  "peerDependencies": {
+    "ws": "^4.0.0",
     "buttplug": "file:../buttplug"
   },
   "jest": {
