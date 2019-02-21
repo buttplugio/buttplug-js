@@ -1,6 +1,6 @@
 import { ButtplugClient, ButtplugLogger,
          ButtplugServer, ButtplugEmbeddedServerConnector } from "../src/index";
-import { TestDeviceSubtypeManager, CreateDevToolsClient } from "../src/devtools/index";
+import { TestDeviceSubtypeManager } from "../src/test/TestDeviceSubtypeManager";
 import * as Messages from "../src/core/Messages";
 import { BPTestClient, SetupTestSuite, SetupTestServer } from "./utils";
 import { ButtplugMessageException, ButtplugDeviceException } from "../src/core/Exceptions";

@@ -2,9 +2,9 @@ import { SetupTestServer } from "./utils";
 import { SingleMotorVibrateCmd, FleshlightLaunchFW12Cmd, LinearCmd, VibrateCmd,
          SpeedSubcommand, VectorSubcommand, ButtplugServer, ButtplugEmbeddedServerConnector,
          ButtplugClient, ButtplugClientDevice } from "../src/index";
-import { TestDeviceSubtypeManager } from "../src/devtools";
+import { TestDeviceSubtypeManager } from "../src/test/TestDeviceSubtypeManager";
 
-describe("devtools tests", () => {
+describe("test test classes", () => {
   let p;
   let res;
   let rej;

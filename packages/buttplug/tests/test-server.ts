@@ -1,14 +1,9 @@
-import { Server } from "mock-socket";
-import { IDeviceSubtypeManager } from "../src/server/IDeviceSubtypeManager";
 import { ButtplugEmbeddedServerConnector } from "../src/client/ButtplugEmbeddedServerConnector";
 import { ButtplugServer } from "../src/server/ButtplugServer";
 import * as Messages from "../src/core/Messages";
-import { FromJSON } from "../src/core/MessageUtils";
-import { EventEmitter } from "events";
 import { ButtplugClient } from "../src/index";
-import { TestDeviceSubtypeManager } from "../src/devtools";
+import { TestDeviceSubtypeManager } from "../src/test/TestDeviceSubtypeManager";
 import { SetupTestSuite } from "./utils";
-import { ButtplugLogger, ButtplugLogLevel } from "../src/core/Logging";
 import { ButtplugDeviceException } from "../src/core/Exceptions";
 
 SetupTestSuite();

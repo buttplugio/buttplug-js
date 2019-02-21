@@ -7,7 +7,7 @@ import { Lovense } from "../src/devices/protocols/Lovense";
 import { WeVibe } from "../src/devices/protocols/WeVibe";
 import { FleshlightLaunch } from "../src/devices/protocols/FleshlightLaunch";
 import { VorzeA10Cyclone } from "../src/devices/protocols/VorzeA10Cyclone";
-import { TestDeviceImpl } from "../src/devtools";
+import { TestDeviceImpl } from "../src/test/TestDeviceImpl";
 
 SetupTestSuite();
 

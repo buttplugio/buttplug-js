@@ -21,10 +21,9 @@
   "scripts": {
     "build": "trash dist dist-bundle && yarn build:all",
     "build:all": "yarn build:convert-config && yarn build:main && yarn build:web && yarn build:web:release",
-    "build:copy-devtools": "copyfiles ./src/devtools/web/*.html ./src/devtools/web/*.css ./src/devtools/web/*.png ./dist/main",
     "build:copy-schema": "copyfiles ./dependencies/buttplug-schema/schema/buttplug-schema.json ./dist/main/",
     "build:copy-device-config": "copyfiles ./dependencies/buttplug-device-config/buttplug-device-config.json ./dist/main/",
-    "build:copy-all": "yarn build:copy-schema && yarn build:copy-devtools && yarn build:copy-device-config",
+    "build:copy-all": "yarn build:copy-schema && yarn build:copy-device-config",
     "build:convert-config": "node util/convert_device_config.js",
     "build:main": "tsc -p tsconfig.json && yarn build:copy-all",
     "build:redist": "tsc -p tsconfig.json && yarn build:copy-all",
