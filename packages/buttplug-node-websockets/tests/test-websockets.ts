@@ -1,20 +1,19 @@
 import { ButtplugNodeWebsocketServer, ButtplugNodeWebsocketClientConnector } from "../src/index";
 import { ButtplugClient, ButtplugServer, Test } from "buttplug";
-import { TestDeviceManager } from "buttplug/dist/main/src/devtools";
+import { TestDeviceSubtypeManager } from "buttplug";
 const selfsigned = require("selfsigned");
 const tmp = require("tmp");
 import * as fs from "fs";
 
 describe("Buttplug Node Websocket tests", () => {
-  it("should throw on erroneous connector states", function() {
+  it("should throw on erroneous connector states", async () => {
     const connector =
       new ButtplugNodeWebsocketClientConnector("ws://localhost:12345/buttplug", false);
-    expect(() => connector.Send(new Test("This should throw", 1))).toThrow();
+    expect(connector.Send(new Test("This should throw", 1))).rejects.toThrow();
   });
-
   it("should connect insecurely to itself, scan, find test devices", async function() {
     const server = new ButtplugNodeWebsocketServer("Buttplug Test Websocket Server");
-    const deviceManager = new TestDeviceManager();
+    const deviceManager = new TestDeviceSubtypeManager();
     server.AddDeviceManager(deviceManager);
     // Insecure hosting, on localhost:12345
     server.StartInsecureServer(12345, "localhost");
@@ -89,26 +88,25 @@ describe("Buttplug Node Websocket tests", () => {
   });
 
   // Test commented out because it will always cause jest to stall after completion.
-  //
-  // it("should connect securely", async () => {
-  //   const attrs = [{ name: "commonName", value: "buttplugtest.com" }];
-  //   const pems = selfsigned.generate(attrs, { days: 365 });
-  //   const tmpcert = tmp.fileSync();
-  //   const tmpprivate = tmp.fileSync();
-  //   fs.writeFileSync(tmpcert.name, pems.cert);
-  //   fs.writeFileSync(tmpprivate.name, pems.private);
-  //   const server = new ButtplugNodeWebsocketServer("Buttplug Test Websocket Server");
-  //   server.StartSecureServer(tmpcert.name, tmpprivate.name, 12345, "localhost");
-  //   const connector =
-  //     new ButtplugNodeWebsocketClientConnector("wss://localhost:12345/buttplug", false);
+  it("should connect securely", async () => {
+    const attrs = [{ name: "commonName", value: "buttplugtest.com" }];
+    const pems = selfsigned.generate(attrs, { days: 365 });
+    const tmpcert = tmp.fileSync();
+    const tmpprivate = tmp.fileSync();
+    fs.writeFileSync(tmpcert.name, pems.cert);
+    fs.writeFileSync(tmpprivate.name, pems.private);
+    const server = new ButtplugNodeWebsocketServer("Buttplug Test Websocket Server");
+    server.StartSecureServer(tmpcert.name, tmpprivate.name, 12345, "localhost");
+    const connector =
+      new ButtplugNodeWebsocketClientConnector("wss://localhost:12345/buttplug", false);
 
-  //   const bpc = new ButtplugClient("test");
-  //   await bpc.Connect(connector);
-  //   expect(bpc.Connected).toBe(true);
-  //   await bpc.Disconnect();
-  //   expect(bpc.Connected).toBe(false);
-  //   await server.StopServer();
-  //   tmpcert.removeCallback();
-  //   tmpprivate.removeCallback();
-  // });
+    const bpc = new ButtplugClient("test");
+    await bpc.Connect(connector);
+    expect(bpc.Connected).toBe(true);
+    await bpc.Disconnect();
+    expect(bpc.Connected).toBe(false);
+    await server.StopServer();
+    tmpcert.removeCallback();
+    tmpprivate.removeCallback();
+  });
 });

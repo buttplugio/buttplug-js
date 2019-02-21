@@ -9,9 +9,7 @@
 import * as fs from "fs";
 import * as ws from "ws";
 import * as https from "https";
-import * as http from "http";
-import { EventEmitter } from "events";
-import { ButtplugMessage, FromJSON, ButtplugServer } from "buttplug";
+import { FromJSON, ButtplugServer } from "buttplug";
 
 /**
  * Derives from the base ButtplugServer class, adds capabilities to the server
@@ -20,6 +18,7 @@ import { ButtplugMessage, FromJSON, ButtplugServer } from "buttplug";
  */
 export class ButtplugNodeWebsocketServer extends ButtplugServer {
 
+  private httpsServer: https.Server | null = null;
   private wsServer: ws.Server | null = null;
 
   public constructor(name: string, maxPingTime: number = 0) {
@@ -50,17 +49,18 @@ export class ButtplugNodeWebsocketServer extends ButtplugServer {
   public StartSecureServer = (certFilePath: string,
                               keyFilePath: string,
                               port: number = 12345,
-                              host: string = "localhost") => {
-    const pems: any = {};
-    pems.cert = fs.readFileSync(certFilePath);
-    pems.private = fs.readFileSync(keyFilePath);
-    const server = https.createServer({
-      cert: pems.cert,
-      key: pems.private,
-    }).listen(port, host);
-    this.wsServer = new ws.Server({server});
-    this.InitServer();
-  }
+                              host: string = "localhost") =>
+    {
+      const pems: any = {};
+      pems.cert = fs.readFileSync(certFilePath);
+      pems.private = fs.readFileSync(keyFilePath);
+      this.httpsServer = https.createServer({
+        cert: pems.cert,
+        key: pems.private,
+      }).listen(port, host);
+      this.wsServer = new ws.Server({ server: this.httpsServer });
+      this.InitServer();
+    }
 
   /**
    * Shuts down the server, closing all connections.
@@ -72,11 +72,15 @@ export class ButtplugNodeWebsocketServer extends ButtplugServer {
     // ws's close doesn't follow the callback style util.promisify expects (only
     // has a passing callback, no failing), so just build our own. Could've
     // wrapped it in a 2 argument closure but eh.
-    let closeRes;
+    let closeRes: Function;
     const closePromise = new Promise((res, rej) => { closeRes = res; });
     this.wsServer.close(() => {
       this.wsServer = null;
-      closeRes();
+      if (this.httpsServer !== null) {
+        this.httpsServer.close(() => closeRes());
+      } else {
+        closeRes();
+      }
     });
     return closePromise;
   }
