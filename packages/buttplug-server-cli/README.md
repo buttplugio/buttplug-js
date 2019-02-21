@@ -1,9 +1,5 @@
 # Buttplug Node.js Websocket Server
 
-[![npm](https://img.shields.io/npm/v/buttplug.svg)](https://npmjs.com/package/buttplug) 
-[![Build Status](https://travis-ci.org/buttplugio/buttplug-js.svg?branch=master)](https://travis-ci.org/buttplugio/buttplug-js) 
-[![codecov](https://codecov.io/gh/buttplugio/buttplug-js/branch/master/graph/badge.svg)](https://codecov.io/gh/buttplugio/buttplug-js) 
-
 [![Patreon donate button](https://img.shields.io/badge/patreon-donate-yellow.svg)](https://www.patreon.com/qdot)
 [![Discourse Forum](https://img.shields.io/badge/discourse-forum-blue.svg)](https://metafetish.club)
 [![Discord](https://img.shields.io/discord/353303527587708932.svg?logo=discord)](https://discord.gg/t9g9RuD)
@@ -56,7 +52,7 @@ yarn start
 
 buttplug-js is BSD 3-Clause licensed.
 
-    Copyright (c) 2017-2018, Nonpolynomial Labs LLC
+    Copyright (c) 2017-2019, Nonpolynomial Labs LLC
     All rights reserved.
     
     Redistribution and use in source and binary forms, with or without
