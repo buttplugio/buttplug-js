@@ -12,10 +12,7 @@
     "build:main": "tsc -p tsconfig.json",
     "tslint": "tslint -c tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
     "tslint:fix": "tslint -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\"",
-    "pretest": "yarn build:main",
     "start": "node dist/index.js",
-    "test": "nyc mocha \"tests/**/*.ts\"",
-    "posttest": "nyc report && codecov -f coverage/*.json",
     "freeze:win": "pkg dist/index.js --targets node8-win-x86 --output buttplug-node-server/buttplug-node-server.exe",
     "package:win": "yarn freeze:win && copy node_modules\\bluetooth-hci-socket\\build\\Release\\binding.node buttplug-node-server && copy node_modules\\usb\\src\\binding\\usb_bindings.node buttplug-node-server && 7z a buttplug-node-server.7z buttplug-node-server\\*"
   },
