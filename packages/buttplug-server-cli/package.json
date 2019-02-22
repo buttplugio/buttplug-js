@@ -23,9 +23,9 @@
     "package:win": "yarn freeze:win && copy node_modules\\bluetooth-hci-socket\\build\\Release\\binding.node buttplug-node-server && copy node_modules\\usb\\src\\binding\\usb_bindings.node buttplug-node-server && 7z a buttplug-node-server.7z buttplug-node-server\\*"
   },
   "dependencies": {
-    "buttplug": "file:../buttplug",
-    "buttplug-node-bluetoothle-manager": "file:../buttplug-node-bluetoothle-manager",
-    "buttplug-node-websockets": "file:../buttplug-node-websockets",
+    "buttplug": "*",
+    "buttplug-node-bluetoothle-manager": "*",
+    "buttplug-node-websockets": "*",
     "commander": "^2.19.0"
   }
 }

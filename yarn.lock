@@ -1795,30 +1795,6 @@ builtins@^1.0.3:
   resolved "https://registry.yarnpkg.com/builtins/-/builtins-1.0.3.tgz#cb94faeb61c8696451db36534e1422f94f0aee88"
   integrity sha1-y5T662HIaWRR2zZTThQi+U8K7og=
 
-"buttplug-node-bluetoothle-manager@file:packages/buttplug-node-bluetoothle-manager":
-  version "0.1.0"
-  dependencies:
-    bluetooth-hci-socket "https://github.com/jrobeson/node-bluetooth-hci-socket/#fix-builds-for-node-10"
-    buttplug "file:../../../.cache/yarn/v4/npm-buttplug-node-bluetoothle-manager-0.1.0-fe2dcd5b-da9e-4728-b98a-5b71c9b6d7b1-1550732038293/node_modules/buttplug"
-    noble-uwp "^0.6.2"
-    uuid-parse "^1.0.0"
-
-"buttplug-node-websockets@file:packages/buttplug-node-websockets":
-  version "0.0.3"
-  dependencies:
-    buttplug "file:../../../.cache/yarn/v4/npm-buttplug-node-websockets-0.0.3-8d005cb2-5483-46b6-95f8-c68f15a1512a-1550732038293/node_modules/buttplug"
-    ws "^4.0.0"
-
-"buttplug@file:packages/buttplug":
-  version "0.10.0"
-  dependencies:
-    "@tweenjs/tween.js" "^17.3.0"
-    ajv "^6.9.1"
-    class-transformer "^0.2.0"
-    js-yaml "^3.12.1"
-    jspanel4 "^4.5.0"
-    reflect-metadata "^0.1.13"
-
 byline@^5.0.0, byline@~5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/byline/-/byline-5.0.0.tgz#741c5216468eadc457b03410118ad77de8c1ddb1"
