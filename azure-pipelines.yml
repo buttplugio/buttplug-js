@@ -6,15 +6,34 @@ pool:
   vmImage: 'Ubuntu-16.04'
 
 steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '11.x'
-  displayName: 'Install Node.js'
-
-# Initial build will most likely fail on some platforms because noble
-# won't build correctly, so don't && it against build/test steps.
-- script: |
-    yarn
-    yarn build && yarn test
-  displayName: 'yarn install and build'
-  env: { "CI": "true" }
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '10.x'
+    displayName: 'Install Node.js'
+  
+  # Initial install will most likely fail on some platforms because
+  # noble won't build correctly, so don't && it against build/test
+  # steps.
+  - script: |
+      yarn
+    displayName: 'Install packages'
+    env: { "CI": "true" }
+  - script: |
+      yarn build && yarn test
+    displayName: 'Build and test'
+    env: { "CI": "true" }
+  - script: |
+      yarn workspace buttplug-server-cli freeze:linux
+    displayName: 'Freeze server executable'
+    env: { "CI": "true" }
+  # For some reason the CopyFiles task can't actually copy a file, as
+  # it complains about weird missing node packages. So we'll just use
+  # a script.
+  - script: |
+      cp $(System.DefaultWorkingDirectory)/node_modules/@abandonware/bluetooth-hci-socket/lib/binding/binding.node $(System.DefaultWorkingDirectory)/packages/buttplug-server-cli/buttplug-node-server/
+    displayName: "Copy server executable to staging"
+  - task: PublishBuildArtifacts@1
+    displayName: "Publish server executable to artifacts"
+    inputs:
+      pathtoPublish: "$(System.DefaultWorkingDirectory)/packages/buttplug-server-cli/buttplug-node-server/"
+      artifactName: "buttplug-node-server-linux-x64"
