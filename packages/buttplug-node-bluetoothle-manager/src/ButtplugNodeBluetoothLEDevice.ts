@@ -6,9 +6,8 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-import * as noble from "noble-uwp";
+import * as noble from "noble-mac";
 import * as uuidParse from "uuid-parse";
-
 import * as util from "util";
 import { ButtplugDeviceImpl, BluetoothLEProtocolConfiguration, Endpoints, ButtplugDeviceWriteOptions, ButtplugDeviceReadOptions, ButtplugDeviceException } from "buttplug";
 

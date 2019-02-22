@@ -5,10 +5,9 @@
  *
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
-
+import * as noble from "noble-mac";
 import { IDeviceSubtypeManager, ButtplugLogger, DeviceConfigurationManager, BluetoothLEProtocolConfiguration, ButtplugDevice } from "buttplug";
 import { EventEmitter } from "events";
-import * as noble from "noble-uwp";
 import { ButtplugNodeBluetoothLEDevice } from "./ButtplugNodeBluetoothLEDevice";
 
 export class ButtplugNodeBluetoothLEDeviceManager extends EventEmitter implements IDeviceSubtypeManager {

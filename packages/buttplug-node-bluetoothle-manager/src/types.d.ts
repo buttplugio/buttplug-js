@@ -1,3 +1,3 @@
-declare module "noble-uwp" {
-    export * from "noble";
+declare module "noble-mac" {
+  export * from "noble";
 }
