@@ -19,7 +19,9 @@
     "tslint": "tslint -c tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
     "tslint:fix": "tslint -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\"",
     "start": "node dist/src/index.js",
-    "freeze:win": "pkg dist/index.js --targets node8-win-x86 --output buttplug-node-server/buttplug-node-server.exe",
+    "freeze:mac": "pkg dist/src/index.js --targets node10-macos-x64 --output buttplug-node-server/buttplug-node-server",
+    "freeze:linux": "pkg dist/src/index.js --targets node10-linux-x64 --output buttplug-node-server/buttplug-node-server",
+    "freeze:win": "pkg dist/index.js --targets node10-win-x86 --output buttplug-node-server/buttplug-node-server.exe",
     "package:win": "yarn freeze:win && copy node_modules\\bluetooth-hci-socket\\build\\Release\\binding.node buttplug-node-server && copy node_modules\\usb\\src\\binding\\usb_bindings.node buttplug-node-server && 7z a buttplug-node-server.7z buttplug-node-server\\*"
   },
   "dependencies": {
