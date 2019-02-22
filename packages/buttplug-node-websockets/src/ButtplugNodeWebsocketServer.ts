@@ -9,7 +9,7 @@
 import * as fs from "fs";
 import * as ws from "ws";
 import * as https from "https";
-import { FromJSON, ButtplugServer } from "buttplug";
+import { FromJSON, ButtplugServer, ButtplugInitException } from "buttplug";
 
 /**
  * Derives from the base ButtplugServer class, adds capabilities to the server
@@ -52,6 +52,12 @@ export class ButtplugNodeWebsocketServer extends ButtplugServer {
                               host: string = "localhost") =>
     {
       const pems: any = {};
+      if (!fs.existsSync(certFilePath)) {
+        throw new ButtplugInitException(`Certificate file ${certFilePath} does not exist.`);
+      }
+      if (!fs.existsSync(keyFilePath)) {
+        throw new ButtplugInitException(`Key file ${keyFilePath} does not exist.`);
+      }
       pems.cert = fs.readFileSync(certFilePath);
       pems.private = fs.readFileSync(keyFilePath);
       this.httpsServer = https.createServer({
