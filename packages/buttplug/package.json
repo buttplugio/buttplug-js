@@ -41,7 +41,6 @@
     "ajv": "^6.9.1",
     "class-transformer": "^0.2.0",
     "js-yaml": "^3.12.1",
-    "jspanel4": "^4.5.0",
     "reflect-metadata": "^0.1.13"
   },
   "jest": {
