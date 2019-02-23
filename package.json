@@ -3,6 +3,7 @@
   "name": "buttplug",
   "scripts": {
     "build": "lerna run build",
+    "build:main": "lerna run build:main",
     "test": "lerna run test"
   },
   "workspaces": [
