@@ -20,13 +20,13 @@
   "types": "./dist/main/src/index.d.ts",
   "scripts": {
     "build": "trash dist dist-bundle && yarn build:all",
-    "build:all": "yarn build:convert-config && yarn build:main && yarn build:web && yarn build:web:release",
-    "build:copy-schema": "copyfiles ./dependencies/buttplug-schema/schema/buttplug-schema.json ./dist/main/",
-    "build:copy-device-config": "copyfiles ./dependencies/buttplug-device-config/buttplug-device-config.json ./dist/main/",
-    "build:copy-all": "yarn build:copy-schema && yarn build:copy-device-config",
-    "build:convert-config": "node util/convert_device_config.js",
-    "build:main": "tsc -p tsconfig.json && yarn build:copy-all",
-    "build:redist": "tsc -p tsconfig.json && yarn build:copy-all",
+    "build:all": "yarn build:convert-config && yarn build:main && yarn build:web && yarn build:web:release && yarn build:copy:all",
+    "build:copy:schema": "copyfiles ./dependencies/buttplug-schema/schema/buttplug-schema.json ./dist/main/",
+    "build:copy:device-config": "copyfiles ./dependencies/buttplug-device-config/buttplug-device-config.json ./dist/main/",
+    "build:copy:all": "yarn build:convert-config && yarn build:copy:schema && yarn build:copy:device-config",
+    "build:convert-config": "node ./util/convert_device_config.js",
+    "build:main": "tsc -p tsconfig.json && yarn build:convert-config && yarn build:copy:all",
+    "build:redist": "tsc -p tsconfig.json && yarn build:copy:all",
     "build:doc": "typedoc --options typedoc.js --out doc .",
     "build:web": "webpack --config=build/webpack.base.js",
     "build:web:release": "webpack --progress --hide-modules --config=build/webpack.production.js",
@@ -46,7 +46,8 @@
   "jest": {
     "moduleFileExtensions": [
       "ts",
-      "js"
+      "js",
+      "json"
     ],
     "transform": {
       "^.+\\.ts$": "ts-jest"

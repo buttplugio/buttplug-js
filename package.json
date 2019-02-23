@@ -19,7 +19,6 @@
     "@types/uuid-parse": "^1.0.0",
     "@types/web-bluetooth": "^0.0.4",
     "@types/ws": "^6.0.1",
-    "codecov": "^3.2.0",
     "copyfiles": "^2.1.0",
     "cross-env": "^5.2.0",
     "css-loader": "^2.1.0",

@@ -59,6 +59,13 @@ jobs:
       displayName: 'Build and test'
       env: { "CI": "true" }
     - script: |
+        npm i -g codecov
+        cd $(System.DefaultWorkingDirectory)/packages/buttplug
+        codecov -t $(BUTTPLUG_CODECOV_TOKEN)
+        cd $(System.DefaultWorkingDirectory)/packages/buttplug-node-websockets
+        codecov -t $(BUTTPLUG_NODE_WEBSOCKETS_CODECOV_TOKEN)
+      displayName: 'Upload test results to codecov'
+    - script: |
         yarn workspace buttplug-server-cli freeze:linux
       displayName: 'Freeze server executable'
       env: { "CI": "true" }
