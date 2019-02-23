@@ -20,6 +20,7 @@ native Bluetooth LE APIs.
 - [Installation](#installation)
 - [API Documentation](#api-documentation)
 - [Usage Example](#usage-example)
+- [Running without Root or Sudo on Linux](#running-without-root-or-sudo-on-linux)
 - [License](#license)
 
 ## Support The Project
@@ -82,6 +83,24 @@ devices supported by the version of buttplug-js in your project. See
 the [buttplug-js
 README](https://github.com/buttplugio/buttplug-js#readme) for a list
 of supported devices.
+
+## Running Without Root or Sudo on Linux
+
+To connect to bluetooth without having to use sudo or root on Linux,
+run the following command:
+
+```
+sudo setcap cap_net_raw+eip $(eval readlink -f `which node`)
+```
+
+This grants the `node` binary `cap_net_raw` privileges, so it can
+start/stop BLE advertising.
+
+Note: The above command requires setcap to be installed, it can be
+installed using the following:
+
+* apt: `sudo apt-get install libcap2-bin`
+* yum: `su -c \'yum install libcap2-bin\'`
 
 ## License
 
