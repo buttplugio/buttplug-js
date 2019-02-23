@@ -124,7 +124,7 @@ export class ButtplugNodeBluetoothLEDeviceManager extends EventEmitter implement
       }
       this.logger.Info(`Error while initializing ${device.advertisement.localName}: ${errStr}`);
       // We can't rethrow here, as this method is only called from an event
-      // handler, so just return;
+      // handler, so just return.
       return;
     }
     this.emit("deviceadded", bpDevice);

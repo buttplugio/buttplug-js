@@ -9,7 +9,7 @@
 import * as noble from "noble-mac";
 import * as uuidParse from "uuid-parse";
 import * as util from "util";
-import { ButtplugDeviceImpl, BluetoothLEProtocolConfiguration, Endpoints, ButtplugDeviceWriteOptions, ButtplugDeviceReadOptions, ButtplugDeviceException } from "buttplug";
+import { ButtplugDeviceImpl, BluetoothLEProtocolConfiguration, Endpoints, ButtplugDeviceWriteOptions, ButtplugDeviceReadOptions, ButtplugDeviceException, GetEndpoint } from "buttplug";
 
 export class ButtplugNodeBluetoothLEDevice extends ButtplugDeviceImpl {
 
@@ -64,12 +64,17 @@ export class ButtplugNodeBluetoothLEDevice extends ButtplugDeviceImpl {
       const discoverCharsAsync: (x: string[]) => noble.Characteristic[] =
         util.promisify(service.discoverCharacteristics.bind(service));
       const serviceUuid = this.NobleToRegularUuid(service.uuid);
+      this._logger.Debug(serviceUuid);
       const chrs = this._deviceInfo.Services.get(serviceUuid)!;
-
+      this._logger.Debug(chrs.size.toString());
+      for (let key in this._deviceInfo.Services) {
+        this._logger.Debug(key);
+      }
       if (chrs.size !== 0) {
         for (let [name, uuid] of chrs.entries()) {
           const nobleChr = this.RegularToNobleUuid(uuid);
-          this._characteristics.set(name,
+          this._logger.Debug(`Setting up endpoint ${name} ${uuid} for device ${this.Name}`);
+          this._characteristics.set(GetEndpoint(name)!,
                                     (await discoverCharsAsync([nobleChr]))[0]);
         }
         continue;
@@ -90,6 +95,9 @@ export class ButtplugNodeBluetoothLEDevice extends ButtplugDeviceImpl {
           this._characteristics.set(Endpoints.Rx, char);
         }
       }
+    }
+    if (this._characteristics.size === 0) {
+      throw new ButtplugDeviceException(`No characteristics found for device ${this.Name}, cannot communicate with device.`);
     }
   }
 
@@ -123,7 +131,7 @@ export class ButtplugNodeBluetoothLEDevice extends ButtplugDeviceImpl {
 
   public WriteValueInternal = async (aValue: Buffer, aOptions: ButtplugDeviceWriteOptions): Promise<void> => {
     if (!this._characteristics.has(aOptions.Endpoint)) {
-      return;
+      throw new ButtplugDeviceException(`Device ${this._device.advertisement.localName} has no endpoint named ${aOptions.Endpoint}`);
     }
     const chr = this._characteristics.get(aOptions.Endpoint)!;
     return await util.promisify(chr.write.bind(chr))(aValue, false);

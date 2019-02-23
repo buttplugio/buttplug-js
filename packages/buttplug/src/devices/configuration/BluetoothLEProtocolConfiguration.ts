@@ -38,13 +38,14 @@ export class BluetoothLEProtocolConfiguration implements IProtocolConfiguration 
     let services = new Map<string, Map<Endpoints, string>>();
     for (let service of Object.keys(aObj["services"])) {
       let chrs = new Map<Endpoints, string>();
-      if (aObj[service] !== undefined) {
-        for (let chr in Object.keys(aObj[service])) {
+      if (Object.getOwnPropertyNames(aObj["services"]).indexOf(service) !== -1 &&
+          aObj["services"][service] !== null) {
+        for (let chr of Object.keys(aObj["services"][service])) {
           let ep = GetEndpoint(chr);
           if (ep == null) {
-            throw new ButtplugDeviceException(`Device lists invalid endpoint ${chr}.`);
+            throw new ButtplugDeviceException(`Device with names ${names} lists invalid endpoint ${chr}.`);
           }
-          chrs.set(ep, Endpoints[chr]);
+          chrs.set(ep, aObj["services"][service][chr]);
         }
       }
       services.set(service, chrs);
