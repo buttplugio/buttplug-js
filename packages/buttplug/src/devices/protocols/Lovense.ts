@@ -6,7 +6,6 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-import * as MessageUtils from "../../core/MessageUtils";
 import * as Messages from "../../core/Messages";
 import { ButtplugDeviceException } from "../../core/Exceptions";
 import { ButtplugDeviceProtocol } from "../ButtplugDeviceProtocol";
@@ -44,7 +43,12 @@ export class Lovense extends ButtplugDeviceProtocol {
   public Initialize = async (): Promise<void> => {
     this._device.addListener("updateReceived", this.OnValueChanged);
     await this._device.SubscribeToUpdates();
-    await this.WriteStringToDevice("DeviceType;");
+    // TODO This is a bogus read that is required for noble on linux to dump
+    // some weird characteristic value we get back on first notify. This doesn't
+    // seem to happen in WebBluetooth.
+    await this._device.ReadString();
+    await this._device.WriteString("DeviceType;");
+    this._logger.Debug(`Device ${this._device.Name} waiting for initialization return`);
     await this._initPromise;
   }
 
@@ -85,7 +89,9 @@ export class Lovense extends ButtplugDeviceProtocol {
   private OnValueChanged = async ([aEndpoint, aValue]: [Endpoints, Buffer]) => {
     // If we haven't initialized yet, consider this to be the first read, for the device info.
     if (this._initResolve !== undefined) {
-      this.ParseDeviceType(aValue.toString('utf8'));
+      let identStr = aValue.toString('utf-8');
+      this._logger.Debug(`Lovense Device ${this._device.Name} got initialization return ${identStr}`);
+      this.ParseDeviceType(identStr);
       const res = this._initResolve;
       this._initResolve = undefined;
       res();
@@ -121,7 +127,7 @@ export class Lovense extends ButtplugDeviceProtocol {
     for (const cmd of aMsg.Speeds) {
       const index = this._specs.VibrateCmd.FeatureCount > 1 ? (cmd.Index + 1).toString(10) : "";
       const speed = Math.floor(20 * cmd.Speed);
-      await this.WriteStringToDevice(`Vibrate${index}:${speed};`);
+      await this._device.WriteString(`Vibrate${index}:${speed};`);
     }
     return new Messages.Ok(aMsg.Id);
   }
@@ -137,10 +143,10 @@ export class Lovense extends ButtplugDeviceProtocol {
       throw new ButtplugDeviceException("Rotation command sent for invalid index.");
     }
     if (rotateCmd.Clockwise !== this._isClockwise) {
-      await this.WriteStringToDevice("RotateChange;");
+      await this._device.WriteString("RotateChange;");
     }
     const speed = Math.floor(20 * rotateCmd.Speed);
-    await this.WriteStringToDevice(`Rotate:${speed};`);
+    await this._device.WriteString(`Rotate:${speed};`);
     return new Messages.Ok(aMsg.Id);
   }
 
