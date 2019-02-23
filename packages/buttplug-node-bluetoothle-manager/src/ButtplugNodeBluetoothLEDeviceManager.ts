@@ -6,7 +6,7 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 import * as noble from "noble-mac";
-import { IDeviceSubtypeManager, ButtplugLogger, DeviceConfigurationManager, BluetoothLEProtocolConfiguration, ButtplugDevice } from "buttplug";
+import { IDeviceSubtypeManager, ButtplugLogger, DeviceConfigurationManager, BluetoothLEProtocolConfiguration, ButtplugDevice, ButtplugException, ButtplugDeviceException } from "buttplug";
 import { EventEmitter } from "events";
 import { ButtplugNodeBluetoothLEDevice } from "./ButtplugNodeBluetoothLEDevice";
 
@@ -74,14 +74,59 @@ export class ButtplugNodeBluetoothLEDeviceManager extends EventEmitter implement
     if (foundConfig === undefined) {
       return;
     }
+    this.logger.Debug(`Found configuration for device ${device.advertisement.localName}`);
     const [config, protocolType] = foundConfig;
     const bpDevImpl = new ButtplugNodeBluetoothLEDevice(config as BluetoothLEProtocolConfiguration, device);
-    await bpDevImpl.Connect();
+    this.logger.Debug(`Connecting to noble device ${device.advertisement.localName}`);
+    try {
+      await bpDevImpl.Connect();
+    } catch (e) {
+      let errStr: string;
+      switch (e) {
+        case ButtplugDeviceException: {
+          errStr = e.errorMessage;
+          break;
+        }
+        case Error: {
+          errStr = e.message;
+          break;
+        }
+        default: {
+          errStr = e.toString();
+          break;
+        }
+      }
+      this.logger.Info(`Error while connecting to ${device.advertisement.localName}: ${errStr}`);
+      // We can't rethrow here, as this method is only called from an event
+      // handler, so just return;
+      return;
+    }
     const bpProtocol = new protocolType(bpDevImpl);
     const bpDevice = new ButtplugDevice(bpProtocol, bpDevImpl);
-    console.log("initializing");
-    await bpDevice.Initialize();
-    console.log("initialize");
+    this.logger.Debug(`Initializing noble device ${device.advertisement.localName}`);
+    try {
+      await bpDevice.Initialize();
+    } catch (e) {
+      let errStr: string;
+      switch (e) {
+        case ButtplugDeviceException: {
+          errStr = e.errorMessage;
+          break;
+        }
+        case Error: {
+          errStr = e.message;
+          break;
+        }
+        default: {
+          errStr = e.toString();
+          break;
+        }
+      }
+      this.logger.Info(`Error while initializing ${device.advertisement.localName}: ${errStr}`);
+      // We can't rethrow here, as this method is only called from an event
+      // handler, so just return;
+      return;
+    }
     this.emit("deviceadded", bpDevice);
   }
 }

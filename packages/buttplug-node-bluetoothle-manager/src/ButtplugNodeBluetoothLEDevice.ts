@@ -48,12 +48,19 @@ export class ButtplugNodeBluetoothLEDevice extends ButtplugDeviceImpl {
     // is horrible.
     let nobleServices = Array.from(this._deviceInfo.Services.keys()).map((x) => this.RegularToNobleUuid(x));
 
-    // TODO Figure out service uuid shortening rules because one god damn line
-    // later everything continues to be fucking horrible and this will miss
-    // services starting with 0000 because it assumes 16-bit shortened form.
+    // Caution: We have to do weird service uuid shortening rules because one
+    // god damn line later everything continues to be fucking horrible and this
+    // will miss services starting with 0000 because it assumes 16-bit shortened
+    // form if we don't shorten them ourselves. This happens back in
+    // RegularToNobleUuid also.
     let services = await discoverServicesAsync(nobleServices);
 
+    if (services.length === 0) {
+      throw new ButtplugDeviceException(`Cannot find any valid services on device ${this._device.advertisement.localName}`);
+    }
+
     for (const service of services) {
+      this._logger.Debug(`Found service ${service.uuid} for device ${this._device.advertisement.localName}`);
       const discoverCharsAsync: (x: string[]) => noble.Characteristic[] =
         util.promisify(service.discoverCharacteristics.bind(service));
       const serviceUuid = this.NobleToRegularUuid(service.uuid);
@@ -87,13 +94,26 @@ export class ButtplugNodeBluetoothLEDevice extends ButtplugDeviceImpl {
   }
 
   private RegularToNobleUuid(aRegularUuid: string): string {
+    // Noble autoshortens default IDs. This is fucking horrible and I'm not sure
+    // how to turn it off. If we see something start with 4 0's, assume we'll
+    // have to shorten.
+    //
+    // Find a new fucking maintainer already, Sandeep. Many of us have
+    // offered. I know you're out there. You're updating your twitter.
+    if (aRegularUuid.startsWith("0000")) {
+      return aRegularUuid.substr(4, 4);
+    }
     return aRegularUuid.replace(/-/g, "");
   }
 
-  private NobleToRegularUuid(aRegularUuid: string): string {
+  private NobleToRegularUuid(aNobleUuid: string): string {
+    // And, once again, shortened IDs we have to convert by hand. God damnit.
+    if (aNobleUuid.length === 4) {
+      return `0000${aNobleUuid}-0000-1000-8000-00805f9b34fb`;
+    }
     // I can't believe I'm bringing in a whole UUID library for this but such is
     // life in node.
-    return uuidParse.unparse(Buffer.from(aRegularUuid, 'hex'));
+    return uuidParse.unparse(Buffer.from(aNobleUuid, 'hex'));
   }
 
   public OnDisconnect = () => {
@@ -111,23 +131,26 @@ export class ButtplugNodeBluetoothLEDevice extends ButtplugDeviceImpl {
 
   public ReadValueInternal = async (aOptions: ButtplugDeviceReadOptions): Promise<Buffer> => {
     if (!this._characteristics.has(aOptions.Endpoint)) {
-      throw new ButtplugDeviceException(`Device ${this._device.advertisement.localName} has not endpoint named ${aOptions.Endpoint}`);
+      throw new ButtplugDeviceException(`Device ${this._device.advertisement.localName} has no endpoint named ${aOptions.Endpoint}`);
     }
     const chr = this._characteristics.get(aOptions.Endpoint)!;
     return await util.promisify(chr.read.bind(chr))();
   }
 
-  public SubscribeToUpdatesInternal = (aOptions: ButtplugDeviceReadOptions): Promise<void> => {
+  public SubscribeToUpdatesInternal = async (aOptions: ButtplugDeviceReadOptions): Promise<void> => {
+    this._logger.Debug(`Subscripting to updates on noble device ${this._device.advertisement.localName}`);
     if (!this._characteristics.has(aOptions.Endpoint)) {
-      throw new ButtplugDeviceException(`Device ${this._device.advertisement.localName} has not endpoint named ${aOptions.Endpoint}`);
+      throw new ButtplugDeviceException(`Device ${this._device.advertisement.localName} has no endpoint named ${aOptions.Endpoint}`);
     }
-    console.log("Subscribing!");
     const chr = this._characteristics.get(aOptions.Endpoint)!;
+    if (chr.properties.find((x) => x === "notify" || x === "indicate") === undefined) {
+      throw new ButtplugDeviceException(`Device ${this._device.advertisement.localName} endpoint ${aOptions.Endpoint} does not have notify or indicate properties.`);
+    }
     this._notificationHandlers.set(aOptions.Endpoint, (aIsNotification: boolean) => {
       this.CharacteristicValueChanged(aOptions.Endpoint, aIsNotification);
     });
-    chr.subscribe();
-    chr.on("notify", this._notificationHandlers.get(aOptions.Endpoint)!);
+    await util.promisify(chr.subscribe.bind(chr))();
+    chr.on("data", this._notificationHandlers.get(aOptions.Endpoint)!);
     return Promise.resolve();
   }
 
