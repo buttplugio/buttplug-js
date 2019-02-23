@@ -33,7 +33,7 @@ export class DeviceConfigurationManager {
     this._protocols.set("wevibe", WeVibe);
     this._protocols.set("vorzesa", VorzeA10Cyclone);
     this._protocols.set("maxpro", Maxpro);
-    this._protocols.set("kiiroov2", FleshlightLaunch);
+    this._protocols.set("kiiroo-v2", FleshlightLaunch);
     // Parse our configuration object last, as we need to add device protocols
     // first.
     this.ParseConfig();
