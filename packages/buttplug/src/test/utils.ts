@@ -6,7 +6,7 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-import { ButtplugClient, ButtplugEmbeddedServerConnector, ButtplugServer } from "../index";
+import { ButtplugClient, ButtplugEmbeddedClientConnector, ButtplugServer } from "../index";
 import { TestDeviceSubtypeManager } from "./TestDeviceSubtypeManager";
 
 export async function CreateDevToolsClient(): Promise<ButtplugClient> {
@@ -14,7 +14,7 @@ export async function CreateDevToolsClient(): Promise<ButtplugClient> {
   const server = new ButtplugServer("Test Server");
   server.ClearDeviceManagers();
   server.AddDeviceManager(new TestDeviceSubtypeManager());
-  const localConnector = new ButtplugEmbeddedServerConnector();
+  const localConnector = new ButtplugEmbeddedClientConnector();
   localConnector.Server = server;
   await client.Connect(localConnector);
   return Promise.resolve(client);

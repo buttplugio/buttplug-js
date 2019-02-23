@@ -9,14 +9,14 @@
 "use strict";
 import * as WebSocket from "ws";
 import { EventEmitter } from "events";
-import { FromJSON, IButtplugConnector, ButtplugLogger, ButtplugMessage, ButtplugMessageSorter, ButtplugClientConnectorException, ButtplugMessageException } from "buttplug";
+import { FromJSON, IButtplugClientConnector, ButtplugLogger, ButtplugMessage, ButtplugMessageSorter, ButtplugClientConnectorException, ButtplugMessageException } from "buttplug";
 
 /**
  * Connector class for using the node ws library as a websocket client to a
  * buttplug server. Users should build an instance of this class and pass it to
  * the ButtplugClient.Connect() function.
  */
-export class ButtplugNodeWebsocketClientConnector extends EventEmitter implements IButtplugConnector {
+export class ButtplugNodeWebsocketClientConnector extends EventEmitter implements IButtplugClientConnector {
 
   private _sorter: ButtplugMessageSorter = new ButtplugMessageSorter();
   /// Websocket client

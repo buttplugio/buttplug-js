@@ -11,9 +11,7 @@
 import { ButtplugLogger } from "../core/Logging";
 import { EventEmitter } from "events";
 import { ButtplugClientDevice } from "./ButtplugClientDevice";
-import { IButtplugConnector } from "./IButtplugConnector";
-import { ButtplugBrowserWebsocketConnector } from "./ButtplugBrowserWebsocketConnector";
-import { ButtplugEmbeddedServerConnector } from "./ButtplugEmbeddedServerConnector";
+import { IButtplugClientConnector } from "./IButtplugClientConnector";
 import * as Messages from "../core/Messages";
 import { CheckMessage } from "../core/MessageUtils";
 import { ButtplugDeviceException, ButtplugException,
@@ -22,7 +20,7 @@ import { ButtplugClientConnectorException } from "./ButtplugClientConnectorExcep
 
 export class ButtplugClient extends EventEmitter {
   protected _pingTimer: NodeJS.Timer | null = null;
-  protected _connector: IButtplugConnector | null = null;
+  protected _connector: IButtplugClientConnector | null = null;
   protected _devices: Map<number, ButtplugClientDevice> = new Map();
   protected _clientName: string;
   protected _logger = ButtplugLogger.Logger;
@@ -36,7 +34,7 @@ export class ButtplugClient extends EventEmitter {
     this._logger.Debug(`ButtplugClient: Client ${aClientName} created.`);
   }
 
-  public get Connector(): IButtplugConnector | null {
+  public get Connector(): IButtplugClientConnector | null {
     return this._connector;
   }
 
@@ -59,17 +57,7 @@ export class ButtplugClient extends EventEmitter {
     return this._isScanning;
   }
 
-  public ConnectWebsocket = async (aAddress: string) => {
-    this._logger.Info(`ButtplugClient: Connecting to ${aAddress}`);
-    await this.Connect(new ButtplugBrowserWebsocketConnector(aAddress));
-  }
-
-  public ConnectLocal = async () => {
-    this._logger.Info(`ButtplugClient: Connecting to In-Browser Server`);
-    await this.Connect(new ButtplugEmbeddedServerConnector());
-  }
-
-  public Connect = async (aConnector: IButtplugConnector) => {
+  public Connect = async (aConnector: IButtplugClientConnector) => {
     this._logger.Info(`ButtplugClient: Connecting using ${aConnector.constructor.name}`);
     await aConnector.Connect();
     this._connector = aConnector;

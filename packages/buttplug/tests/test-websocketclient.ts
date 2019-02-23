@@ -4,7 +4,7 @@ import * as Messages from "../src/core/Messages";
 import { ButtplugLogLevel } from "../src/core/Logging";
 import { FromJSON } from "../src/core/MessageUtils";
 import { SetupTestSuite } from "./utils";
-import { ButtplugMessageException } from "../src";
+import { ButtplugMessageException, ButtplugBrowserWebsocketClientConnector } from "../src";
 
 SetupTestSuite();
 
@@ -37,7 +37,7 @@ describe("Websocket Client Tests", async () => {
     };
     mockServer.on("message", serverInfo);
     bp = new ButtplugClient("Test Buttplug Client");
-    await bp.ConnectWebsocket("ws://localhost:6868");
+    await bp.Connect(new ButtplugBrowserWebsocketClientConnector("ws://localhost:6868"));
   });
 
   afterEach(function(done) {

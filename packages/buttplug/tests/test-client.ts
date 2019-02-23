@@ -1,5 +1,5 @@
 import { ButtplugClient, ButtplugLogger,
-         ButtplugServer, ButtplugEmbeddedServerConnector } from "../src/index";
+  ButtplugServer, ButtplugEmbeddedClientConnector } from "../src/index";
 import { TestDeviceSubtypeManager } from "../src/test/TestDeviceSubtypeManager";
 import * as Messages from "../src/core/Messages";
 import { BPTestClient, SetupTestSuite, SetupTestServer } from "./utils";
@@ -18,7 +18,7 @@ describe("Client Tests", async () => {
 
   async function SetupServer(): Promise<BPTestClient> {
     const bp = new BPTestClient("Test Buttplug Client");
-    await bp.ConnectLocal();
+    await bp.Connect(new ButtplugEmbeddedClientConnector);
     return bp;
   }
 
@@ -78,7 +78,7 @@ describe("Client Tests", async () => {
     const tdm = new TestDeviceSubtypeManager();
     server.AddDeviceManager(tdm);
     tdm.ConnectLinearDevice();
-    const localConnector = new ButtplugEmbeddedServerConnector();
+    const localConnector = new ButtplugEmbeddedClientConnector();
     localConnector.Server = server;
     await client.Connect(localConnector);
     return p;
@@ -129,7 +129,7 @@ describe("Client Tests", async () => {
   it("Should receive disconnect event on disconnect", async () => {
     const bplocal = new ButtplugClient("Test Client");
     bplocal.addListener("disconnect", () => { res(); });
-    await bplocal.ConnectLocal();
+    await bplocal.Connect(new ButtplugEmbeddedClientConnector());
     bplocal.Disconnect();
     return p;
   });
@@ -140,14 +140,14 @@ describe("Client Tests", async () => {
       expect(bplocal.PingTimer).toEqual(null);
       res();
     });
-    await bplocal.ConnectLocal();
+    await bplocal.Connect(new ButtplugEmbeddedClientConnector());
     bplocal.Disconnect();
     return p;
   });
 
   it("Should get error on scanning when no device managers available.", async () => {
     const bplocal = new ButtplugClient("Test Client");
-    await bplocal.ConnectLocal();
+    await bplocal.Connect(new ButtplugEmbeddedClientConnector());
     await expect(bplocal.StartScanning()).rejects.toBeInstanceOf(ButtplugDeviceException);
   });
 });

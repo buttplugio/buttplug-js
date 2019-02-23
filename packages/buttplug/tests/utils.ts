@@ -1,4 +1,4 @@
-import { ButtplugClient, ButtplugServer, ButtplugEmbeddedServerConnector } from "../src/index";
+import { ButtplugClient, ButtplugServer, ButtplugEmbeddedClientConnector } from "../src/index";
 import { TestDeviceSubtypeManager } from "../src/test/TestDeviceSubtypeManager";
 import * as Messages from "../src/core/Messages";
 import { ButtplugClientConnectorException } from "client/ButtplugClientConnectorException";
@@ -27,13 +27,13 @@ export function SetupTestSuite() {
 export async function SetupTestServer(): Promise<{Client: ButtplugClient,
                                                   Server: ButtplugServer,
                                                   TestDeviceManager: TestDeviceSubtypeManager,
-                                                  Connector: ButtplugEmbeddedServerConnector}> {
+                                                  Connector: ButtplugEmbeddedClientConnector}> {
   const client = new ButtplugClient("Test Client");
   const server = new ButtplugServer("Test Server");
   server.ClearDeviceManagers();
   const testdevicemanager = new TestDeviceSubtypeManager();
   server.AddDeviceManager(testdevicemanager);
-  const localConnector = new ButtplugEmbeddedServerConnector();
+  const localConnector = new ButtplugEmbeddedClientConnector();
   localConnector.Server = server;
   await client.Connect(localConnector);
   return Promise.resolve({Client: client,

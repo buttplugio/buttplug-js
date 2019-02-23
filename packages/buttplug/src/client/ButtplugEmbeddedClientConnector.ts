@@ -10,12 +10,11 @@
 
 import { EventEmitter } from "events";
 import { ButtplugMessage } from "../core/Messages";
-import { IButtplugConnector } from "./IButtplugConnector";
+import { IButtplugClientConnector } from "./IButtplugClientConnector";
 import { ButtplugServer } from "../server/ButtplugServer";
-import { ButtplugException } from "../core/Exceptions";
 import { ButtplugClientConnectorException } from "./ButtplugClientConnectorException";
 
-export class ButtplugEmbeddedServerConnector extends EventEmitter implements IButtplugConnector {
+export class ButtplugEmbeddedClientConnector extends EventEmitter implements IButtplugClientConnector {
   private _connected: boolean = false;
   private _server: ButtplugServer | null = null;
 

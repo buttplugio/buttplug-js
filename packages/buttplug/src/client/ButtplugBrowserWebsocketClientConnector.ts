@@ -9,12 +9,12 @@
 "use strict";
 
 import { EventEmitter } from "events";
-import { IButtplugConnector } from "./IButtplugConnector";
+import { IButtplugClientConnector } from "./IButtplugClientConnector";
 import { ButtplugMessage } from "../core/Messages";
 import { FromJSON } from "../core/MessageUtils";
 import { ButtplugMessageSorter } from "./ButtplugMessageSorter";
 
-export class ButtplugBrowserWebsocketConnector extends EventEmitter implements IButtplugConnector {
+export class ButtplugBrowserWebsocketClientConnector extends EventEmitter implements IButtplugClientConnector {
 
   private _sorter: ButtplugMessageSorter = new ButtplugMessageSorter();
   private _ws: WebSocket | undefined;

@@ -1,4 +1,4 @@
-import { ButtplugEmbeddedServerConnector } from "../src/client/ButtplugEmbeddedServerConnector";
+import { ButtplugEmbeddedClientConnector } from "../src/client/ButtplugEmbeddedClientConnector";
 import { ButtplugServer } from "../src/server/ButtplugServer";
 import * as Messages from "../src/core/Messages";
 import { ButtplugClient } from "../src/index";
@@ -46,7 +46,7 @@ describe("Server Tests", async () => {
   });
 
   it("Should downgrade messages", async () => {
-    const bpConnector = new ButtplugEmbeddedServerConnector();
+    const bpConnector = new ButtplugEmbeddedClientConnector();
     bpConnector.Server = bpServer;
     const oldClient = new TestOldClient();
     await oldClient.Connect(bpConnector);
@@ -73,7 +73,7 @@ describe("Server Tests", async () => {
   });
 
   it("Should clear all device managers when ClearDeviceManagers called", async () => {
-    const bpConnector = new ButtplugEmbeddedServerConnector();
+    const bpConnector = new ButtplugEmbeddedClientConnector();
     bpConnector.Server = bpServer;
     bpServer.ClearDeviceManagers();
     const client = new ButtplugClient();

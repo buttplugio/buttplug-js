@@ -8,11 +8,11 @@
 
 export * from "./client/Client";
 export * from "./client/ButtplugClientDevice";
-export * from "./client/ButtplugBrowserWebsocketConnector";
+export * from "./client/ButtplugBrowserWebsocketClientConnector";
 export * from "./client/ButtplugClientConnectorException";
-export * from "./client/ButtplugEmbeddedServerConnector";
+export * from "./client/ButtplugEmbeddedClientConnector";
 export * from "./client/ButtplugMessageSorter";
-export * from "./client/IButtplugConnector";
+export * from "./client/IButtplugClientConnector";
 export * from "./core/Messages";
 export * from "./core/MessageUtils";
 export * from "./core/Logging";

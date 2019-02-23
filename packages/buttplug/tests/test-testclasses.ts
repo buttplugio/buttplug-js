@@ -1,7 +1,7 @@
 import { SetupTestServer } from "./utils";
 import { SingleMotorVibrateCmd, FleshlightLaunchFW12Cmd, LinearCmd, VibrateCmd,
-         SpeedSubcommand, VectorSubcommand, ButtplugServer, ButtplugEmbeddedServerConnector,
-         ButtplugClient, ButtplugClientDevice } from "../src/index";
+         SpeedSubcommand, VectorSubcommand, ButtplugServer, ButtplugClient,
+         ButtplugClientDevice, ButtplugEmbeddedClientConnector} from "../src/index";
 import { TestDeviceSubtypeManager } from "../src/test/TestDeviceSubtypeManager";
 
 describe("test test classes", () => {
@@ -83,7 +83,7 @@ describe("test test classes", () => {
 
   it("should list allowed messages correctly when devices are added manually", async () => {
     const server = new ButtplugServer();
-    const serverConnector = new ButtplugEmbeddedServerConnector();
+    const serverConnector = new ButtplugEmbeddedClientConnector();
     const testDeviceManager = new TestDeviceSubtypeManager();
     server.AddDeviceManager(testDeviceManager);
     serverConnector.Server = server;

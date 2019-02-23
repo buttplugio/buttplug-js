@@ -1,7 +1,7 @@
 import { WebBluetoothMock, DeviceMock, CharacteristicMock, PrimaryServiceMock, GattMock } from "web-bluetooth-mock";
 import { ButtplugClient } from "../src/client/Client";
 import { SetupTestSuite } from "./utils";
-import { VibrateCmd, SpeedSubcommand, Endpoints, DeviceConfigurationManager, ButtplugDevice } from "../src/index";
+import { Endpoints, DeviceConfigurationManager, ButtplugDevice, ButtplugEmbeddedClientConnector } from "../src/index";
 import { ButtplugDeviceException } from "../src/core/Exceptions";
 import { BluetoothLEProtocolConfiguration } from "../src/devices/configuration/BluetoothLEProtocolConfiguration";
 import { WebBluetoothDevice } from "../src/server/managers/webbluetooth/WebBluetoothDevice";
@@ -96,7 +96,7 @@ describe("WebBluetooth library tests", () => {
     bluetooth = new WebBluetoothMock([mockBT.device]);
     g.navigator.bluetooth = bluetooth;
     bp = new ButtplugClient("Bluetooth Test Client");
-    await bp.ConnectLocal();
+    await bp.Connect(new ButtplugEmbeddedClientConnector());
   });
 
   it("should find webbluetooth, add manager, discover device", async () => {
