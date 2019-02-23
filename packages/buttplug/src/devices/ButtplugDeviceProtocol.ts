@@ -13,6 +13,7 @@ import { ButtplugLogger } from "../core/Logging";
 import { ButtplugMessageException } from "../core/Exceptions";
 import { IButtplugDeviceImpl } from "./IButtplugDeviceImpl";
 import { ButtplugDeviceWriteOptions } from "./ButtplugDeviceWriteOptions";
+import { ButtplugDeviceReadOptions } from "./ButtplugDeviceReadOptions";
 
 export abstract class ButtplugDeviceProtocol extends EventEmitter implements IButtplugDeviceProtocol
 {
@@ -50,10 +51,6 @@ export abstract class ButtplugDeviceProtocol extends EventEmitter implements IBu
     }
     // Non-null assurance in the middle of functions looks weird.
     return this.MsgFuncs.get(aMsg.Type)!(aMsg);
-  }
-
-  protected WriteStringToDevice = async (aStr: string, aOptions?: ButtplugDeviceWriteOptions): Promise<void> => {
-    return this._device.WriteValue(Buffer.from(aStr), aOptions)
   }
 }
 

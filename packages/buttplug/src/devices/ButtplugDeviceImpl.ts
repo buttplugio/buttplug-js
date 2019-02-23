@@ -51,6 +51,15 @@ export abstract class ButtplugDeviceImpl extends EventEmitter implements IButtpl
     return this.ReadValueInternal(aOptions);
   }
 
+  public WriteString = async (aStr: string, aOptions?: ButtplugDeviceWriteOptions): Promise<void> => {
+    return this.WriteValue(Buffer.from(aStr), aOptions)
+  }
+
+  public ReadString = async (aOptions?: ButtplugDeviceReadOptions): Promise<string> => {
+    const buf = await this.ReadValue(aOptions);
+    return buf.toString('utf-8');
+  }
+
   public SubscribeToUpdates(aOptions?: ButtplugDeviceReadOptions): void {
     if (aOptions === undefined) {
       return this.SubscribeToUpdatesInternal(new ButtplugDeviceReadOptions());
