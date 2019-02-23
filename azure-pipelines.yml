@@ -20,7 +20,7 @@ jobs:
       displayName: 'Install packages'
       env: { "CI": "true" }
     - script: |
-        yarn build && yarn test
+        yarn build:main && yarn test
       displayName: 'Build and test'
       env: { "CI": "true" }
     - script: |
@@ -55,7 +55,7 @@ jobs:
       displayName: 'Install packages'
       env: { "CI": "true" }
     - script: |
-        yarn build && yarn test
+        yarn build:main && yarn test
       displayName: 'Build and test'
       env: { "CI": "true" }
     - script: |
@@ -65,6 +65,9 @@ jobs:
         cd $(System.DefaultWorkingDirectory)/packages/buttplug-node-websockets
         codecov -t $(BUTTPLUG_NODE_WEBSOCKETS_CODECOV_TOKEN)
       displayName: 'Upload test results to codecov'
+    - script: |
+        yarn workspace buttplug build:web && yarn workspace buttplug build:web:release
+      displayName: 'Build Buttplug library web modules'
     - script: |
         yarn workspace buttplug-server-cli freeze:linux
       displayName: 'Freeze server executable'
