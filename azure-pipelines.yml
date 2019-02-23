@@ -63,7 +63,7 @@ jobs:
         cd $(System.DefaultWorkingDirectory)/packages/buttplug
         codecov -t $(BUTTPLUG_CODECOV_TOKEN)
         cd $(System.DefaultWorkingDirectory)/packages/buttplug-node-websockets
-        codecov -t $(BUTTPLUG_NODE_WEBSOCKETS_CODECOV_TOKEN)
+        codecov -t $(BUTTPLUG_CODECOV_TOKEN)
       displayName: 'Upload test results to codecov'
     - script: |
         yarn workspace buttplug build:web && yarn workspace buttplug build:web:release
