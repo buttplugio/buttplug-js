@@ -13,6 +13,16 @@
   optionalDependencies:
     usb "^1.1.0"
 
+"@abandonware/noble@https://github.com/abandonware/noble":
+  version "1.9.2-1"
+  resolved "https://github.com/abandonware/noble#2620aa4d97eee08883b189a8df868439c042dfb9"
+  dependencies:
+    debug "^4.1.0"
+  optionalDependencies:
+    "@abandonware/bluetooth-hci-socket" "^0.5.3-1"
+    bplist-parser "0.1.1"
+    xpc-connection "~0.1.4"
+
 "@babel/code-frame@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.0.0.tgz#06e2ab19bdb535385559aabb5ba59729482800f8"
@@ -1541,9 +1551,9 @@ bfj@^6.1.1:
     tryer "^1.0.0"
 
 big-integer@^1.6.7:
-  version "1.6.41"
-  resolved "https://registry.yarnpkg.com/big-integer/-/big-integer-1.6.41.tgz#6fb0e51bc8661129ef3832d46c939170b81ca794"
-  integrity sha512-d5AT9lMTYJ/ZE/4gzxb+5ttPcRWljVsvv7lF1w9KzkPhVUhBtHrjDo1J8swfZKepfLsliDhYa31zRYwcD0Yg9w==
+  version "1.6.42"
+  resolved "https://registry.yarnpkg.com/big-integer/-/big-integer-1.6.42.tgz#91623ae5ceeff9a47416c56c9440a66f12f534f1"
+  integrity sha512-3UQFKcRMx+5Z+IK5vYTMYK2jzLRJkt+XqyDdacgWgtMjjuifKpKTFneJLEgeBElOE2/lXZ1LcMcb5s8pwG2U8Q==
 
 big.js@^3.1.3:
   version "3.2.0"
@@ -5894,25 +5904,15 @@ no-case@^2.2.0:
   dependencies:
     lower-case "^1.1.1"
 
-noble-mac@buttplugio/noble-mac#buttplugio:
+"noble-mac@https://github.com/buttplugio/noble-mac#buttplugio":
   version "0.0.4"
-  resolved "https://codeload.github.com/buttplugio/noble-mac/tar.gz/e6135d21826bc6a033c4682c6bb50bff4c5daf68"
+  resolved "https://github.com/buttplugio/noble-mac#70a68e65677f9e746d3c011cac1dfe1f34656ad6"
   dependencies:
+    "@abandonware/noble" "https://github.com/abandonware/noble"
     cross-spawn "^6.0.5"
     napi-thread-safe-callback "0.0.6"
-    noble "^1.9.1"
     node-addon-api "^1.1.0"
     node-pre-gyp "^0.10.0"
-
-noble@abandonware/noble:
-  version "1.9.2-1"
-  resolved "https://codeload.github.com/abandonware/noble/tar.gz/2620aa4d97eee08883b189a8df868439c042dfb9"
-  dependencies:
-    debug "^4.1.0"
-  optionalDependencies:
-    "@abandonware/bluetooth-hci-socket" "^0.5.3-1"
-    bplist-parser "0.1.1"
-    xpc-connection "~0.1.4"
 
 node-addon-api@^1.1.0:
   version "1.6.2"

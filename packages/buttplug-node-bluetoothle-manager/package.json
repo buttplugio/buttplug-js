@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "buttplug": "*",
-    "uuid-parse": "^1.0.0",
-    "noble-mac": "buttplugio/noble-mac#buttplugio"
+    "noble-mac": "https://github.com/buttplugio/noble-mac#buttplugio",
+    "uuid-parse": "^1.0.0"
   }
 }
