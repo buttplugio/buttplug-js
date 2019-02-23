@@ -80,6 +80,9 @@ export class ButtplugNodeWebsocketServer extends ButtplugServer {
     // wrapped it in a 2 argument closure but eh.
     let closeRes: Function;
     const closePromise = new Promise((res, rej) => { closeRes = res; });
+    for (let client of this.wsServer.clients) {
+      client.close();
+    }
     this.wsServer.close(() => {
       this.wsServer = null;
       if (this.httpsServer !== null) {

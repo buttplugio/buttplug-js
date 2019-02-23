@@ -6,10 +6,24 @@ const tmp = require("tmp");
 import * as fs from "fs";
 
 describe("Buttplug Node Websocket tests", () => {
-  it("should throw on erroneous connector states", async () => {
-    const connector =
+
+  let _insecureConnector: ButtplugNodeWebsocketClientConnector;
+  let _secureConnector: ButtplugNodeWebsocketClientConnector;
+
+  beforeEach(() => {
+    _insecureConnector =
       new ButtplugNodeWebsocketClientConnector("ws://localhost:12345/buttplug", false);
-    expect(connector.Send(new Test("This should throw", 1))).rejects.toThrow();
+    _secureConnector =
+      new ButtplugNodeWebsocketClientConnector("wss://localhost:12345/buttplug", false);
+  });
+
+  afterEach(() => {
+    _insecureConnector.Disconnect();
+    _secureConnector.Disconnect();
+  });
+
+  it("should throw on erroneous connector states", async () => {
+    expect(_insecureConnector.Send(new Test("This should throw", 1))).rejects.toThrow();
   });
   it("should connect insecurely to itself, scan, find test devices", async function() {
     const server = new ButtplugNodeWebsocketServer("Buttplug Test Websocket Server");
@@ -18,11 +32,8 @@ describe("Buttplug Node Websocket tests", () => {
     // Insecure hosting, on localhost:12345
     server.StartInsecureServer(12345, "localhost");
 
-    const connector =
-      new ButtplugNodeWebsocketClientConnector("ws://localhost:12345/buttplug", false);
-
     const bpc = new ButtplugClient("test");
-    await bpc.Connect(connector);
+    await bpc.Connect(_insecureConnector);
     let res;
     let rej;
     let p = new Promise((resolve, reject) => { res = resolve; rej = reject; });
@@ -51,11 +62,9 @@ describe("Buttplug Node Websocket tests", () => {
     const server = new ButtplugNodeWebsocketServer("Buttplug Test Websocket Server");
     // Insecure hosting, on localhost:12345
     server.StartInsecureServer(12345, "localhost");
-    const connector =
-      new ButtplugNodeWebsocketClientConnector("ws://localhost:12345/buttplug", false);
 
     const bpc = new ButtplugClient("test");
-    await bpc.Connect(connector);
+    await bpc.Connect(_insecureConnector);
     expect(bpc.Connected).toBe(true);
     await bpc.Disconnect();
     expect(bpc.Connected).toBe(false);
@@ -66,11 +75,9 @@ describe("Buttplug Node Websocket tests", () => {
     const server = new ButtplugNodeWebsocketServer("Buttplug Test Websocket Server");
     // Insecure hosting, on localhost:12345
     server.StartInsecureServer(12345, "localhost");
-    const connector =
-      new ButtplugNodeWebsocketClientConnector("ws://localhost:12345/buttplug", false);
 
     let bpc = new ButtplugClient("test");
-    await bpc.Connect(connector);
+    await bpc.Connect(_insecureConnector);
     expect(bpc.Connected).toBe(true);
     await bpc.Disconnect();
     expect(bpc.Connected).toBe(false);
@@ -80,7 +87,7 @@ describe("Buttplug Node Websocket tests", () => {
     server.StartInsecureServer(12345, "localhost");
 
     bpc = new ButtplugClient("test");
-    await bpc.Connect(connector);
+    await bpc.Connect(_insecureConnector);
     expect(bpc.Connected).toBe(true);
     await bpc.Disconnect();
     expect(bpc.Connected).toBe(false);
@@ -97,11 +104,9 @@ describe("Buttplug Node Websocket tests", () => {
     fs.writeFileSync(tmpprivate.name, pems.private);
     const server = new ButtplugNodeWebsocketServer("Buttplug Test Websocket Server");
     server.StartSecureServer(tmpcert.name, tmpprivate.name, 12345, "localhost");
-    const connector =
-      new ButtplugNodeWebsocketClientConnector("wss://localhost:12345/buttplug", false);
 
     const bpc = new ButtplugClient("test");
-    await bpc.Connect(connector);
+    await bpc.Connect(_secureConnector);
     expect(bpc.Connected).toBe(true);
     await bpc.Disconnect();
     expect(bpc.Connected).toBe(false);
