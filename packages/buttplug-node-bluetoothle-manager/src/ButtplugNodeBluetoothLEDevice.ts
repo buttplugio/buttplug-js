@@ -15,7 +15,7 @@ export class ButtplugNodeBluetoothLEDevice extends ButtplugDeviceImpl {
 
   private _characteristics: Map<Endpoints, noble.Characteristic> =
     new Map<Endpoints, noble.Characteristic>();
-  private _notificationHandlers = new Map<Endpoints, (aNotification: boolean, aCharName: string) => void>();
+  private _notificationHandlers = new Map<Endpoints, (aData: Buffer, aIsNotification: boolean) => void>();
 
   public constructor(private _deviceInfo: BluetoothLEProtocolConfiguration,
                      private _device: noble.Peripheral) {
@@ -134,7 +134,8 @@ export class ButtplugNodeBluetoothLEDevice extends ButtplugDeviceImpl {
       throw new ButtplugDeviceException(`Device ${this._device.advertisement.localName} has no endpoint named ${aOptions.Endpoint}`);
     }
     const chr = this._characteristics.get(aOptions.Endpoint)!;
-    return await util.promisify(chr.write.bind(chr))(aValue, false);
+    // Noble uses "WriteWithoutResponse" so we have to flip our logic here.
+    return await util.promisify(chr.write.bind(chr))(aValue, !aOptions.WriteWithResponse);
   }
 
   public ReadValueInternal = async (aOptions: ButtplugDeviceReadOptions): Promise<Buffer> => {
@@ -154,8 +155,8 @@ export class ButtplugNodeBluetoothLEDevice extends ButtplugDeviceImpl {
     if (chr.properties.find((x) => x === "notify" || x === "indicate") === undefined) {
       throw new ButtplugDeviceException(`Device ${this._device.advertisement.localName} endpoint ${aOptions.Endpoint} does not have notify or indicate properties.`);
     }
-    this._notificationHandlers.set(aOptions.Endpoint, (aIsNotification: boolean) => {
-      this.CharacteristicValueChanged(aOptions.Endpoint, aIsNotification);
+    this._notificationHandlers.set(aOptions.Endpoint, (aData: Buffer, aIsNotification: boolean) => {
+      this.CharacteristicValueChanged(aOptions.Endpoint, aData, aIsNotification);
     });
     await util.promisify(chr.subscribe.bind(chr))();
     chr.on("data", this._notificationHandlers.get(aOptions.Endpoint)!);
@@ -166,9 +167,7 @@ export class ButtplugNodeBluetoothLEDevice extends ButtplugDeviceImpl {
     return Promise.resolve();
   }
 
-  protected CharacteristicValueChanged = async (aCharName: Endpoints, aIsNotification: boolean) => {
-    // The notification doesn't come with the value, so we have to manually read it out of rx.
-    const buffer = await this.ReadValue(new ButtplugDeviceReadOptions({ Endpoint: aCharName }));
-    this.UpdateReceived(aCharName, buffer);
+  protected CharacteristicValueChanged = async (aCharName: Endpoints, aData: Buffer, aIsNotification: boolean) => {
+    this.UpdateReceived(aCharName, aData);
   }
 }

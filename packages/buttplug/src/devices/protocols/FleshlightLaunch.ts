@@ -25,7 +25,7 @@ export class FleshlightLaunch extends ButtplugDeviceProtocol {
 
   public Initialize = async (): Promise<void> => {
     this._logger.Debug(`Calling Fleshlight Launch initialize on ${this._device.Name}`);
-    await this._device.WriteValue(Buffer.from([0x00]), new ButtplugDeviceWriteOptions({ Endpoint: Endpoints.Firmware }));
+    await this._device.WriteValue(Buffer.from([0x00]), new ButtplugDeviceWriteOptions({ Endpoint: Endpoints.Firmware, WriteWithResponse: true }));
   }
 
   public get MessageSpecifications(): object {

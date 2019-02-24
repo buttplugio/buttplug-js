@@ -43,12 +43,8 @@ export class Lovense extends ButtplugDeviceProtocol {
   public Initialize = async (): Promise<void> => {
     this._device.addListener("updateReceived", this.OnValueChanged);
     await this._device.SubscribeToUpdates();
-    // xxx This is a bogus read that is required for noble on linux to dump
-    // some weird characteristic value we get back on first notify. This doesn't
-    // seem to happen in WebBluetooth.
-    await this._device.ReadString();
-    await this._device.WriteString("DeviceType;");
     this._logger.Debug(`Device ${this._device.Name} waiting for initialization return`);
+    await this._device.WriteString("DeviceType;");
     await this._initPromise;
   }
 
@@ -85,16 +81,6 @@ export class Lovense extends ButtplugDeviceProtocol {
     // If we haven't initialized yet, consider this to be the first read, for the device info.
     if (this._initResolve !== undefined) {
       let identStr = aValue.toString('utf-8');
-      // For some reason, our usual tricks with subscribe/notify don't work with
-      // noble, meaning older devices like the Nora and Max won't ever send a
-      // valid ident string. In this case, we just kludge an ident based on the
-      // device name and hope it works. Any device named
-      // LVS-[devicename][firmwarename] shouldn't hit this block, this really
-      // only applies to the oldest firmware.
-      if (identStr.length === 0 || identStr.indexOf(":") === -1) {
-        this._logger.Debug(`Lovense Device ${this._device.Name} got invalid initialization return "${identStr}, falling back to fake init`);
-        identStr=`${this._device.Name.substr(4, 1)}:00:000000000000`;
-      }
       this._logger.Debug(`Lovense Device ${this._device.Name} got initialization return ${identStr}`);
       this.ParseDeviceType(identStr);
       this._initResolve();
