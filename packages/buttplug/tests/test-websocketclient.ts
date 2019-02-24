@@ -1,4 +1,4 @@
-import { Server } from "mock-socket";
+import { Server, WebSocket } from "mock-socket";
 import { ButtplugClient } from "../src/client/Client";
 import * as Messages from "../src/core/Messages";
 import { ButtplugLogLevel } from "../src/core/Logging";
@@ -10,6 +10,7 @@ SetupTestSuite();
 
 describe("Websocket Client Tests", async () => {
   let mockServer: Server;
+  let socket: WebSocket;
   let bp: ButtplugClient;
   let p;
   let res;
@@ -32,10 +33,16 @@ describe("Websocket Client Tests", async () => {
       }
       if (msg.Type === Messages.RequestDeviceList) {
         delaySend(new Messages.DeviceList([], msg.Id));
-        mockServer.removeEventListener("message", serverInfo);
+        //(socket as any).removeListener("message", serverInfo);
       }
     };
-    mockServer.on("message", serverInfo);
+    mockServer.on("connection", (aSocket: WebSocket) => {
+      socket = aSocket;
+      // TODO Bug in typescript defs for mock-socket 8 means we can't use the
+      // socket type as it was meant. See
+      // https://github.com/thoov/mock-socket/issues/224
+      (socket as any).on('message', (data: string) => serverInfo(data));
+    });
     bp = new ButtplugClient("Test Buttplug Client");
     await bp.Connect(new ButtplugBrowserWebsocketClientConnector("ws://localhost:6868"));
   });
@@ -45,11 +52,11 @@ describe("Websocket Client Tests", async () => {
   });
 
   function delaySend(aMsg: Messages.ButtplugMessage) {
-    process.nextTick(() => mockServer.send("[" + aMsg.toJSON() + "]"));
+    process.nextTick(() => socket.send("[" + aMsg.toJSON() + "]"));
   }
 
   it("Should deal with request/reply correctly", async () => {
-    mockServer.on("message", (jsonmsg: string) => {
+    (socket as any).on("message", (jsonmsg: string) => {
       const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
       delaySend(new Messages.Ok(msg.Id));
     });
@@ -64,7 +71,7 @@ describe("Websocket Client Tests", async () => {
   });
 
   it("Should throw exception on return of error message", async () => {
-    mockServer.on("message", (jsonmsg: string) => {
+    (socket as any).on("message", (jsonmsg: string) => {
       const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
       if (msg.Type === Messages.RequestLog) {
         delaySend(new Messages.Error("Error", Messages.ErrorClass.ERROR_MSG, msg.Id));
