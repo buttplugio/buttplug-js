@@ -24,7 +24,7 @@
     "tslint": "tslint -c tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
     "tslint:fix": "tslint -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\"",
     "pretest": "yarn build:main",
-    "test": "jest --detect-open-handles && istanbul report"
+    "test": "jest"
   },
   "repository": {
     "type": "git",

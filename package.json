@@ -24,7 +24,6 @@
     "css-loader": "^2.1.0",
     "fork-ts-checker-webpack-plugin": "^0.5.2",
     "html-loader": "^0.5.5",
-    "istanbul": "^0.4.5",
     "jest": "^24.1.0",
     "lerna": "^3.13.0",
     "mock-socket": "^7.1.0",
