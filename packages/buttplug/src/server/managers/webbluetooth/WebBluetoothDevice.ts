@@ -8,7 +8,7 @@
 
 import { ButtplugException, ButtplugDeviceException } from "../../../core/Exceptions";
 import { ButtplugDeviceImpl } from "../../../devices/ButtplugDeviceImpl";
-import { Endpoints } from "../../../devices/Endpoints";
+import { Endpoints, GetEndpoint } from "../../../devices/Endpoints";
 import { BluetoothLEProtocolConfiguration } from "../../../devices/configuration/BluetoothLEProtocolConfiguration";
 import { ButtplugDeviceWriteOptions } from "../../../devices/ButtplugDeviceWriteOptions";
 import { ButtplugDeviceReadOptions } from "../../../devices/ButtplugDeviceReadOptions";
@@ -66,7 +66,11 @@ export class WebBluetoothDevice extends ButtplugDeviceImpl {
       }
 
       for (let [chrEndpoint, chrUuid] of configChrs) {
-        this.SetNewCharacteristic(chrEndpoint, await service.getCharacteristic(chrUuid));
+        // Assume that our characteristic name is correct if we've gotten this
+        // far. Hopefully not a wrong assumption at the moment, though it's
+        // something we'll need to change once arbitrary string endpoints are
+        // allowed.
+        this.SetNewCharacteristic(GetEndpoint(chrEndpoint)!, await service.getCharacteristic(chrUuid));
       }
     }
 
