@@ -6,8 +6,7 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-import { SingleMotorVibrateCmd, FleshlightLaunchFW12Cmd } from "../index";
-import * as Messages from "../index";
+import * as Messages from "../core/Messages";
 import { ButtplugDeviceProtocol } from "../devices/ButtplugDeviceProtocol";
 import { IButtplugDeviceImpl } from "../devices/IButtplugDeviceImpl";
 import { TestDeviceImpl } from "./TestDeviceImpl";
@@ -95,9 +94,9 @@ export class TestDeviceProtocol extends ButtplugDeviceProtocol {
 
   private HandleVibrateCmd =
     async (aMsg: Messages.VibrateCmd): Promise<Messages.ButtplugMessage> => {
-      return this.HandleSingleMotorVibrateCmd(new SingleMotorVibrateCmd(aMsg.Speeds[0].Speed,
-                                                                        aMsg.DeviceIndex,
-                                                                        aMsg.Id));
+      return this.HandleSingleMotorVibrateCmd(new Messages.SingleMotorVibrateCmd(aMsg.Speeds[0].Speed,
+                                                                                 aMsg.DeviceIndex,
+                                                                                 aMsg.Id));
     }
 
   private HandleRotateCmd =

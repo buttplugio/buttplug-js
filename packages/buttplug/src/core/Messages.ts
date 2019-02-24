@@ -9,9 +9,9 @@
 // tslint:disable:max-classes-per-file
 "use strict";
 
-import {classToPlain, plainToClass} from "class-transformer";
-import { ButtplugMessageException } from "./Exceptions";
 import "reflect-metadata";
+import { classToPlain } from "class-transformer";
+import { ButtplugMessageException } from "./Exceptions";
 
 export const SYSTEM_MESSAGE_ID = 0;
 export const DEFAULT_MESSAGE_ID = 1;

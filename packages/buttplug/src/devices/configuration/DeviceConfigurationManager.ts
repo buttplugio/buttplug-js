@@ -18,7 +18,7 @@ import { Maxpro } from "../protocols/Maxpro";
 import { FleshlightLaunch } from "../protocols/FleshlightLaunch";
 import { ButtplugDeviceProtocolType } from "../ButtplugDeviceProtocol";
 import { IProtocolConfiguration } from "./IProtocolConfiguration";
-const defaultDeviceConfig = require("../../../dependencies/buttplug-device-config/buttplug-device-config.json");
+import * as defaultDeviceConfig from "../../../dependencies/buttplug-device-config/buttplug-device-config.json";
 
 export class DeviceConfigurationManager {
 
@@ -40,7 +40,7 @@ export class DeviceConfigurationManager {
   }
 
   public static LoadFromInternalConfig(): void {
-    DeviceConfigurationManager._manager = new DeviceConfigurationManager(defaultDeviceConfig as object);
+    DeviceConfigurationManager._manager = new DeviceConfigurationManager(defaultDeviceConfig);
   }
 
   public static LoadFromExternalConfig(aExternalConfig: string): void {
