@@ -9,18 +9,11 @@
 import * as noble from "noble-mac";
 import * as uuidParse from "uuid-parse";
 import * as util from "util";
-import { ButtplugDeviceImpl, BluetoothLEProtocolConfiguration, Endpoints, ButtplugDeviceWriteOptions, ButtplugDeviceReadOptions, ButtplugDeviceException, GetEndpoint } from "buttplug";
+import { ButtplugDeviceImpl, BluetoothLEProtocolConfiguration, Endpoints,
+         ButtplugDeviceWriteOptions, ButtplugDeviceReadOptions, ButtplugDeviceException,
+         GetEndpoint } from "buttplug";
 
 export class ButtplugNodeBluetoothLEDevice extends ButtplugDeviceImpl {
-
-  private _characteristics: Map<Endpoints, noble.Characteristic> =
-    new Map<Endpoints, noble.Characteristic>();
-  private _notificationHandlers = new Map<Endpoints, (aData: Buffer, aIsNotification: boolean) => void>();
-
-  public constructor(private _deviceInfo: BluetoothLEProtocolConfiguration,
-                     private _device: noble.Peripheral) {
-    super(_device.advertisement.localName, _device.address);
-  }
 
   public get Name(): string {
     return this._device.advertisement.localName!;
@@ -35,6 +28,15 @@ export class ButtplugNodeBluetoothLEDevice extends ButtplugDeviceImpl {
     return true;
   }
 
+  private _characteristics: Map<Endpoints, noble.Characteristic> =
+    new Map<Endpoints, noble.Characteristic>();
+  private _notificationHandlers = new Map<Endpoints, (aData: Buffer, aIsNotification: boolean) => void>();
+
+  public constructor(private _deviceInfo: BluetoothLEProtocolConfiguration,
+                     private _device: noble.Peripheral) {
+    super(_device.advertisement.localName, _device.address);
+  }
+
   public Connect = async (): Promise<void> => {
     // Declare promisified versions of noble functions, just to keep things asyncy.
     const connectAsync: () => Promise<void> =
@@ -46,17 +48,18 @@ export class ButtplugNodeBluetoothLEDevice extends ButtplugDeviceImpl {
     // God damnit noble why can't you just take a normal formatted UUID like
     // everyone else. Stripping all of the dashes out of our UUIDs because life
     // is horrible.
-    let nobleServices = Array.from(this._deviceInfo.Services.keys()).map((x) => this.RegularToNobleUuid(x));
+    const nobleServices = Array.from(this._deviceInfo.Services.keys()).map((x) => this.RegularToNobleUuid(x));
 
     // Caution: We have to do weird service uuid shortening rules because one
     // god damn line later everything continues to be fucking horrible and this
     // will miss services starting with 0000 because it assumes 16-bit shortened
     // form if we don't shorten them ourselves. This happens back in
     // RegularToNobleUuid also.
-    let services = await discoverServicesAsync(nobleServices);
+    const services = await discoverServicesAsync(nobleServices);
 
     if (services.length === 0) {
-      throw new ButtplugDeviceException(`Cannot find any valid services on device ${this._device.advertisement.localName}`);
+      const err = `Cannot find any valid services on device ${this._device.advertisement.localName}`;
+      throw new ButtplugDeviceException(err);
     }
 
     for (const service of services) {
@@ -64,14 +67,9 @@ export class ButtplugNodeBluetoothLEDevice extends ButtplugDeviceImpl {
       const discoverCharsAsync: (x: string[]) => noble.Characteristic[] =
         util.promisify(service.discoverCharacteristics.bind(service));
       const serviceUuid = this.NobleToRegularUuid(service.uuid);
-      this._logger.Debug(serviceUuid);
       const chrs = this._deviceInfo.Services.get(serviceUuid)!;
-      this._logger.Debug(chrs.size.toString());
-      for (let key in this._deviceInfo.Services) {
-        this._logger.Debug(key);
-      }
       if (chrs.size !== 0) {
-        for (let [name, uuid] of chrs.entries()) {
+        for (const [name, uuid] of chrs.entries()) {
           const nobleChr = this.RegularToNobleUuid(uuid);
           this._logger.Debug(`Setting up endpoint ${name} ${uuid} for device ${this.Name}`);
           this._characteristics.set(GetEndpoint(name)!,
@@ -97,8 +95,60 @@ export class ButtplugNodeBluetoothLEDevice extends ButtplugDeviceImpl {
       }
     }
     if (this._characteristics.size === 0) {
-      throw new ButtplugDeviceException(`No characteristics found for device ${this.Name}, cannot communicate with device.`);
+      const err = `No characteristics found for device ${this.Name}, cannot communicate with device.`;
+      throw new ButtplugDeviceException(err);
     }
+  }
+
+  public OnDisconnect = () => {
+    this._device.disconnect();
+    this.emit("deviceremoved");
+  }
+
+  public WriteValueInternal = async (aValue: Buffer, aOptions: ButtplugDeviceWriteOptions): Promise<void> => {
+    this.CheckForCharacteristic(aOptions.Endpoint);
+    const chr = this._characteristics.get(aOptions.Endpoint)!;
+    // Noble uses "WriteWithoutResponse" so we have to flip our logic here.
+    return await util.promisify(chr.write.bind(chr))(aValue, !aOptions.WriteWithResponse);
+  }
+
+  public ReadValueInternal = async (aOptions: ButtplugDeviceReadOptions): Promise<Buffer> => {
+    this.CheckForCharacteristic(aOptions.Endpoint);
+    const chr = this._characteristics.get(aOptions.Endpoint)!;
+    return await util.promisify(chr.read.bind(chr))();
+  }
+
+  public SubscribeToUpdatesInternal = async (aOptions: ButtplugDeviceReadOptions): Promise<void> => {
+    this.CheckForCharacteristic(aOptions.Endpoint);
+    this._logger.Debug(`Subscripting to updates on noble device ${this._device.advertisement.localName}`);
+    const chr = this._characteristics.get(aOptions.Endpoint)!;
+    if (chr.properties.find((x) => x === "notify" || x === "indicate") === undefined) {
+      const err = `Device ${this._device.advertisement.localName} endpoint ${aOptions.Endpoint}` +
+        ` does not have notify or indicate properties.`;
+      throw new ButtplugDeviceException(err);
+    }
+    this._notificationHandlers.set(aOptions.Endpoint, (aData: Buffer, aIsNotification: boolean) => {
+      this.CharacteristicValueChanged(aOptions.Endpoint, aData, aIsNotification);
+    });
+    await util.promisify(chr.subscribe.bind(chr))();
+    chr.on("data", this._notificationHandlers.get(aOptions.Endpoint)!);
+    return Promise.resolve();
+  }
+
+  public Disconnect = async (): Promise<void> => {
+    return Promise.resolve();
+  }
+
+  protected CheckForCharacteristic(aEndpoint: Endpoints) {
+    if (this._characteristics.has(aEndpoint)) {
+      return;
+    }
+    const err = `Device ${this._device.advertisement.localName} has no endpoint named ${aEndpoint}`;
+    throw new ButtplugDeviceException(err);
+  }
+
+  protected CharacteristicValueChanged = async (aCharName: Endpoints, aData: Buffer, aIsNotification: boolean) => {
+    this.UpdateReceived(aCharName, aData);
   }
 
   private RegularToNobleUuid(aRegularUuid: string): string {
@@ -121,53 +171,6 @@ export class ButtplugNodeBluetoothLEDevice extends ButtplugDeviceImpl {
     }
     // I can't believe I'm bringing in a whole UUID library for this but such is
     // life in node.
-    return uuidParse.unparse(Buffer.from(aNobleUuid, 'hex'));
-  }
-
-  public OnDisconnect = () => {
-    this._device.disconnect();
-    this.emit("deviceremoved");
-  }
-
-  public WriteValueInternal = async (aValue: Buffer, aOptions: ButtplugDeviceWriteOptions): Promise<void> => {
-    if (!this._characteristics.has(aOptions.Endpoint)) {
-      throw new ButtplugDeviceException(`Device ${this._device.advertisement.localName} has no endpoint named ${aOptions.Endpoint}`);
-    }
-    const chr = this._characteristics.get(aOptions.Endpoint)!;
-    // Noble uses "WriteWithoutResponse" so we have to flip our logic here.
-    return await util.promisify(chr.write.bind(chr))(aValue, !aOptions.WriteWithResponse);
-  }
-
-  public ReadValueInternal = async (aOptions: ButtplugDeviceReadOptions): Promise<Buffer> => {
-    if (!this._characteristics.has(aOptions.Endpoint)) {
-      throw new ButtplugDeviceException(`Device ${this._device.advertisement.localName} has no endpoint named ${aOptions.Endpoint}`);
-    }
-    const chr = this._characteristics.get(aOptions.Endpoint)!;
-    return await util.promisify(chr.read.bind(chr))();
-  }
-
-  public SubscribeToUpdatesInternal = async (aOptions: ButtplugDeviceReadOptions): Promise<void> => {
-    this._logger.Debug(`Subscripting to updates on noble device ${this._device.advertisement.localName}`);
-    if (!this._characteristics.has(aOptions.Endpoint)) {
-      throw new ButtplugDeviceException(`Device ${this._device.advertisement.localName} has no endpoint named ${aOptions.Endpoint}`);
-    }
-    const chr = this._characteristics.get(aOptions.Endpoint)!;
-    if (chr.properties.find((x) => x === "notify" || x === "indicate") === undefined) {
-      throw new ButtplugDeviceException(`Device ${this._device.advertisement.localName} endpoint ${aOptions.Endpoint} does not have notify or indicate properties.`);
-    }
-    this._notificationHandlers.set(aOptions.Endpoint, (aData: Buffer, aIsNotification: boolean) => {
-      this.CharacteristicValueChanged(aOptions.Endpoint, aData, aIsNotification);
-    });
-    await util.promisify(chr.subscribe.bind(chr))();
-    chr.on("data", this._notificationHandlers.get(aOptions.Endpoint)!);
-    return Promise.resolve();
-  }
-
-  public Disconnect = (): Promise<void> => {
-    return Promise.resolve();
-  }
-
-  protected CharacteristicValueChanged = async (aCharName: Endpoints, aData: Buffer, aIsNotification: boolean) => {
-    this.UpdateReceived(aCharName, aData);
+    return uuidParse.unparse(Buffer.from(aNobleUuid, "hex"));
   }
 }

@@ -19,10 +19,10 @@ export * from "./core/Logging";
 export * from "./core/Exceptions";
 export * from "./devices/IButtplugDevice";
 export * from "./devices/IButtplugDeviceImpl";
-export * from "./devices/IButtplugDeviceProtocol"
+export * from "./devices/IButtplugDeviceProtocol";
 export * from "./devices/ButtplugDevice";
 export * from "./devices/ButtplugDeviceImpl";
-export * from "./devices/ButtplugDeviceProtocol"
+export * from "./devices/ButtplugDeviceProtocol";
 export * from "./devices/ButtplugDeviceReadOptions";
 export * from "./devices/ButtplugDeviceWriteOptions";
 export * from "./devices/Endpoints";

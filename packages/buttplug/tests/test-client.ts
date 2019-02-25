@@ -18,7 +18,7 @@ describe("Client Tests", async () => {
 
   async function SetupServer(): Promise<BPTestClient> {
     const bp = new BPTestClient("Test Buttplug Client");
-    await bp.Connect(new ButtplugEmbeddedClientConnector);
+    await bp.Connect(new ButtplugEmbeddedClientConnector());
     return bp;
   }
 

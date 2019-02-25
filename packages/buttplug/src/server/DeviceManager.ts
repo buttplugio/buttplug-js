@@ -27,6 +27,8 @@ export class DeviceManager extends EventEmitter {
     this._logger.Debug("DeviceManager: Starting Device Manager");
     try {
       // If getting this throws, it means we should just load the internal file.
+      //
+      // tslint:disable:no-unused-expression
       DeviceConfigurationManager.Manager;
     } catch (e) {
       DeviceConfigurationManager.LoadFromInternalConfig();

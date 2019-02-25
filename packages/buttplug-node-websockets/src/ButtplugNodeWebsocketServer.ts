@@ -46,11 +46,8 @@ export class ButtplugNodeWebsocketServer extends ButtplugServer {
    * @param port Network port to listen on (defaults to 12345)
    * @param host Host address to listen on (defaults to localhost)
    */
-  public StartSecureServer = (certFilePath: string,
-                              keyFilePath: string,
-                              port: number = 12345,
-                              host: string = "localhost") =>
-    {
+  public StartSecureServer = (certFilePath: string, keyFilePath: string,
+                              port: number = 12345, host: string = "localhost") => {
       const pems: any = {};
       if (!fs.existsSync(certFilePath)) {
         throw new ButtplugInitException(`Certificate file ${certFilePath} does not exist.`);
@@ -78,9 +75,9 @@ export class ButtplugNodeWebsocketServer extends ButtplugServer {
     // ws's close doesn't follow the callback style util.promisify expects (only
     // has a passing callback, no failing), so just build our own. Could've
     // wrapped it in a 2 argument closure but eh.
-    let closeRes: Function;
+    let closeRes: () => void;
     const closePromise = new Promise((res, rej) => { closeRes = res; });
-    for (let client of this.wsServer.clients) {
+    for (const client of this.wsServer.clients) {
       client.close();
     }
     this.wsServer.close(() => {

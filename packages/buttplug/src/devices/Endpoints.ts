@@ -6,17 +6,17 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-// taken from https://stackoverflow.com/questions/54039138/how-to-handle-reverse-mapping-of-string-enums-with-different-string-literals-in
-type Entries<T extends object> = { [K in keyof T]: [K, T[K]] }[keyof T]
+// taken from https://stackoverflow.com/questions/54039138/
+type Entries<T extends object> = { [K in keyof T]: [K, T[K]] }[keyof T];
 
 function reverseEnum<E extends Record<keyof E, string | number>>(
-  e: E
+  e: E,
 ): { [K in E[keyof E]]: Extract<Entries<E>, [any, K]>[0] };
 function reverseEnum(
-  e: Record<string | number, string | number>
+  e: Record<string | number, string | number>,
 ): Record<string | number, string | number> {
   const ret: Record<string | number, string | number> = {};
-  Object.keys(e).forEach(k => ret[e[k]] = k);
+  Object.keys(e).forEach((k) => ret[e[k]] = k);
   return ret;
 }
 

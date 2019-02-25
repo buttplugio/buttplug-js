@@ -1,8 +1,9 @@
 import { ButtplugClient } from "../src/client/Client";
 import { SetupTestSuite } from "./utils";
 import { VibrateCmd, RotateCmd, SpeedSubcommand, LinearCmd, VectorSubcommand, FleshlightLaunchFW12Cmd,
-         SingleMotorVibrateCmd, RotateSubcommand,
-  VorzeA10CycloneCmd, ButtplugDeviceException, ButtplugDeviceProtocol, ButtplugDevice, Endpoints, StopDeviceCmd, IButtplugDeviceImpl } from "../src/index";
+         SingleMotorVibrateCmd, RotateSubcommand, VorzeA10CycloneCmd, ButtplugDeviceException,
+         ButtplugDeviceProtocol, ButtplugDevice, Endpoints, StopDeviceCmd,
+         IButtplugDeviceImpl } from "../src/index";
 import { Lovense } from "../src/devices/protocols/Lovense";
 import { WeVibe } from "../src/devices/protocols/WeVibe";
 import { FleshlightLaunch } from "../src/devices/protocols/FleshlightLaunch";
@@ -12,17 +13,18 @@ import { TestDeviceImpl } from "../src/test/TestDeviceImpl";
 SetupTestSuite();
 
 describe("Device protocol tests", () => {
-  let bp: ButtplugClient;
 
-  function SetupDevice<T extends ButtplugDeviceProtocol>(constructor:{new (aDeviceImpl: IButtplugDeviceImpl):T}, aDeviceName: string = "Test Device") : [TestDeviceImpl, ButtplugDevice] {
-    let device = new TestDeviceImpl(aDeviceName);
-    let protocol = new constructor(device);
-    let bpDevice = new ButtplugDevice(protocol, device);
+  function SetupDevice<T extends ButtplugDeviceProtocol>(constructor: new (aDeviceImpl: IButtplugDeviceImpl) => T,
+                                                         aDeviceName: string = "Test Device")
+  : [TestDeviceImpl, ButtplugDevice] {
+    const device = new TestDeviceImpl(aDeviceName);
+    const protocol = new constructor(device);
+    const bpDevice = new ButtplugDevice(protocol, device);
     return [device, bpDevice];
-  };
+  }
 
   it("should convert lovense commands properly", async () => {
-    let [deviceImpl, device] = SetupDevice(Lovense);
+    const [deviceImpl, device] = SetupDevice(Lovense);
     deviceImpl.ScheduleUpdateOnNextTick(Endpoints.Rx, Buffer.from("W:01:000000000000"));
     await device.Initialize();
     expect(device.Name).toEqual("Lovense Domi v01");
@@ -40,7 +42,7 @@ describe("Device protocol tests", () => {
   });
 
   it("should convert lovense edge vibrate commands properly", async () => {
-    let [deviceImpl, device] = SetupDevice(Lovense);
+    const [deviceImpl, device] = SetupDevice(Lovense);
     deviceImpl.ScheduleUpdateOnNextTick(Endpoints.Rx, Buffer.from("P:01:000000000000"));
     await device.Initialize();
     expect(device.Name).toEqual("Lovense Edge v01");
@@ -62,7 +64,7 @@ describe("Device protocol tests", () => {
   });
 
   it("should convert lovense nora rotate commands properly", async () => {
-    let [deviceImpl, device] = SetupDevice(Lovense);
+    const [deviceImpl, device] = SetupDevice(Lovense);
     deviceImpl.ScheduleUpdateOnNextTick(Endpoints.Rx, Buffer.from("A:01:000000000000"));
     await device.Initialize();
     expect(device.Name).toEqual("Lovense Nora v01");
@@ -82,21 +84,24 @@ describe("Device protocol tests", () => {
   });
 
   it("should convert wevibe commands properly", async () => {
-    let [deviceImpl, device] = SetupDevice(WeVibe);
+    const [deviceImpl, device] = SetupDevice(WeVibe);
     await expect(device.ParseMessage(new VibrateCmd([new SpeedSubcommand(0, 1),
                                                      new SpeedSubcommand(1, 1)])))
       .rejects
       .toBeInstanceOf(ButtplugDeviceException);
     await device.ParseMessage(new VibrateCmd([new SpeedSubcommand(0, 1)]));
-    expect(deviceImpl.LastValueWritten).toEqual([Endpoints.Tx, Buffer.from([0x0f, 0x03, 0x00, 0xff, 0x00, 0x03, 0x00, 0x00])]);
+    expect(deviceImpl.LastValueWritten).toEqual([Endpoints.Tx,
+                                                 Buffer.from([0x0f, 0x03, 0x00, 0xff, 0x00, 0x03, 0x00, 0x00])]);
     await device.ParseMessage(new SingleMotorVibrateCmd(.5));
-    expect(deviceImpl.LastValueWritten).toEqual([Endpoints.Tx, Buffer.from([0x0f, 0x03, 0x00, 0x88, 0x00, 0x03, 0x00, 0x00])]);
+    expect(deviceImpl.LastValueWritten).toEqual([Endpoints.Tx,
+                                                 Buffer.from([0x0f, 0x03, 0x00, 0x88, 0x00, 0x03, 0x00, 0x00])]);
     await device.ParseMessage(new StopDeviceCmd());
-    expect(deviceImpl.LastValueWritten).toEqual([Endpoints.Tx, Buffer.from([0x0f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])]);
+    expect(deviceImpl.LastValueWritten).toEqual([Endpoints.Tx,
+                                                 Buffer.from([0x0f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])]);
   });
 
   it("should convert fleshlight commands properly", async () => {
-    let [deviceImpl, device] = SetupDevice(FleshlightLaunch);
+    const [deviceImpl, device] = SetupDevice(FleshlightLaunch);
     await expect(device.ParseMessage(new LinearCmd([new VectorSubcommand(0, 1, 1),
                                                     new VectorSubcommand(1, 1, 1)])))
       .rejects
@@ -112,7 +117,7 @@ describe("Device protocol tests", () => {
   });
 
   it("should convert vorze commands properly", async () => {
-    let [deviceImpl, device] = SetupDevice(VorzeA10Cyclone, "CycSA");
+    const [deviceImpl, device] = SetupDevice(VorzeA10Cyclone, "CycSA");
     await expect(device.ParseMessage(new RotateCmd([new RotateSubcommand(0, 1, true),
                                                     new RotateSubcommand(1, 1, false)])))
       .rejects

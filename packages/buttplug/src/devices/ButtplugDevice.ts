@@ -24,7 +24,7 @@ export class ButtplugDevice extends EventEmitter implements IButtplugDevice {
     this._device.addListener("deviceremoved", () => {
       // TODO Do we really have to pass ourselves here?
       this.emit("deviceremoved", this);
-    })
+    });
   }
 
   public get Connected(): boolean {
@@ -39,8 +39,8 @@ export class ButtplugDevice extends EventEmitter implements IButtplugDevice {
     return this._device.Disconnect();
   }
 
-  public Initialize(): Promise<void> {
-    return this._protocol.Initialize();
+  public async Initialize(): Promise<void> {
+    return await this._protocol.Initialize();
   }
 
   public get Name() {
@@ -51,11 +51,14 @@ export class ButtplugDevice extends EventEmitter implements IButtplugDevice {
     return this._device.Address;
   }
 
+  // See ButtplugDeviceProtocol.MsgFuncs comment
+  //
+  // tslint:disable-next-line:ban-types
   public get AllowedMessageTypes(): Function[] {
     return this._protocol.AllowedMessageTypes;
   }
 
   public ParseMessage = async (aMsg: Messages.ButtplugDeviceMessage): Promise<Messages.ButtplugMessage> => {
-    return this._protocol.ParseMessage(aMsg);
+    return await this._protocol.ParseMessage(aMsg);
   }
 }

@@ -9,7 +9,8 @@
 "use strict";
 import * as WebSocket from "ws";
 import { EventEmitter } from "events";
-import { FromJSON, IButtplugClientConnector, ButtplugLogger, ButtplugMessage, ButtplugMessageSorter, ButtplugClientConnectorException, ButtplugMessageException } from "buttplug";
+import { FromJSON, IButtplugClientConnector, ButtplugLogger, ButtplugMessage, ButtplugMessageSorter,
+         ButtplugClientConnectorException, ButtplugMessageException } from "buttplug";
 
 /**
  * Connector class for using the node ws library as a websocket client to a
@@ -40,8 +41,8 @@ export class ButtplugNodeWebsocketClientConnector extends EventEmitter implement
    * Called by ButtplugClient to establish websocket connection.
    */
   public Connect = async () => {
-    let res: Function;
-    let rej: Function;
+    let res: () => void;
+    let rej: () => void;
     const ws = new WebSocket(this.url, {
       rejectUnauthorized: this.rejectUnauthorized,
     });

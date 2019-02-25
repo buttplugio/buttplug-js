@@ -11,6 +11,9 @@ import { EventEmitter } from "events";
 
 export interface IButtplugDevice extends EventEmitter {
   readonly MessageSpecifications: object;
+  // See ButtplugDeviceProtocol.MsgFuncs comment
+  //
+  // tslint:disable-next-line:ban-types
   readonly AllowedMessageTypes: Function[];
   readonly Name: string;
   readonly Id: string;

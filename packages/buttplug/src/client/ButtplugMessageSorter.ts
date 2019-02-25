@@ -13,6 +13,9 @@ export class ButtplugMessageSorter {
   protected _counter: number = 1;
   protected _waitingMsgs: Map<number, [(val: Messages.ButtplugMessage) => void, (err: Error) => void]> = new Map();
 
+  // One of the places we should actually return a promise, as we need to store
+  // them while waiting for them to return across the line.
+  // tslint:disable:promise-function-async
   public PrepareOutgoingMessage(aMsg: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage> {
     aMsg.Id = this._counter;
     let res;

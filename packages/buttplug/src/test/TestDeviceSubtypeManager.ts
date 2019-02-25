@@ -26,14 +26,14 @@ export class TestDeviceSubtypeManager extends EventEmitter implements IDeviceSub
 
   public constructor() {
     super();
-    let vibrationDevice = new TestDeviceImpl("Test Vibration Device");
+    const vibrationDevice = new TestDeviceImpl("Test Vibration Device");
     this._testVibrationProtocol = new TestDeviceProtocol(vibrationDevice.Name, vibrationDevice, true, false, false);
     this._testVibrationDevice = new ButtplugDevice(this._testVibrationProtocol, vibrationDevice);
-    let linearDevice = new TestDeviceImpl("Test Linear Device");
+    const linearDevice = new TestDeviceImpl("Test Linear Device");
     this._testLinearProtocol = new TestDeviceProtocol(linearDevice.Name, linearDevice, false, true, false);
     this._testLinearDevice = new ButtplugDevice(this._testLinearProtocol, linearDevice);
-    let rotationDevice = new TestDeviceImpl("Test Rotation Device");
-    this._testRotationProtocol = new TestDeviceProtocol(rotationDevice.Name, rotationDevice, false, false, true)
+    const rotationDevice = new TestDeviceImpl("Test Rotation Device");
+    this._testRotationProtocol = new TestDeviceProtocol(rotationDevice.Name, rotationDevice, false, false, true);
     this._testRotationDevice = new ButtplugDevice(this._testRotationProtocol, rotationDevice);
   }
 
@@ -103,4 +103,3 @@ export class TestDeviceSubtypeManager extends EventEmitter implements IDeviceSub
     return this._isScanning;
   }
 }
-

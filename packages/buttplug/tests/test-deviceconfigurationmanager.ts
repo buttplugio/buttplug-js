@@ -7,21 +7,24 @@ describe("Device Configuration Manager Tests", async () => {
   });
 
   it("Find static named protocols correctly", () => {
-    let wevibeConfig = new BluetoothLEProtocolConfiguration(["Cougar"], new Map<string, Map<Endpoints, string>>());
+    const wevibeConfig = new BluetoothLEProtocolConfiguration(["Cougar"], new Map<string, Map<Endpoints, string>>());
     expect(DeviceConfigurationManager.Manager.Find(wevibeConfig)).toBeTruthy();
   });
 
   it("Find wildcarded protocols correctly", () => {
-    let lovenseConfig = new BluetoothLEProtocolConfiguration(["LVS-Test"], new Map<string, Map<Endpoints, string>>());
+    const lovenseConfig = new BluetoothLEProtocolConfiguration(["LVS-Test"], new Map<string, Map<Endpoints, string>>());
     expect(DeviceConfigurationManager.Manager.Find(lovenseConfig)).toBeTruthy();
   });
 
   it("Return false on invalid protocols", () => {
-    let invalidConfig = new BluetoothLEProtocolConfiguration(["Whatever"], new Map<string, Map<Endpoints, string>>());
+    const invalidConfig = new BluetoothLEProtocolConfiguration(["Whatever"], new Map<string, Map<Endpoints, string>>());
     expect(DeviceConfigurationManager.Manager.Find(invalidConfig)).toBeFalsy();
   });
 
   it("GetAllConfigsOfType should return > 0 types", () => {
-    expect(DeviceConfigurationManager.Manager.GetAllConfigsOfType(BluetoothLEProtocolConfiguration).length).toBeGreaterThan(0);
+    expect(DeviceConfigurationManager
+           .Manager
+           .GetAllConfigsOfType(BluetoothLEProtocolConfiguration)
+           .length).toBeGreaterThan(0);
   });
 });

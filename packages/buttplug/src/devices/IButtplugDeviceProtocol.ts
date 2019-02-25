@@ -9,9 +9,11 @@
 import * as Messages from "../core/Messages";
 import { EventEmitter } from "events";
 
-export interface IButtplugDeviceProtocol extends EventEmitter
-{
+export interface IButtplugDeviceProtocol extends EventEmitter {
   readonly Name: string;
+  // See ButtplugDeviceProtocol.MsgFuncs comment
+  //
+  // tslint:disable-next-line:ban-types
   readonly AllowedMessageTypes: Function[];
   readonly MessageSpecifications: object;
   ParseMessage(aMsg: Messages.ButtplugDeviceMessage): Promise<Messages.ButtplugMessage>;

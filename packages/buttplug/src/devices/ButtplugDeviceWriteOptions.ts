@@ -8,12 +8,11 @@
 
 import { Endpoints } from "./Endpoints";
 
-export class ButtplugDeviceWriteOptions
-{
+export class ButtplugDeviceWriteOptions {
   public Endpoint: Endpoints = Endpoints.Tx;
   public WriteWithResponse: boolean = false;
 
-  public constructor(init?:Partial<ButtplugDeviceWriteOptions>) {
+  public constructor(init?: Partial<ButtplugDeviceWriteOptions>) {
     Object.assign(this, init);
   }
 }

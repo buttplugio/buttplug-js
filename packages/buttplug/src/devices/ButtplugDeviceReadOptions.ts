@@ -8,13 +8,12 @@
 
 import { Endpoints } from "./Endpoints";
 
-export class ButtplugDeviceReadOptions
-{
+export class ButtplugDeviceReadOptions {
   public Endpoint: Endpoints = Endpoints.Rx;
   public Timeout: number = -1;
   public ReadLength: number = -1;
 
-  public constructor(init?:Partial<ButtplugDeviceReadOptions>) {
+  public constructor(init?: Partial<ButtplugDeviceReadOptions>) {
     Object.assign(this, init);
   }
 }

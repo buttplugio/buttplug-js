@@ -33,7 +33,7 @@ describe("Websocket Client Tests", async () => {
       }
       if (msg.Type === Messages.RequestDeviceList) {
         delaySend(new Messages.DeviceList([], msg.Id));
-        //(socket as any).removeListener("message", serverInfo);
+        // (socket as any).removeListener("message", serverInfo);
       }
     };
     mockServer.on("connection", (aSocket: WebSocket) => {
@@ -41,7 +41,7 @@ describe("Websocket Client Tests", async () => {
       // TODO Bug in typescript defs for mock-socket 8 means we can't use the
       // socket type as it was meant. See
       // https://github.com/thoov/mock-socket/issues/224
-      (socket as any).on('message', (data: string) => serverInfo(data));
+      (socket as any).on("message", (data: string) => serverInfo(data));
     });
     bp = new ButtplugClient("Test Buttplug Client");
     await bp.Connect(new ButtplugBrowserWebsocketClientConnector("ws://localhost:6868"));

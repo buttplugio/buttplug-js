@@ -95,7 +95,8 @@ export class ButtplugClient extends EventEmitter {
     await this.SendMsgExpectOk(new Messages.StopAllDevices());
   }
 
-  public async SendDeviceMessage(aDevice: ButtplugClientDevice, aDeviceMsg: Messages.ButtplugDeviceMessage) {
+  public async SendDeviceMessage(aDevice: ButtplugClientDevice,
+                                 aDeviceMsg: Messages.ButtplugDeviceMessage): Promise<void> {
     this.CheckConnector();
     const dev = this._devices.get(aDevice.Index);
     if (dev === undefined) {
@@ -230,7 +231,7 @@ export class ButtplugClient extends EventEmitter {
     }
   }
 
-  protected SendMsgExpectOk = async (aMsg: Messages.ButtplugMessage) => {
+  protected SendMsgExpectOk = async (aMsg: Messages.ButtplugMessage): Promise<void> => {
     const msg = await this.SendMessage(aMsg);
     switch (msg.constructor) {
       case Messages.Ok:
@@ -244,7 +245,8 @@ export class ButtplugClient extends EventEmitter {
     }
   }
 
-  protected SendDeviceMessageClosure = async (aDevice: ButtplugClientDevice, aMsg: Messages.ButtplugDeviceMessage) => {
-    this.SendDeviceMessage(aDevice, aMsg);
+  protected SendDeviceMessageClosure = async (aDevice: ButtplugClientDevice,
+                                              aMsg: Messages.ButtplugDeviceMessage): Promise<void> => {
+    await this.SendDeviceMessage(aDevice, aMsg);
   }
 }

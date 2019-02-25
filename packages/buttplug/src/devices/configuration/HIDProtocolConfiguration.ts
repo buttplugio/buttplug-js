@@ -10,12 +10,14 @@ import { IProtocolConfiguration } from "./IProtocolConfiguration";
 
 export class HIDProtocolConfiguration implements IProtocolConfiguration {
   public constructor(aObj: object) {
+    // TODO Fill in for user config.
   }
 
-  public Matches(aConfig: IProtocolConfiguration) : boolean {
+  public Matches(aConfig: IProtocolConfiguration): boolean {
     return false;
   }
 
-  public Merge(aConfig: IProtocolConfiguration) : void {
+  public Merge(aConfig: IProtocolConfiguration): void {
+    // TODO Fill in for user config.
   }
 }

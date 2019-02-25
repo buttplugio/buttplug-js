@@ -22,8 +22,25 @@ import * as defaultDeviceConfig from "../../../dependencies/buttplug-device-conf
 
 export class DeviceConfigurationManager {
 
+  public static get Manager(): DeviceConfigurationManager {
+    if (DeviceConfigurationManager._manager === null) {
+      throw new ButtplugDeviceException("Device configuration manager not yet initialized!");
+    }
+
+    return DeviceConfigurationManager._manager!;
+  }
+
+  public static LoadFromInternalConfig(): void {
+    DeviceConfigurationManager._manager = new DeviceConfigurationManager(defaultDeviceConfig);
+  }
+
+  public static LoadFromExternalConfig(aExternalConfig: string): void {
+    const config = yaml.safeLoad(aExternalConfig);
+    DeviceConfigurationManager._manager = new DeviceConfigurationManager(config);
+  }
+
   private static _manager: DeviceConfigurationManager | null = null;
-  private _configObject: object = {};
+  private _configObject: any = {};
   private _configs: Map<string, IProtocolConfiguration> = new Map<string, IProtocolConfiguration>();
   private _protocols: Map<string, ButtplugDeviceProtocolType> = new Map<string, ButtplugDeviceProtocolType>();
 
@@ -39,29 +56,13 @@ export class DeviceConfigurationManager {
     this.ParseConfig();
   }
 
-  public static LoadFromInternalConfig(): void {
-    DeviceConfigurationManager._manager = new DeviceConfigurationManager(defaultDeviceConfig);
-  }
-
-  public static LoadFromExternalConfig(aExternalConfig: string): void {
-    let config = yaml.safeLoad(aExternalConfig);
-    DeviceConfigurationManager._manager = new DeviceConfigurationManager(config);
-  }
-
   public LoadUserConfiguration(): void {
+    // TODO Fill in user config
   }
 
-  public static get Manager(): DeviceConfigurationManager {
-    if (DeviceConfigurationManager._manager === null) {
-      throw new ButtplugDeviceException("Device configuration manager not yet initialized!");
-    }
-
-    return DeviceConfigurationManager._manager!;
-  }
-
-  public GetAllConfigsOfType<T extends IProtocolConfiguration>(constructor:{new (...args: any[]):T}): T[] {
-    let configs: T[] = [];
-    for (let [name, config] of this._configs.entries()) {
+  public GetAllConfigsOfType<T extends IProtocolConfiguration>(constructor: new (...args: any[]) => T): T[] {
+    const configs: T[] = [];
+    for (const [name, config] of this._configs.entries()) {
       if (config instanceof constructor) {
         configs.push(config);
       }
@@ -70,7 +71,7 @@ export class DeviceConfigurationManager {
   }
 
   public Find(aConfig: IProtocolConfiguration): [IProtocolConfiguration, ButtplugDeviceProtocolType] | undefined {
-    for (let [name, config] of this._configs.entries()) {
+    for (const [name, config] of this._configs.entries()) {
       if (config.Matches(aConfig)) {
         return [config, this._protocols.get(name)!];
       }
@@ -80,19 +81,19 @@ export class DeviceConfigurationManager {
 
   protected ParseConfig(): void {
     this._configs = new Map<string, IProtocolConfiguration>();
-    let protocols = this._configObject["protocols"] as object;
-    for (let protocolName of Object.keys(protocols)) {
+    const protocols = this._configObject.protocols as object;
+    for (const protocolName of Object.keys(protocols)) {
       // If we don't support the protocol, don't load it.
       if (!this._protocols.has(protocolName)) {
         // TODO We should log here.
         continue;
       }
-      let protocol = protocols[protocolName];
+      const protocol = protocols[protocolName];
       // Ok maybe XInput being null isn't such a good idea.
       if (protocol == null) {
         continue;
       }
-      for (let bus of Object.keys(protocol)) {
+      for (const bus of Object.keys(protocol)) {
         switch (bus) {
           case "btle":
             this._configs.set(protocolName, BluetoothLEProtocolConfiguration.ConstructFromObject(protocol[bus]));

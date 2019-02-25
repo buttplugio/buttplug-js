@@ -13,8 +13,7 @@ import { ButtplugDeviceReadOptions } from "./ButtplugDeviceReadOptions";
 import { IButtplugDeviceImpl } from "./IButtplugDeviceImpl";
 import { Endpoints } from "./Endpoints";
 
-export abstract class ButtplugDeviceImpl extends EventEmitter implements IButtplugDeviceImpl
-{
+export abstract class ButtplugDeviceImpl extends EventEmitter implements IButtplugDeviceImpl {
   protected _name: string;
   protected _address: string;
   protected _logger = ButtplugLogger.Logger;
@@ -27,49 +26,40 @@ export abstract class ButtplugDeviceImpl extends EventEmitter implements IButtpl
     return this._address;
   }
 
-  protected constructor(aName: string, aAddress: string)
-  {
+  protected constructor(aName: string, aAddress: string) {
     super();
     this._name = aName;
     this._address = aAddress;
   }
 
+  public abstract async Connect(): Promise<void>;
   public abstract get Connected(): boolean;
   public abstract Disconnect(): void;
 
-  public WriteValue(aValue: Buffer, aOptions?: ButtplugDeviceWriteOptions): Promise<void> {
-    if (aOptions === undefined) {
-      return this.WriteValueInternal(aValue, new ButtplugDeviceWriteOptions());
-    }
-    return this.WriteValueInternal(aValue, aOptions);
+  public WriteValue = async (aValue: Buffer, aOptions?: ButtplugDeviceWriteOptions): Promise<void> => {
+    return await this.WriteValueInternal(aValue, aOptions || new ButtplugDeviceWriteOptions());
   }
 
-  public ReadValue(aOptions?: ButtplugDeviceReadOptions): Promise<Buffer> {
-    if (aOptions === undefined) {
-      return this.ReadValueInternal(new ButtplugDeviceReadOptions());
-    }
-    return this.ReadValueInternal(aOptions);
+  public ReadValue = async (aOptions?: ButtplugDeviceReadOptions): Promise<Buffer> => {
+    return await this.ReadValueInternal(aOptions || new ButtplugDeviceReadOptions());
   }
 
   public WriteString = async (aStr: string, aOptions?: ButtplugDeviceWriteOptions): Promise<void> => {
-    return this.WriteValue(Buffer.from(aStr), aOptions)
+    return await this.WriteValue(Buffer.from(aStr), aOptions);
   }
 
   public ReadString = async (aOptions?: ButtplugDeviceReadOptions): Promise<string> => {
     const buf = await this.ReadValue(aOptions);
-    return buf.toString('utf-8');
+    return buf.toString("utf-8");
   }
 
-  public SubscribeToUpdates(aOptions?: ButtplugDeviceReadOptions): void {
-    if (aOptions === undefined) {
-      return this.SubscribeToUpdatesInternal(new ButtplugDeviceReadOptions());
-    }
-    return this.SubscribeToUpdatesInternal(aOptions);
+  public SubscribeToUpdates = async (aOptions?: ButtplugDeviceReadOptions): Promise<void> => {
+    return await this.SubscribeToUpdatesInternal(aOptions || new ButtplugDeviceReadOptions());
   }
 
-  public abstract WriteValueInternal(aValue: Buffer, aOptions: ButtplugDeviceWriteOptions): Promise<void>;
-  public abstract ReadValueInternal(aOptions: ButtplugDeviceReadOptions): Promise<Buffer>;
-  public abstract SubscribeToUpdatesInternal(aOptions: ButtplugDeviceReadOptions): void;
+  public abstract async WriteValueInternal(aValue: Buffer, aOptions: ButtplugDeviceWriteOptions): Promise<void>;
+  public abstract async ReadValueInternal(aOptions: ButtplugDeviceReadOptions): Promise<Buffer>;
+  public abstract async SubscribeToUpdatesInternal(aOptions: ButtplugDeviceReadOptions): Promise<void>;
 
   protected UpdateReceived(aEndpoint: Endpoints, aData: Buffer) {
     this.emit("updateReceived", [aEndpoint, aData]);

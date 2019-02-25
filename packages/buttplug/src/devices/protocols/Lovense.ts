@@ -55,6 +55,8 @@ export class Lovense extends ButtplugDeviceProtocol {
   private ParseDeviceType(aDeviceType: string) {
     // This will return 3 values, but the last one (device address) we don't
     // really care about.
+    //
+    // tslint:disable:prefer-const
     let [deviceLetter, deviceVersion] = aDeviceType.split(":");
 
     if (!Lovense._deviceNames.hasOwnProperty(deviceLetter)) {
@@ -80,7 +82,7 @@ export class Lovense extends ButtplugDeviceProtocol {
   private OnValueChanged = async ([aEndpoint, aValue]: [Endpoints, Buffer]) => {
     // If we haven't initialized yet, consider this to be the first read, for the device info.
     if (this._initResolve !== undefined) {
-      let identStr = aValue.toString('utf-8');
+      const identStr = aValue.toString("utf-8");
       this._logger.Debug(`Lovense Device ${this._device.Name} got initialization return ${identStr}`);
       this.ParseDeviceType(identStr);
       this._initResolve();
@@ -93,7 +95,9 @@ export class Lovense extends ButtplugDeviceProtocol {
   private HandleStopDeviceCmd = async (aMsg: Messages.StopDeviceCmd): Promise<Messages.ButtplugMessage> => {
     await this.HandleSingleMotorVibrateCmd(new Messages.SingleMotorVibrateCmd(0, aMsg.DeviceIndex, aMsg.Id));
     if (this._specs.hasOwnProperty("RotateCmd")) {
-      this.HandleRotateCmd(new Messages.RotateCmd([new Messages.RotateSubcommand(0, 0, this._isClockwise)], 0, aMsg.Id));
+      this.HandleRotateCmd(new Messages.RotateCmd([new Messages.RotateSubcommand(0, 0, this._isClockwise)],
+                                                  0,
+                                                  aMsg.Id));
     }
     return new Messages.Ok(aMsg.Id);
   }

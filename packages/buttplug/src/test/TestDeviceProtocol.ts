@@ -144,4 +144,3 @@ export class TestDeviceProtocol extends ButtplugDeviceProtocol {
                                                                                            aMsg.Id));
     }
 }
-

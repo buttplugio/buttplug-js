@@ -10,15 +10,14 @@ import { EventEmitter } from "events";
 import { ButtplugDeviceWriteOptions } from "./ButtplugDeviceWriteOptions";
 import { ButtplugDeviceReadOptions } from "./ButtplugDeviceReadOptions";
 
-export interface IButtplugDeviceImpl extends EventEmitter
-{
+export interface IButtplugDeviceImpl extends EventEmitter {
   readonly Name: string;
   readonly Address: string;
   readonly Connected: boolean;
   Disconnect(): void;
   WriteValue(aValue: Buffer, aOptions?: ButtplugDeviceWriteOptions): Promise<void>;
   WriteValue(aValue: Buffer, aOptions?: ButtplugDeviceWriteOptions): Promise<void>;
-  ReadValue(aOptions?: ButtplugDeviceReadOptions): Promise<Buffer>
+  ReadValue(aOptions?: ButtplugDeviceReadOptions): Promise<Buffer>;
   WriteString(aStr: string, aOptions?: ButtplugDeviceWriteOptions): Promise<void>;
   ReadString(aOptions?: ButtplugDeviceReadOptions): Promise<string>;
   SubscribeToUpdates(aOptions?: ButtplugDeviceReadOptions): void;

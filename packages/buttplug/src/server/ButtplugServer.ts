@@ -122,12 +122,12 @@ export class ButtplugServer extends EventEmitter {
         const testmsg = aMessage as Messages.Test;
         return new Messages.Test(testmsg.TestString, aMessage.Id);
     }
-    return this._deviceManager.SendMessage(aMessage);
+    return await this._deviceManager.SendMessage(aMessage);
   }
 
   public Shutdown = async (): Promise<void> => {
     this.Disconnect();
-    await this._deviceManager.Shutdown();
+    return await this._deviceManager.Shutdown();
   }
 
   private OnLogMessage = (aMsg: LogMessage) => {

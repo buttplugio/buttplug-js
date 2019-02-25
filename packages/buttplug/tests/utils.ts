@@ -41,4 +41,3 @@ export async function SetupTestServer(): Promise<{Client: ButtplugClient,
                           TestDeviceManager: testdevicemanager,
                           Connector: localConnector});
 }
-

@@ -30,13 +30,12 @@ export class ButtplugEmbeddedClientConnector extends EventEmitter implements IBu
     return this._connected;
   }
 
-  public Connect = (): Promise<void> => {
+  public Connect = async (): Promise<void> => {
     this._connected = true;
     if (this._server === null) {
       this._server = new ButtplugServer();
     }
     this._server.addListener("message", this.OnMessageReceived);
-    return Promise.resolve();
   }
 
   public Disconnect = () => {
@@ -51,7 +50,7 @@ export class ButtplugEmbeddedClientConnector extends EventEmitter implements IBu
 
   public Send = async (aMsg: ButtplugMessage): Promise<ButtplugMessage> => {
     if (!this._connected) {
-      return Promise.reject(new ButtplugClientConnectorException("Client not connected."));
+      throw new ButtplugClientConnectorException("Client not connected.");
     }
     return await this._server!.SendMessage(aMsg);
   }

@@ -17,7 +17,7 @@ describe("Logging Tests", async () => {
     logger = TestLogger.Logger;
   });
 
-  it("Should log nothing at start.", () => {
+  it("Should log nothing at start.", async () => {
     let res;
     let rej;
     const p = new Promise((rs, rj) => { res = rs; rej = rj; });
@@ -34,7 +34,7 @@ describe("Logging Tests", async () => {
     return p;
   });
 
-  it("Should log everything on trace.", () => {
+  it("Should log everything on trace.", async () => {
     let res;
     let rej;
     let count = 0;
@@ -57,7 +57,7 @@ describe("Logging Tests", async () => {
     return Promise.reject("Log event count incorrect!");
   });
 
-  it("Should deal with different log levels for console and events", (() => {
+  it("Should deal with different log levels for console and events", async () => {
     jest.spyOn(global.console, "log");
     let res;
     let rej;
@@ -71,5 +71,5 @@ describe("Logging Tests", async () => {
     expect(console.log).toBeCalled();
     res();
     return p;
-  }));
+  });
 });

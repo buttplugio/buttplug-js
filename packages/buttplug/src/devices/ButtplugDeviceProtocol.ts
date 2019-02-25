@@ -15,8 +15,24 @@ import { IButtplugDeviceImpl } from "./IButtplugDeviceImpl";
 import { ButtplugDeviceWriteOptions } from "./ButtplugDeviceWriteOptions";
 import { ButtplugDeviceReadOptions } from "./ButtplugDeviceReadOptions";
 
-export abstract class ButtplugDeviceProtocol extends EventEmitter implements IButtplugDeviceProtocol
-{
+export abstract class ButtplugDeviceProtocol extends EventEmitter implements IButtplugDeviceProtocol {
+
+  public get Name(): string {
+    return this._name;
+  }
+
+  // tslint:disable-next-line:ban-types
+  public get AllowedMessageTypes(): Function[] {
+    return Array.from(this.MsgFuncs.keys());
+  }
+
+  public abstract readonly MessageSpecifications: object;
+  // It would be really nice to store a map of types here, but the only way I
+  // can figure out to do that is using the constructor for
+  // ButtplugDeviceMessage classes, which always resolves to Function. This is
+  // basically a useless type in Typescript, but it does the job for now. Just
+  // means we have to turn off type complaining.
+  //
   // tslint:disable-next-line:ban-types
   protected readonly MsgFuncs: Map<Function, (aMsg: Messages.ButtplugMessage) => Promise<Messages.ButtplugMessage>> =
     // tslint:disable-next-line:ban-types
@@ -31,16 +47,6 @@ export abstract class ButtplugDeviceProtocol extends EventEmitter implements IBu
     this._device = aDevice;
   }
 
-  public get Name(): string {
-    return this._name;
-  }
-
-  public get AllowedMessageTypes(): Function[] {
-    return Array.from(this.MsgFuncs.keys());
-  }
-
-  public abstract readonly MessageSpecifications: object;
-
   public async Initialize(): Promise<void> {
     return Promise.resolve();
   }
@@ -54,4 +60,4 @@ export abstract class ButtplugDeviceProtocol extends EventEmitter implements IBu
   }
 }
 
-export type ButtplugDeviceProtocolType = {new (aImpl: IButtplugDeviceImpl): IButtplugDeviceProtocol};
+export type ButtplugDeviceProtocolType = new (aImpl: IButtplugDeviceImpl) => IButtplugDeviceProtocol;

@@ -39,9 +39,9 @@ export class WebBluetoothDeviceManager extends EventEmitter implements IDeviceSu
 
     // If the DeviceConfigurationManager hasn't been built yet, we've got a
     // problem. So just expect we'll get one back.
-    let confMgr = DeviceConfigurationManager.Manager;
+    const confMgr = DeviceConfigurationManager.Manager;
 
-    let bluetoothConfigs = confMgr.GetAllConfigsOfType(BluetoothLEProtocolConfiguration);
+    const bluetoothConfigs = confMgr.GetAllConfigsOfType(BluetoothLEProtocolConfiguration);
 
     for (const config of bluetoothConfigs) {
       for (const deviceName of config.Names) {
@@ -102,18 +102,18 @@ export class WebBluetoothDeviceManager extends EventEmitter implements IDeviceSu
       return;
     }
     // TODO Use DeviceConfigurationManager to get a device factory here.
-    let mgr = DeviceConfigurationManager.Manager;
+    const mgr = DeviceConfigurationManager.Manager;
 
-    let searchConfig = new BluetoothLEProtocolConfiguration([aDevice.name!]);
+    const searchConfig = new BluetoothLEProtocolConfiguration([aDevice.name!]);
 
-    let matchSpec = mgr.Find(searchConfig);
+    const matchSpec = mgr.Find(searchConfig);
 
     if (matchSpec === undefined) {
       // TODO For WebBluetooth, we should never get here and should probably throw.
       return;
     }
 
-    let [matchConfig, matchProtocolType] = matchSpec!;
+    const [matchConfig, matchProtocolType] = matchSpec!;
 
     const webBtDevice = new WebBluetoothDevice(matchConfig as BluetoothLEProtocolConfiguration, aDevice);
     await webBtDevice.Connect();

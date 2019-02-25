@@ -144,28 +144,28 @@ export class ButtplugClientDevice {
     await this.SendMessageAsync(msg);
   }
 
-  public async SendFleshlightLaunchFW12Cmd(aSpeed: number, aPosition: number) {
+  public async SendFleshlightLaunchFW12Cmd(aSpeed: number, aPosition: number): Promise<void>  {
     this.CheckAllowedMessageType(Messages.FleshlightLaunchFW12Cmd.name);
     await this.SendMessageAsync(new Messages.FleshlightLaunchFW12Cmd(aSpeed, aPosition, this._index));
   }
 
-  public async SendLovenseCmd(aDeviceCmd: string) {
+  public async SendLovenseCmd(aDeviceCmd: string): Promise<void>  {
     this.CheckAllowedMessageType(Messages.LovenseCmd.name);
     await this.SendMessageAsync(new Messages.LovenseCmd(aDeviceCmd, this._index));
   }
 
-  public async SendVorzeA10CycloneCmd(aSpeed: number, aClockwise: boolean) {
+  public async SendVorzeA10CycloneCmd(aSpeed: number, aClockwise: boolean): Promise<void>  {
     this.CheckAllowedMessageType(Messages.VorzeA10CycloneCmd.name);
     await this.SendMessageAsync(new Messages.VorzeA10CycloneCmd(aSpeed, aClockwise, this._index));
   }
 
-  public async SendStopDeviceCmd() {
+  public async SendStopDeviceCmd(): Promise<void> {
     // Every message should support this, but it doesn't hurt to check
     this.CheckAllowedMessageType(Messages.StopDeviceCmd.name);
     await this.SendMessageAsync(new Messages.StopDeviceCmd(this._index));
   }
 
-  public async SendKiirooCmd(aPosition: number) {
+  public async SendKiirooCmd(aPosition: number): Promise<void> {
     this.CheckAllowedMessageType(Messages.KiirooCmd.name);
     await this.SendMessageAsync(new Messages.KiirooCmd(aPosition, this._index));
   }

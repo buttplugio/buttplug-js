@@ -59,7 +59,7 @@ async function main() {
   }
 
   if (commander.websocketserver) {
-    let wsServer = new ButtplugNodeWebsocketServer(commander.servername, commander.pingtime)
+    const wsServer = new ButtplugNodeWebsocketServer(commander.servername, commander.pingtime);
     if (commander.certfile !== undefined && commander.privfile !== undefined) {
       console.log("Starting secure websocket server");
       wsServer.StartSecureServer(commander.certfile, commander.privfile, commander.port, commander.host);
@@ -78,7 +78,6 @@ async function main() {
     console.log("Server must run in either ipc or websocket mode");
     return;
   }
-
 
   if (process.platform === "win32") {
     const rl = require("readline").createInterface({

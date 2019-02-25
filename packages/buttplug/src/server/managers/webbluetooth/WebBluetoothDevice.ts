@@ -15,6 +15,10 @@ import { ButtplugDeviceReadOptions } from "../../../devices/ButtplugDeviceReadOp
 
 export class WebBluetoothDevice extends ButtplugDeviceImpl {
 
+  public get Connected(): boolean {
+    return this._server.connected;
+  }
+
   private _notificationHandlers = new Map<Endpoints, (Event) => void>();
   private _server: BluetoothRemoteGATTServer;
   private _characteristics: Map<Endpoints, BluetoothRemoteGATTCharacteristic> =
@@ -40,15 +44,15 @@ export class WebBluetoothDevice extends ButtplugDeviceImpl {
                                           `Cannot find gatt service to connect to on device ${this._device.name}`);
     }
 
-    for (let [configService, configChrs] of this._deviceConfig.Services) {
-      let service = services.find((x) => x.uuid == configService)
+    for (const [configService, configChrs] of this._deviceConfig.Services) {
+      const service = services.find((x) => x.uuid === configService);
       if (service === undefined) {
         continue;
       }
       // If no characteristics are present in the DeviceInfo block, we assume that
       // we're connecting to a simple rx/tx service, and can query to figure out
       // characteristics. Assume that the characteristics have tx/rx references.
-      if (configChrs.size == 0) {
+      if (configChrs.size === 0) {
         const characteristics = await service.getCharacteristics();
         for (const char of characteristics) {
           if (char.properties.write ||
@@ -59,13 +63,13 @@ export class WebBluetoothDevice extends ButtplugDeviceImpl {
                      char.properties.broadcast ||
                      char.properties.notify ||
                      char.properties.indicate) {
-            this.SetNewCharacteristic(Endpoints.Rx, char)
+            this.SetNewCharacteristic(Endpoints.Rx, char);
           }
         }
         continue;
       }
 
-      for (let [chrEndpoint, chrUuid] of configChrs) {
+      for (const [chrEndpoint, chrUuid] of configChrs) {
         // Assume that our characteristic name is correct if we've gotten this
         // far. Hopefully not a wrong assumption at the moment, though it's
         // something we'll need to change once arbitrary string endpoints are
@@ -79,17 +83,6 @@ export class WebBluetoothDevice extends ButtplugDeviceImpl {
     if (this._characteristics.size === 0) {
       throw new ButtplugDeviceException(`No usable characteristics found for ${this._device.name}`);
     }
-  }
-
-  public get Connected(): boolean {
-    return this._server.connected;
-  }
-
-  private SetNewCharacteristic(aEndpoint: Endpoints, aChr: BluetoothRemoteGATTCharacteristic): void {
-    if (this._characteristics.has(aEndpoint)) {
-      throw new ButtplugDeviceException(`Endpoint ${aEndpoint} already defined on ${this._device.name}`);
-    }
-    this._characteristics.set(aEndpoint, aChr);
   }
 
   public Disconnect = async (): Promise<void> => {
@@ -106,37 +99,26 @@ export class WebBluetoothDevice extends ButtplugDeviceImpl {
   }
 
   public WriteValueInternal = async (aValue: Buffer, aOptions: ButtplugDeviceWriteOptions): Promise<void> => {
-    if (!this._characteristics.has(aOptions.Endpoint)) {
-      throw ButtplugException.LogAndError(ButtplugDeviceException,
-                                          this._logger,
-                                          `Characteristic ${aOptions.Endpoint} does not exist on device ${this._device.name}.`);
-    }
+    this.CheckForCharacteristic(aOptions.Endpoint);
     const chr = this._characteristics.get(aOptions.Endpoint)!;
-    //this._logger.Trace(`WebBluetoothDevice: ${this.constructor.name} writing ${aValue} to ${chr.uuid}`);
-    await chr.writeValue(aValue);
+    // this._logger.Trace(`WebBluetoothDevice: ${this.constructor.name} writing ${aValue} to ${chr.uuid}`);
+    return await chr.writeValue(aValue);
   }
 
   public ReadValueInternal = async (aOptions: ButtplugDeviceReadOptions): Promise<Buffer> => {
-    if (!this._characteristics.has(aOptions.Endpoint)) {
-      throw ButtplugException.LogAndError(ButtplugDeviceException,
-                                          this._logger,
-                                          `Characteristic ${aOptions.Endpoint} does not exist on device ${this._device.name}.`);
-    }
+    this.CheckForCharacteristic(aOptions.Endpoint);
     const chr = this._characteristics.get(aOptions.Endpoint)!;
     // this._logger.Trace(`WebBluetoothDevice: ${this.constructor.name} reading from ${chr.uuid}`);
     return Buffer.from((await chr.readValue()).buffer);
   }
 
   public SubscribeToUpdatesInternal = async (aOptions: ButtplugDeviceReadOptions): Promise<void> => {
-    if (!this._characteristics.has(aOptions.Endpoint)) {
-      throw ButtplugException.LogAndError(ButtplugDeviceException,
-                                          this._logger,
-                                          `Characteristic ${aOptions.Endpoint} does not exist on device ${this._device.name}.`);
-    }
+    this.CheckForCharacteristic(aOptions.Endpoint);
     if (this._notificationHandlers.has(aOptions.Endpoint)) {
+      const err = `${this._device.name} already subscribed to updates on characteristic ${aOptions.Endpoint}`;
       throw ButtplugException.LogAndError(ButtplugDeviceException,
                                           this._logger,
-                                          "${this._device.name} already subscribed to updates on characteristic ${aOptions.Endpoint}");
+                                          err);
     }
     const chr = this._characteristics.get(aOptions.Endpoint)!;
     this._logger.Trace(`WebBluetoothDevice: ${this.constructor.name} subscribing to updates from ${chr.uuid}`);
@@ -148,15 +130,12 @@ export class WebBluetoothDevice extends ButtplugDeviceImpl {
   }
 
   public Unsubscribe = async (aOptions: ButtplugDeviceReadOptions): Promise<void> => {
-    if (!this._characteristics.has(aOptions.Endpoint)) {
-      throw ButtplugException.LogAndError(ButtplugDeviceException,
-                                          this._logger,
-                                          `Characteristic ${aOptions.Endpoint} does not exist on device ${this._device.name}.`);
-    }
+    this.CheckForCharacteristic(aOptions.Endpoint);
     if (!this._notificationHandlers.has(aOptions.Endpoint)) {
+      const err = `${this._device.name} not subscribed to updates on characteristic ${aOptions.Endpoint}`;
       throw ButtplugException.LogAndError(ButtplugDeviceException,
                                           this._logger,
-                                          "${this._device.name} not subscribed to updates on characteristic ${aOptions.Endpoint}");
+                                          err);
     }
     const chr = this._characteristics.get(aOptions.Endpoint)!;
     this._logger.Trace(`WebBluetoothDevice: ${this.constructor.name} unsubscribing to updates from ${chr.uuid}`);
@@ -166,10 +145,26 @@ export class WebBluetoothDevice extends ButtplugDeviceImpl {
   }
 
   protected CharacteristicValueChanged = (aEvent: Event, aCharacteristic: Endpoints) => {
-    let view = (aEvent.target! as BluetoothRemoteGATTCharacteristic).value!
-    let arrBuf = view.buffer;
-    let buf = Buffer.from(arrBuf, view.byteOffset, view.byteLength);
-    this.UpdateReceived(aCharacteristic, buf)
+    const view = (aEvent.target! as BluetoothRemoteGATTCharacteristic).value!;
+    const arrBuf = view.buffer;
+    const buf = Buffer.from(arrBuf, view.byteOffset, view.byteLength);
+    this.UpdateReceived(aCharacteristic, buf);
+  }
+
+  protected CheckForCharacteristic(aEndpoint: Endpoints) {
+    if (this._characteristics.has(aEndpoint)) {
+      return;
+    }
+    const err = `Characteristic ${aEndpoint} does not exist on device ${this._device.name}.`;
+    throw ButtplugException.LogAndError(ButtplugDeviceException,
+                                        this._logger,
+                                        err);
+  }
+
+  private SetNewCharacteristic(aEndpoint: Endpoints, aChr: BluetoothRemoteGATTCharacteristic): void {
+    if (this._characteristics.has(aEndpoint)) {
+      throw new ButtplugDeviceException(`Endpoint ${aEndpoint} already defined on ${this._device.name}`);
+    }
+    this._characteristics.set(aEndpoint, aChr);
   }
 }
-
