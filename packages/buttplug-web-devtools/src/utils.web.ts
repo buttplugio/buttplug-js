@@ -8,7 +8,7 @@
 
 import { TestDeviceManagerPanel } from "./TestDeviceManagerPanel";
 import { LogPanel } from "./LogPanel";
-import { ButtplugServer } from "../../index";
+import { ButtplugServer } from "buttplug";
 
 export function CreateLoggerPanel() {
   LogPanel.ShowLogPanel();

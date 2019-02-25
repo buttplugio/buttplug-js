@@ -6,26 +6,25 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-import { ButtplugServer, ButtplugLogger } from "../../index";
-import { TestDeviceManager } from "../TestDeviceManager";
+import { ButtplugServer, ButtplugLogger, TestDeviceSubtypeManager } from "buttplug";
 import * as TWEEN from "@tweenjs/tween.js";
 
-const jsPanel = require("jspanel4");
-require("jspanel4/dist/jspanel.css");
-const testPanelHTML = require("./TestDeviceManagerPanel.html").toString();
-require("./TestDeviceManagerPanel.css");
+import * as jsPanel from "jspanel4";
+import jsPanelCss from "jspanel4/dist/jspanel.css";
+import testPanelHTML from "./TestDeviceManagerPanel.html";
+import TestDeviceManagerPanelCss from "./TestDeviceManagerPanel.css";
 
 export class TestDeviceManagerPanel {
   public static ShowTestDeviceManagerPanel(buttplugServer: ButtplugServer) {
-    let tdm: TestDeviceManager | null = null;
+    let tdm: TestDeviceSubtypeManager | null = null;
     for (const mgr of buttplugServer.DeviceManagers) {
-      if (mgr.constructor.name === "TestDeviceManager") {
-        tdm = (mgr as TestDeviceManager);
+      if (mgr instanceof TestDeviceSubtypeManager) {
+        tdm = (mgr as TestDeviceSubtypeManager);
         break;
       }
     }
     if (tdm === null) {
-      ButtplugLogger.Logger.Error("TestDeviceManagerPanel: Cannot get test device manager from server.");
+      ButtplugLogger.Logger.Error("TestDeviceSubtypeManagerPanel: Cannot get test device manager from server.");
       throw new Error("Cannot get test device manager from server.");
     }
     jsPanel.jsPanel.create({
@@ -44,7 +43,7 @@ export class TestDeviceManagerPanel {
   protected static _panel: TestDeviceManagerPanel;
   private vibratorTween: TWEEN.Tween | null = null;
   private launchTween: TWEEN.Tween | null = null;
-  private _testManager: TestDeviceManager;
+  private _testManager: TestDeviceSubtypeManager;
   private fleshlightElement: HTMLElement;
   private vibratorElement: HTMLElement;
   private currentLaunchPosition: any = { x: 0, y: 0 };
@@ -54,7 +53,7 @@ export class TestDeviceManagerPanel {
   private elementObserver: MutationObserver | null = null;
   private hasRAFBeenCalled = false;
 
-  constructor(tdm: TestDeviceManager) {
+  constructor(tdm: TestDeviceSubtypeManager) {
     this._testManager = tdm;
     document.getElementById("vibratedisconnect")!.addEventListener("click", () => {
       this._testManager!.VibrationDevice.Disconnect();
@@ -81,7 +80,7 @@ export class TestDeviceManagerPanel {
     // After the node has been created, attach a mutation observer to disconnect
     // events when the panel is closed, otherwise we'll get events going to
     // elements that no longer exist.
-    process.nextTick(() => {
+    setTimeout(() => {
       const el = document.getElementById("buttplug-test-device-manager-panel");
       if (!el) {
         return;
@@ -94,7 +93,7 @@ export class TestDeviceManagerPanel {
         }
       });
       observer.observe(el!.parentNode!, { childList: true });
-    });
+    }, 0);
   }
 
   private requestAnimate = () => {

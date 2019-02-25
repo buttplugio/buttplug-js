@@ -6,11 +6,11 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-import { ButtplugLogger, LogMessage, ButtplugLogLevel } from "../../index";
-const jsPanel = require("jspanel4");
-require("jspanel4/dist/jspanel.css");
-const logPanelHTML = require("./LogPanel.html").toString();
-require("./LogPanel.css");
+import { ButtplugLogger, LogMessage, ButtplugLogLevel } from "buttplug";
+import * as jsPanel from "jspanel4";
+import logPanelHTML from "./LogPanel.html";
+import jspanelCSS from "jspanel4/dist/jspanel.css";
+import logPanelCSS from "./LogPanel.css";
 
 export class LogPanel {
 

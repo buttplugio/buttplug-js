@@ -36,3 +36,4 @@ export * from "./server/IDeviceSubtypeManager";
 export * from "./test/TestDeviceImpl";
 export * from "./test/TestDeviceProtocol";
 export * from "./test/TestDeviceSubtypeManager";
+export * from "./test/utils";

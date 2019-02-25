@@ -9,7 +9,7 @@
 import { ButtplugClient, ButtplugEmbeddedClientConnector, ButtplugServer } from "../index";
 import { TestDeviceSubtypeManager } from "./TestDeviceSubtypeManager";
 
-export async function CreateDevToolsClient(): Promise<ButtplugClient> {
+export async function CreateTestClient(): Promise<ButtplugClient> {
   const client = new ButtplugClient("Test Client");
   const server = new ButtplugServer("Test Server");
   server.ClearDeviceManagers();
