@@ -20,6 +20,10 @@ jobs:
       displayName: 'Install packages'
       env: { "CI": "true" }
     - script: |
+        yarn tslint
+      displayName: 'Lint'
+      env: { "CI": "true" }
+    - script: |
         yarn build:main && yarn test
       displayName: 'Build and test'
       env: { "CI": "true" }
@@ -53,6 +57,10 @@ jobs:
     - script: |
         yarn
       displayName: 'Install packages'
+      env: { "CI": "true" }
+    - script: |
+        yarn tslint
+      displayName: 'Lint'
       env: { "CI": "true" }
     - script: |
         yarn build:main && yarn test
