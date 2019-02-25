@@ -15,6 +15,7 @@ export class WeVibe extends ButtplugDeviceProtocol {
   public static readonly DualVibes: string[] = ["Cougar", "4 Plus", "4plus", "classic", "Classic",
                                                 "Gala", "Nova", "NOVAV2", "Sync"];
   private readonly _vibratorCount: number = 1;
+  private _hasRunCommand = false;
   private _vibratorSpeed = [ 0.0, 0.0 ];
 
   public constructor(aDeviceImpl: IButtplugDeviceImpl) {
@@ -50,9 +51,11 @@ export class WeVibe extends ButtplugDeviceProtocol {
       this._vibratorSpeed[cmd.Index] = cmd.Speed;
     }
 
-    if (!changed) {
+    if (!changed && this._hasRunCommand) {
       return new Messages.Ok(aMsg.Id);
     }
+
+    this._hasRunCommand = true;
 
     const rSpeedInt = Math.round(this._vibratorSpeed[0] * 15);
     const rSpeedExt = Math.round(this._vibratorSpeed[this._vibratorCount - 1] * 15);
