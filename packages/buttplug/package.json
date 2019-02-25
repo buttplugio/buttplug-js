@@ -29,8 +29,8 @@
     "build:redist": "tsc -p tsconfig.json && yarn build:copy:all",
     "build:doc": "typedoc --options typedoc.js --out doc .",
     "build:rollup": "rollup -c",
-    "tslint": "tslint -c tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
-    "tslint:fix": "tslint -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "tslint": "tslint --project tsconfig.json --outputAbsolutePaths -c tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "tslint:fix": "tslint --project tsconfig.json --outputAbsolutePaths -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\"",
     "pretest": "yarn build:main",
     "test": "jest"
   },

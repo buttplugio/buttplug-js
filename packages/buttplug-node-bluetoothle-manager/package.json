@@ -22,8 +22,8 @@
     "build": "trash dist dist-bundle && yarn build:main",
     "build:main": "tsc -p tsconfig.json",
     "build:doc": "typedoc --options typedoc.js --out doc .",
-    "tslint": "tslint -c tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
-    "tslint:fix": "tslint -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\""
+    "tslint": "tslint --project tsconfig.json --outputAbsolutePaths -c tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "tslint:fix": "tslint --project tsconfig.json --outputAbsolutePaths -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\""
   },
   "dependencies": {
     "buttplug": "*",

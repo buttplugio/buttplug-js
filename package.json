@@ -4,6 +4,8 @@
   "scripts": {
     "build": "lerna run build",
     "build:main": "lerna run build:main",
+    "tslint": "lerna run tslint",
+    "tslint:fix": "lerna run tslint:fix",
     "test": "lerna run test"
   },
   "workspaces": [

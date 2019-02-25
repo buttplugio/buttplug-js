@@ -16,8 +16,8 @@
   "scripts": {
     "build": "trash dist dist-bundle && yarn build:main",
     "build:main": "tsc -p tsconfig.json",
-    "tslint": "tslint -c tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
-    "tslint:fix": "tslint -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "tslint": "tslint --project tsconfig.json --outputAbsolutePaths -c tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "tslint:fix": "tslint --project tsconfig.json --outputAbsolutePaths -c tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\"",
     "start": "node dist/src/index.js",
     "freeze:mac": "pkg dist/src/index.js --targets node10-macos-x64 --output buttplug-node-server/buttplug-node-server",
     "freeze:linux": "pkg dist/src/index.js --targets node10-linux-x64 --output buttplug-node-server/buttplug-node-server",
