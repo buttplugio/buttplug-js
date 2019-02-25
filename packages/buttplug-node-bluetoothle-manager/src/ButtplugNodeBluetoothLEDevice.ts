@@ -147,7 +147,7 @@ export class ButtplugNodeBluetoothLEDevice extends ButtplugDeviceImpl {
     throw new ButtplugDeviceException(err);
   }
 
-  protected CharacteristicValueChanged = async (aCharName: Endpoints, aData: Buffer, aIsNotification: boolean) => {
+  protected CharacteristicValueChanged = (aCharName: Endpoints, aData: Buffer, aIsNotification: boolean) => {
     this.UpdateReceived(aCharName, aData);
   }
 

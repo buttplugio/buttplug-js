@@ -21,8 +21,8 @@ export class ButtplugNodeBluetoothLEDeviceManager extends EventEmitter implement
 
   constructor() {
     super();
-    noble.on("discover", (d: noble.Peripheral) => {
-      this.OpenDevice(d);
+    noble.on("discover", async (d: noble.Peripheral) => {
+      await this.OpenDevice(d);
     });
   }
 

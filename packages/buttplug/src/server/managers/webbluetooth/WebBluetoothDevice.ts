@@ -87,7 +87,7 @@ export class WebBluetoothDevice extends ButtplugDeviceImpl {
 
   public Disconnect = async (): Promise<void> => {
     for (const chr of this._notificationHandlers.keys()) {
-      this.Unsubscribe(new ButtplugDeviceReadOptions({ Endpoint: chr }));
+      await this.Unsubscribe(new ButtplugDeviceReadOptions({ Endpoint: chr }));
     }
     this._server.disconnect();
   }

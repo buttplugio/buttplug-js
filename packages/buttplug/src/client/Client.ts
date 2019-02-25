@@ -70,7 +70,7 @@ export class ButtplugClient extends EventEmitter {
     this._logger.Debug(`ButtplugClient: Disconnect called`);
     this.CheckConnector();
     await this.ShutdownConnection();
-    this._connector!.Disconnect();
+    await this._connector!.Disconnect();
   }
 
   public StartScanning = async () => {
@@ -161,7 +161,7 @@ export class ButtplugClient extends EventEmitter {
         const ping = serverinfo.MaxPingTime;
         if (serverinfo.MessageVersion < this._messageVersion) {
           // Disconnect and throw an exception explaining the version mismatch problem.
-          this._connector!.Disconnect();
+          await this._connector!.Disconnect();
           throw ButtplugException.LogAndError(
             ButtplugInitException,
             this._logger,
@@ -174,7 +174,7 @@ export class ButtplugClient extends EventEmitter {
               await this.ShutdownConnection();
               return;
             }
-            this.SendMessage(new Messages.Ping());
+            await this.SendMessage(new Messages.Ping());
           } , Math.round(ping / 2));
         }
         await this.RequestDeviceList();
@@ -184,7 +184,7 @@ export class ButtplugClient extends EventEmitter {
         // Disconnect and throw an exception with the error message we got back.
         // This will usually only error out if we have a version mismatch that the
         // server has detected.
-        this._connector!.Disconnect();
+        await this._connector!.Disconnect();
         const err = msg as Messages.Error;
         throw ButtplugException.LogAndError(ButtplugInitException,
                                             this._logger,

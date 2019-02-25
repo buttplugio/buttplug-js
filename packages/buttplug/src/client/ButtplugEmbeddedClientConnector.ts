@@ -38,14 +38,20 @@ export class ButtplugEmbeddedClientConnector extends EventEmitter implements IBu
     this._server.addListener("message", this.OnMessageReceived);
   }
 
-  public Disconnect = () => {
+  public Disconnect = async () => {
     if (!this._connected) {
       return;
     }
-    this._server!.Shutdown();
-    this._connected = false;
-    this._server = null;
-    this.emit("disconnect");
+    try {
+      // If we're shutting down but this rejects (due to the device manager
+      // throwing while shutting down devices), rethrow but finish shutting down
+      // first. We should just assume the server is dead no matter what.
+      await this._server!.Shutdown();
+    } finally {
+      this._connected = false;
+      this._server = null;
+      this.emit("disconnect");
+    }
   }
 
   public Send = async (aMsg: ButtplugMessage): Promise<ButtplugMessage> => {

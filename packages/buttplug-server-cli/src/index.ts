@@ -90,13 +90,13 @@ async function main() {
     // });
   }
 
-  process.on("SIGINT", () => {
+  process.on("SIGINT", async () => {
     server.Disconnect();
     if (commander.websocketserver) {
-      (server as ButtplugNodeWebsocketServer).StopServer();
+      await (server as ButtplugNodeWebsocketServer).StopServer();
     }
     process.exit();
   });
 }
 
-main();
+main().catch((e) => console.log(e));

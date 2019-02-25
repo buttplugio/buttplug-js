@@ -174,7 +174,7 @@ describe("WebBluetooth library tests", () => {
     mockBT.txChar.writeValue = () => {
       throw new DOMException("GATT operation already in progress.");
     };
-    expect(bp.Devices[0].SendVibrateCmd(1)).rejects.toThrow();
+    await expect(bp.Devices[0].SendVibrateCmd(1)).rejects.toThrow();
     mockBT.txChar.writeValue = oldValue;
   });
 });

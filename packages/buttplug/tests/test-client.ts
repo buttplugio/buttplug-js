@@ -130,7 +130,7 @@ describe("Client Tests", async () => {
     const bplocal = new ButtplugClient("Test Client");
     bplocal.addListener("disconnect", () => { res(); });
     await bplocal.Connect(new ButtplugEmbeddedClientConnector());
-    bplocal.Disconnect();
+    await bplocal.Disconnect();
     return p;
   });
 
@@ -141,7 +141,7 @@ describe("Client Tests", async () => {
       res();
     });
     await bplocal.Connect(new ButtplugEmbeddedClientConnector());
-    bplocal.Disconnect();
+    await bplocal.Disconnect();
     return p;
   });
 

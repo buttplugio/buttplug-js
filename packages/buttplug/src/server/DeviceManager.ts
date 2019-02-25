@@ -112,8 +112,9 @@ export class DeviceManager extends EventEmitter {
         return new Messages.Ok(id);
       case Messages.StopAllDevices:
         this._logger.Debug(`DeviceManager: Stopping all devices`);
-        this._devices.forEach((deviceObj, index) => {
-          deviceObj.ParseMessage(new Messages.StopDeviceCmd());
+        this._devices.forEach(async (deviceObj, index) => {
+          // TODO What if something throws here?!
+          await deviceObj.ParseMessage(new Messages.StopDeviceCmd());
         });
         return new Messages.Ok(id);
       case Messages.RequestDeviceList:

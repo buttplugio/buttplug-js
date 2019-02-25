@@ -95,9 +95,9 @@ export class Lovense extends ButtplugDeviceProtocol {
   private HandleStopDeviceCmd = async (aMsg: Messages.StopDeviceCmd): Promise<Messages.ButtplugMessage> => {
     await this.HandleSingleMotorVibrateCmd(new Messages.SingleMotorVibrateCmd(0, aMsg.DeviceIndex, aMsg.Id));
     if (this._specs.hasOwnProperty("RotateCmd")) {
-      this.HandleRotateCmd(new Messages.RotateCmd([new Messages.RotateSubcommand(0, 0, this._isClockwise)],
-                                                  0,
-                                                  aMsg.Id));
+      await this.HandleRotateCmd(new Messages.RotateCmd([new Messages.RotateSubcommand(0, 0, this._isClockwise)],
+                                                        0,
+                                                        aMsg.Id));
     }
     return new Messages.Ok(aMsg.Id);
   }

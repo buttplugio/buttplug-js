@@ -47,7 +47,7 @@ export class ButtplugBrowserWebsocketClientConnector extends EventEmitter implem
     return p;
   }
 
-  public Disconnect = () => {
+  public Disconnect = async (): Promise<void> => {
     if (!this.Connected) {
       return;
     }

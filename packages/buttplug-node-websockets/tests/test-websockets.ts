@@ -17,13 +17,13 @@ describe("Buttplug Node Websocket tests", () => {
       new ButtplugNodeWebsocketClientConnector("wss://localhost:12345/buttplug", false);
   });
 
-  afterEach(() => {
-    _insecureConnector.Disconnect();
-    _secureConnector.Disconnect();
+  afterEach(async () => {
+    await _insecureConnector.Disconnect();
+    await _secureConnector.Disconnect();
   });
 
   it("should throw on erroneous connector states", async () => {
-    expect(_insecureConnector.Send(new Test("This should throw", 1))).rejects.toThrow();
+    await expect(_insecureConnector.Send(new Test("This should throw", 1))).rejects.toThrow();
   });
   it("should connect insecurely to itself, scan, find test devices", async function() {
     const server = new ButtplugNodeWebsocketServer("Buttplug Test Websocket Server");
@@ -50,7 +50,7 @@ describe("Buttplug Node Websocket tests", () => {
     await p;
     p = new Promise((resolve, reject) => { res = resolve; rej = reject; });
     bpc.on("deviceremoved", async () => {
-      bpc.Disconnect();
+      await bpc.Disconnect();
       await server.StopServer();
       res();
     });

@@ -67,7 +67,7 @@ export class ButtplugNodeWebsocketClientConnector extends EventEmitter implement
   /***
    * Called by ButtplugClient to disconnect websocket connection.
    */
-  public Disconnect = () => {
+  public Disconnect = async (): Promise<void> => {
     if (!this.Connected) {
       return;
     }
