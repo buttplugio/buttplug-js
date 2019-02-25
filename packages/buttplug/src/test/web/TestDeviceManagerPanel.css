@@ -1,0 +1,135 @@
+/*!
+ * Buttplug JS Source Code File - Visit https://buttplug.io for more info about
+ * the project. Licensed under the BSD 3-Clause license. See LICENSE file in the
+ * project root for full license information.
+ *
+ * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
+ */
+
+buttplug-devtools-main {
+    width: 100%;
+    height: 100%;
+}
+
+buttplug-devtools-main section {
+    display: none;
+    padding: 20px;
+    border-top: 1px solid #ddd;
+}
+
+buttplug-devtools-main input {
+    display: none;
+}
+
+buttplug-devtools-main label {
+    display: inline-block;
+    margin: 0 0 -1px;
+    padding: 5px 10px;
+    font-weight: 600;
+    text-align: center;
+    color: #bbb;
+    border: 1px solid transparent;
+}
+
+buttplug-devtools-main label:before {
+    font-family: fontawesome;
+    font-weight: normal;
+    margin-right: 10px;
+}
+
+buttplug-devtools-main label:hover {
+    color: #888;
+    cursor: pointer;
+}
+
+buttplug-devtools-main input:checked + label {
+    color: #555;
+    border: 1px solid #ddd;
+    border-top: 2px solid orange;
+    border-bottom: 1px solid #fff;
+}
+
+buttplug-devtools-main #tab1:checked ~ #content1,
+buttplug-devtools-main #tab2:checked ~ #content2,
+buttplug-devtools-main #tab3:checked ~ #content3,
+buttplug-devtools-main #tab4:checked ~ #content4 {
+    display: block;
+}
+
+buttplug-devtools-main #content1 {
+    height: 100%;
+}
+
+buttplug-devtools-main #content2 {
+    height: 100%;
+}
+
+buttplug-devtools-main #simulator {
+    display: flex;
+    width: 100%;
+    height: calc(100% - 60px);
+    flex-direction: row;
+}
+
+buttplug-devtools-main .fleshlight-sim {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+buttplug-devtools-main div.c-fleshlight {
+    display: flex;
+    flex: 1;
+}
+
+buttplug-devtools-main div.c-fleshlight img {
+    height: 100%;
+    width: auto;
+	  image-rendering: -moz-crisp-edges;
+	  image-rendering: -o-crisp-edges;
+	  image-rendering: -webkit-optimize-contrast;
+	  image-rendering: pixelated;
+}
+
+buttplug-devtools-main div.c-fleshlight .o-fleshlight {
+    position: relative;
+    height: 77%;
+}
+
+buttplug-devtools-main .vibrator-simulator-component {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+buttplug-devtools-main div.vibrator {
+    flex: 1 1;
+    align-items: center;
+}
+
+buttplug-devtools-main div.vibrator-simulator-component img {
+    height: calc(100% - 40px);
+    width: auto;
+    position: relative;
+    image-rendering: -moz-crisp-edges;
+	  image-rendering: -o-crisp-edges;
+	  image-rendering: -webkit-optimize-contrast;
+	  image-rendering: pixelated;
+}
+
+buttplug-devtools-main div.vibrator-info {
+    flex: 0;
+}
+
+buttplug-devtools-main .simulator-divider {
+    border-left: 1px #000 dashed;
+    height: 100%;
+}
