@@ -100,6 +100,10 @@ export class ButtplugNodeWebsocketServer extends ButtplugServer {
     }
     const bs: ButtplugServer = this;
     this.wsServer.on("connection", function connection(client) {
+      client.on("error", (err) => {
+        console.log(`Error in websocket connection: ${err.message}`);
+        client.terminate();
+      });
       client.on("message", async (message) => {
         const msg = FromJSON(message);
         for (const m of msg) {
