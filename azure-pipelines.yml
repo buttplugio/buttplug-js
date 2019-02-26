@@ -77,6 +77,10 @@ jobs:
         yarn workspace buttplug build:rollup
       displayName: 'Build Buttplug library web modules'
     - script: |
+        yarn workspace buttplug web-test-ci
+      displayName: 'Test web libraries'
+      env: { "CI": "true" }
+    - script: |
         yarn workspace buttplug-server-cli freeze:linux
       displayName: 'Freeze server executable'
       env: { "CI": "true" }

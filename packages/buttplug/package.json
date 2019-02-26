@@ -31,7 +31,9 @@
     "tslint": "tslint --project tsconfig.json --outputAbsolutePaths -c ../../tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
     "tslint:fix": "tslint --project tsconfig.json --outputAbsolutePaths -c ../../tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\"",
     "pretest": "yarn build:main",
-    "test": "jest"
+    "test": "jest tests/*",
+    "web-test": "jest web-tests/test-web-library.ts",
+    "web-test-ci": "jest --runInBand web-tests/test-web-library.ts"
   },
   "dependencies": {
     "ajv": "^6.9.1",
@@ -49,7 +51,8 @@
       "^.+\\.ts$": "ts-jest"
     },
     "testMatch": [
-      "<rootDir>/tests/**/test-*.ts"
+      "<rootDir>/tests/**/test-*.ts",
+      "<rootDir>/web-tests/**/test-*.ts"
     ],
     "coverageDirectory": "./coverage/",
     "coverageReporters": [
