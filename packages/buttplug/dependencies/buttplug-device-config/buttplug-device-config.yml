@@ -325,6 +325,13 @@ protocols:
       services:
         40ee1111-63ec-4b7f-8ce7-712efd55b90e:
           tx: 40ee2222-63ec-4b7f-8ce7-712efd55b90e
+  youou:
+    btle:
+      names:
+        - VX001_*
+      services:
+        0000fff0-0000-1000-8000-00805f9b34fb:
+          tx: 0000fff6-0000-1000-8000-00805f9b34fb
   # nintendo-joycon:
   #   names:
   #     en-us: Nintendo Joycon
