@@ -7,6 +7,8 @@
  */
 
 import * as commander from "commander";
+import * as selfsigned from "selfsigned";
+import * as fs from "fs";
 import { ButtplugServer, ButtplugLogger, ButtplugLogLevel } from "buttplug";
 import { ButtplugNodeBluetoothLEDeviceManager } from "buttplug-node-bluetoothle-manager";
 import { ButtplugNodeWebsocketServer } from "buttplug-node-websockets";
@@ -27,6 +29,7 @@ async function main() {
     .version(packageinfo.version)
     .option("--servername <name>", "Name of server to pass to connecting clients", "Buttplug Server")
     .option("--serverversion", "Print version and exit")
+    .option("--generatecert", "Generates self signed certificate for secure websocket servers, and exits.")
     .option("--deviceconfig <filename>", "Device configuration file (if none specified, will use internal version)")
     .option("--userdeviceconfig <filename>", "User device configuration file")
     .option("--websocketserver", "Run websocket server")
@@ -44,6 +47,19 @@ async function main() {
 
   if (commander.serverversion) {
     console.log(packageinfo.version);
+    return;
+  }
+
+  if (commander.generatecert) {
+    console.log("Creating secure selfsigned keys...");
+    if (fs.existsSync("cert.pem") || fs.existsSync("private.pem")) {
+      console.log("Please remove cert.pem and private.pem files before generating new keys.");
+      return;
+    }
+    const pems = selfsigned.generate(undefined, { days: 365 });
+    fs.writeFileSync("cert.pem", pems.cert);
+    fs.writeFileSync("private.pem", pems.private);
+    console.log("cert.pem and private.pem generated");
     return;
   }
 
