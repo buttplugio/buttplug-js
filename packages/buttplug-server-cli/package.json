@@ -16,6 +16,7 @@
   "scripts": {
     "build": "trash dist dist-bundle && yarn build:main",
     "build:main": "tsc -p tsconfig.json",
+    "build:proto": "pbjs -t json-module -w commonjs -o src/buttplug-gui-proto.js buttplug-gui.proto && pbjs -t static-module buttplug-gui.proto | pbts -o src/buttplug-gui-proto.d.ts -",
     "tslint": "tslint --project tsconfig.json --outputAbsolutePaths -c ../../tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
     "tslint:fix": "tslint --project tsconfig.json --outputAbsolutePaths -c ../../tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\"",
     "start": "node dist/src/index.js",
@@ -29,6 +30,7 @@
     "buttplug": "*",
     "buttplug-node-bluetoothle-manager": "*",
     "buttplug-node-websockets": "*",
-    "commander": "^2.19.0"
+    "commander": "^2.19.0",
+    "protobufjs": "^6.8.8"
   }
 }

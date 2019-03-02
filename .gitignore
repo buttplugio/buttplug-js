@@ -49,3 +49,10 @@ dist-bundle
 
 # typedoc output
 doc/**
+
+# cert files
+*.pem
+# pkg files
+rpt2*
+# pkg output
+buttplug-node-server

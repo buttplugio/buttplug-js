@@ -9,6 +9,9 @@
 import * as commander from "commander";
 import * as selfsigned from "selfsigned";
 import * as fs from "fs";
+import * as net from "net";
+import { Message } from "protobufjs";
+import { buttplug_gui_protocol as bpGuiProtocol } from "./buttplug-gui-proto";
 import { ButtplugServer, ButtplugLogger, ButtplugLogLevel } from "buttplug";
 import { ButtplugNodeBluetoothLEDeviceManager } from "buttplug-node-bluetoothle-manager";
 import { ButtplugNodeWebsocketServer } from "buttplug-node-websockets";
@@ -18,8 +21,9 @@ import * as packageinfo from "../package.json";
 export class ButtplugServerCLI {
 
   private _server: ButtplugServer;
+  private _guiPipe: net.Socket;
 
-  public RunServer() {
+  public async RunServer() {
     this.BuildOptions();
 
     if (commander.serverversion) {
@@ -30,6 +34,15 @@ export class ButtplugServerCLI {
     if (commander.generatecert) {
       this.GenerateCertificate();
       return;
+    }
+
+    if (commander.guiPipe) {
+      let res;
+      let rej;
+      const connectPromise = new Promise<void>((rs, rj) => { res = rs; rej = rj; });
+      this._guiPipe = net.createConnection(commander.guiPipe, () => res() );
+      await connectPromise;
+      this.SendGuiLogMessage(`Buttplug server now running on IPC pipe ${commander.guiPipe}`);
     }
 
     if (commander.websocketserver && commander.ipcserver) {
@@ -49,6 +62,12 @@ export class ButtplugServerCLI {
       console.log("IPC server not yet implemented");
       return;
     }
+  }
+
+  private SendGuiLogMessage(aMsg: string) {
+    const logmsg = new bpGuiProtocol.GuiMessage.GuiLog({ message: aMsg });
+    const buffer = Message.encode(logmsg);
+    this._guiPipe.write(buffer);
   }
 
   private SetupExit() {
