@@ -1,0 +1,30 @@
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '10.x'
+    displayName: 'Install Node.js'
+  
+  # Initial install will most likely fail on some platforms because
+  # noble won't build correctly, so don't && it against build/test
+  # steps.
+  - script: |
+      yarn
+    displayName: 'Install packages'
+    env: { "CI": "true" }
+  - script: |
+      yarn tslint
+    displayName: 'Lint'
+    env: { "CI": "true" }
+  - script: |
+      yarn build:main && yarn test
+    displayName: 'Build and test'
+    env: { "CI": "true" }
+  - script: |
+      yarn workspace buttplug-server-cli freeze:${{ parameters.platform }}
+    displayName: 'Freeze server executable'
+    env: { "CI": "true" }
+  - task: PublishPipelineArtifact@0
+    displayName: "Publish server executable to artifacts"
+    inputs:
+      pathtoPublish: "$(System.DefaultWorkingDirectory)/packages/buttplug-server-cli/buttplug-node-server/"
+      artifactName: "buttplug-node-server-${{ parameters.platform }}-x64"

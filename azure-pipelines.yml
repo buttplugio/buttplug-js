@@ -7,91 +7,13 @@ jobs:
     pool:
       vmImage: 'macos-10.13'
     steps:
-    - task: NodeTool@0
-      inputs:
-        versionSpec: '10.x'
-      displayName: 'Install Node.js'
-    
-    # Initial install will most likely fail on some platforms because
-    # noble won't build correctly, so don't && it against build/test
-    # steps.
-    - script: |
-        yarn
-      displayName: 'Install packages'
-      env: { "CI": "true" }
-    - script: |
-        yarn tslint
-      displayName: 'Lint'
-      env: { "CI": "true" }
-    - script: |
-        yarn build:main && yarn test
-      displayName: 'Build and test'
-      env: { "CI": "true" }
-    - script: |
-        yarn workspace buttplug-server-cli freeze:mac
-      displayName: 'Freeze server executable'
-      env: { "CI": "true" }
-    # For some reason the CopyFiles task can't actually copy a file, as
-    # it complains about weird missing node packages. So we'll just use
-    # a script.
-    - script: |
-        cp $(System.DefaultWorkingDirectory)/node_modules/noble-mac/native/noble_mac.node $(System.DefaultWorkingDirectory)/packages/buttplug-server-cli/buttplug-node-server/
-      displayName: "Copy server executable to staging"
-    - task: PublishBuildArtifacts@1
-      displayName: "Publish server executable to artifacts"
-      inputs:
-        pathtoPublish: "$(System.DefaultWorkingDirectory)/packages/buttplug-server-cli/buttplug-node-server/"
-        artifactName: "buttplug-node-server-macos-x64"
+      - template: 'build/build-test-freeze.yml'
+        parameters:
+          platform: "macos"
   - job: "Linux"
     pool:
       vmImage: 'ubuntu-16.04'
     steps:
-    - task: NodeTool@0
-      inputs:
-        versionSpec: '10.x'
-      displayName: 'Install Node.js'
-    
-    # Initial install will most likely fail on some platforms because
-    # noble won't build correctly, so don't && it against build/test
-    # steps.
-    - script: |
-        yarn
-      displayName: 'Install packages'
-      env: { "CI": "true" }
-    - script: |
-        yarn tslint
-      displayName: 'Lint'
-      env: { "CI": "true" }
-    - script: |
-        yarn build:main && yarn test
-      displayName: 'Build and test'
-      env: { "CI": "true" }
-    - script: |
-        npm i -g codecov
-        cd $(System.DefaultWorkingDirectory)/packages/buttplug
-        codecov -t $(BUTTPLUG_CODECOV_TOKEN)
-        cd $(System.DefaultWorkingDirectory)/packages/buttplug-node-websockets
-        codecov -t $(BUTTPLUG_CODECOV_TOKEN)
-      displayName: 'Upload test results to codecov'
-    - script: |
-        yarn workspace buttplug build:rollup
-      displayName: 'Build Buttplug library web modules'
-    - script: |
-        yarn workspace buttplug web-test-ci
-      displayName: 'Test web libraries'
-      env: { "CI": "true" }
-    - script: |
-        yarn workspace buttplug-server-cli freeze:linux
-      displayName: 'Freeze server executable'
-      env: { "CI": "true" }
-    # For some reason the CopyFiles task can't actually copy a file, as
-    # it complains about weird missing node packages. So we'll just use
-    # a script.
-    - script: |
-        cp $(System.DefaultWorkingDirectory)/node_modules/@abandonware/bluetooth-hci-socket/lib/binding/binding.node $(System.DefaultWorkingDirectory)/packages/buttplug-server-cli/buttplug-node-server/
-      displayName: "Copy server executable to staging"
-    - task: PublishBuildArtifacts@1
-      displayName: "Publish server executable to artifacts"
-      inputs:
-        pathtoPublish: "$(System.DefaultWorkingDirectory)/packages/buttplug-server-cli/buttplug-node-server/"
-        artifactName: "buttplug-node-server-linux-x64"
+      - template: 'build/build-test-freeze.yml'
+        parameters:
+          platform: "linux"
