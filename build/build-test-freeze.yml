@@ -23,8 +23,13 @@ steps:
       yarn workspace buttplug-server-cli freeze:${{ parameters.platform }}
     displayName: 'Freeze server executable'
     env: { "CI": "true" }
-  - task: PublishPipelineArtifact@0
-    displayName: "Publish server executable to artifacts"
+  - task: CopyFiles@2
+    displayName: "Copy frozen executables to staging"
     inputs:
-      pathtoPublish: "$(System.DefaultWorkingDirectory)/packages/buttplug-server-cli/buttplug-node-server/"
+      contents: "$(System.DefaultWorkingDirectory)/packages/buttplug-server-cli/buttplug-node-server/*"
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+  - task: PublishPipelineArtifact@0
+    displayName: "Publish frozen executables to artifacts"
+    inputs:
+      targetPath: '$(Build.ArtifactStagingDirectory)'
       artifactName: "buttplug-node-server-${{ parameters.platform }}-x64"
