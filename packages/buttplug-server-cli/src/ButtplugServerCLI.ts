@@ -45,6 +45,11 @@ export class ButtplugServerCLI {
       this.SendGuiLogMessage(`Buttplug server now running on IPC pipe ${commander.guiPipe}`);
     }
 
+    if (!commander.websocketserver && !commander.ipcserver) {
+      console.log("Must specify either Websocket or IPC server!");
+      return;
+    }
+
     if (commander.websocketserver && commander.ipcserver) {
       console.log("Can only run IPC or websocket server, not both");
       return;
