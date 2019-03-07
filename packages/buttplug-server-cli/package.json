@@ -25,8 +25,8 @@
     "freeze:linux:rpi": "pkg dist/src/index.js --targets node10-linux-armv6 --output buttplug-node-server/buttplug-node-server && yarn copy:bindings:linux",
     "freeze:win": "pkg dist/src/index.js --targets node10-win-x86 --output buttplug-node-server/buttplug-node-server.exe",
     "package:win": "yarn freeze:win && copy node_modules\\bluetooth-hci-socket\\build\\Release\\binding.node buttplug-node-server && copy node_modules\\usb\\src\\binding\\usb_bindings.node buttplug-node-server && 7z a buttplug-node-server.7z buttplug-node-server\\*",
-    "copy:bindings:macos": "copyfiles ../../node_modules/noble-mac/native/noble_mac.node ./buttplug-node-server",
-    "copy:bindings:linux": "copyfiles ../../node_modules/@abandonware/bluetooth-hci-socket/lib/binding/binding.node ./buttplug-node-server"
+    "copy:bindings:macos": "copyfiles ../../node_modules/noble-mac/native/noble_mac.node ./buttplug-node-server/noble_mac.node",
+    "copy:bindings:linux": "copyfiles ../../node_modules/@abandonware/bluetooth-hci-socket/lib/binding/binding.node ./buttplug-node-server/binding.node"
   },
   "dependencies": {
     "buttplug": "*",
