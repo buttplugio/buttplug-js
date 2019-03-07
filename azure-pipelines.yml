@@ -17,3 +17,28 @@ jobs:
       - template: 'build/build-test-freeze.yml'
         parameters:
           platform: "linux"
+  - job: Deploy
+    dependsOn:
+      - MacOS
+      - Linux
+    # condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/dev')))
+    condition: succeeded()
+    pool:
+      vmImage: 'ubuntu-16.04'
+    steps:
+      - task: DownloadPipelineArtifact@1
+        displayName: Download Artifacts from other jobs
+        inputs:
+          buildType: 'current'
+      - task: GitHubRelease@0
+        displayName: Upload CLI releases to Github
+        inputs:
+          gitHubConnection: "release"
+          repositoryName: "buttplugio/buttplug-js"
+          action: "edit"
+          tagSource: "manual"
+          tag: "420.69.666"
+          title: "Buttplug JS CLI Prerelease"
+          assets: "$(System.ArtifactsDirectory)/**/*.zip"
+          # isPreRelease: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
+          isPreRelease: true
