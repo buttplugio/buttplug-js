@@ -1,0 +1,48 @@
+syntax = "proto3";
+package buttplug_gui_protocol;
+
+option csharp_namespace = "Buttplug.Server.CLI";
+
+message GuiMessage {
+
+  message GuiLog {
+    string message = 1;
+  };
+
+  message ProcessStarted {
+  };
+
+  message ProcessEnded {
+  };
+
+  message ButtplugLog {
+    string message = 1;
+  };
+
+  message ClientConnected {
+    string client_name = 1;
+  };
+
+  message ClientDisconnected {
+  };
+
+  message DeviceConnected {
+    string device_name = 1;
+    uint32 device_id = 2;
+  };
+
+  message DeviceDisconnected {
+    uint32 device_id = 1;
+  };
+
+  oneof msg {
+    GuiLog guilog = 1;
+    ProcessStarted processstarted = 2;
+    ProcessEnded processended = 3;
+    ButtplugLog bplog = 4;
+    ClientConnected clientconnected = 5;
+    ClientDisconnected clientdisconnected = 6;
+    DeviceConnected deviceconnected = 7;
+    DeviceDisconnected devicedisconnected = 8;
+  };
+}

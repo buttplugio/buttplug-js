@@ -1,0 +1,52 @@
+steps:
+  - task: Bash@3
+    displayName: "Set Up Build Variables"
+    inputs:
+      targetType: inline
+      script: |
+        gitshorthash=$(git describe --long --always --dirty)
+        echo "Git Short Hash: $gitshorthash"
+        echo "##vso[task.setvariable variable=gitShortHash]$gitshorthash"
+        echo "##vso[task.setvariable variable=cliBuildName]buttplug-js-${{ parameters.platform }}-x64-cli-$(buildConfiguration)-$gitshorthash"
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '10.x'
+    displayName: 'Install Node.js'
+  
+  # Initial install will most likely fail on some platforms because
+  # noble won't build correctly, so don't && it against build/test
+  # steps.
+  - script: |
+      yarn
+    displayName: 'Install packages'
+    env: { "CI": "true" }
+  - script: |
+      yarn tslint
+    displayName: 'Lint'
+    env: { "CI": "true" }
+  - script: |
+      yarn build:main && yarn test
+    displayName: 'Build and test'
+    env: { "CI": "true" }
+  - script: |
+      yarn workspace buttplug-server-cli freeze:${{ parameters.platform }}
+    displayName: 'Freeze server executable'
+    env: { "CI": "true" }
+  - task: CopyFiles@2
+    displayName: "Copy frozen executables to staging"
+    inputs:
+      sourceFolder: "$(System.DefaultWorkingDirectory)/packages/buttplug-server-cli/buttplug-node-server/"
+      contents: "*"
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+      flattenFolders: true
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: "$(Build.ArtifactStagingDirectory)"
+      archiveFile: '$(Build.ArtifactStagingDirectory)/$(cliBuildName).zip'
+      includeRootFolder: false
+      archiveType: 'zip'
+  - task: PublishPipelineArtifact@0
+    displayName: "Publish frozen executables to artifacts"
+    inputs:
+      targetPath: '$(Build.ArtifactStagingDirectory)'
+      artifactName: '$(cliBuildName)'
