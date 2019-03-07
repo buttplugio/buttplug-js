@@ -1,6 +1,7 @@
 {
   "compilerOptions" : {
     "baseUrl": "./src",
+    "allowJs": true,
     "lib": ["es2015", "dom", "es6"],
     "target": "es6",
     "module": "commonjs",
@@ -10,11 +11,11 @@
     "experimentalDecorators": true,
     "strictNullChecks": true,
     "noImplicitThis": true,
-    "declaration": true,
     "outDir": "./dist/",
     "resolveJsonModule": true
   },
   "include": [
+    "./src/*.js",
     "./src/*.ts",
     "./src/**/*.ts",
     "./tests/**/*.ts"
