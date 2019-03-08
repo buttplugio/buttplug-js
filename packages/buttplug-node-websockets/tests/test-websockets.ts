@@ -9,6 +9,7 @@ describe("Buttplug Node Websocket tests", () => {
 
   let _insecureConnector: ButtplugNodeWebsocketClientConnector;
   let _secureConnector: ButtplugNodeWebsocketClientConnector;
+  let _server: ButtplugNodeWebsocketServer;
   // Use a random port, otherwise things can get jammed up on CI for some reason.
   const _port = 1024 + getRandomInt(65535 - 1024);
 
@@ -17,26 +18,29 @@ describe("Buttplug Node Websocket tests", () => {
   }
 
   beforeEach(() => {
+    _server = new ButtplugNodeWebsocketServer("Buttplug Test Websocket Server");
     _insecureConnector =
-      new ButtplugNodeWebsocketClientConnector(`ws://localhost:${_port}/buttplug`, false);
+      new ButtplugNodeWebsocketClientConnector(`ws://127.0.0.1:${_port}/buttplug`, false);
     _secureConnector =
-      new ButtplugNodeWebsocketClientConnector(`wss://localhost:${_port}/buttplug`, false);
+      new ButtplugNodeWebsocketClientConnector(`wss://127.0.0.1:${_port}/buttplug`, false);
   });
 
   afterEach(async () => {
     await _insecureConnector.Disconnect();
     await _secureConnector.Disconnect();
+    if (_server !== null && _server.IsRunning) {
+      _server.StopServer();
+    }
   });
 
   it("should throw on erroneous connector states", async () => {
     await expect(_insecureConnector.Send(new Test("This should throw", 1))).rejects.toThrow();
   });
   it("should connect insecurely to itself, scan, find test devices", async function() {
-    const server = new ButtplugNodeWebsocketServer("Buttplug Test Websocket Server");
     const deviceManager = new TestDeviceSubtypeManager();
-    server.AddDeviceManager(deviceManager);
-    // Insecure hosting, on localhost:_port
-    server.StartInsecureServer(_port, "localhost");
+    _server.AddDeviceManager(deviceManager);
+    // Insecure hosting, on 127.0.0.1:_port
+    _server.StartInsecureServer(_port, "127.0.0.1");
 
     const bpc = new ButtplugClient("test");
     await bpc.Connect(_insecureConnector);
@@ -57,7 +61,6 @@ describe("Buttplug Node Websocket tests", () => {
     p = new Promise((resolve, reject) => { res = resolve; rej = reject; });
     bpc.on("deviceremoved", async () => {
       await bpc.Disconnect();
-      await server.StopServer();
       res();
     });
     deviceManager.VibrationDevice.Disconnect();
@@ -65,39 +68,35 @@ describe("Buttplug Node Websocket tests", () => {
   });
 
   it("should disconnect cleanly from client side", async function() {
-    const server = new ButtplugNodeWebsocketServer("Buttplug Test Websocket Server");
-    // Insecure hosting, on localhost:_port
-    server.StartInsecureServer(_port, "localhost");
+    // Insecure hosting, on 127.0.0.1:_port
+    _server.StartInsecureServer(_port, "127.0.0.1");
 
     const bpc = new ButtplugClient("test");
     await bpc.Connect(_insecureConnector);
     expect(bpc.Connected).toBe(true);
     await bpc.Disconnect();
     expect(bpc.Connected).toBe(false);
-    await server.StopServer();
   });
 
   it("should be able to start/stop multiple times", async () => {
-    const server = new ButtplugNodeWebsocketServer("Buttplug Test Websocket Server");
-    // Insecure hosting, on localhost:_port
-    server.StartInsecureServer(_port, "localhost");
+    // Insecure hosting, on 127.0.0.1:_port
+    _server.StartInsecureServer(_port, "127.0.0.1");
 
     let bpc = new ButtplugClient("test");
     await bpc.Connect(_insecureConnector);
     expect(bpc.Connected).toBe(true);
     await bpc.Disconnect();
     expect(bpc.Connected).toBe(false);
-    await server.StopServer();
+    await _server.StopServer();
 
-    // Insecure hosting, on localhost:_port
-    server.StartInsecureServer(_port, "localhost");
+    // Insecure hosting, on 127.0.0.1:_port
+    _server.StartInsecureServer(_port, "127.0.0.1");
 
     bpc = new ButtplugClient("test");
     await bpc.Connect(_insecureConnector);
     expect(bpc.Connected).toBe(true);
     await bpc.Disconnect();
     expect(bpc.Connected).toBe(false);
-    await server.StopServer();
   });
 
   // Test commented out because it will always cause jest to stall after completion.
@@ -108,15 +107,13 @@ describe("Buttplug Node Websocket tests", () => {
     const tmpprivate = tmp.fileSync();
     fs.writeFileSync(tmpcert.name, pems.cert);
     fs.writeFileSync(tmpprivate.name, pems.private);
-    const server = new ButtplugNodeWebsocketServer("Buttplug Test Websocket Server");
-    server.StartSecureServer(tmpcert.name, tmpprivate.name, _port, "localhost");
+    _server.StartSecureServer(tmpcert.name, tmpprivate.name, _port, "127.0.0.1");
 
     const bpc = new ButtplugClient("test");
     await bpc.Connect(_secureConnector);
     expect(bpc.Connected).toBe(true);
     await bpc.Disconnect();
     expect(bpc.Connected).toBe(false);
-    await server.StopServer();
     tmpcert.removeCallback();
     tmpprivate.removeCallback();
   });
