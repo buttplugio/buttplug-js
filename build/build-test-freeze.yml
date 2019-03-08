@@ -7,7 +7,7 @@ steps:
         gitshorthash=$(git describe --long --always --dirty)
         echo "Git Short Hash: $gitshorthash"
         echo "##vso[task.setvariable variable=gitShortHash]$gitshorthash"
-        echo "##vso[task.setvariable variable=cliBuildName]buttplug-js-${{ parameters.platform }}-x64-cli-$(buildConfiguration)-$gitshorthash"
+        echo "##vso[task.setvariable variable=cliBuildName]buttplug-js-${{ parameters.platform }}-x64-cli-$gitshorthash"
   - task: NodeTool@0
     inputs:
       versionSpec: '10.x'
