@@ -29,7 +29,7 @@ describe("Buttplug Node Websocket tests", () => {
     await _insecureConnector.Disconnect();
     await _secureConnector.Disconnect();
     if (_server !== null && _server.IsRunning) {
-      _server.StopServer();
+      await _server.StopServer();
     }
   });
 

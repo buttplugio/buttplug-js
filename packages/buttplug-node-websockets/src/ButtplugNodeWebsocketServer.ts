@@ -74,7 +74,7 @@ export class ButtplugNodeWebsocketServer extends ButtplugServer {
   /**
    * Shuts down the server, closing all connections.
    */
-  public StopServer = async () => {
+  public StopServer = async (): Promise<void> => {
     if (this.wsServer === null) {
       throw new Error("Websocket server is null!");
     }
@@ -82,7 +82,7 @@ export class ButtplugNodeWebsocketServer extends ButtplugServer {
     // has a passing callback, no failing), so just build our own. Could've
     // wrapped it in a 2 argument closure but eh.
     let closeRes: () => void;
-    const closePromise = new Promise((res, rej) => { closeRes = res; });
+    const closePromise: Promise<void> = new Promise((res, rej) => { closeRes = res; });
     for (const client of this.wsServer.clients) {
       client.close();
     }

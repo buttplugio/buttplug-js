@@ -52,7 +52,7 @@ export class ButtplugNodeWebsocketClientConnector extends EventEmitter implement
     // library to state what the problem might be.
     const conErrorCallback = (ev) => {
       rej(ev);
-    }
+    };
     ws.on("open", async (ev) => {
       ws.removeAllListeners();
       this.wsClient = ws;
