@@ -42,7 +42,7 @@ export class ButtplugNodeWebsocketClientConnector extends EventEmitter implement
    */
   public Connect = async () => {
     let res: () => void;
-    let rej: () => void;
+    let rej: (ev: Error) => void;
     const ws = new WebSocket(this.url, {
       rejectUnauthorized: this.rejectUnauthorized,
     });
@@ -50,7 +50,9 @@ export class ButtplugNodeWebsocketClientConnector extends EventEmitter implement
     // In websockets, our error rarely tells us much, as for security reasons
     // browsers usually only throw Error Code 1006. It's up to those using this
     // library to state what the problem might be.
-    const conErrorCallback = (ev) => rej();
+    const conErrorCallback = (ev) => {
+      rej(ev);
+    }
     ws.on("open", async (ev) => {
       ws.removeAllListeners();
       this.wsClient = ws;
@@ -60,6 +62,7 @@ export class ButtplugNodeWebsocketClientConnector extends EventEmitter implement
                        ButtplugLogger.Logger.Info("Websocket Error (Happens on close, possibly ignorable): " + e));
       res();
     });
+    ws.on("error", conErrorCallback);
     ws.on("close", conErrorCallback);
     return p;
   }

@@ -8,6 +8,7 @@
 
 import * as fs from "fs";
 import * as ws from "ws";
+import * as http from "http";
 import * as https from "https";
 import { FromJSON, ButtplugServer, ButtplugInitException } from "buttplug";
 
@@ -17,12 +18,16 @@ import { FromJSON, ButtplugServer, ButtplugInitException } from "buttplug";
  * application.
  */
 export class ButtplugNodeWebsocketServer extends ButtplugServer {
-
+  private httpServer: http.Server | null = null;
   private httpsServer: https.Server | null = null;
   private wsServer: ws.Server | null = null;
 
   public constructor(name: string, maxPingTime: number = 0) {
     super(name, maxPingTime);
+  }
+
+  public get IsRunning(): boolean {
+    return this.wsServer !== null;
   }
 
   /**
@@ -33,7 +38,8 @@ export class ButtplugNodeWebsocketServer extends ButtplugServer {
    * @param host Host address to listen on (defaults to localhost)
    */
   public StartInsecureServer = (port: number = 12345, host: string = "localhost") => {
-    this.wsServer = new ws.Server({host, port});
+    this.httpServer = http.createServer().listen(port, host);
+    this.wsServer = new ws.Server({ server: this.httpServer });
     this.InitServer();
   }
 
@@ -84,6 +90,10 @@ export class ButtplugNodeWebsocketServer extends ButtplugServer {
       this.wsServer = null;
       if (this.httpsServer !== null) {
         this.httpsServer.close(() => closeRes());
+        this.httpsServer = null;
+      } else if (this.httpServer !== null) {
+        this.httpServer.close(() => closeRes());
+        this.httpServer = null;
       } else {
         closeRes();
       }

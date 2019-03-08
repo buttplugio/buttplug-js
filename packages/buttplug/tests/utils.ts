@@ -19,7 +19,7 @@ export class BPTestClient extends ButtplugClient {
 export function SetupTestSuite() {
   // None of our tests should take very long.
   jest.setTimeout(1000);
-  process.on("unhandledRejection", (reason, p) => {
+  process.on("unhandledRejection", (reason: Error, p) => {
     throw new Error(`Unhandled Promise rejection!\n---\n${reason.stack}\n---\n`);
   });
 }
