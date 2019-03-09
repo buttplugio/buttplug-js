@@ -1,13 +1,7 @@
 steps:
-  - task: Bash@3
-    displayName: "Set Up Build Variables"
-    inputs:
-      targetType: inline
-      script: |
-        gitshorthash=$(git describe --long --always --dirty)
-        echo "Git Short Hash: $gitshorthash"
-        echo "##vso[task.setvariable variable=gitShortHash]$gitshorthash"
-        echo "##vso[task.setvariable variable=cliBuildName]buttplug-js-${{ parameters.platform }}-x64-cli-$gitshorthash"
+  - template: ./setup-variables.yml
+    parameters:
+      platform: ${{ parameters.platform }}
   - task: NodeTool@0
     inputs:
       versionSpec: '10.x'
