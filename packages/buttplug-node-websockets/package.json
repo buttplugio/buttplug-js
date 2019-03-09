@@ -1,11 +1,11 @@
 {
   "name": "buttplug-node-websockets",
-  "version": "0.0.3",
+  "version": "0.11.0",
   "description": "Node Websocket Client/Server for buttplug-js",
   "homepage": "https://github.com/buttplugio/buttplug-js/packages/buttplug-node-websockets#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/buttplugio/buttplug-js.git"
+    "url": "git+https://github.com/metafetish/buttplug-node-websockets.git"
   },
   "author": "The Buttplug Project Team",
   "keywords": [
@@ -26,12 +26,8 @@
     "pretest": "yarn build:main",
     "test": "jest"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/metafetish/buttplug-node-websockets.git"
-  },
   "dependencies": {
-    "buttplug": "*",
+    "buttplug": "^0.11.0",
     "ws": "^4.0.0"
   },
   "jest": {
