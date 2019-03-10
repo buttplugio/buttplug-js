@@ -1,7 +1,7 @@
 # Buttplug Node Websockets
 
 [![npm](https://img.shields.io/npm/v/buttplug-node-websockets.svg)](https://npmjs.com/package/buttplug-node-websockets) 
-[![Build Status](https://travis-ci.org/buttplugio/buttplug-node-websockets.svg?branch=master)](https://travis-ci.org/buttplugio/buttplug-node-websockets) 
+[![Build Status](https://dev.azure.com/nplabs/buttplug/_apis/build/status/buttplugio.buttplug-js?branchName=master)](https://dev.azure.com/nplabs/buttplug/_build/latest?definitionId=3&branchName=master)
 [![codecov](https://codecov.io/gh/buttplugio/buttplug-node-websockets/branch/master/graph/badge.svg)](https://codecov.io/gh/buttplugio/buttplug-node-websockets) 
 
 [![Patreon donate button](https://img.shields.io/badge/patreon-donate-yellow.svg)](https://www.patreon.com/qdot)

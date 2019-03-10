@@ -1,22 +1,24 @@
 # Buttplug Node.js Websocket Server
 
+[![Build Status](https://dev.azure.com/nplabs/buttplug/_apis/build/status/buttplugio.buttplug-js?branchName=master)](https://dev.azure.com/nplabs/buttplug/_build/latest?definitionId=3&branchName=master)
+
 [![Patreon donate button](https://img.shields.io/badge/patreon-donate-yellow.svg)](https://www.patreon.com/qdot)
 [![Discourse Forum](https://img.shields.io/badge/discourse-forum-blue.svg)](https://metafetish.club)
 [![Discord](https://img.shields.io/discord/353303527587708932.svg?logo=discord)](https://discord.gg/t9g9RuD)
 [![Twitter](https://img.shields.io/twitter/follow/buttplugio.svg?style=social&logo=twitter)](https://twitter.com/buttplugio)
 
-Native websocket server frontend for Buttplug. 
+Native server frontend for Buttplug. Currently supports connections via:
 
-This frontend is mainly for use on Windows 7 alpha builds of the
-Buttplug server. It may also work on linux, macOS, and windows 10.
+- Websocket
 
-**Note:** This project is provided as an example and **without support**.
-If you want to try it, you are on your own, and it may or may not
-work. Dependencies may or may not be up to date with the main library
-repos. This message will be removed if/when the project moves to being
-supported, but right now the build system and native dependency
-requirements are way to flaky to recommend to anyone not familiar
-with node and native libraries.
+With the following Subtype Managers:
+
+- BluetoothLE
+
+On the following platforms:
+
+- MacOS (> 10.10)
+- Linux (built on Ubuntu 16.04, needs Bluez >= 5.24)
 
 ## Table Of Contents
 
@@ -30,13 +32,6 @@ with node and native libraries.
 If you find this project helpful, you can [support us on
 Patreon](http://patreon.com/qdot)! Every donation helps us afford more
 hardware to reverse, document, and write code for!
-
-## IMPORTANT BUILD NOTE
-
-**USE YARN TO INSTALL THIS**
-
-Installing with npm will break the native dependencies required for
-our bluetooth dependencies. Only use yarn to install this.
 
 ## Installation
 

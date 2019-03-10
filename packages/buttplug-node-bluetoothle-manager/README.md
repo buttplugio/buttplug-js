@@ -1,7 +1,8 @@
 # Buttplug Node BluetoothLE Device Manager
 
 [![npm](https://img.shields.io/npm/v/buttplug-node-bluetoothle-manager.svg)](https://npmjs.com/package/buttplug-node-bluetoothle-manager)
-[![Build Status](https://travis-ci.org/qdot/buttplug-node-bluetoothle-manager.svg?branch=master)](https://travis-ci.org/buttplugio/buttplug-node-bluetoothle-manager)
+[![Build Status](https://dev.azure.com/nplabs/buttplug/_apis/build/status/buttplugio.buttplug-js?branchName=master)](https://dev.azure.com/nplabs/buttplug/_build/latest?definitionId=3&branchName=master)
+[![codecov](https://codecov.io/gh/buttplugio/buttplug-js/branch/master/graph/badge.svg)](https://codecov.io/gh/buttplugio/buttplug-js) 
 
 [![Patreon donate button](https://img.shields.io/badge/patreon-donate-yellow.svg)](https://www.patreon.com/qdot)
 [![Discourse Forum](https://img.shields.io/badge/discourse-forum-blue.svg)](https://metafetish.club)
@@ -29,14 +30,6 @@ If you find this project helpful, you can [support us via
 Patreon](http://patreon.com/qdot)! Every donation helps us afford more
 hardware to reverse, document, and write code for!
 
-## IMPORTANT BUILD NOTE
-
-**DO NOT USE YARN TO INSTALL THIS**
-
-Installing with yarn will break the native dependencies required for
-this package. Only use 'npm install' to install this. Afterwards,
-using yarn is fine.
-
 ## Installation
 
 To install buttplug-js in your node project via npm, a simple add call
@@ -45,18 +38,6 @@ should do it.
 ```
 npm add buttplug-node-bluetoothle-manager
 ```
-
-buttplug-node-bluetoothle-manager is considered a plugin for
-buttplug-js, and has that project as a peer dependency. You will need
-to add buttplug-js >= 0.4.0 to the project that is using
-buttplug-node-bluetoothle-manager in order for this to work correctly.
-
-## API Documentation
-
-buttplug-node-bluetoothle-manager API Documentation is available at
-[https://buttplug-node-bluetoothle-manager.docs.buttplug.io](https://buttplug-node-bluetoothle-manager.docs.buttplug.io).
-
-The documentation is rebuilt on every commit/merge to master.
 
 ## Usage Example
 
