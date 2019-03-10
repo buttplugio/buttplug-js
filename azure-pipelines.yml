@@ -47,7 +47,7 @@ jobs:
         inputs:
           gitHubConnection: "release"
           repositoryName: "buttplugio/buttplug-js"
-          action: "edit"
+          action: "create"
           tagSource: "auto"
           title: "Buttplug JS CLI Release"
           assets: "$(System.ArtifactsDirectory)/**/*.zip"
