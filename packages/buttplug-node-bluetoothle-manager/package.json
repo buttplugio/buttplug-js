@@ -28,6 +28,6 @@
   "dependencies": {
     "buttplug": "^0.11.0",
     "noble-mac": "https://github.com/buttplugio/noble-mac#buttplugio",
-    "uuid-parse": "^1.0.0"
+    "uuid-parse": "^1.1.0"
   }
 }

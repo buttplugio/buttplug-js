@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "buttplug": "^0.11.0",
-    "ws": "^4.0.0"
+    "ws": "^6.2.0"
   },
   "jest": {
     "moduleFileExtensions": [
