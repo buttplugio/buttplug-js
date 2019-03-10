@@ -1,3 +1,29 @@
+# Version 0.11.0 - 2019/03/09
+
+## Features
+
+- ButtplugBrowserWebsocketConnector now exported from library
+- Add ability to use Device Configuration files, eliminating need to
+  change code to add devices to protocols we already support.
+
+## Bugfixes
+
+- Fixed lots of unhandled promises, turning them into exception
+  throws. Also now have a linter rule to make sure this doesn't happen
+  again.
+
+## Other
+
+- Moved CI to Azure Pipelines
+- Moved project to being a monorepo for all buttplug-js core library,
+  device subtype manager, connector, and server CLI projects
+- Removed Devtools package for time being, needs to be turned into its
+  own module.
+- Not currently building CLIs for windows, because noble-uwp was
+  having some problems compiling.
+- Removed ConnectLocal/ConnectWebsocket functions from Client, now
+  requires a connector object.
+
 # Version 0.10.0 - 2018/12/03
 
 - Add way to pass loggers into DeviceSubtypeManagers (to bridge module scope issues)
