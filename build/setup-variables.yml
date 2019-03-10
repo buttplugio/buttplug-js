@@ -16,7 +16,7 @@ steps:
         gitVersion=`if [[ -z $gitCurrentTag ]]; then echo $gitShortHash; else echo $gitCurrentTag; fi;`
         echo "##vso[task.setvariable variable=gitCurrentTag]$gitCurrentTag"
         echo "##vso[task.setvariable variable=gitVersion]$gitVersion"
-        echo "##vso[task.setvariable variable=cliBuildName]buttplug-csharp-${{ parameters.platform }}-cli-$(buildConfiguration)-$gitVersion"
+        echo "##vso[task.setvariable variable=cliBuildName]buttplug-js-${{ parameters.platform }}-cli-$gitVersion"
         echo "Git Current Tag: $gitCurrentTag"
         echo "Git Short Hash: $gitShortHash"
         echo "Git Version for Build: $gitVersion"
