@@ -113,8 +113,11 @@ export class ButtplugServerCLI {
       .option("--deviceconfig <filename>", "Device configuration file (if none specified, will use internal version)")
       .option("--userdeviceconfig <filename>", "User device configuration file")
       .option("--websocketserver", "Run websocket server")
-      .option("--host <hostname>", "Host for websocket server.", "localhost")
-      .option("--port <number>", "Port to listen on, defaults to 12345.", 12345)
+      .option("--websocketallinterfaces", "If passed, listen on all interfaces. Otherwise only listen on 127.0.0.1.")
+      .option("--insecureport <number>",
+              "Port to listen on for insecure websocket connections. Only listens on this port if this argument is passed.")
+      .option("--secureport <number>",
+              "Port to listen on secure websocket connections (requires cert to be passed), defaults to 12345.", 12345)
       .option("--certfile <filename>", "Cert file to load for SSL")
       .option("--privfile <filename>", "Private key file to load for SSL")
       .option("--ipcserver", "Run IPC server")
@@ -148,17 +151,23 @@ export class ButtplugServerCLI {
   }
 
   private RunWebsocketServer() {
+    const host: string = commander.websocketallinterfaces ? "0.0.0.0" : "127.0.0.1";
+
     const wsServer = new ButtplugNodeWebsocketServer(commander.servername, commander.pingtime);
-    if (commander.certfile !== undefined && commander.privfile !== undefined) {
+    if (commander.secureport && commander.certfile !== undefined && commander.privfile !== undefined) {
       console.log("Starting secure websocket server");
-      wsServer.StartSecureServer(commander.certfile, commander.privfile, commander.port, commander.host);
-    } else {
+      wsServer.StartSecureServer(commander.certfile,
+                                 commander.privfile,
+                                 commander.secureport,
+                                 host);
+      console.log("Secure server listening on port " + commander.secureport);
+    } else if (commander.insecureport) {
       console.log("Starting insecure websocket server");
-      wsServer.StartInsecureServer(commander.port, commander.host);
+      wsServer.StartInsecureServer(commander.insecureport, host);
+      console.log("Insecure server listening on port " + commander.insecureport);
     }
     this._server = wsServer;
     this.InitServer();
-    console.log("Listening on port " + commander.port);
   }
 
   private InitServer() {
