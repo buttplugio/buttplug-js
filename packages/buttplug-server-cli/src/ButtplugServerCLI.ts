@@ -10,6 +10,7 @@ import * as commander from "commander";
 import * as selfsigned from "selfsigned";
 import * as fs from "fs";
 import * as net from "net";
+import * as path from "path";
 import { Message } from "protobufjs";
 import { buttplug_gui_protocol as bpGuiProtocol } from "./buttplug-gui-proto";
 import { ButtplugServer, ButtplugLogger, ButtplugLogLevel } from "buttplug";
@@ -32,7 +33,7 @@ export class ButtplugServerCLI {
     }
 
     if (commander.generatecert) {
-      this.GenerateCertificate();
+      this.GenerateCertificate(commander.generatecert);
       return;
     }
 
@@ -108,7 +109,7 @@ export class ButtplugServerCLI {
       .version(packageinfo.version)
       .option("--servername <name>", "Name of server to pass to connecting clients", "Buttplug Server")
       .option("--serverversion", "Print version and exit")
-      .option("--generatecert", "Generates self signed certificate for secure websocket servers, and exits.")
+      .option("--generatecert <path>", "Generates self signed certificate for secure websocket servers at the path specified, and exits.")
       .option("--deviceconfig <filename>", "Device configuration file (if none specified, will use internal version)")
       .option("--userdeviceconfig <filename>", "User device configuration file")
       .option("--websocketserver", "Run websocket server")
@@ -125,15 +126,15 @@ export class ButtplugServerCLI {
       .parse(process.argv);
   }
 
-  private GenerateCertificate() {
+  private GenerateCertificate(aPath: string) {
     console.log("Creating secure selfsigned keys...");
     if (fs.existsSync("cert.pem") || fs.existsSync("private.pem")) {
       console.log("Please remove cert.pem and private.pem files before generating new keys.");
       return;
     }
     const pems = selfsigned.generate(undefined, { days: 365 });
-    fs.writeFileSync("cert.pem", pems.cert);
-    fs.writeFileSync("private.pem", pems.private);
+    fs.writeFileSync(path.join(aPath, "cert.pem"), pems.cert);
+    fs.writeFileSync(path.join(aPath, "private.pem"), pems.private);
     console.log("cert.pem and private.pem generated");
     return;
   }
