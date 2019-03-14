@@ -11,9 +11,8 @@ import * as selfsigned from "selfsigned";
 import * as fs from "fs";
 import * as net from "net";
 import * as path from "path";
-import { Message } from "protobufjs";
-import { buttplug_gui_protocol as bpGuiProtocol } from "./buttplug-gui-proto";
-import { ButtplugServer, ButtplugLogger, ButtplugLogLevel } from "buttplug";
+import { ButtplugGuiProtocol } from "./buttplug-gui-proto";
+import { ButtplugLogger, ButtplugLogLevel } from "buttplug";
 import { ButtplugNodeBluetoothLEDeviceManager } from "buttplug-node-bluetoothle-manager";
 import { ButtplugNodeWebsocketServer } from "buttplug-node-websockets";
 
@@ -21,8 +20,8 @@ import * as packageinfo from "../package.json";
 
 export class ButtplugServerCLI {
 
-  private _server: ButtplugServer;
-  private _guiPipe: net.Socket;
+  private _wsServer: ButtplugNodeWebsocketServer | null = null;
+  private _guiPipe: net.Socket | null = null;
 
   public async RunServer() {
     this.BuildOptions();
@@ -37,13 +36,25 @@ export class ButtplugServerCLI {
       return;
     }
 
-    if (commander.guiPipe) {
+    if (commander.guipipe) {
       let res;
       let rej;
+      console.log(`Buttplug server connecting to GUI on IPC pipe ${commander.guipipe}`);
+      // Promisify has problems getting createConnection's return type right
+      // (may be typescript misinterpretting one of the overloads?), so just
+      // doing it manually here.
       const connectPromise = new Promise<void>((rs, rj) => { res = rs; rej = rj; });
-      this._guiPipe = net.createConnection(commander.guiPipe, () => res() );
+      this._guiPipe = net.createConnection(commander.guipipe, () => res() );
       await connectPromise;
-      this.SendGuiLogMessage(`Buttplug server now running on IPC pipe ${commander.guiPipe}`);
+      // Monkey patch stdout/stderr at this point to shove everything over our pipe.
+      process.stdout.write = process.stderr.write = this.SendGuiLogMessage.bind(this);
+      this._guiPipe.addListener("data", (aData: Buffer) => {
+        this.OnGuiMessage(aData);
+      });
+      console.log(`Buttplug server connected to GUI on IPC pipe ${commander.guipipe}`);
+      this.SendGuiLogMessage(`Buttplug server connected to GUI on IPC pipe ${commander.guipipe}`);
+    } else {
+      console.log(`No valid pipe at ${commander.guipipe}`);
     }
 
     if (!commander.websocketserver && !commander.ipcserver) {
@@ -70,10 +81,44 @@ export class ButtplugServerCLI {
     }
   }
 
+  private async OnGuiMessage(aMsg: Buffer) {
+    const msg = ButtplugGuiProtocol.ServerControlMessage.decode(aMsg);
+    if (msg.stop !== null) {
+      this.Shutdown();
+    }
+  }
+
+  private SendMessage(aMsg: ButtplugGuiProtocol.ServerProcessMessage) {
+    if (!this._guiPipe) {
+      return;
+    }
+    const buffer = Buffer.from(ButtplugGuiProtocol.ServerProcessMessage.encode(aMsg).finish());
+    this._guiPipe!.write(buffer);
+  }
+
   private SendGuiLogMessage(aMsg: string) {
-    const logmsg = new bpGuiProtocol.GuiMessage.GuiLog({ message: aMsg });
-    const buffer = Message.encode(logmsg);
-    this._guiPipe.write(buffer);
+    const logmsg = ButtplugGuiProtocol.ServerProcessMessage.create({
+      processLog: ButtplugGuiProtocol.ServerProcessMessage.ProcessLog.create({ message: aMsg }),
+    });
+    this.SendMessage(logmsg);
+  }
+
+  private async Shutdown() {
+    if (this._wsServer) {
+      await this._wsServer.Disconnect();
+      await this._wsServer.StopServer();
+      this._wsServer = null;
+    }
+    if (this._guiPipe) {
+      const exitMsg = ButtplugGuiProtocol.ServerProcessMessage.create({
+        processEnded: ButtplugGuiProtocol.ServerProcessMessage.ProcessEnded.create(),
+      });
+      this.SendMessage(exitMsg);
+      this._guiPipe.destroy();
+      this._guiPipe = null;
+    }
+
+    process.exit();
   }
 
   private SetupExit() {
@@ -89,15 +134,12 @@ export class ButtplugServerCLI {
     }
 
     process.on("SIGINT", async () => {
-      if (this._server) {
-        this._server.Disconnect();
-      }
-      if (commander.websocketserver) {
-        await (this._server as ButtplugNodeWebsocketServer).StopServer();
-      }
       process.exit();
     });
 
+    process.on("beforeExit", async () => {
+      await this.Shutdown();
+    });
   }
 
   private PrintVersion() {
@@ -155,22 +197,24 @@ export class ButtplugServerCLI {
 
     const wsServer = new ButtplugNodeWebsocketServer(commander.servername, commander.pingtime);
     if (commander.secureport && commander.certfile !== undefined && commander.privfile !== undefined) {
-      console.log("Starting secure websocket server");
+      this.SendGuiLogMessage("Starting secure websocket server");
       wsServer.StartSecureServer(commander.certfile,
                                  commander.privfile,
                                  commander.secureport,
                                  host);
-      console.log("Secure server listening on port " + commander.secureport);
+      this.SendGuiLogMessage(`Secure server listening on port ${commander.secureport}`);
     } else if (commander.insecureport) {
-      console.log("Starting insecure websocket server");
+      this.SendGuiLogMessage("Starting insecure websocket server");
       wsServer.StartInsecureServer(commander.insecureport, host);
-      console.log("Insecure server listening on port " + commander.insecureport);
+      this.SendGuiLogMessage(`Insecure server listening on port ${commander.insecureport}`);
     }
-    this._server = wsServer;
+    this._wsServer = wsServer;
     this.InitServer();
   }
 
   private InitServer() {
-    this._server.AddDeviceManager(new ButtplugNodeBluetoothLEDeviceManager());
+    if (this._wsServer) {
+      this._wsServer.AddDeviceManager(new ButtplugNodeBluetoothLEDeviceManager());
+    }
   }
 }

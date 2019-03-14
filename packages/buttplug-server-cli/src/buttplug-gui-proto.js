@@ -5,62 +5,87 @@ var $protobuf = require("protobufjs/light");
 
 var $root = ($protobuf.roots["default"] || ($protobuf.roots["default"] = new $protobuf.Root()))
 .addJSON({
-  buttplug_gui_protocol: {
+  ButtplugGuiProtocol: {
     options: {
       csharp_namespace: "Buttplug.Server.CLI"
     },
     nested: {
-      GuiMessage: {
+      ServerControlMessage: {
         oneofs: {
           msg: {
             oneof: [
-              "guilog",
-              "processstarted",
-              "processended",
-              "bplog",
-              "clientconnected",
-              "clientdisconnected",
-              "deviceconnected",
-              "devicedisconnected"
+              "stop"
             ]
           }
         },
         fields: {
-          guilog: {
-            type: "GuiLog",
+          stop: {
+            type: "Stop",
             id: 1
-          },
-          processstarted: {
-            type: "ProcessStarted",
-            id: 2
-          },
-          processended: {
-            type: "ProcessEnded",
-            id: 3
-          },
-          bplog: {
-            type: "ButtplugLog",
-            id: 4
-          },
-          clientconnected: {
-            type: "ClientConnected",
-            id: 5
-          },
-          clientdisconnected: {
-            type: "ClientDisconnected",
-            id: 6
-          },
-          deviceconnected: {
-            type: "DeviceConnected",
-            id: 7
-          },
-          devicedisconnected: {
-            type: "DeviceDisconnected",
-            id: 8
           }
         },
         nested: {
-          GuiLog: {
+          Stop: {
+            fields: {}
+          }
+        }
+      },
+      ServerProcessMessage: {
+        oneofs: {
+          msg: {
+            oneof: [
+              "processStarted",
+              "processError",
+              "processEnded",
+              "processLog",
+              "buttplugLog",
+              "clientConnected",
+              "clientDisconnected",
+              "deviceConnected",
+              "deviceDisconnected"
+            ]
+          }
+        },
+        fields: {
+          processStarted: {
+            type: "ProcessStarted",
+            id: 1
+          },
+          processError: {
+            type: "ProcessError",
+            id: 2
+          },
+          processEnded: {
+            type: "ProcessEnded",
+            id: 3
+          },
+          processLog: {
+            type: "ProcessLog",
+            id: 4
+          },
+          buttplugLog: {
+            type: "ButtplugLog",
+            id: 5
+          },
+          clientConnected: {
+            type: "ClientConnected",
+            id: 6
+          },
+          clientDisconnected: {
+            type: "ClientDisconnected",
+            id: 7
+          },
+          deviceConnected: {
+            type: "DeviceConnected",
+            id: 8
+          },
+          deviceDisconnected: {
+            type: "DeviceDisconnected",
+            id: 9
+          }
+        },
+        nested: {
+          ProcessLog: {
             fields: {
               message: {
                 type: "string",
@@ -70,6 +95,14 @@ var $root = ($protobuf.roots["default"] || ($protobuf.roots["default"] = new $pr
           },
           ProcessStarted: {
             fields: {}
+          },
+          ProcessError: {
+            fields: {
+              message: {
+                type: "string",
+                id: 1
+              }
+            }
           },
           ProcessEnded: {
             fields: {}
