@@ -8,4 +8,5 @@
 
 import { ButtplugServerCLI } from "./ButtplugServerCLI";
 
-new ButtplugServerCLI().RunServer().catch((err) => console.log(err));
+const server = new ButtplugServerCLI();
+server.RunServer().catch((err) => console.log(err));
