@@ -28,7 +28,7 @@ steps:
     # Mac has intermittent network errors that don't show up anywhere
     # else. If linux fails, something is wrong. So test but ignore on
     # mac for now.
-    continueOnError: eq('${{ parameters.platform }}', 'macos-x64')
+    condition: not(eq('${{ parameters.platform }}', 'macos-x64'))
     env: { "CI": "true" }
   - script: |
       yarn workspace buttplug-server-cli freeze:${{ parameters.platform }}
