@@ -29,8 +29,8 @@ export class ButtplugServerCLI {
       this._usePbOutput = true;
       // Monkey patch stdout/stderr at this point to shove everything over our pipe.
       console.log = process.stderr.write = this.SendGuiLogMessage.bind(this);
-      process.stdin.addListener("data", (aData: Buffer) => {
-        this.OnGuiMessage(aData);
+      process.stdin.addListener("data", async (aData: Buffer) => {
+        await this.OnGuiMessage(aData);
       });
       console.log(`Server using protobuf based output.`);
     } else {
@@ -104,7 +104,7 @@ export class ButtplugServerCLI {
   private async OnGuiMessage(aMsg: Buffer) {
     const msg = ButtplugGuiProtocol.ServerControlMessage.decodeDelimited(aMsg);
     if (msg.stop !== null) {
-      this.Shutdown();
+      await this.Shutdown();
     }
   }
 
@@ -149,19 +149,24 @@ export class ButtplugServerCLI {
       .version(packageinfo.version)
       .option("--servername <name>", "Name of server to pass to connecting clients", "Buttplug Server")
       .option("--serverversion", "Print version and exit")
+    // tslint:disable-next-line max-line-length
       .option("--generatecert <path>", "Generates self signed certificate for secure websocket servers at the path specified, and exits.")
       .option("--deviceconfig <filename>", "Device configuration file (if none specified, will use internal version)")
       .option("--userdeviceconfig <filename>", "User device configuration file")
       .option("--websocketserver", "Run websocket server", false)
+    // tslint:disable-next-line max-line-length
       .option("--websocketallinterfaces", "If passed, listen on all interfaces. Otherwise only listen on 127.0.0.1.", false)
       .option("--insecureport <number>",
+              // tslint:disable-next-line max-line-length
               "Port to listen on for insecure websocket connections. Only listens on this port if this argument is passed.", 0)
       .option("--secureport <number>",
+              // tslint:disable-next-line max-line-length
               "Port to listen on secure websocket connections (requires cert to be passed). Only listens on this port if this argument is passed.", 0)
       .option("--certfile <filename>", "Cert file to load for Secure Websockets.")
       .option("--privfile <filename>", "Private key file to load for Secure Websockets.")
       .option("--ipcserver", "Run IPC server", false)
       .option("--ipcpipe <path>", "IPC Pipe Name for IPC Server IO")
+    // tslint:disable-next-line max-line-length
       .option("--guipipe", "If passed, use protobuf protocol over stdin/out for communication with parent process.", false)
       .option("--pingtime <ping>", "Ping timeout maximum for server (in milliseconds, 0 = off/infinite ping)", 0)
       .option("--stayopen", "If passed, server will stay running after client disconnection", false)
