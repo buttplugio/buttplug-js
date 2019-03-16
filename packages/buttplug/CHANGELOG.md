@@ -1,3 +1,11 @@
+# Version 0.11.1 - 2019/03/15
+
+## Features
+
+- Update CLI to work with Intiface
+- That's it. No other changes. Maybe this Monorepo and lockstepped
+  versioning thing wasn't such a good idea. :/
+
 # Version 0.11.0 - 2019/03/09
 
 ## Features
@@ -5,6 +13,7 @@
 - ButtplugBrowserWebsocketConnector now exported from library
 - Add ability to use Device Configuration files, eliminating need to
   change code to add devices to protocols we already support.
+- Add Youou Wand support
 
 ## Bugfixes
 
