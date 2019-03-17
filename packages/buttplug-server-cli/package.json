@@ -1,6 +1,6 @@
 {
   "name": "buttplug-server-cli",
-  "version": "0.11.1",
+  "version": "0.11.2",
   "description": "Node.js Server Frontend for Buttplug",
   "homepage": "https://github.com/buttplugio/buttplug-js/packages/buttplug-server-cli#readme",
   "repository": {
@@ -29,9 +29,9 @@
     "copy:bindings:linux": "cp ../../node_modules/@abandonware/bluetooth-hci-socket/lib/binding/binding.node ./buttplug-node-server/binding.node"
   },
   "dependencies": {
-    "buttplug": "^0.11.1",
-    "buttplug-node-bluetoothle-manager": "^0.11.1",
-    "buttplug-node-websockets": "^0.11.1",
+    "buttplug": "^0.11.2",
+    "buttplug-node-bluetoothle-manager": "^0.11.2",
+    "buttplug-node-websockets": "^0.11.2",
     "commander": "^2.19.0",
     "protobufjs": "^6.8.8"
   }
