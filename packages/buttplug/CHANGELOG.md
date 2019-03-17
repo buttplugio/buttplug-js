@@ -1,3 +1,9 @@
+# Version 0.11.2 - 2019/03/16
+
+## Bugfixes
+
+- Roll back to using webpack for web libraries until Rollup is fixed.
+
 # Version 0.11.1 - 2019/03/15
 
 ## Features
