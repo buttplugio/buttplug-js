@@ -7,9 +7,9 @@
  */
 
 import { EventEmitter } from "events";
-import { IDeviceSubtypeManager } from "../server/IDeviceSubtypeManager";
+import { IDeviceSubtypeManager } from "../index";
 import { TestDeviceProtocol } from "./TestDeviceProtocol";
-import { ButtplugLogger } from "../core/Logging";
+import { ButtplugLogger } from "../index";
 import { ButtplugDevice } from "../devices/ButtplugDevice";
 import { TestDeviceImpl } from "./TestDeviceImpl";
 

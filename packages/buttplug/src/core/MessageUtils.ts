@@ -7,27 +7,16 @@
  */
 
 "use strict";
-import { plainToClass } from "class-transformer";
+import {plainToClass} from "class-transformer";
 import * as ajv from "ajv";
 import * as Messages from "./Messages";
 import { ButtplugMessageException } from "./Exceptions";
 import * as buttplugSchema from "../../dependencies/buttplug-schema/schema/buttplug-schema.json";
-import * as jsonSchema6 from "ajv/lib/refs/json-schema-draft-06.json";
 
 // Since we're still using the draft 06 schema, we now have to specifically add
 // it to ajv, which defaults to 7.
-//
-// We have to use the ajv default call here instead of the constructor,
-// otherwise Rollup will mangle this in unusable ways. THIS IS SO MUCH BETTER
-// THAN WEBPACK. THANKS IVAN.
-let validator: ajv.Ajv;
-if ((ajv as any).default !== undefined) {
-  validator = new (ajv as any).default();
-} else {
-  validator = new ajv();
-}
-
-validator.addMetaSchema(jsonSchema6);
+const validator = new ajv();
+validator.addMetaSchema(require("ajv/lib/refs/json-schema-draft-06.json"));
 const jsonValidator = validator.compile(buttplugSchema);
 
 export function CheckMessage(aMsgObj: Messages.ButtplugMessage) {
