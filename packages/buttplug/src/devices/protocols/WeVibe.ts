@@ -20,7 +20,7 @@ export class WeVibe extends ButtplugDeviceProtocol {
 
   public constructor(aDeviceImpl: IButtplugDeviceImpl) {
     super(`WeVibe ${aDeviceImpl.Name}` , aDeviceImpl);
-    this._vibratorCount = WeVibe.DualVibes.find((x) => x === this.Name) ? 2 : 1;
+    this._vibratorCount = WeVibe.DualVibes.find((x) => x === aDeviceImpl.Name) ? 2 : 1;
     this.MsgFuncs.set(Messages.StopDeviceCmd, this.HandleStopDeviceCmd);
     this.MsgFuncs.set(Messages.SingleMotorVibrateCmd, this.HandleSingleMotorVibrateCmd);
     this.MsgFuncs.set(Messages.VibrateCmd, this.HandleVibrateCmd);
