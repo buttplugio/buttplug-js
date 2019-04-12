@@ -41,7 +41,7 @@
   "dependencies": {
     "ajv": "^6.10.0",
     "class-transformer": "^0.2.0",
-    "js-yaml": "^3.12.2",
+    "js-yaml": "^3.13.1",
     "reflect-metadata": "^0.1.13"
   },
   "jest": {
