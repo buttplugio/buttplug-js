@@ -1,3 +1,15 @@
+# Version 0.11.3 - 2019/04/11
+
+- No changes, other library release
+
+# Version 0.11.2 - 2019/03/16
+
+- No changes, other library release
+
+# Version 0.11.1 - 2019/03/15
+
+- No changes, other library release
+
 # 0.11.0 - 2019/03/09
 
 ## Features

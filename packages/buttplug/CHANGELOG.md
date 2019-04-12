@@ -1,3 +1,9 @@
+# Version 0.11.3 - 2019/04/11
+
+## Features
+
+- Updates dependencies, but otherwise this is a dependent library release.
+
 # Version 0.11.2 - 2019/03/16
 
 ## Bugfixes

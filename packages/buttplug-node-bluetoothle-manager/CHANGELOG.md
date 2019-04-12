@@ -1,3 +1,18 @@
+# Version 0.11.3 - 2019/04/11
+
+## Bugfixes
+
+- Last release was missing dist directory. Fixed npmignore/gitignore
+  so that won't happen.
+
+# Version 0.11.2 - 2019/03/16
+
+- No changes, other library release
+
+# Version 0.11.1 - 2019/03/15
+
+- No changes, other library release
+
 # Version 0.11.0 - 2019/03/09
 
 ## Features
