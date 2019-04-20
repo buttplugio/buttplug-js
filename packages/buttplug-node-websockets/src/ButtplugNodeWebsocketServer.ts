@@ -88,10 +88,16 @@ export class ButtplugNodeWebsocketServer extends ButtplugServer {
       this.wsServer = null;
     }
     if (this.httpsServer !== null) {
-      this.httpsServer.close(() => { this.httpsServer = null; });
+      let res;
+      const p = new Promise((r, j) => { res = r; });
+      this.httpsServer.close(() => { this.httpsServer = null; res(); });
+      await p;
     }
     if (this.httpServer !== null) {
-      this.httpServer.close(() => { this.httpServer = null; });
+      let res;
+      const p = new Promise((r, j) => { res = r; });
+      this.httpServer.close(() => { this.httpServer = null; res(); });
+      await p;
     }
     await this.Shutdown();
   }
