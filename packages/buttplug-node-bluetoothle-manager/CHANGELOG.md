@@ -1,3 +1,10 @@
+# Version 0.11.4 - 2019/04/20
+
+## Bugfixes
+
+- Make noble bluetooth devices actually disconnect. Disconnect() was a
+  no-op before this. Yes, really. :(
+
 # Version 0.11.3 - 2019/04/11
 
 ## Bugfixes

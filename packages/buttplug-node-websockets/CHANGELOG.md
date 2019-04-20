@@ -1,3 +1,10 @@
+# Version 0.11.4 - 2019/04/11
+
+## Bugfixes
+
+- Fixed closing of HTTP Servers during shutdown, which could throw in
+  some situations.
+
 # Version 0.11.3 - 2019/04/11
 
 - No changes, other library release

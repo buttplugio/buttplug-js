@@ -1,6 +1,6 @@
 {
   "name": "buttplug-node-websockets",
-  "version": "0.11.3",
+  "version": "0.11.4",
   "description": "Node Websocket Client/Server for buttplug-js",
   "homepage": "https://github.com/buttplugio/buttplug-js/packages/buttplug-node-websockets#readme",
   "repository": {
