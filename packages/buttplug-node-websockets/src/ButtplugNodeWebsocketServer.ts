@@ -10,6 +10,7 @@ import * as fs from "fs";
 import * as ws from "ws";
 import * as http from "http";
 import * as https from "https";
+import { promisify } from "util";
 import { FromJSON, ButtplugServer, ButtplugInitException } from "buttplug";
 
 /**
@@ -75,30 +76,24 @@ export class ButtplugNodeWebsocketServer extends ButtplugServer {
    * Shuts down the server, closing all connections.
    */
   public StopServer = async (): Promise<void> => {
-    if (this.wsServer === null) {
-      throw new Error("Websocket server is null!");
-    }
-    // ws's close doesn't follow the callback style util.promisify expects (only
-    // has a passing callback, no failing), so just build our own. Could've
-    // wrapped it in a 2 argument closure but eh.
-    let closeRes: () => void;
-    const closePromise: Promise<void> = new Promise((res, rej) => { closeRes = res; });
-    for (const client of this.wsServer.clients) {
-      client.close();
-    }
-    this.wsServer.close(() => {
-      this.wsServer = null;
-      if (this.httpsServer !== null) {
-        this.httpsServer.close(() => closeRes());
-        this.httpsServer = null;
-      } else if (this.httpServer !== null) {
-        this.httpServer.close(() => closeRes());
-        this.httpServer = null;
-      } else {
-        closeRes();
+    if (this.wsServer !== null) {
+      // ws's close doesn't follow the callback style util.promisify expects (only
+      // has a passing callback, no failing), so just build our own. Could've
+      // wrapped it in a 2 argument closure but eh.
+      for (const client of this.wsServer.clients) {
+        client.close();
       }
-    });
-    return closePromise;
+      const wsClose = promisify(this.wsServer.close.bind(this));
+      await wsClose();
+      this.wsServer = null;
+    }
+    if (this.httpsServer !== null) {
+      this.httpsServer.close(() => { this.httpsServer = null; });
+    }
+    if (this.httpServer !== null) {
+      this.httpServer.close(() => { this.httpServer = null; });
+    }
+    await this.Shutdown();
   }
 
   /**
