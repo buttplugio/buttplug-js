@@ -98,11 +98,9 @@ export class ButtplugNodeBluetoothLEDevice extends ButtplugDeviceImpl {
       const err = `No characteristics found for device ${this.Name}, cannot communicate with device.`;
       throw new ButtplugDeviceException(err);
     }
-  }
-
-  public OnDisconnect = () => {
-    this._device.disconnect();
-    this.emit("deviceremoved");
+    this._device.once("disconnect", () => {
+      this.emit("deviceremoved");
+    });
   }
 
   public WriteValueInternal = async (aValue: Buffer, aOptions: ButtplugDeviceWriteOptions): Promise<void> => {
@@ -132,11 +130,13 @@ export class ButtplugNodeBluetoothLEDevice extends ButtplugDeviceImpl {
     });
     await util.promisify(chr.subscribe.bind(chr))();
     chr.on("data", this._notificationHandlers.get(aOptions.Endpoint)!);
-    return Promise.resolve();
   }
 
   public Disconnect = async (): Promise<void> => {
-    return Promise.resolve();
+    const disconnectAsync: () => Promise<void> =
+      util.promisify(this._device.disconnect.bind(this._device));
+    await disconnectAsync();
+    this.emit("deviceremoved");
   }
 
   protected CheckForCharacteristic(aEndpoint: Endpoints) {
