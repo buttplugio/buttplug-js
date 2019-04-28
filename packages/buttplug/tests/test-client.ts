@@ -7,7 +7,7 @@ import { ButtplugMessageException, ButtplugDeviceException } from "../src/core/E
 
 SetupTestSuite();
 
-describe("Client Tests", async () => {
+describe("Client Tests", () => {
   let p;
   let res;
   let rej;

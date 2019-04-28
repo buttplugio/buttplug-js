@@ -34,7 +34,7 @@ class TestOldClient extends ButtplugClient {
   }
 }
 
-describe("Server Tests", async () => {
+describe("Server Tests", () => {
   let bpServer: ButtplugServer;
   beforeEach(async () => {
     bpServer = new ButtplugServer("Test Server", 0);

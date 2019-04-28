@@ -1,7 +1,7 @@
 import { DeviceConfigurationManager, Endpoints } from "../src";
 import { BluetoothLEProtocolConfiguration } from "../src/devices/configuration/BluetoothLEProtocolConfiguration";
 
-describe("Device Configuration Manager Tests", async () => {
+describe("Device Configuration Manager Tests", () => {
   beforeEach(() => {
     DeviceConfigurationManager.LoadFromInternalConfig();
   });

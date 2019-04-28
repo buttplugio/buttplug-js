@@ -8,7 +8,7 @@ import { ButtplugMessageException, ButtplugBrowserWebsocketClientConnector } fro
 
 SetupTestSuite();
 
-describe("Websocket Client Tests", async () => {
+describe("Websocket Client Tests", () => {
   let mockServer: Server;
   let socket: WebSocket;
   let bp: ButtplugClient;

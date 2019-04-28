@@ -3,7 +3,7 @@ import { SetupTestSuite } from "./utils";
 
 SetupTestSuite();
 
-describe("Logging Tests", async () => {
+describe("Logging Tests", () => {
   class TestLogger extends ButtplugLogger {
     public static ResetLogger() {
       ButtplugLogger.sLogger = new ButtplugLogger();
