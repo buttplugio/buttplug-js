@@ -40,6 +40,10 @@ export class WebBluetoothDevice extends ButtplugDeviceImpl {
       // running getPrimaryService
       let service: BluetoothRemoteGATTService;
       try {
+        if (typeof((this._device as any).hasService) !== undefined &&
+            !(this._device as any).hasService(configService)) {
+          continue;
+        }
         service = await this._server.getPrimaryService(configService);
       } catch (e) {
         // We may run into services that aren't actually on the current device.

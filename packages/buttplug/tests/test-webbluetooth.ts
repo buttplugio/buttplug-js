@@ -1,7 +1,7 @@
 import { WebBluetoothMock, DeviceMock, CharacteristicMock, PrimaryServiceMock, GattMock } from "web-bluetooth-mock";
 import { ButtplugClient } from "../src/client/Client";
 import { SetupTestSuite } from "./utils";
-import { Endpoints, DeviceConfigurationManager, ButtplugDevice, ButtplugEmbeddedClientConnector } from "../src/index";
+import { GetEndpoint, Endpoints, DeviceConfigurationManager, ButtplugDevice, ButtplugEmbeddedClientConnector } from "../src/index";
 import { ButtplugDeviceException } from "../src/core/Exceptions";
 import { BluetoothLEProtocolConfiguration } from "../src/devices/configuration/BluetoothLEProtocolConfiguration";
 import { WebBluetoothDevice } from "../src/server/managers/webbluetooth/WebBluetoothDevice";
@@ -35,27 +35,26 @@ export function MakeMockWebBluetoothDevice(deviceInfo: BluetoothLEProtocolConfig
   // TODO Instead of building a bunch of fake characteristics, we should use
   // what's listed in the config file, and only build when we expect to do discovery anyways.
   let tx: CharacteristicMock;
-  if (serviceChrs.has(Endpoints.Tx)) {
-    tx = service.getCharacteristicMock(serviceChrs.get(Endpoints.Tx)!);
+  if (serviceChrs.has(GetEndpoint(Endpoints.Tx)!)) {
+    tx = service.getCharacteristicMock(serviceChrs.get(GetEndpoint(Endpoints.Tx)!)!);
   } else {
     // In this case, we are expected to query devices and find rx/tx
     // characteristics. Since this is a test and we have no devices, we can't do
     // that. Just make one up.
     tx = service.getCharacteristicMock("55555555-5555-5555-5555-555555555555");
-    tx.properties.write = true;
-    tx.properties.writeWithoutResponse = true;
   }
+  tx.properties.write = true;
+  tx.properties.writeWithoutResponse = true;
   let rx: CharacteristicMock;
-  if (serviceChrs.has(Endpoints.Rx)) {
-    rx = service.getCharacteristicMock(serviceChrs.get(Endpoints.Rx)!);
+  if (serviceChrs.has(GetEndpoint(Endpoints.Rx)!)) {
+    rx = service.getCharacteristicMock(serviceChrs.get(GetEndpoint(Endpoints.Rx)!)!);
   } else {
     // In this case, we are expected to query devices and find rx/tx
     // characteristics. Since this is a test and we have no devices, we can't do
     // that. Just make one up.
     rx = service.getCharacteristicMock("55555556-5555-5555-5555-555555555555");
-    rx.properties.notify = true;
   }
-
+  rx.properties.notify = true;
   return new WebBluetoothMockObject(device, gatt, service, tx, rx);
 }
 
@@ -99,7 +98,9 @@ describe("WebBluetooth library tests", () => {
     process.nextTick(() => {
       mockBT.rxChar.dispatchEvent(new CustomEvent("characteristicvaluechanged"));
     });
+
     await bp.StartScanning();
+
     expect(bluetooth.requestDevice).toHaveBeenCalled();
     expect(mockBT.gatt.connect).toHaveBeenCalled();
     expect(mockBT.txChar.writeValue).toBeCalledWith(Buffer.from("DeviceType;"));
