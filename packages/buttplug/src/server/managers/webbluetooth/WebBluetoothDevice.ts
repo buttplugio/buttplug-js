@@ -34,26 +34,40 @@ export class WebBluetoothDevice extends ButtplugDeviceImpl {
     this._device.addEventListener("gattserverdisconnected", this.OnDisconnect);
     this._server = await this._device.gatt!.connect();
 
-    // We passed along a list of services we expect to work with all hardware as
-    // part of the connection filters, so only those services will be found when
-    // running getPrimaryServices
-    const services = await this._server.getPrimaryServices();
-    if (services.length === 0) {
-      throw ButtplugException.LogAndError(ButtplugDeviceException,
-                                          this._logger,
-                                          `Cannot find gatt service to connect to on device ${this._device.name}`);
-    }
-
     for (const [configService, configChrs] of this._deviceConfig.Services) {
-      const service = services.find((x) => x.uuid === configService);
-      if (service === undefined) {
+      // We passed along a list of services we expect to work with all hardware
+      // as part of the connection filters, so these services will be found when
+      // running getPrimaryService
+      let service: BluetoothRemoteGATTService;
+      try {
+        service = await this._server.getPrimaryService(configService);
+      } catch (e) {
+        // We may run into services that aren't actually on the current device.
+        // For instance, we have a long list of expected services for Lovense
+        // devices. In this case, log and continue looking through the list.
+        this._logger.Debug(`Cannot find gatt service ${configService} on device ${this._device.name}, continuing search.`);
         continue;
       }
       // If no characteristics are present in the DeviceInfo block, we assume that
       // we're connecting to a simple rx/tx service, and can query to figure out
       // characteristics. Assume that the characteristics have tx/rx references.
+      //
+      // Note: This will always fail for WebBLE/iOS WebBluetooth at the moment,
+      // as the polyfill lacks any enumeration functionality. Only use this as a
+      // last resort.
       if (configChrs.size === 0) {
-        const characteristics = await service.getCharacteristics();
+        let characteristics: BluetoothRemoteGATTCharacteristic[] = [];
+        try {
+          characteristics = await service.getCharacteristics();
+        } catch (e) {
+          // If we have a device that requires characteristic searches, but
+          // whatever polyfill we're using doesn't allow for it, just complain
+          // and refuse to connect.
+          throw ButtplugException.LogAndError(ButtplugDeviceException,
+                                              this._logger,
+                                              `getCharacteristics not implemented on this platform, cannot connect to ${this._device.name}`);
+
+        }
         for (const char of characteristics) {
           if (char.properties.write ||
               char.properties.writeWithoutResponse ||
