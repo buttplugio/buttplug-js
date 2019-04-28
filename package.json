@@ -1,0 +1,30 @@
+{
+  "name": "buttplug-device-config",
+  "version": "0.0.1",
+  "description": "Buttplug Device Configuration File",
+  "main": "index.js",
+  "scripts": {
+    "build": "trash dist && mkdir -p dist && js-yaml buttplug-device-config.yml > dist/buttplug-device-config.json",
+    "build:ci": "js-yaml buttplug-device-config.yml > buttplug-device-config.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/buttplugio/buttplug-device-config.git"
+  },
+  "keywords": [
+    "teledildonics",
+    "buttplug"
+  ],
+  "author": "Nonpolynomial Labs, LLC <kyle@nonpolynomial.com>",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/buttplugio/buttplug-device-config/issues"
+  },
+  "homepage": "https://github.com/buttplugio/buttplug-device-config#readme",
+  "devDependencies": {
+    "js-yaml": "^3.12.2"
+  },
+  "dependencies": {
+    "trash-cli": "^1.4.0"
+  }
+}
