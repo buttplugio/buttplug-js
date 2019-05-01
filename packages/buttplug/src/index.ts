@@ -33,6 +33,7 @@ export * from "./devices/configuration/SerialProtocolConfiguration";
 export * from "./devices/configuration/HIDProtocolConfiguration";
 export * from "./server/ButtplugServer";
 export * from "./server/IDeviceSubtypeManager";
+export * from "./server/ButtplugBrowserWebsocketProxyServer";
 export * from "./test/TestDeviceImpl";
 export * from "./test/TestDeviceProtocol";
 export * from "./test/TestDeviceSubtypeManager";
