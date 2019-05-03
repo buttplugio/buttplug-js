@@ -49,7 +49,7 @@ export class WebBluetoothDevice extends ButtplugDeviceImpl {
         // We may run into services that aren't actually on the current device.
         // For instance, we have a long list of expected services for Lovense
         // devices. In this case, log and continue looking through the list.
-        this._logger.Debug(`Cannot find gatt service ${configService} on device ${this._device.name}, continuing search.`);
+        this._logger.Debug(`Cannot find service ${configService} on ${this._device.name}, continuing search.`);
         continue;
       }
       // If no characteristics are present in the DeviceInfo block, we assume that
@@ -67,9 +67,10 @@ export class WebBluetoothDevice extends ButtplugDeviceImpl {
           // If we have a device that requires characteristic searches, but
           // whatever polyfill we're using doesn't allow for it, just complain
           // and refuse to connect.
+          const errMsg = `getCharacteristics not implemented on this platform, cannot connect to ${this._device.name}`;
           throw ButtplugException.LogAndError(ButtplugDeviceException,
                                               this._logger,
-                                              `getCharacteristics not implemented on this platform, cannot connect to ${this._device.name}`);
+                                              errMsg);
 
         }
         for (const char of characteristics) {

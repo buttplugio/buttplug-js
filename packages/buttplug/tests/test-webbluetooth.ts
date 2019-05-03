@@ -1,7 +1,8 @@
 import { WebBluetoothMock, DeviceMock, CharacteristicMock, PrimaryServiceMock, GattMock } from "web-bluetooth-mock";
 import { ButtplugClient } from "../src/client/Client";
 import { SetupTestSuite } from "./utils";
-import { GetEndpoint, Endpoints, DeviceConfigurationManager, ButtplugDevice, ButtplugEmbeddedClientConnector } from "../src/index";
+import { GetEndpoint, Endpoints, DeviceConfigurationManager,
+         ButtplugDevice, ButtplugEmbeddedClientConnector } from "../src/index";
 import { ButtplugDeviceException } from "../src/core/Exceptions";
 import { BluetoothLEProtocolConfiguration } from "../src/devices/configuration/BluetoothLEProtocolConfiguration";
 import { WebBluetoothDevice } from "../src/server/managers/webbluetooth/WebBluetoothDevice";
