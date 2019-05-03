@@ -1,3 +1,9 @@
+# Version 0.11.5 - 2019/05/02
+
+## Features
+
+- Change WebBluetooth calls to work with iOS WebBLE app
+
 # Version 0.11.3 - 2019/04/11
 
 ## Features
