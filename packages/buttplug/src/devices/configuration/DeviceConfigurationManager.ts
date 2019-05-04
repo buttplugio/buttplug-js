@@ -14,6 +14,9 @@ import { HIDProtocolConfiguration } from "./HIDProtocolConfiguration";
 import { Lovense } from "../protocols/Lovense";
 import { WeVibe } from "../protocols/WeVibe";
 import { VorzeA10Cyclone } from "../protocols/VorzeA10Cyclone";
+import { MagicMotion } from "../protocols/MagicMotion";
+import { LiBo } from "../protocols/LiBo";
+import { Youcups } from "../protocols/Youcups";
 import { Maxpro } from "../protocols/Maxpro";
 import { FleshlightLaunch } from "../protocols/FleshlightLaunch";
 import { ButtplugDeviceProtocolType } from "../ButtplugDeviceProtocol";
@@ -49,10 +52,13 @@ export class DeviceConfigurationManager {
     this._configObject = aConfigObject;
     this._protocols.set("lovense", Lovense);
     this._protocols.set("wevibe", WeVibe);
-    this._protocols.set("vorzesa", VorzeA10Cyclone);
+    this._protocols.set("vorze-sa", VorzeA10Cyclone);
+    this._protocols.set("magic-motion", MagicMotion);
     this._protocols.set("maxpro", Maxpro);
     this._protocols.set("kiiroo-v2", FleshlightLaunch);
     this._protocols.set("youou", Youou);
+    this._protocols.set("youcups", Youcups);
+    this._protocols.set("libo", LiBo);
     // Parse our configuration object last, as we need to add device protocols
     // first.
     this.ParseConfig();
