@@ -53,7 +53,7 @@ export class WebBluetoothDeviceManager extends EventEmitter implements IDeviceSu
       filters.optionalServices = [...filters.optionalServices, ...config.Services.keys()];
     }
 
-    this._logger.Trace("Bluetooth filter set: " + filters);
+    this._logger.Trace("Bluetooth filter set: " + JSON.stringify(filters));
 
     // At some point, we should use navigator.bluetooth.getAvailability() to
     // check whether we have a radio to use. However, no browser currently
