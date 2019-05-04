@@ -147,15 +147,33 @@ protocols:
       names:
         - LVS-*
       services:
-        0000fff0-0000-1000-8000-00805f9b34fb: null
-        6e400001-b5a3-f393-e0a9-e50e24dcca9e: null
-        50300001-0024-4bd4-bbd5-a6920e4c5653: null
-        57300001-0023-4bd4-bbd5-a6920e4c5653: null
-        5a300001-0024-4bd4-bbd5-a6920e4c5653: null
-        50300001-0023-4bd4-bbd5-a6920e4c5653: null
-        53300001-0023-4bd4-bbd5-a6920e4c5653: null
-        5a300001-0023-4bd4-bbd5-a6920e4c5653: null
-        4f300001-0023-4bd4-bbd5-a6920e4c5653: null
+        0000fff0-0000-1000-8000-00805f9b34fb:
+          tx: 0000fff2-0000-1000-8000-00805f9b34fb
+          rx: 0000fff1-0000-1000-8000-00805f9b34fb
+        6e400001-b5a3-f393-e0a9-e50e24dcca9e:
+          tx: 6e400002-b5a3-f393-e0a9-e50e24dcca9e
+          rx: 6e400003-b5a3-f393-e0a9-e50e24dcca9e
+        50300001-0024-4bd4-bbd5-a6920e4c5653:
+          tx: 50300002-0024-4bd4-bbd5-a6920e4c5653
+          rx: 50300003-0024-4bd4-bbd5-a6920e4c5653
+        57300001-0023-4bd4-bbd5-a6920e4c5653:
+          tx: 57300002-0023-4bd4-bbd5-a6920e4c5653
+          rx: 57300003-0023-4bd4-bbd5-a6920e4c5653
+        5a300001-0024-4bd4-bbd5-a6920e4c5653:
+          tx: 5a300002-0024-4bd4-bbd5-a6920e4c5653
+          rx: 5a300003-0024-4bd4-bbd5-a6920e4c5653
+        50300001-0023-4bd4-bbd5-a6920e4c5653:
+          tx: 50300002-0023-4bd4-bbd5-a6920e4c5653
+          rx: 50300003-0023-4bd4-bbd5-a6920e4c5653
+        53300001-0023-4bd4-bbd5-a6920e4c5653:
+          tx: 53300002-0023-4bd4-bbd5-a6920e4c5653
+          rx: 53300003-0023-4bd4-bbd5-a6920e4c5653
+        5a300001-0023-4bd4-bbd5-a6920e4c5653:
+          tx: 5a300002-0023-4bd4-bbd5-a6920e4c5653
+          rx: 5a300003-0023-4bd4-bbd5-a6920e4c5653
+        4f300001-0023-4bd4-bbd5-a6920e4c5653:
+          tx: 4f300002-0023-4bd4-bbd5-a6920e4c5653
+          rx: 4f300003-0023-4bd4-bbd5-a6920e4c5653
   xinput:
     # This will actually be ANY gamepad that supports XInput. XInput
     # is its own connector type, so we don't have any special
@@ -167,13 +185,23 @@ protocols:
   libo:
       btle:
         names:
-          - PiPiJing
+          - PiPiJing # Whale/ELLE - Shock Egg
+          - XiaoLu # Lottie - Rabbit
+          - LuXiaoHan # LuLu - Egg
+          - SuoYinQiu # Karen - Kegel
+          - BaiHu # LaLa - Suction Rabbit
+          - MonsterPub # Sistalk MonsterPub (all 6?)
         services:
           # Write Service
           00006000-0000-1000-8000-00805f9b34fb:
-            txshock: 00006001-0000-1000-8000-00805f9b34fb
-            txvibrate: 00006002-0000-1000-8000-00805f9b34fb
+            tx: 00006001-0000-1000-8000-00805f9b34fb
+            txmode: 00006002-0000-1000-8000-00805f9b34fb
           # Read Service (battery)
+          # 00006050-0000-1000-8000-00805f9b34fb:
+          #   battery: 00006051-0000-1000-8000-00805f9b34fb
+          # 00006070-0000-1000-8000-00805f9b34fb:
+          #   battery: 00006071-0000-1000-8000-00805f9b34fb
+          # Read Service (pressue)
           # 00006050-0000-1000-8000-00805f9b34fb:
           #   battery: 00006051-0000-1000-8000-00805f9b34fb
   magic-motion:
@@ -250,7 +278,8 @@ protocols:
       names:
         - Youcups
       services:
-        0000fee9-0000-1000-8000-00805f9b34fb: null
+        0000fee9-0000-1000-8000-00805f9b34fb:
+          tx: d44bc439-abfd-45a2-b575-925416129600
   cueme:
     btle:
       names:
@@ -332,6 +361,14 @@ protocols:
       services:
         0000fff0-0000-1000-8000-00805f9b34fb:
           tx: 0000fff6-0000-1000-8000-00805f9b34fb
+  prettylove:
+    btle:
+      names:
+        - Aogu BLE *
+      services:
+        0000FFE5-0000-1000-8000-00805f9b34fb:
+          tx: 0000FFE9-0000-1000-8000-00805f9b34fb
+          rx: 0000FFE2-0000-1000-8000-00805f9b34fb
   # nintendo-joycon:
   #   names:
   #     en-us: Nintendo Joycon
