@@ -147,15 +147,33 @@ protocols:
       names:
         - LVS-*
       services:
-        0000fff0-0000-1000-8000-00805f9b34fb: null
-        6e400001-b5a3-f393-e0a9-e50e24dcca9e: null
-        50300001-0024-4bd4-bbd5-a6920e4c5653: null
-        57300001-0023-4bd4-bbd5-a6920e4c5653: null
-        5a300001-0024-4bd4-bbd5-a6920e4c5653: null
-        50300001-0023-4bd4-bbd5-a6920e4c5653: null
-        53300001-0023-4bd4-bbd5-a6920e4c5653: null
-        5a300001-0023-4bd4-bbd5-a6920e4c5653: null
-        4f300001-0023-4bd4-bbd5-a6920e4c5653: null
+        0000fff0-0000-1000-8000-00805f9b34fb:
+          tx: 0000fff2-0000-1000-8000-00805f9b34fb
+          rx: 0000fff1-0000-1000-8000-00805f9b34fb
+        6e400001-b5a3-f393-e0a9-e50e24dcca9e:
+          tx: 6e400002-b5a3-f393-e0a9-e50e24dcca9e
+          rx: 6e400003-b5a3-f393-e0a9-e50e24dcca9e
+        50300001-0024-4bd4-bbd5-a6920e4c5653:
+          tx: 50300002-0024-4bd4-bbd5-a6920e4c5653
+          rx: 50300003-0024-4bd4-bbd5-a6920e4c5653
+        57300001-0023-4bd4-bbd5-a6920e4c5653:
+          tx: 57300002-0023-4bd4-bbd5-a6920e4c5653
+          rx: 57300003-0023-4bd4-bbd5-a6920e4c5653
+        5a300001-0024-4bd4-bbd5-a6920e4c5653:
+          tx: 5a300002-0024-4bd4-bbd5-a6920e4c5653
+          rx: 5a300003-0024-4bd4-bbd5-a6920e4c5653
+        50300001-0023-4bd4-bbd5-a6920e4c5653:
+          tx: 50300002-0023-4bd4-bbd5-a6920e4c5653
+          rx: 50300003-0023-4bd4-bbd5-a6920e4c5653
+        53300001-0023-4bd4-bbd5-a6920e4c5653:
+          tx: 53300002-0023-4bd4-bbd5-a6920e4c5653
+          rx: 53300003-0023-4bd4-bbd5-a6920e4c5653
+        5a300001-0023-4bd4-bbd5-a6920e4c5653:
+          tx: 5a300002-0023-4bd4-bbd5-a6920e4c5653
+          rx: 5a300003-0023-4bd4-bbd5-a6920e4c5653
+        4f300001-0023-4bd4-bbd5-a6920e4c5653:
+          tx: 4f300002-0023-4bd4-bbd5-a6920e4c5653
+          rx: 4f300003-0023-4bd4-bbd5-a6920e4c5653
   xinput:
     # This will actually be ANY gamepad that supports XInput. XInput
     # is its own connector type, so we don't have any special
@@ -202,6 +220,9 @@ protocols:
     btle:
       names:
         - MV Crescendo
+        # Tenuto contains trailing spaces, so just deal with that
+        # using a wildcard.
+        - MV Tenuto*
       services:
         f0006900-110c-478B-B74B-6F403B364A9C:
           txmode: f0006901-110c-478B-B74B-6F403B364A9C
