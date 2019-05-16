@@ -220,6 +220,9 @@ protocols:
     btle:
       names:
         - MV Crescendo
+        # Tenuto contains trailing spaces, so just deal with that
+        # using a wildcard.
+        - MV Tenuto*
       services:
         f0006900-110c-478B-B74B-6F403B364A9C:
           txmode: f0006901-110c-478B-B74B-6F403B364A9C
