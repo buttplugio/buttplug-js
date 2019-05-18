@@ -44,6 +44,10 @@ export enum Endpoints {
   TxShock = "txshock",
 
   TxVendorControl = "txvendorcontrol",
+
+  RxTouch = "rxtouch",
+
+  RxAccel = "rxaccel",
 }
 
 const TwoWayEndpointsEnum = twoWayEnum(Endpoints);

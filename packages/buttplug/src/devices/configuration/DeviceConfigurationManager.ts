@@ -19,6 +19,7 @@ import { LiBo } from "../protocols/LiBo";
 import { Youcups } from "../protocols/Youcups";
 import { Maxpro } from "../protocols/Maxpro";
 import { FleshlightLaunch } from "../protocols/FleshlightLaunch";
+import { KiirooGen2Vibe } from "../protocols/KiirooGen2Vibe";
 import { ButtplugDeviceProtocolType } from "../ButtplugDeviceProtocol";
 import { IProtocolConfiguration } from "./IProtocolConfiguration";
 import * as defaultDeviceConfig from "../../../dependencies/buttplug-device-config/buttplug-device-config.json";
@@ -56,6 +57,7 @@ export class DeviceConfigurationManager {
     this._protocols.set("magic-motion", MagicMotion);
     this._protocols.set("maxpro", Maxpro);
     this._protocols.set("kiiroo-v2", FleshlightLaunch);
+    this._protocols.set("kiiroo-v2-vibrator", KiirooGen2Vibe);
     this._protocols.set("youou", Youou);
     this._protocols.set("youcups", Youcups);
     this._protocols.set("libo", LiBo);
