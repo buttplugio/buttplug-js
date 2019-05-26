@@ -83,7 +83,7 @@ export class KiirooGen2Vibe extends ButtplugDeviceProtocol {
 
   private HandleVibrateCmd = async (aMsg: Messages.VibrateCmd): Promise<Messages.ButtplugMessage> => {
     if (aMsg.Speeds.length < 1 || aMsg.Speeds.length > this._devInfo.VibeCount) {
-      throw new ButtplugDeviceException(`MagicMotionn devices require VibrateCmd at most ` +
+      throw new ButtplugDeviceException(`Kiiroo Gen 2 Vibrator devices require VibrateCmd at most ` +
                                         `${this._devInfo.VibeCount} speed commands, ${aMsg.Speeds.length} sent.`,
                                         aMsg.Id);
     }
