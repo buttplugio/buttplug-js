@@ -48,6 +48,8 @@ export enum Endpoints {
   RxTouch = "rxtouch",
 
   RxAccel = "rxaccel",
+
+  Whitelist = "whitelist",
 }
 
 const TwoWayEndpointsEnum = twoWayEnum(Endpoints);
