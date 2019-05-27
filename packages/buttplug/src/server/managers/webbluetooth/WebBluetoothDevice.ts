@@ -40,18 +40,28 @@ export class WebBluetoothDevice extends ButtplugDeviceImpl {
       // running getPrimaryService
       let service: BluetoothRemoteGATTService;
       try {
-        if (typeof((this._device as any).hasService) !== undefined &&
-            !(this._device as any).hasService(configService)) {
-          continue;
+        // If we don't include this block, tests fail because the WebBluetooth
+        // mock we use doesn't implement getPrimaryService checking, it'll
+        // always return a service. Therefore we have to add non-standard
+        // functions to our tests. This is so dumb. :(
+        try {
+          if (!(this._device as any).hasService(configService)) {
+            continue;
+          }
+        } catch (e) {
+          // no-op, just continue. This block will only succeed during testing.
+          // However, it's also not in any hot path, so we're fine with the
+          // constant triggering of try/catch in production.
         }
         service = await this._server.getPrimaryService(configService);
       } catch (e) {
         // We may run into services that aren't actually on the current device.
         // For instance, we have a long list of expected services for Lovense
         // devices. In this case, log and continue looking through the list.
-        this._logger.Debug(`Cannot find service ${configService} on ${this._device.name}, continuing search.`);
+        this._logger.Debug(`Cannot find service ${configService} on ${this._device.name}, continuing search: ${e}`);
         continue;
       }
+
       // If no characteristics are present in the DeviceInfo block, we assume that
       // we're connecting to a simple rx/tx service, and can query to figure out
       // characteristics. Assume that the characteristics have tx/rx references.
