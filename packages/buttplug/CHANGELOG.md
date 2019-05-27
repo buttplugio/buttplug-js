@@ -1,3 +1,23 @@
+# Version 0.11.6 - 2019/05/27
+
+## Features
+
+- Added hardware support
+  - Kiiroo Onyx 2
+  - Kiiroo Pearl 2
+  - Kiiroo/OhMiBod Fuse
+  - Kiiroo Virtual Blowbot
+  - Kiiroo Titan
+  - Libo PiPiJing Elle/Whale
+  - Libo Xiao Lu (Lottie)
+  - Libo Lu Xiao Han (Lulu)
+  - Libo Suo Yin Qiu (Karen)
+  - Libo Bai Hu (LaLa)
+  - Libo/Sistalk MonsterPub
+  - Youcups Warrior 2
+  - Vorze Bach
+  - A whole bunch of Magic Motion toys I'm not gonna list here.
+
 # Version 0.11.5 - 2019/05/02
 
 ## Features
