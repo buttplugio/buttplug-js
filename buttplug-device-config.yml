@@ -190,6 +190,7 @@ protocols:
           - LuXiaoHan # LuLu - Egg
           - SuoYinQiu # Karen - Kegel
           - BaiHu # LaLa - Suction Rabbit
+          - MonsterPub # Sistalk MonsterPub (all 6?)
         services:
           # Write Service
           00006000-0000-1000-8000-00805f9b34fb:
@@ -280,7 +281,8 @@ protocols:
       names:
         - Youcups
       services:
-        0000fee9-0000-1000-8000-00805f9b34fb: null
+        0000fee9-0000-1000-8000-00805f9b34fb:
+          tx: d44bc439-abfd-45a2-b575-925416129600
   cueme:
     btle:
       names:
@@ -376,6 +378,14 @@ protocols:
     hid:
       vendor-id: 0x1f54
       product-id: 0x0001
+  prettylove:
+    btle:
+      names:
+        - Aogu BLE *
+      services:
+        0000FFE5-0000-1000-8000-00805f9b34fb:
+          tx: 0000FFE9-0000-1000-8000-00805f9b34fb
+          rx: 0000FFE2-0000-1000-8000-00805f9b34fb
   # nintendo-joycon:
   #   hid:
   #     vendor-id: 0x057e
