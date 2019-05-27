@@ -302,6 +302,16 @@ protocols:
           tx: 88f82581-0000-01e6-aace-0002a5d5c51b
           rxtouch: 88f82582-0000-01e6-aace-0002a5d5c51b
           rxaccel: 88f82584-0000-01e6-aace-0002a5d5c51b
+  kiiroo-v21:
+    btle:
+      names:
+        - Onyx2.1
+      services:
+        00001900-0000-1000-8000-00805F9B34FB:
+          # Used to clear the whitelist
+          whitelist: 00001901-0000-1000-8000-00805F9B34FB
+          tx: 00001902-0000-1000-8000-00805F9B34FB
+          rx: 00001903-0000-1000-8000-00805F9B34FB
   kiiroo-v2:
     btle:
       names:
@@ -362,11 +372,11 @@ protocols:
       services:
         0000fff0-0000-1000-8000-00805f9b34fb:
           tx: 0000fff6-0000-1000-8000-00805f9b34fb
+  realtouch:
+    hid:
+      vendor-id: 0x1f54
+      product-id: 0x0001
   # nintendo-joycon:
-  #   names:
-  #     en-us: Nintendo Joycon
-  #   protocol: joycon
-  #   connection-info:
-  #     - hid:
-  #         vendor-id: 0x057e
-  #         product-id: 0x2006
+  #   hid:
+  #     vendor-id: 0x057e
+  #     product-id: 0x2006
