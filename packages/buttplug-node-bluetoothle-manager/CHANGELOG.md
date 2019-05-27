@@ -1,3 +1,9 @@
+# Version 0.11.6 - 2019/05/27
+
+## Features
+
+- Update dependencies
+
 # Version 0.11.5 - 2019/05/02
 
 ## Features
