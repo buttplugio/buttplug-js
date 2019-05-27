@@ -225,9 +225,9 @@ protocols:
         # using a wildcard.
         - MV Tenuto*
       services:
-        f0006900-110c-478B-B74B-6F403B364A9C:
-          txmode: f0006901-110c-478B-B74B-6F403B364A9C
-          txvibrate: f0006903-110c-478B-B74B-6F403B364A9C
+        f0006900-110c-478b-b74b-6f403b364a9c:
+          txmode: f0006901-110c-478b-b74b-6f403b364a9c
+          txvibrate: f0006903-110c-478b-b74b-6f403b364a9c
   picobong:
     btle:
       names:
@@ -309,11 +309,11 @@ protocols:
       names:
         - Onyx2.1
       services:
-        00001900-0000-1000-8000-00805F9B34FB:
+        00001900-0000-1000-8000-00805f9b34fb:
           # Used to clear the whitelist
-          whitelist: 00001901-0000-1000-8000-00805F9B34FB
-          tx: 00001902-0000-1000-8000-00805F9B34FB
-          rx: 00001903-0000-1000-8000-00805F9B34FB
+          whitelist: 00001901-0000-1000-8000-00805f9b34fb
+          tx: 00001902-0000-1000-8000-00805f9b34fb
+          rx: 00001903-0000-1000-8000-00805f9b34fb
   kiiroo-v2:
     btle:
       names:
