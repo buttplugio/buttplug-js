@@ -1,3 +1,9 @@
+# Version 0.11.7 - 2019/06/22
+
+## Bugfixes
+
+- Dependency security updates
+
 # Version 0.11.6 - 2019/05/27
 
 ## Features
