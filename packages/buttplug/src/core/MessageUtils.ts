@@ -29,7 +29,7 @@ export function CheckMessage(aMsgObj: Messages.ButtplugMessage) {
 }
 
 export function FromJSON(str): Messages.ButtplugMessage[] {
-  const msgarray = JSON.parse(str);
+  const msgarray: object[] = JSON.parse(str);
   if (!jsonValidator(msgarray)) {
     // Relay validator errors as an error message locally.
     const errorString = jsonValidator.errors!.map((error) => error.message).join("; ");
