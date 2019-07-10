@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/buttplugio/buttplug-device-config#readme",
   "devDependencies": {
-    "js-yaml": "^3.12.2"
+    "js-yaml": "^3.13.1"
   },
   "dependencies": {
     "trash-cli": "^1.4.0"
