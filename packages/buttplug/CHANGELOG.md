@@ -1,3 +1,9 @@
+# Version 0.11.8 - 2019/07/09
+
+## Bugfixes
+
+- Updated built in device config file, including Cyclone SA fixes.
+
 # Version 0.11.7 - 2019/06/22
 
 ## Bugfixes
