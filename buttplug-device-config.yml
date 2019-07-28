@@ -212,12 +212,13 @@ protocols:
   magic-motion:
     btle:
       names:
-        - Smart Mini Vibe
+        - Smart Mini Vibe*
         - Flamingo
         - Eidolon
         - Smart Bean
         - Magic Cell
         - Magic Wand
+        - Fugu
         - Krush
       services:
         78667579-7b48-43db-b8c5-7928a6b0a335:
@@ -275,6 +276,7 @@ protocols:
         - Pivot
         - Rave
         - Sync
+        - Vector
         - Verge
         - Wish
       services:
@@ -316,6 +318,16 @@ protocols:
       services:
         00001900-0000-1000-8000-00805f9b34fb:
           # Used to clear the whitelist
+          whitelist: 00001901-0000-1000-8000-00805f9b34fb
+          tx: 00001902-0000-1000-8000-00805f9b34fb
+          rx: 00001903-0000-1000-8000-00805f9b34fb
+  kiiroo-v21-vibrator:
+    btle:
+      names:
+        - Cliona
+      services:
+        00001900-0000-1000-8000-00805f9b34fb:
+          # Used to clear the whitelist?
           whitelist: 00001901-0000-1000-8000-00805f9b34fb
           tx: 00001902-0000-1000-8000-00805f9b34fb
           rx: 00001903-0000-1000-8000-00805f9b34fb
@@ -399,6 +411,13 @@ protocols:
         0000ffe0-0000-1000-8000-00805f9b34fb:
           tx: 0000ffe1-0000-1000-8000-00805f9b34fb
           rx: 0000ffe2-0000-1000-8000-00805f9b34fb
+  realov:
+    btle:
+      names:
+        - REALOV_VIBE
+      services:
+        0000ffe0-0000-1000-8000-00805f9b34fb:
+          tx: 0000ffe1-0000-1000-8000-00805f9b34fb
   # nintendo-joycon:
   #   hid:
   #     vendor-id: 0x057e
