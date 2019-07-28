@@ -6,7 +6,6 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-import * as yaml from "js-yaml";
 import { ButtplugDeviceException } from "../../core/Exceptions";
 import { BluetoothLEProtocolConfiguration } from "./BluetoothLEProtocolConfiguration";
 import { SerialProtocolConfiguration } from "./SerialProtocolConfiguration";
@@ -40,8 +39,8 @@ export class DeviceConfigurationManager {
     DeviceConfigurationManager._manager = new DeviceConfigurationManager(defaultDeviceConfig);
   }
 
-  public static LoadFromExternalConfig(aExternalConfig: string): void {
-    const config = yaml.safeLoad(aExternalConfig);
+  public static LoadFromJsonExternalConfig(aExternalConfig: string): void {
+    const config = JSON.parse(aExternalConfig);
     DeviceConfigurationManager._manager = new DeviceConfigurationManager(config);
   }
 
