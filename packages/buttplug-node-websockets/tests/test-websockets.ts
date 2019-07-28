@@ -102,7 +102,7 @@ describe("Buttplug Node Websocket tests", () => {
   // Test commented out because it will always cause jest to stall after completion.
   it("should connect securely", async () => {
     const attrs = [{ name: "commonName", value: "buttplugtest.com" }];
-    const pems = selfsigned.generate(attrs, { days: 365 });
+    const pems = selfsigned.generate(attrs, { days: 365, keySize: 2048 });
     const tmpcert = tmp.fileSync();
     const tmpprivate = tmp.fileSync();
     fs.writeFileSync(tmpcert.name, pems.cert);
