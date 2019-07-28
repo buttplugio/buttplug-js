@@ -1,3 +1,12 @@
+# Version 0.12.0 - 2019/07/27
+
+## Features
+
+- Allow loading of device configuration file from CDN
+  (https://buttplug-device-config.buttplug.io)
+- Remove yaml requirement for device config file, just use JSON (Saves
+  30% library size)
+
 # Version 0.11.8 - 2019/07/09
 
 ## Bugfixes

@@ -1,6 +1,6 @@
 {
   "name": "buttplug",
-  "version": "0.11.8",
+  "version": "0.12.0",
   "description": "Javascript library for creating or accessing Buttplug Intimate Hardware Protocol servers/clients, for node or web",
   "homepage": "https://github.com/buttplugio/buttplug-js/packages/buttplug#readme",
   "repository": {
@@ -39,7 +39,7 @@
     "web-test-ci": "jest --runInBand web-tests/test-web-library.ts"
   },
   "dependencies": {
-    "ajv": "^6.10.0",
+    "ajv": "^6.10.2",
     "class-transformer": "^0.2.3",
     "reflect-metadata": "^0.1.13"
   },
