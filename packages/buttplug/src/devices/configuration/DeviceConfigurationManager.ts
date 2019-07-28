@@ -44,6 +44,11 @@ export class DeviceConfigurationManager {
     DeviceConfigurationManager._manager = new DeviceConfigurationManager(config);
   }
 
+  public static async LoadFromWebConfig(aUrl: string = "https://buttplug-device-config.buttplug.io"): Promise<void> {
+    const config = await fetch(aUrl);
+    DeviceConfigurationManager.LoadFromJsonExternalConfig(await config.text());
+  }
+
   private static _manager: DeviceConfigurationManager | null = null;
   private _configObject: any = {};
   private _configs: Map<string, IProtocolConfiguration> = new Map<string, IProtocolConfiguration>();
