@@ -174,6 +174,9 @@ protocols:
         4f300001-0023-4bd4-bbd5-a6920e4c5653:
           tx: 4f300002-0023-4bd4-bbd5-a6920e4c5653
           rx: 4f300003-0023-4bd4-bbd5-a6920e4c5653
+        42300001-0023-4bd4-bbd5-a6920e4c5653: # Max 2
+          tx: 42300002-0023-4bd4-bbd5-a6920e4c5653
+          rx: 42300003-0023-4bd4-bbd5-a6920e4c5653
   xinput:
     # This will actually be ANY gamepad that supports XInput. XInput
     # is its own connector type, so we don't have any special
@@ -418,6 +421,18 @@ protocols:
       services:
         0000ffe0-0000-1000-8000-00805f9b34fb:
           tx: 0000ffe1-0000-1000-8000-00805f9b34fb
+  motorbunny:
+    btle:
+      names:
+        - MB Controller
+      services:
+        0000fff0-0000-1000-8000-00805f9b34fb:
+          tx: 0000fff6-0000-1000-8000-00805f9b34fb
+          # Motorbunny has a WRITE/NOTIFY characteristic, meaning rx/tx are the
+          # same characteristic. Do we support this? Not really sure it matters
+          # since I don't think we get any data off notify for this anyways?
+          #
+          # rx: 0000fff6-0000-1000-8000-00805f9b34fb
   # nintendo-joycon:
   #   hid:
   #     vendor-id: 0x057e

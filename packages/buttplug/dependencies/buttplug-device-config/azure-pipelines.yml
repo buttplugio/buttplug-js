@@ -18,7 +18,7 @@ jobs:
       displayName: 'Install packages'
       env: { "CI": "true" }
     - script: |
-        yarn build:ci
+        yarn build
       displayName: 'Build JSON version of device file'
       env: { "CI": "true" }
     - task: CopyFiles@2

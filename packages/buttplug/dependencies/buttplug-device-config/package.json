@@ -4,8 +4,7 @@
   "description": "Buttplug Device Configuration File",
   "main": "index.js",
   "scripts": {
-    "build": "trash dist && mkdir -p dist && js-yaml buttplug-device-config.yml > dist/buttplug-device-config.json",
-    "build:ci": "js-yaml buttplug-device-config.yml > buttplug-device-config.json"
+    "build": "js-yaml buttplug-device-config.yml > buttplug-device-config.json"
   },
   "repository": {
     "type": "git",
