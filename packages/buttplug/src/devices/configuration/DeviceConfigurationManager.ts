@@ -24,6 +24,7 @@ import { IProtocolConfiguration } from "./IProtocolConfiguration";
 import * as defaultDeviceConfig from "../../../dependencies/buttplug-device-config/buttplug-device-config.json";
 import { Youou } from "../protocols/Youou";
 import { KiirooGen21 } from "../protocols/KiirooGen21";
+import { Motorbunny } from "../protocols/Motorbunny";
 
 export class DeviceConfigurationManager {
 
@@ -67,6 +68,7 @@ export class DeviceConfigurationManager {
     this._protocols.set("youou", Youou);
     this._protocols.set("youcups", Youcups);
     this._protocols.set("libo", LiBo);
+    this._protocols.set("motorbunny", Motorbunny);
     // Parse our configuration object last, as we need to add device protocols
     // first.
     this.ParseConfig();
