@@ -1,3 +1,9 @@
+# Version 0.12.1 - 2019/10/05
+
+## Features
+
+- Add Motorbunny Support
+
 # Version 0.12.0 - 2019/07/27
 
 ## Features
