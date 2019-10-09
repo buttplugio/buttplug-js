@@ -13,14 +13,27 @@ import { IButtplugDeviceImpl } from "../IButtplugDeviceImpl";
 
 export class WeVibe extends ButtplugDeviceProtocol {
   public static readonly DualVibes: string[] = ["Cougar", "4 Plus", "4plus", "classic", "Classic",
-                                                "Gala", "Nova", "NOVAV2", "Sync"];
+                                                "Gala", "Nova", "NOVAV2", "Sync", "Vector"];
+  public static readonly NameMap = {
+    "Cougar": "4 Plus",
+    "4plus": "4 Plus",
+    "classic": "Classic",
+    "NOVAV2": "Nova",
+  };
+  public static readonly EightBitSpeed: string[]  = ["Moxie", "Vector"];
+
   private readonly _vibratorCount: number = 1;
+  private readonly _eightBitSpeed: boolean = false;
   private _hasRunCommand = false;
   private _vibratorSpeed = [ 0.0, 0.0 ];
 
   public constructor(aDeviceImpl: IButtplugDeviceImpl) {
     super(`WeVibe ${aDeviceImpl.Name}` , aDeviceImpl);
     this._vibratorCount = WeVibe.DualVibes.find((x) => x === aDeviceImpl.Name) ? 2 : 1;
+    if (WeVibe.NameMap.hasOwnProperty(aDeviceImpl.Name)) {
+      this._name = WeVibe.NameMap[aDeviceImpl.Name];
+    }
+    this._eightBitSpeed = WeVibe.EightBitSpeed.find((x) => x === aDeviceImpl.Name) ? true : false;
     this.MsgFuncs.set(Messages.StopDeviceCmd, this.HandleStopDeviceCmd);
     this.MsgFuncs.set(Messages.SingleMotorVibrateCmd, this.HandleSingleMotorVibrateCmd);
     this.MsgFuncs.set(Messages.VibrateCmd, this.HandleVibrateCmd);
@@ -57,9 +70,33 @@ export class WeVibe extends ButtplugDeviceProtocol {
 
     this._hasRunCommand = true;
 
-    const rSpeedInt = Math.round(this._vibratorSpeed[0] * 15);
-    const rSpeedExt = Math.round(this._vibratorSpeed[this._vibratorCount - 1] * 15);
-    const data = Buffer.from([0x0f, 0x03, 0x00, (rSpeedInt << 4) | (rSpeedExt), 0x00, 0x03, 0x00, 0x00]);
+    // 0f 03 00 bc 00 00 00 00
+    const data = Buffer.from([ 0x0f, 0x03, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00 ]);
+    let rSpeedInt = 0;
+    let rSpeedExt = 0;
+
+    if (this._eightBitSpeed) {
+      rSpeedInt = Math.round(this._vibratorSpeed[0] * 12);
+      rSpeedExt = Math.round(this._vibratorSpeed[this._vibratorCount - 1] * 12);
+
+      data[3] = (rSpeedExt + 3); // External
+      data[4] = (rSpeedInt + 3); // Internal
+      data[5] = (rSpeedInt === 0 ? 0 : 1);
+      data[5] |= (rSpeedExt === 0 ? 0 : 2);
+    } else {
+      rSpeedInt = Math.round(this._vibratorSpeed[0] * 15);
+      rSpeedExt = Math.round(this._vibratorSpeed[this._vibratorCount - 1] * 15);
+
+      data[3] = rSpeedExt; // External
+      data[3] |= (rSpeedInt << 4); // Internal
+    }
+
+    if (rSpeedInt === 0 && rSpeedExt === 0) {
+      data[1] = 0x00;
+      data[3] = 0x00;
+      data[4] = 0x00;
+      data[5] = 0x00;
+    }
 
     if (rSpeedInt === 0 && rSpeedExt === 0) {
       data[1] = 0x00;
