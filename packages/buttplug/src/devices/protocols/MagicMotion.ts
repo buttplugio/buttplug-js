@@ -103,6 +103,61 @@ export class MagicMotion extends ButtplugDeviceProtocol {
         MaxSpeed: 0x4d,
       }),
     ],
+    [
+      "Smart Mini Vibe3",
+      Object.assign(new MagicMotionType(),
+      {
+        Brand: "MagicMotion",
+        Name: "Vini",
+        VibeCount: 1,
+        Protocol: 1,
+        MaxSpeed: 0x64,
+      }),
+    ],
+    [
+      "Fugu",
+      Object.assign(new MagicMotionType(),
+      {
+        Brand: "MagicMotion",
+        Name: "Fugu",
+        VibeCount: 1,
+        Protocol: 1,
+        MaxSpeed: 0x64,
+      }),
+    ],
+    [
+      "Lipstick",
+      Object.assign(new MagicMotionType(),
+      {
+        Brand: "MagicMotion",
+        Name: "Awaken",
+        VibeCount: 1,
+        Protocol: 2,
+        MaxSpeed: 0x64,
+      }),
+    ],
+    [
+      "Sword",
+      Object.assign(new MagicMotionType(),
+      {
+        Brand: "MagicMotion",
+        Name: "Equinox",
+        VibeCoun: 1,
+        Protocol: 2,
+        MaxSpeed: 0x64,
+      }),
+    ],
+    [
+      "Curve",
+      Object.assign(new MagicMotionType(),
+      {
+        Brand: "MagicMotion",
+        Name: "Solstice",
+        VibeCount: 1,
+        Protocol: 2,
+        MaxSpeed: 0x64,
+      }),
+    ],
   ]);
 
   private _devInfo: MagicMotionType = new MagicMotionType();
