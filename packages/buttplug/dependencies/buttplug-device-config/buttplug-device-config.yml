@@ -199,6 +199,9 @@ protocols:
           - Yuyi # Lina - Leaf
           - LuWuShuang # Adel - Curved Rabbit
           - LiBo # Lily - Double ended mini wand
+          - QingTing # Lucy - Dragonfly egg
+          - Shuidi # ELLE2 - Shock Egg
+          - Huohu # Sexy Fox - Rabbit
         services:
           # Write Service
           00006000-0000-1000-8000-00805f9b34fb:
@@ -218,11 +221,14 @@ protocols:
         - Smart Mini Vibe*
         - Flamingo
         - Eidolon
-        - Smart Bean
-        - Magic Cell
+        - Smart Bean # Magic Kegel Twins/Master/Master V2
+        - Magic Cell # Candy/Dante
         - Magic Wand
         - Fugu
-        - Krush
+        - Krush # Lovelife Krush
+        - Lipstick # Awaken
+        - Sword # Equinox
+        - Curve # Solstice
       services:
         78667579-7b48-43db-b8c5-7928a6b0a335:
           tx: 78667579-a914-49a4-8333-aa3c0cd8fedc
@@ -267,6 +273,7 @@ protocols:
       names:
         - Cougar
         - 4 Plus
+        - 4_Plus
         - 4plus
         - Bloom
         - classic
@@ -274,10 +281,18 @@ protocols:
         - Ditto
         - Gala
         - Jive
+        - Melt
+        - Moxie
         - Nova
         - NOVAV2
         - Pivot
+        - Rey # Branded Realm
+        - We-Vibe Rocketman # Rey alias
         - Rave
+        - Reina # Branded Realm
+        - imassager # Reina alias
+        - Interactive Massager # Reina alias
+        - "03" # Reina alias
         - Sync
         - Vector
         - Verge
@@ -433,6 +448,66 @@ protocols:
           # since I don't think we get any data off notify for this anyways?
           #
           # rx: 0000fff6-0000-1000-8000-00805f9b34fb
+  zalo:
+    btle:
+      names:
+        - ZALO-Queen
+      services:
+        0000fff0-0000-1000-8000-00805f9b34fb:
+          tx: 0000fff1-0000-1000-8000-00805f9b34fb
+  sayberx:
+    btle:
+      names:
+        - SayberX
+        # - X-Ring *
+      services:
+        0000fff0-0000-1000-8000-00805f9b34fb:
+          tx: 0000fff6-0000-1000-8000-00805f9b34fb
+          # No current way of marking services as optional
+          # rx: 0000fff8-0000-1000-8000-00805f9b34fb
+  muse:
+    btle:
+      names:
+        - WB-ZDB-WST
+        - WB-TDD
+      services:
+        0000aaa0-0000-1000-8000-00805f9b34fb:
+          tx: 0000aaa1-0000-1000-8000-00805f9b34fb
+  lelo-f1s:
+    btle:
+      names:
+        - F1s
+      services:
+        0000fff0-0000-1000-8000-00805f9b34fb:
+          tx: 0000fff1-0000-1000-8000-00805f9b34fb
+          # There are a LOT of sensor characteristics
+          # I figure we'll add them as support for those sensor
+          # types is added to Buttplug
+  aneros:
+    btle:
+      names:
+        - Massage Demo
+      services:
+        0000ff00-0000-1000-8000-00805f9b34fb:
+          tx: 0000ff01-0000-1000-8000-00805f9b34fb
+  lovehoney-desire:
+    btle:
+      names:
+        - PROSTATE VIBE
+        - KNICKER VIBE
+      services:
+        0000ff00-0000-1000-8000-00805f9b34fb:
+          tx: 0000ff01-0000-1000-8000-00805f9b34fb
+  twerkingbutt:
+    btle:
+      names:
+        - BODIKANG
+        - Twerking Butt
+        - TwerkingButt
+      services:
+        00000a60-0000-1000-8000-00805f9b34fb:
+          tx: 00000a66-0000-1000-8000-00805f9b34fb
+          rx: 00000a67-0000-1000-8000-00805f9b34fb
   # nintendo-joycon:
   #   hid:
   #     vendor-id: 0x057e

@@ -69,7 +69,10 @@
           "ShaYu",
           "Yuyi",
           "LuWuShuang",
-          "LiBo"
+          "LiBo",
+          "QingTing",
+          "Shuidi",
+          "Huohu"
         ],
         "services": {
           "00006000-0000-1000-8000-00805f9b34fb": {
@@ -89,7 +92,10 @@
           "Magic Cell",
           "Magic Wand",
           "Fugu",
-          "Krush"
+          "Krush",
+          "Lipstick",
+          "Sword",
+          "Curve"
         ],
         "services": {
           "78667579-7b48-43db-b8c5-7928a6b0a335": {
@@ -152,6 +158,7 @@
         "names": [
           "Cougar",
           "4 Plus",
+          "4_Plus",
           "4plus",
           "Bloom",
           "classic",
@@ -159,10 +166,18 @@
           "Ditto",
           "Gala",
           "Jive",
+          "Melt",
+          "Moxie",
           "Nova",
           "NOVAV2",
           "Pivot",
+          "Rey",
+          "We-Vibe Rocketman",
           "Rave",
+          "Reina",
+          "imassager",
+          "Interactive Massager",
+          "03",
           "Sync",
           "Vector",
           "Verge",
@@ -379,6 +394,95 @@
         "services": {
           "0000fff0-0000-1000-8000-00805f9b34fb": {
             "tx": "0000fff6-0000-1000-8000-00805f9b34fb"
+          }
+        }
+      }
+    },
+    "zalo": {
+      "btle": {
+        "names": [
+          "ZALO-Queen"
+        ],
+        "services": {
+          "0000fff0-0000-1000-8000-00805f9b34fb": {
+            "tx": "0000fff1-0000-1000-8000-00805f9b34fb"
+          }
+        }
+      }
+    },
+    "sayberx": {
+      "btle": {
+        "names": [
+          "SayberX"
+        ],
+        "services": {
+          "0000fff0-0000-1000-8000-00805f9b34fb": {
+            "tx": "0000fff6-0000-1000-8000-00805f9b34fb"
+          }
+        }
+      }
+    },
+    "muse": {
+      "btle": {
+        "names": [
+          "WB-ZDB-WST",
+          "WB-TDD"
+        ],
+        "services": {
+          "0000aaa0-0000-1000-8000-00805f9b34fb": {
+            "tx": "0000aaa1-0000-1000-8000-00805f9b34fb"
+          }
+        }
+      }
+    },
+    "lelo-f1s": {
+      "btle": {
+        "names": [
+          "F1s"
+        ],
+        "services": {
+          "0000fff0-0000-1000-8000-00805f9b34fb": {
+            "tx": "0000fff1-0000-1000-8000-00805f9b34fb"
+          }
+        }
+      }
+    },
+    "aneros": {
+      "btle": {
+        "names": [
+          "Massage Demo"
+        ],
+        "services": {
+          "0000ff00-0000-1000-8000-00805f9b34fb": {
+            "tx": "0000ff01-0000-1000-8000-00805f9b34fb"
+          }
+        }
+      }
+    },
+    "lovehoney-desire": {
+      "btle": {
+        "names": [
+          "PROSTATE VIBE",
+          "KNICKER VIBE"
+        ],
+        "services": {
+          "0000ff00-0000-1000-8000-00805f9b34fb": {
+            "tx": "0000ff01-0000-1000-8000-00805f9b34fb"
+          }
+        }
+      }
+    },
+    "twerkingbutt": {
+      "btle": {
+        "names": [
+          "BODIKANG",
+          "Twerking Butt",
+          "TwerkingButt"
+        ],
+        "services": {
+          "00000a60-0000-1000-8000-00805f9b34fb": {
+            "tx": "00000a66-0000-1000-8000-00805f9b34fb",
+            "rx": "00000a67-0000-1000-8000-00805f9b34fb"
           }
         }
       }
