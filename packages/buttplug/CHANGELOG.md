@@ -1,3 +1,11 @@
+# Version 0.12.2 - 2019/12/06
+
+## Features
+
+- Added Hardware Support
+  - WeVibe Vector
+  - Magic Motion Vini, Fugu, Awaken, Equinox, Solstice
+
 # Version 0.12.1 - 2019/10/05
 
 ## Features
