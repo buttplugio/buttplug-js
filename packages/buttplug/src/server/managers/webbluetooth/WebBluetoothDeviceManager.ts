@@ -45,10 +45,15 @@ export class WebBluetoothDeviceManager extends EventEmitter implements IDeviceSu
 
     for (const config of bluetoothConfigs) {
       for (const deviceName of config.Names) {
-        if (deviceName.endsWith("*")) {
-          filters.filters.push({namePrefix: deviceName.substr(0, deviceName.length - 1)});
+        try {
+          if (deviceName.endsWith("*")) {
+            filters.filters.push({namePrefix: deviceName.substr(0, deviceName.length - 1)});
+          }
+          filters.filters.push({name: deviceName});
+        } catch (e) {
+          console.log(e);
+          console.log(config);
         }
-        filters.filters.push({name: deviceName});
       }
       filters.optionalServices = [...filters.optionalServices, ...config.Services.keys()];
     }
