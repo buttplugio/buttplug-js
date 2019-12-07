@@ -1,6 +1,6 @@
 {
   "name": "buttplug-node-bluetoothle-manager",
-  "version": "0.12.1",
+  "version": "0.12.2",
   "description": "Bluetooth LE Manager (using Noble) for native node Buttplug servers",
   "homepage": "https://github.com/buttplugio/buttplug-js/packages/buttplug-node-bluetoothle-manager#readme",
   "repository": {
@@ -26,7 +26,7 @@
     "tslint:fix": "tslint --project tsconfig.json --outputAbsolutePaths -c ../../tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\""
   },
   "dependencies": {
-    "buttplug": "^0.12.1",
+    "buttplug": "^0.12.2",
     "noble-mac": "https://github.com/buttplugio/noble-mac#buttplugio",
     "uuid-parse": "^1.1.0"
   }
