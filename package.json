@@ -1,76 +1,29 @@
 {
-  "private": true,
-  "name": "buttplug",
+  "name": "buttplug-device-config",
+  "version": "0.0.1",
+  "description": "Buttplug Device Configuration File",
+  "main": "index.js",
   "scripts": {
-    "build": "lerna run build",
-    "build:main": "lerna run build:main",
-    "build:rollup": "lerna run build:rollup",
-    "tslint": "lerna run tslint",
-    "tslint:fix": "lerna run tslint:fix",
-    "test": "lerna run test"
+    "build": "js-yaml buttplug-device-config.yml > buttplug-device-config.json"
   },
-  "workspaces": [
-    "packages/buttplug",
-    "packages/buttplug-node-bluetoothle-manager",
-    "packages/buttplug-node-websockets",
-    "packages/buttplug-server-cli"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/buttplugio/buttplug-device-config.git"
+  },
+  "keywords": [
+    "teledildonics",
+    "buttplug"
   ],
-  "devDependencies": {
-    "@types/commander": "^2.12.2",
-    "@types/expect-puppeteer": "^3.3.1",
-    "@types/jest": "^24.0.15",
-    "@types/jest-environment-puppeteer": "^4.0.0",
-    "@types/noble": "^0.0.39",
-    "@types/node": "^12.6.8",
-    "@types/puppeteer": "^1.19.0",
-    "@types/tween.js": "^17.2.0",
-    "@types/uuid-parse": "^1.0.0",
-    "@types/web-bluetooth": "^0.0.4",
-    "@types/ws": "^6.0.1",
-    "copyfiles": "^2.1.1",
-    "cross-env": "^5.2.0",
-    "css-loader": "^3.1.0",
-    "fork-ts-checker-webpack-plugin": "^1.4.3",
-    "html-loader": "^0.5.5",
-    "jest": "^24.8.0",
-    "jest-puppeteer": "^4.3.0",
-    "lerna": "^3.16.4",
-    "mock-socket": "^8.1.0",
-    "pkg": "^4.4.0",
-    "puppeteer": "^1.19.0",
-    "rollup": "^1.17.0",
-    "rollup-plugin-auto-external": "^2.0.0",
-    "rollup-plugin-commonjs": "^10.0.1",
-    "rollup-plugin-html": "^0.2.1",
-    "rollup-plugin-json": "^4.0.0",
-    "rollup-plugin-node-builtins": "^2.1.2",
-    "rollup-plugin-node-globals": "^1.4.0",
-    "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-postcss": "^2.0.3",
-    "rollup-plugin-postcss-modules": "^2.0.1",
-    "rollup-plugin-terser": "^5.1.1",
-    "rollup-plugin-typescript2": "^0.22.1",
-    "selfsigned": "^1.10.4",
-    "style-loader": "^0.23.1",
-    "terser": "^4.1.2",
-    "terser-webpack-plugin": "^1.3.0",
-    "tmp": "^0.1.0",
-    "trash": "^6.0.0",
-    "trash-cli": "^3.0.0",
-    "ts-jest": "^24.0.2",
-    "ts-loader": "^6.x",
-    "ts-node": "^8.3.0",
-    "tslib": "^1.10.0",
-    "tslint": "^5.18.0",
-    "typedoc": "^0.15.0",
-    "typescript": "^3.5.3",
-    "url-loader": "^2.1.0",
-    "web-bluetooth-mock": "^1.0.2",
-    "webpack": "^4.38.0",
-    "webpack-bundle-analyzer": "^3.3.2",
-    "webpack-cli": "^3.3.6",
-    "webpack-merge": "^4.2.1",
-    "yarn": "^1.17.3"
+  "author": "Nonpolynomial Labs, LLC <kyle@nonpolynomial.com>",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/buttplugio/buttplug-device-config/issues"
   },
-  "dependencies": {}
+  "homepage": "https://github.com/buttplugio/buttplug-device-config#readme",
+  "devDependencies": {
+    "js-yaml": "^3.13.1"
+  },
+  "dependencies": {
+    "trash-cli": "^1.4.0"
+  }
 }

@@ -333,6 +333,7 @@ protocols:
     btle:
       names:
         - Onyx2.1
+        - Titan1.1
       services:
         00001900-0000-1000-8000-00805f9b34fb:
           # Used to clear the whitelist

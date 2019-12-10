@@ -1,7 +1,0 @@
-tests
-web-tests
-.rpt2_cache
-coverage
-build
-node_modules
-yarn-error.log
