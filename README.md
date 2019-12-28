@@ -41,8 +41,6 @@ write code for!
 - [Buttplug Node Websockets](packages/buttplug-node-websockets)
   - [ws](https://github.com/websockets/ws) based Websocket connectors
     for native buttplug clients and servers.
-- [Buttplug Server CLI](packages/buttplug-server-cli)
-  - Command Line server for running native node servers.
   
 ## Applications Using Buttplug-js
 
