@@ -20,18 +20,22 @@ export class WeVibe extends ButtplugDeviceProtocol {
     "classic": "Classic",
     "NOVAV2": "Nova",
   };
-  public static readonly EightBitSpeed: string[]  = ["Moxie", "Vector"];
+  public static readonly EightBitSpeed: string[]  = ["Melt", "Moxie", "Vector"];
 
   private readonly _vibratorCount: number = 1;
   private readonly _eightBitSpeed: boolean = false;
   private _hasRunCommand = false;
   private _vibratorSpeed = [ 0.0, 0.0 ];
+  private _max8bit = 12;
 
   public constructor(aDeviceImpl: IButtplugDeviceImpl) {
     super(`WeVibe ${aDeviceImpl.Name}` , aDeviceImpl);
     this._vibratorCount = WeVibe.DualVibes.find((x) => x === aDeviceImpl.Name) ? 2 : 1;
     if (WeVibe.NameMap.hasOwnProperty(aDeviceImpl.Name)) {
       this._name = WeVibe.NameMap[aDeviceImpl.Name];
+    }
+    if(aDeviceImpl.Name === "Melt") {
+      this._max8bit = 22;
     }
     this._eightBitSpeed = WeVibe.EightBitSpeed.find((x) => x === aDeviceImpl.Name) ? true : false;
     this.MsgFuncs.set(Messages.StopDeviceCmd, this.HandleStopDeviceCmd);
@@ -76,8 +80,8 @@ export class WeVibe extends ButtplugDeviceProtocol {
     let rSpeedExt = 0;
 
     if (this._eightBitSpeed) {
-      rSpeedInt = Math.round(this._vibratorSpeed[0] * 12);
-      rSpeedExt = Math.round(this._vibratorSpeed[this._vibratorCount - 1] * 12);
+      rSpeedInt = Math.round(this._vibratorSpeed[0] * this._max8bit);
+      rSpeedExt = Math.round(this._vibratorSpeed[this._vibratorCount - 1] * this._max8bit);
 
       data[3] = (rSpeedExt + 3); // External
       data[4] = (rSpeedInt + 3); // Internal
