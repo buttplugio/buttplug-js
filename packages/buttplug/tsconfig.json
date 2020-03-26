@@ -11,7 +11,8 @@
     "strictNullChecks": true,
     "noImplicitThis": true,
     "declaration": true,
-    "outDir": "./dist/main"
+    "outDir": "./dist/main",
+    "esModuleInterop": true
   },
   "include": [
     "./src/*.ts",
