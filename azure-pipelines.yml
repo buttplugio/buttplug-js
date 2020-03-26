@@ -3,13 +3,13 @@ trigger:
 - dev
 
 jobs:
-  - job: "MacOS"
-    pool:
-      vmImage: 'macos-10.13'
-    steps:
-      - template: 'build/build-test-freeze.yml'
-        parameters:
-          platform: "macos-x64"
+  # - job: "MacOS"
+  #   pool:
+  #     vmImage: 'macos-10.13'
+  #   steps:
+  #     - template: 'build/build-test-freeze.yml'
+  #       parameters:
+  #         platform: "macos-x64"
   - job: "Linux"
     pool:
       vmImage: 'ubuntu-16.04'
