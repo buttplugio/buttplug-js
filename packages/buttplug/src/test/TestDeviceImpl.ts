@@ -13,7 +13,7 @@ import { Endpoints } from "../devices/Endpoints";
 
 export class TestDeviceImpl extends ButtplugDeviceImpl {
   private _connected = true;
-  private _lastValueWritten: Array<[Endpoints, Buffer]> = [];
+  private _lastValueWritten: [Endpoints, Buffer][] = [];
   private _valueToRead: Map<Endpoints, Buffer> = new Map<Endpoints, Buffer>();
 
   public constructor(aName: string) {

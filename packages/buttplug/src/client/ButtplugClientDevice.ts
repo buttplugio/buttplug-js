@@ -102,7 +102,7 @@ export class ButtplugClientDevice {
     await this.SendMessageAsync(msg);
   }
 
-  public async SendRotateCmd(aValues: number | Array<[number, boolean]>, aClockwise?: boolean): Promise<void> {
+  public async SendRotateCmd(aValues: number | [number, boolean][], aClockwise?: boolean): Promise<void> {
     this.CheckAllowedMessageType(Messages.RotateCmd.name);
     let msg: Messages.RotateCmd;
     if (typeof(aValues) === "number") {
@@ -123,7 +123,7 @@ export class ButtplugClientDevice {
     await this.SendMessageAsync(msg);
   }
 
-  public async SendLinearCmd(aValues: number | Array<[number, number]>, aDuration?: number): Promise<void> {
+  public async SendLinearCmd(aValues: number | [number, number][], aDuration?: number): Promise<void> {
     this.CheckAllowedMessageType(Messages.LinearCmd.name);
     let msg: Messages.LinearCmd;
     if (typeof(aValues) === "number") {
