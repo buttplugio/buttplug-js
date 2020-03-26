@@ -438,7 +438,7 @@ export class RotateCmd extends ButtplugDeviceMessage {
   get SchemaVersion() { return 1; }
 
   public static Create(aDeviceIndex: number,
-                       aCommands: Array<[number, boolean]>): RotateCmd {
+                       aCommands: [number, boolean][]): RotateCmd {
     const cmdList: RotateSubcommand[] = new Array<RotateSubcommand>();
 
     let i = 0;
@@ -469,7 +469,7 @@ export class LinearCmd extends ButtplugDeviceMessage {
   get SchemaVersion() { return 1; }
 
   public static Create(aDeviceIndex: number,
-                       aCommands: Array<[number, number]>): LinearCmd {
+                       aCommands: [number, number][]): LinearCmd {
     const cmdList: VectorSubcommand[] = new Array<VectorSubcommand>();
 
     let i = 0;
