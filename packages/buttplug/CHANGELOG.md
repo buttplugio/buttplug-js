@@ -1,3 +1,10 @@
+# Version 0.12.3 - 2020/03/25
+
+## Features
+
+- Added Hardware Support
+  - WebGamepad Haptics on Chrome
+
 # Version 0.12.2 - 2019/12/06
 
 ## Features
