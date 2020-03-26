@@ -10,6 +10,7 @@ import * as Messages from "../core/Messages";
 import { IButtplugDevice } from "../devices/IButtplugDevice";
 import { IDeviceSubtypeManager } from "./IDeviceSubtypeManager";
 import { WebBluetoothDeviceManager } from "./managers/webbluetooth/WebBluetoothDeviceManager";
+import { WebGamepadDeviceManager } from "./managers/webgamepad/WebGamepadDeviceManager";
 import { EventEmitter } from "events";
 import { ButtplugLogger } from "../core/Logging";
 import { ButtplugException, ButtplugDeviceException, ButtplugMessageException } from "../core/Exceptions";
@@ -39,6 +40,7 @@ export class DeviceManager extends EventEmitter {
         typeof(window.navigator) !== "undefined" &&
         (navigator as any).bluetooth) {
       this.AddDeviceManager(new WebBluetoothDeviceManager(this._logger));
+      this.AddDeviceManager(new WebGamepadDeviceManager(this._logger));
     } else {
       this._logger.Info("DeviceManager: Not adding WebBluetooth Manager, no WebBluetooth capabilities found.");
     }
