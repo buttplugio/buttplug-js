@@ -152,7 +152,7 @@ export class ButtplugClient extends EventEmitter {
 
   protected InitializeConnection = async (): Promise<boolean> => {
     this.CheckConnector();
-    const msg = await this.SendMessage(new Messages.RequestServerInfo(this._clientName, 1));
+    const msg = await this.SendMessage(new Messages.RequestServerInfo(this._clientName, Messages.MESSAGE_SPEC_VERSION));
     switch (msg.constructor) {
       case Messages.ServerInfo: {
         const serverinfo = msg as Messages.ServerInfo;

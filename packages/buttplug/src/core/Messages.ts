@@ -16,6 +16,7 @@ import "reflect-metadata";
 export const SYSTEM_MESSAGE_ID = 0;
 export const DEFAULT_MESSAGE_ID = 1;
 export const MAX_ID = 4294967295;
+export const MESSAGE_SPEC_VERSION = 1;
 
 export abstract class ButtplugMessage {
 
