@@ -35,6 +35,13 @@ export class ButtplugClientDevice {
   public get AllowedMessages(): string[] {
     return Array.from(this.allowedMsgs.keys());
   }
+
+  public get AllowedMessagesObject(): object {
+    const obj = {};
+    this.allowedMsgs.forEach((value, key) => { obj[key] = value; });
+    return obj;
+  }
+
   public static fromMsg(aMsg: Messages.DeviceAdded | Messages.DeviceInfoWithSpecifications,
                         sendClosure: (aDevice: ButtplugClientDevice,
                                       aMsg: Messages.ButtplugDeviceMessage) => Promise<void>): ButtplugClientDevice {
