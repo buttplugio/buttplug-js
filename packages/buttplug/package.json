@@ -39,7 +39,7 @@
     "web-test-ci": "jest --runInBand web-tests/test-web-library.ts"
   },
   "dependencies": {
-    "ajv": "^6.10.2",
+    "ajv": "^6.12.0",
     "class-transformer": "^0.2.3",
     "reflect-metadata": "^0.1.13"
   },
