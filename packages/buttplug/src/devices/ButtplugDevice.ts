@@ -51,13 +51,6 @@ export class ButtplugDevice extends EventEmitter implements IButtplugDevice {
     return this._device.Address;
   }
 
-  // See ButtplugDeviceProtocol.MsgFuncs comment
-  //
-  // tslint:disable-next-line:ban-types
-  public get AllowedMessageTypes(): Function[] {
-    return this._protocol.AllowedMessageTypes;
-  }
-
   public ParseMessage = async (aMsg: Messages.ButtplugDeviceMessage): Promise<Messages.ButtplugMessage> => {
     return await this._protocol.ParseMessage(aMsg);
   }

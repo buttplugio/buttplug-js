@@ -141,12 +141,7 @@ export class DeviceManager extends EventEmitter {
                                           id);
     }
     const device = this._devices.get(deviceMsg.DeviceIndex)!;
-    if (device.AllowedMessageTypes.indexOf(aMessage.Type) < 0) {
-      throw ButtplugException.LogAndError(ButtplugDeviceException,
-                                          this._logger,
-                                          `Device ${device.Name} does not take message type ${aMessage.Type.name}`,
-                                          id);
-    }
+    // Pass all device messages to ParseMessage, if it fails there, we'll error out.
     this._logger.Trace(`DeviceManager: Sending ${deviceMsg.Type} to ${device.Name} (${deviceMsg.Id})`);
     return await device.ParseMessage(deviceMsg);
   }
