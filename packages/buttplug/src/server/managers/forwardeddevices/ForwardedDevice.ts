@@ -26,8 +26,9 @@ export class ForwardedDevice extends ButtplugDeviceImpl {
       return Promise.resolve();
   }
 
-  public Disconnect = async (): Promise<void> => {
-      // Noop. We don't have to do anything here.
+  public Disconnect = () => {
+      // Noop. We don't have to do anything here. Just act like we're removed.
+      this.OnDisconnect();
   }
 
   public OnDisconnect = () => {

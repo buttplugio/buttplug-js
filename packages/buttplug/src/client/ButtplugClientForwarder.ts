@@ -78,6 +78,9 @@ export class ButtplugClientForwarder {
     public ReceiveDeviceCommand = async (message: ButtplugDeviceMessage) => {
         // Parse command and forward to actual device.
         const device = this._devices.get(message.DeviceIndex);
+        if (device === undefined) {
+            return;
+        }
         // TODO This could fail if we don't find the device.
         //
         // TODO If this fails on the device (doesn't support message, etc...),
@@ -110,7 +113,9 @@ export class ButtplugClientForwarder {
             .filter(({ 1: v }) => v.Index === device.Index)
             .map(([k]) => k);
         if (deviceKeys.length === 1) {
-            return new DeviceRemoved(deviceKeys.pop()!);
+            const key = deviceKeys.pop()!;
+            this._devices.delete(key);
+            return new DeviceRemoved(key);
         } else if (deviceKeys.length === 0) {
             throw new ButtplugDeviceException("Device not currently shared with server!");
         } else {
