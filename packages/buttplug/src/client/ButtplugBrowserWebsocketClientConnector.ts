@@ -12,11 +12,11 @@ import { EventEmitter } from "events";
 import { IButtplugClientConnector } from "./IButtplugClientConnector";
 import { ButtplugMessage } from "../core/Messages";
 import { FromJSON } from "../core/MessageUtils";
-import { ButtplugMessageSorter } from "./ButtplugMessageSorter";
+import { ButtplugMessageSorter } from "../utils/ButtplugMessageSorter";
 
 export class ButtplugBrowserWebsocketClientConnector extends EventEmitter implements IButtplugClientConnector {
 
-  private _sorter: ButtplugMessageSorter = new ButtplugMessageSorter();
+  private _sorter: ButtplugMessageSorter = new ButtplugMessageSorter(true);
   private _ws: WebSocket | undefined;
 
   public constructor(private _url: string) {

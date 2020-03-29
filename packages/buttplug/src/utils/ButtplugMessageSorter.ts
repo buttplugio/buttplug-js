@@ -13,17 +13,22 @@ export class ButtplugMessageSorter {
   protected _counter: number = 1;
   protected _waitingMsgs: Map<number, [(val: Messages.ButtplugMessage) => void, (err: Error) => void]> = new Map();
 
+  public constructor(private _useCounter: boolean) {
+  }
+
   // One of the places we should actually return a promise, as we need to store
   // them while waiting for them to return across the line.
   // tslint:disable:promise-function-async
   public PrepareOutgoingMessage(aMsg: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage> {
-    aMsg.Id = this._counter;
+    if (this._useCounter) {
+      aMsg.Id = this._counter;
+      // Always increment last, otherwise we might lose sync
+      this._counter += 1;
+    }
     let res;
     let rej;
     const msgPromise = new Promise<Messages.ButtplugMessage>((resolve, reject) => { res = resolve; rej = reject; });
-    this._waitingMsgs.set(this._counter, [res, rej]);
-    // Always increment last, otherwise we might lose sync
-    this._counter += 1;
+    this._waitingMsgs.set(aMsg.Id, [res, rej]);
     return msgPromise;
   }
 
