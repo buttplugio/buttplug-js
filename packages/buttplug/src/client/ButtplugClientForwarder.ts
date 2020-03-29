@@ -17,16 +17,18 @@ export class ButtplugClientForwarderBrowserWebsocketConnector extends EventEmitt
 
     public constructor(serverAddress: string) {
         super();
-        this._connector = new ButtplugBrowserWebsocketClientConnector(serverAddress);
+        this._connector = new ButtplugBrowserWebsocketClientConnector(serverAddress, false);
     }
 
     public Connect = async (): Promise<void> => {
         // Connect to the websocket, hook up events.
-        await this._connector.Connect();
-        // Just re-emit from the connector.
-        this._connector.addListener("message", (msg) => {
-            this.emit("message", msg);
+        this._connector.addListener("message", async (msg: ButtplugDeviceMessage[]) => {
+            for (const m of msg) {
+                this.emit("message", m);
+            }
         });
+        await this._connector.Connect();
+
     }
 
     public Disconnect = async (): Promise<void> => {

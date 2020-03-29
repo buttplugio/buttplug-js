@@ -19,7 +19,7 @@ export class ButtplugBrowserWebsocketClientConnector extends EventEmitter implem
   private _sorter: ButtplugMessageSorter = new ButtplugMessageSorter(true);
   private _ws: WebSocket | undefined;
 
-  public constructor(private _url: string) {
+  public constructor(private _url: string, private _shouldUseSorter: boolean = true) {
     super();
   }
 
@@ -60,7 +60,7 @@ export class ButtplugBrowserWebsocketClientConnector extends EventEmitter implem
     if (!this.Connected) {
       throw new Error("ButtplugClient not connected");
     }
-    const p = this._sorter.PrepareOutgoingMessage(aMsg);
+    const p = this._shouldUseSorter? this._sorter.PrepareOutgoingMessage(aMsg) : aMsg;
     this._ws!.send("[" + aMsg.toJSON() + "]");
     return await p;
   }
