@@ -10,10 +10,10 @@ import { ButtplugLogger } from "../../../core/Logging";
 import { IDeviceSubtypeManager } from "../../IDeviceSubtypeManager";
 import { EventEmitter } from "events";
 import { ButtplugDevice } from "../../../devices/ButtplugDevice";
-import { ButtplugDeviceMessage, DeviceRemoved, DeviceAdded, Ok, Error, ButtplugMessage } from "core/Messages";
+import { ButtplugDeviceMessage, DeviceRemoved, DeviceAdded, Ok, Error, ButtplugMessage } from "../../../core/Messages";
 import { ForwardedDevice } from "./ForwardedDevice";
-import { ButtplugMessageSorter } from "utils/ButtplugMessageSorter";
-import { getRandomInt } from "utils/Utils";
+import { ButtplugMessageSorter } from "../../../utils/ButtplugMessageSorter";
+import { getRandomInt } from "../../../utils/Utils";
 import { ForwardedDeviceProtocol } from "./ForwardedDeviceProtocol";
 
 export interface ButtplugServerForwarderConnector extends EventEmitter {

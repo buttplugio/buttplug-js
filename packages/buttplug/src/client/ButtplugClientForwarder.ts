@@ -1,9 +1,9 @@
 import { ButtplugClientDevice } from "../client/ButtplugClientDevice";
-import { ButtplugDeviceMessage, DeviceAdded, DeviceRemoved, Ok, Error } from "core/Messages";
+import { ButtplugDeviceMessage, DeviceAdded, DeviceRemoved, Ok, Error, ButtplugMessage } from "../core/Messages";
 import { EventEmitter } from "events";
-import { ButtplugDeviceException } from "core/Exceptions";
+import { ButtplugDeviceException } from "../core/Exceptions";
 import { ButtplugBrowserWebsocketClientConnector } from "./ButtplugBrowserWebsocketClientConnector";
-import { getRandomInt } from "utils/Utils";
+import { getRandomInt } from "../utils/Utils";
 
 export interface ButtplugClientForwarderConnector extends EventEmitter {
     Connect(): Promise<void>;

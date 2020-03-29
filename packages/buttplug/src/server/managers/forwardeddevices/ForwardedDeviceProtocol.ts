@@ -7,7 +7,7 @@
  */
 
 import * as Messages from "../../../core/Messages";
-import { ButtplugDeviceException, ButtplugMessageException } from "../../../core/Exceptions";
+import { ButtplugMessageException } from "../../../core/Exceptions";
 import { ButtplugDeviceProtocol } from "../../../devices/ButtplugDeviceProtocol";
 import { IButtplugDeviceImpl } from "../../../devices/IButtplugDeviceImpl";
 
