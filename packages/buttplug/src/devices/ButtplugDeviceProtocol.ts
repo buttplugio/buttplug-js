@@ -12,8 +12,6 @@ import { EventEmitter } from "events";
 import { ButtplugLogger } from "../core/Logging";
 import { ButtplugMessageException } from "../core/Exceptions";
 import { IButtplugDeviceImpl } from "./IButtplugDeviceImpl";
-import { ButtplugDeviceWriteOptions } from "./ButtplugDeviceWriteOptions";
-import { ButtplugDeviceReadOptions } from "./ButtplugDeviceReadOptions";
 
 export abstract class ButtplugDeviceProtocol extends EventEmitter implements IButtplugDeviceProtocol {
 
