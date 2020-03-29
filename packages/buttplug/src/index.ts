@@ -11,6 +11,7 @@ export * from "./client/ButtplugClientDevice";
 export * from "./client/ButtplugBrowserWebsocketClientConnector";
 export * from "./client/ButtplugClientConnectorException";
 export * from "./client/ButtplugEmbeddedClientConnector";
+export * from "./client/ButtplugClientForwarder";
 export * from "./utils/ButtplugMessageSorter";
 export * from "./client/IButtplugClientConnector";
 export * from "./core/Messages";
