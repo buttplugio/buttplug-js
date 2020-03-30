@@ -46,5 +46,8 @@
       "json"
     ],
     "collectCoverage": true
+  },
+  "devDependencies": {
+    "@types/ws": "^7.2.3"
   }
 }

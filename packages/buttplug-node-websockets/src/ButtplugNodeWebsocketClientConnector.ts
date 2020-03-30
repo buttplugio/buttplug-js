@@ -7,7 +7,7 @@
  */
 
 "use strict";
-import * as WebSocket from "ws";
+import WebSocket from "ws";
 import { EventEmitter } from "events";
 import { FromJSON, IButtplugClientConnector, ButtplugLogger, ButtplugMessage, ButtplugMessageSorter,
          ButtplugClientConnectorException, ButtplugMessageException } from "buttplug";
@@ -19,7 +19,7 @@ import { FromJSON, IButtplugClientConnector, ButtplugLogger, ButtplugMessage, Bu
  */
 export class ButtplugNodeWebsocketClientConnector extends EventEmitter implements IButtplugClientConnector {
 
-  private _sorter: ButtplugMessageSorter = new ButtplugMessageSorter();
+  private _sorter: ButtplugMessageSorter = new ButtplugMessageSorter(true);
   /// Websocket client
   private wsClient: WebSocket | null = null;
   /// URL to connect to
