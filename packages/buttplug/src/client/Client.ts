@@ -138,6 +138,7 @@ export class ButtplugClient extends EventEmitter {
           const removedMsg = x as Messages.DeviceRemoved;
           if (this._devices.has(removedMsg.DeviceIndex)) {
             const removedDevice = this._devices.get(removedMsg.DeviceIndex);
+            removedDevice?.EmitDisconnected();
             this._devices.delete(removedMsg.DeviceIndex);
             this.emit("deviceremoved", removedDevice);
           }

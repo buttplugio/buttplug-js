@@ -9,11 +9,12 @@
 "use strict";
 import * as Messages from "../core/Messages";
 import { ButtplugDeviceException } from "../core/Exceptions";
+import { EventEmitter } from "events";
 
 /**
  * Represents an abstract device, capable of taking certain kinds of messages.
  */
-export class ButtplugClientDevice {
+export class ButtplugClientDevice extends EventEmitter {
 
   /**
    * Return the name of the device.
@@ -64,6 +65,7 @@ export class ButtplugClientDevice {
               allowedMsgsObj: object,
               private _sendClosure: (aDevice: ButtplugClientDevice,
                                      aMsg: Messages.ButtplugDeviceMessage) => Promise<void>) {
+    super();
     for (const k of Object.keys(allowedMsgsObj)) {
       this.allowedMsgs.set(k, allowedMsgsObj[k]);
     }
@@ -175,6 +177,10 @@ export class ButtplugClientDevice {
   public async SendKiirooCmd(aPosition: number): Promise<void> {
     this.CheckAllowedMessageType(Messages.KiirooCmd.name);
     await this.SendMessageAsync(new Messages.KiirooCmd(aPosition, this._index));
+  }
+
+  public EmitDisconnected() {
+    this.emit("deviceremoved");
   }
 
   private CheckGenericSubcommandList<T extends Messages.GenericMessageSubcommand>(aType: string,

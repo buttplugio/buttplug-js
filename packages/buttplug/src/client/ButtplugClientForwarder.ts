@@ -66,10 +66,8 @@ export class ButtplugClientForwarder {
 
     public AddDevice = async (device: ButtplugClientDevice) => {
         const msg = this.CreateDeviceAdded(device);
+        device.addListener("deviceremoved", () => this.RemoveDevice(device));
         await this._connector.SendMessage(msg);
-        // TODO Need a way to automatically remove the device if it fires
-        // deviceremoved, but that's only emitted from the client! WHY IS THAT
-        // NOT EMITTED FROM THE DEVICE TOO. WHY. ANSWER ME, 2017 ME.
     }
 
     public RemoveDevice = async (device: ButtplugClientDevice) => {
