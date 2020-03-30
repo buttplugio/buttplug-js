@@ -1,3 +1,20 @@
+# Version 0.13.0 - 2020/03/29
+
+## Features
+
+- Added Device Forwarder Support
+  - Allows developers to create a device manager that can accept "forwarded"
+    devices from another client. Basically turns Buttplug into a full
+    teledildonics system, using its own protocol.
+- ButtplugClientDevice now emits "deviceremoved" when it is disconnected.
+  - This is alongside the client emitting it.
+
+## Bugfixes
+
+- Fixed WeVibe Melt support
+- Fixed references to buttplug-server-cli in README
+  - This is now at https://github.com/intiface/intiface-node-cli
+
 # Version 0.12.3 - 2020/03/25
 
 ## Features
