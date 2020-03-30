@@ -1,3 +1,9 @@
+# Version 0.13.0 - 2020/03/29
+
+## Features
+
+- Update dependencies
+
 # Version 0.12.1 - 2019/10/05
 
 ## Features
