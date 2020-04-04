@@ -2,52 +2,33 @@ import { ButtplugClientDevice } from "../client/ButtplugClientDevice";
 import { ButtplugDeviceMessage, DeviceAdded, DeviceRemoved, Ok, Error, ButtplugMessage } from "../core/Messages";
 import { EventEmitter } from "events";
 import { ButtplugDeviceException } from "../core/Exceptions";
-import { ButtplugBrowserWebsocketClientConnector } from "./ButtplugBrowserWebsocketClientConnector";
 import { getRandomInt } from "../utils/Utils";
+import { ButtplugBrowserWebsocketConnector } from "../utils/ButtplugBrowserWebsocketConnector";
 
-export interface ButtplugClientForwarderConnector extends EventEmitter {
+export interface IButtplugClientForwarderConnector extends EventEmitter {
     Connect(): Promise<void>;
     Disconnect(): Promise<void>;
-    SendMessage(message: DeviceAdded | DeviceRemoved | Ok | Error): Promise<void>;
+    SendForwardedMessage(message: DeviceAdded | DeviceRemoved | Ok | Error): Promise<void>;
 }
 
-export class ButtplugClientForwarderBrowserWebsocketConnector extends EventEmitter implements ButtplugClientForwarderConnector {
-    private _serverAddress: string;
-    private _connector: ButtplugBrowserWebsocketClientConnector;
-
+export class ButtplugClientForwarderBrowserWebsocketConnector extends ButtplugBrowserWebsocketConnector implements IButtplugClientForwarderConnector {
     public constructor(serverAddress: string) {
-        super();
-        this._connector = new ButtplugBrowserWebsocketClientConnector(serverAddress, false);
+        super(serverAddress);
     }
 
-    public Connect = async (): Promise<void> => {
-        // Connect to the websocket, hook up events.
-        this._connector.addListener("message", async (msg: ButtplugDeviceMessage[]) => {
-            for (const m of msg) {
-                this.emit("message", m);
-            }
-        });
-        await this._connector.Connect();
-
-    }
-
-    public Disconnect = async (): Promise<void> => {
-        // Disconnect from the websocket
-        await this._connector.Disconnect();
-    }
-
-    public SendMessage = async (message: DeviceAdded | DeviceRemoved | Ok | Error): Promise<void> => {
+    public async SendForwardedMessage(message: ButtplugMessage): Promise<void> {
         // Expect that we'll just get Ok or Error back.
-        await this._connector.Send(message);
+        this.SendMessage(message);
+        return Promise.resolve();
     }
 }
 
 export class ButtplugClientForwarder {
     private _clientName: string;
-    private _connector: ButtplugClientForwarderConnector;
+    private _connector: IButtplugClientForwarderConnector;
     private _devices: Map<number, ButtplugClientDevice> = new Map<number, ButtplugClientDevice>();
 
-    public constructor(clientName: string, connector: ButtplugClientForwarderConnector) {
+    public constructor(clientName: string, connector: IButtplugClientForwarderConnector) {
         // We should prepend the client name to our devices before sending them out.
         this._clientName = clientName;
         this._connector = connector;
@@ -55,8 +36,10 @@ export class ButtplugClientForwarder {
 
     public Connect = async () => {
         await this._connector.Connect();
-        this._connector.addListener("message", async (msg: ButtplugDeviceMessage) => {
-            await this.ReceiveDeviceCommand(msg);
+        this._connector.addListener("message", async (msgs: ButtplugDeviceMessage[]) => {
+            for (const m of msgs) {
+              await this.ReceiveDeviceCommand(m);
+            }
         });
     }
 
@@ -67,12 +50,12 @@ export class ButtplugClientForwarder {
     public AddDevice = async (device: ButtplugClientDevice) => {
         const msg = this.CreateDeviceAdded(device);
         device.addListener("deviceremoved", () => this.RemoveDevice(device));
-        await this._connector.SendMessage(msg);
+        await this._connector.SendForwardedMessage(msg);
     }
 
     public RemoveDevice = async (device: ButtplugClientDevice) => {
         const msg = this.CreateDeviceRemoved(device);
-        await this._connector.SendMessage(msg);
+        await this._connector.SendForwardedMessage(msg);
     }
 
     public ReceiveDeviceCommand = async (message: ButtplugDeviceMessage) => {
@@ -89,7 +72,7 @@ export class ButtplugClientForwarder {
         await device?.SendMessageAsync(message);
         // Assume if we made it this far that we're just sending back an Ok with
         // Id match.
-        await this._connector.SendMessage(new Ok(message.Id));
+        await this._connector.SendForwardedMessage(new Ok(message.Id));
     }
 
     private CreateDeviceAdded(device: ButtplugClientDevice): DeviceAdded {

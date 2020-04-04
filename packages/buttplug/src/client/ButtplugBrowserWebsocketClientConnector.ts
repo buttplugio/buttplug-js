@@ -8,64 +8,35 @@
 
 "use strict";
 
-import { EventEmitter } from "events";
 import { IButtplugClientConnector } from "./IButtplugClientConnector";
 import { ButtplugMessage } from "../core/Messages";
 import { FromJSON } from "../core/MessageUtils";
 import { ButtplugMessageSorter } from "../utils/ButtplugMessageSorter";
+import { ButtplugBrowserWebsocketConnector } from "../utils/ButtplugBrowserWebsocketConnector";
 
-export class ButtplugBrowserWebsocketClientConnector extends EventEmitter implements IButtplugClientConnector {
+export class ButtplugBrowserWebsocketClientConnector extends ButtplugBrowserWebsocketConnector implements IButtplugClientConnector {
 
   private _sorter: ButtplugMessageSorter = new ButtplugMessageSorter(true);
-  private _ws: WebSocket | undefined;
+  protected _ws: WebSocket | undefined;
 
-  public constructor(private _url: string, private _shouldUseSorter: boolean = true) {
-    super();
+  public constructor(_url: string) {
+    super(_url);
   }
 
   public get Connected(): boolean {
     return this._ws !== undefined;
   }
 
-  public Connect = async (): Promise<void> => {
-    const ws = new WebSocket(this._url);
-    let res;
-    let rej;
-    const p = new Promise<void>((resolve, reject) => { res = resolve; rej = reject; });
-    // In websockets, our error rarely tells us much, as for security reasons
-    // browsers usually only throw Error Code 1006. It's up to those using this
-    // library to state what the problem might be.
-    const conErrorCallback = (ev) => rej();
-    ws.addEventListener("open", async (ev) => {
-      this._ws = ws;
-      this._ws.addEventListener("message", (aMsg) => { this.ParseIncomingMessage(aMsg); });
-      this._ws.removeEventListener("close", conErrorCallback);
-      this._ws.addEventListener("close", this.Disconnect);
-      res();
-    });
-    ws.addEventListener("close", conErrorCallback);
-    return p;
-  }
-
-  public Disconnect = async (): Promise<void> => {
-    if (!this.Connected) {
-      return;
-    }
-    this._ws!.close();
-    this._ws = undefined;
-    this.emit("disconnect");
-  }
-
   public Send = async (aMsg: ButtplugMessage): Promise<ButtplugMessage> => {
     if (!this.Connected) {
       throw new Error("ButtplugClient not connected");
     }
-    const p = this._shouldUseSorter? this._sorter.PrepareOutgoingMessage(aMsg) : aMsg;
-    this._ws!.send("[" + aMsg.toJSON() + "]");
+    const p = this._sorter.PrepareOutgoingMessage(aMsg);
+    this.SendMessage(aMsg);
     return await p;
   }
 
-  private ParseIncomingMessage = (aEvent: MessageEvent) => {
+  protected ParseIncomingMessage = (aEvent: MessageEvent) => {
     if (typeof (aEvent.data) === "string") {
       const msgs = FromJSON(aEvent.data);
       const emitMsgs = this._sorter.ParseIncomingMessages(msgs);
@@ -77,7 +48,7 @@ export class ButtplugBrowserWebsocketClientConnector extends EventEmitter implem
     }
   }
 
-  private OnReaderLoad(aEvent: Event) {
+  protected OnReaderLoad(aEvent: Event) {
     const msgs = FromJSON((aEvent.target as FileReader).result);
     const emitMsgs = this._sorter.ParseIncomingMessages(msgs);
     this.emit("message", emitMsgs);
