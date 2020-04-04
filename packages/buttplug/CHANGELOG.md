@@ -1,3 +1,11 @@
+# Version 0.13.1 - 2020/04/04
+
+## Features
+
+- Added support for Connector Initializer
+  - Allows using the Buttplug connector for auth or other communication before
+    spinning up the protocol itself.
+
 # Version 0.13.0 - 2020/03/29
 
 ## Features
