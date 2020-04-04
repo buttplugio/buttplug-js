@@ -67,11 +67,12 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter {
     this._ws!.send("[" + aMsg.toJSON() + "]");
   }
 
-  public Initialize = (): Promise<void> => {
+  public Initialize = async (): Promise<void> => {
     return Promise.resolve();
   }
 
   protected ParseIncomingMessage(aEvent: MessageEvent) {
+    console.log("Calling parent parse incoming");
     if (typeof (aEvent.data) === "string") {
       const msgs = FromJSON(aEvent.data);
       this.emit("message", msgs);

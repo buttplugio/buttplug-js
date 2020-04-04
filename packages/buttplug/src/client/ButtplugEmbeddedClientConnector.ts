@@ -26,7 +26,7 @@ export class ButtplugEmbeddedClientConnector extends EventEmitter implements IBu
     return this._server;
   }
 
-  public Initialize(): Promise<void> {
+  public async Initialize(): Promise<void> {
     return Promise.resolve();
   }
 
