@@ -29,12 +29,12 @@ export class ForwardedDeviceProtocol extends ButtplugDeviceProtocol {
   }
 
   // Override the base protocol ParseMessage, because we'll never actually handle our own messages.
-  public ParseMessage = async (aMsg: Messages.ButtplugDeviceMessage): Promise<Messages.ButtplugMessage> => {
+  public ParseMessage = async (aMsg: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage> => {
     if (!this.MessageSpecifications.hasOwnProperty(aMsg.Type.name)) {
       throw new ButtplugMessageException(`${this._name} cannot handle message of type ${aMsg.Type.name}`, aMsg.Id);
     }
     // Swap out the device index so we send to the correct device on the other end.
-    aMsg.DeviceIndex = this._actualDeviceIndex;
+    (aMsg as Messages.ButtplugDeviceMessage).DeviceIndex = this._actualDeviceIndex;
     // We can forward this message on to the client to run.
     return await this._clientSendClosure(aMsg);
   }
