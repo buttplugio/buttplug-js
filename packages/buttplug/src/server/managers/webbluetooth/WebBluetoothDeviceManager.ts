@@ -32,10 +32,25 @@ export class WebBluetoothDeviceManager extends EventEmitter implements IDeviceSu
     // Form scanning filters
     // TODO Get bluetooth device info from device configuration manager here.
 
-    const filters = {
-      filters: new Array<BluetoothRequestDeviceFilter>(),
-      optionalServices: new Array<BluetoothServiceUUID>(),
-    };
+    // Check the user agent for android, so we can substitute in
+    // acceptAllDevices until the Chrome namePrefix bug is fixed.
+    var userAgent = navigator.userAgent.toLowerCase();
+    var isAndroid = userAgent.indexOf("android") > -1;
+
+    let filters: RequestDeviceOptions;
+    // If we're on any platform other than android, use name filters
+    if (!isAndroid) {
+      filters = {
+        filters: new Array<BluetoothRequestDeviceFilter>(),
+        optionalServices: new Array<BluetoothServiceUUID>(),
+      };
+    } else {
+      // Otherwise, just accept everything.
+      filters = {
+        acceptAllDevices: true,
+        optionalServices: new Array<BluetoothServiceUUID>(),
+      }
+    }
 
     // If the DeviceConfigurationManager hasn't been built yet, we've got a
     // problem. So just expect we'll get one back.
@@ -44,18 +59,21 @@ export class WebBluetoothDeviceManager extends EventEmitter implements IDeviceSu
     const bluetoothConfigs = confMgr.GetAllConfigsOfType(BluetoothLEProtocolConfiguration);
 
     for (const config of bluetoothConfigs) {
-      for (const deviceName of config.Names) {
-        try {
-          if (deviceName.endsWith("*")) {
-            filters.filters.push({namePrefix: deviceName.substr(0, deviceName.length - 1)});
+      if (!isAndroid) {
+        for (const deviceName of config.Names) {
+          try {
+            // We have to cast filters to any here because the logic + split value type doesn't work well.
+            if (deviceName.endsWith("*")) {
+              (filters as any).filters.push({ namePrefix: deviceName.substr(0, deviceName.length - 1) });
+            }
+            (filters as any).filters.push({ name: deviceName });
+          } catch (e) {
+            console.log(e);
+            console.log(config);
           }
-          filters.filters.push({name: deviceName});
-        } catch (e) {
-          console.log(e);
-          console.log(config);
         }
       }
-      filters.optionalServices = [...filters.optionalServices, ...config.Services.keys()];
+      filters.optionalServices = [...filters.optionalServices!, ...config.Services.keys()];
     }
 
     this._logger.Trace("Bluetooth filter set: " + JSON.stringify(filters));
@@ -76,18 +94,18 @@ export class WebBluetoothDeviceManager extends EventEmitter implements IDeviceSu
         return;
       }
       throw ButtplugException.LogAndError(ButtplugDeviceException,
-                                          this._logger,
-                                          "Bluetooth scanning interrupted. " +
-                                          "Either user cancelled out of dialog, " +
-                                          "or bluetooth radio is not available. Exception: " + e);
+        this._logger,
+        "Bluetooth scanning interrupted. " +
+        "Either user cancelled out of dialog, " +
+        "or bluetooth radio is not available. Exception: " + e);
     }
     try {
       await this.OpenDevice(device);
     } catch (e) {
       this.emit("scanningfinished");
       throw ButtplugException.LogAndError(ButtplugDeviceException,
-                                          this._logger,
-                                          `Cannot open device ${device.name}: ${e}`);
+        this._logger,
+        `Cannot open device ${device.name}: ${e}`);
     }
     this.emit("scanningfinished");
   }
