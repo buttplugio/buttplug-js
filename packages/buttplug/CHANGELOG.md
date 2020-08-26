@@ -1,3 +1,12 @@
+# Version 0.13.2 - 2020/08/25
+
+## Bugfixes
+
+- Make Android use WebBluetooth's acceptAllDevices so Lovense shows up again
+  - namePrefix, which we use to wildcard Lovense devices, broke in Chrome 81.
+    Fix is tracked for Chrome 87.
+- Fix type mismatch in inherited methods in ForwardedDeviceProtocol.
+
 # Version 0.13.1 - 2020/04/04
 
 ## Features
