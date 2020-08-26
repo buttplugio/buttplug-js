@@ -1709,10 +1709,10 @@
   resolved "https://registry.yarnpkg.com/@types/web-bluetooth/-/web-bluetooth-0.0.3.tgz#39472343a188585a041bbd40ddc944d051282863"
   integrity sha512-Pk4ArFI+nyf4wkqKwR4tTNMEmuMoccDns8mqL/9wty/mCJAutPgc0rO42ywxa3WD06K75xkg0jYglp6hx5s2XA==
 
-"@types/web-bluetooth@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@types/web-bluetooth/-/web-bluetooth-0.0.5.tgz#f952d1481572798dd20a381135bef3d8b1ef305a"
-  integrity sha512-gaSAxNePCVJUR1a+4jKMaukjEzE4XuJd9fzSx/mAy6BrVoJXnACmfaBkaXU/K0frxJVfHvMDJx96hbNt4NXd9Q==
+"@types/web-bluetooth@^0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@types/web-bluetooth/-/web-bluetooth-0.0.8.tgz#440808ba4c705377f35b0ac35078c7c77cee7158"
+  integrity sha512-LxKTVUOLauVRZxgOmqxKT9n8xBRukUkP/vyG5QfFmTWN58zuOgiGT3BIIIJbjmSSZ2iSlC/kky5xSWBS1PIgtQ==
 
 "@types/ws@^7.2.3":
   version "7.2.3"
@@ -11442,10 +11442,10 @@ typedoc@^0.17.3:
     shelljs "^0.8.3"
     typedoc-default-themes "^0.9.0"
 
-typescript@^3.8.3:
-  version "3.8.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.8.3.tgz#409eb8544ea0335711205869ec458ab109ee1061"
-  integrity sha512-MYlEfn5VrLNsgudQTVJeNaQFUAI7DkhnOjdpAp4T+ku1TfQClewlbSuTVHiA+8skNBgaf02TL/kLOvig4y3G8w==
+typescript@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.0.2.tgz#7ea7c88777c723c681e33bf7988be5d008d05ac2"
+  integrity sha512-e4ERvRV2wb+rRZ/IQeb3jm2VxBsirQLpQhdxplZ2MEzGvDkkMmPglecnNDfSUBivMjP93vRbngYYDQqQ/78bcQ==
 
 uglify-js@3.4.x:
   version "3.4.10"
