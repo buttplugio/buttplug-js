@@ -1,3 +1,22 @@
+# DEPRECATION WARNING
+
+This project will be deprecated and archived in the coming weeks/months, with
+the JS implementation of buttplug moving to an FFI layer on top of buttplug-rs
+(WASM for the web, Neon for node). Bugs are currently being triaged from this
+library to buttplug-rs-ffi.
+
+The new project will be at
+
+[https://github.com/buttplugio/buttplug-rs-ffi/](https://github.com/buttplugio/buttplug-rs-ffi/)
+
+The API will change, though minimally (mostly connection in methods), and we
+will most likely still distribute the npm package under the same name
+("buttplug"). Many of the support packages for connectors and device management
+will also be deprecated, as their functionality will now be handled in Rust.
+
+You may continue to use this repo for the time being, just wanted everyone to be
+aware of the changes happening in the near future.
+
 # Buttplug JS Multirepo
 
 [![Build Status](https://dev.azure.com/nplabs/buttplug/_apis/build/status/buttplugio.buttplug-js?branchName=master)](https://dev.azure.com/nplabs/buttplug/_build/latest?definitionId=3&branchName=master)
