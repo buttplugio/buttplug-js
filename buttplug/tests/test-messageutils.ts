@@ -1,7 +1,6 @@
 import { SetupTestSuite } from "./utils";
 import {ButtplugClientDevice, VibrateCmd, RotateCmd, LinearCmd, VectorSubcommand,
-        RotateSubcommand, SpeedSubcommand, FleshlightLaunchFW12Cmd, VorzeA10CycloneCmd,
-  LovenseCmd, StopDeviceCmd, ButtplugDeviceMessage, ButtplugDeviceException, KiirooCmd } from "../src/index";
+        RotateSubcommand, SpeedSubcommand, StopDeviceCmd, ButtplugDeviceMessage, ButtplugDeviceException } from "../src/index";
 
 SetupTestSuite();
 
@@ -12,10 +11,6 @@ describe("Message Utils Tests", () => {
     VibrateCmd: { FeatureCount: 2 },
     RotateCmd: { FeatureCount: 1 },
     LinearCmd: { FeatureCount: 1 },
-    FleshlightLaunchFW12Cmd: {},
-    LovenseCmd: {},
-    VorzeA10CycloneCmd: {},
-    KiirooCmd: {},
     StopDeviceCmd: {},
   }, async (aDevice, aMsg) => { lastMsg = aMsg; });
 
@@ -55,18 +50,6 @@ describe("Message Utils Tests", () => {
     await testDevice.SendLinearCmd([[0.5, 1.5]]);
     expect(lastMsg).toEqual(new LinearCmd([new VectorSubcommand(0, 0.5, 1.5)],
                                           0));
-
-    await testDevice.SendFleshlightLaunchFW12Cmd(50, 50);
-    expect(lastMsg).toEqual(new FleshlightLaunchFW12Cmd(50, 50, 0));
-
-    await testDevice.SendLovenseCmd("Vibrate:10;");
-    expect(lastMsg).toEqual(new LovenseCmd("Vibrate:10;", 0));
-
-    await testDevice.SendVorzeA10CycloneCmd(50, true);
-    expect(lastMsg).toEqual(new VorzeA10CycloneCmd(50, true, 0));
-
-    await testDevice.SendKiirooCmd(3);
-    expect(lastMsg).toEqual(new KiirooCmd(3, 0));
 
     await testDevice.SendStopDeviceCmd();
     expect(lastMsg).toEqual(new StopDeviceCmd(0));
