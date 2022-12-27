@@ -55,4 +55,7 @@ doc/**
 # pkg files
 rpt2*
 # pkg output
-buttplug-node-server
+
+
+# yarn metadata
+.yarn

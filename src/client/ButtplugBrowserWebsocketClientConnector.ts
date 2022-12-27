@@ -27,29 +27,29 @@ export class ButtplugBrowserWebsocketClientConnector extends ButtplugBrowserWebs
     return this._ws !== undefined;
   }
 
-  public Send = async (aMsg: ButtplugMessage): Promise<ButtplugMessage> => {
+  public Send = async (msg: ButtplugMessage): Promise<ButtplugMessage> => {
     if (!this.Connected) {
       throw new Error("ButtplugClient not connected");
     }
-    const p = this._sorter.PrepareOutgoingMessage(aMsg);
-    this.SendMessage(aMsg);
+    const p = this._sorter.PrepareOutgoingMessage(msg);
+    this.SendMessage(msg);
     return await p;
   }
 
-  protected ParseIncomingMessage = (aEvent: MessageEvent) => {
-    if (typeof (aEvent.data) === "string") {
-      const msgs = FromJSON(aEvent.data);
+  protected ParseIncomingMessage = (event: MessageEvent) => {
+    if (typeof (event.data) === "string") {
+      const msgs = FromJSON(event.data);
       const emitMsgs = this._sorter.ParseIncomingMessages(msgs);
       this.emit("message", emitMsgs);
-    } else if (aEvent.data instanceof Blob) {
+    } else if (event.data instanceof Blob) {
       const reader = new FileReader();
       reader.addEventListener("load", (ev) => { this.OnReaderLoad(ev); });
-      reader.readAsText(aEvent.data);
+      reader.readAsText(event.data);
     }
   }
 
-  protected OnReaderLoad(aEvent: Event) {
-    const msgs = FromJSON((aEvent.target as FileReader).result);
+  protected OnReaderLoad(event: Event) {
+    const msgs = FromJSON((event.target as FileReader).result);
     const emitMsgs = this._sorter.ParseIncomingMessages(msgs);
     this.emit("message", emitMsgs);
   }

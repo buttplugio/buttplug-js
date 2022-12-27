@@ -27,10 +27,10 @@ export class ButtplugClient extends EventEmitter {
   // TODO This should be set on schema load
   protected _messageVersion: number = 1;
 
-  constructor(aClientName: string = "Generic Buttplug Client") {
+  constructor(clientName: string = "Generic Buttplug Client") {
     super();
-    this._clientName = aClientName;
-    this._logger.Debug(`ButtplugClient: Client ${aClientName} created.`);
+    this._clientName = clientName;
+    this._logger.Debug(`ButtplugClient: Client ${clientName} created.`);
   }
 
   public get Connector(): IButtplugClientConnector | null {
@@ -56,10 +56,10 @@ export class ButtplugClient extends EventEmitter {
     return this._isScanning;
   }
 
-  public Connect = async (aConnector: IButtplugClientConnector) => {
-    this._logger.Info(`ButtplugClient: Connecting using ${aConnector.constructor.name}`);
-    await aConnector.Connect();
-    this._connector = aConnector;
+  public Connect = async (connector: IButtplugClientConnector) => {
+    this._logger.Info(`ButtplugClient: Connecting using ${connector.constructor.name}`);
+    await connector.Connect();
+    this._connector = connector;
     this._connector.addListener("message", this.ParseMessages);
     this._connector.addListener("disconnect", this.DisconnectHandler);
     await this.InitializeConnection();
@@ -84,9 +84,9 @@ export class ButtplugClient extends EventEmitter {
     await this.SendMsgExpectOk(new Messages.StopScanning());
   }
 
-  public RequestLog = async (aLogLevel: string) => {
-    this._logger.Debug(`ButtplugClient: RequestLog called with level ${aLogLevel}`);
-    await this.SendMsgExpectOk(new Messages.RequestLog(aLogLevel));
+  public RequestLog = async (logLevel: string) => {
+    this._logger.Debug(`ButtplugClient: RequestLog called with level ${logLevel}`);
+    await this.SendMsgExpectOk(new Messages.RequestLog(logLevel));
   }
 
   public StopAllDevices = async () => {
@@ -94,26 +94,26 @@ export class ButtplugClient extends EventEmitter {
     await this.SendMsgExpectOk(new Messages.StopAllDevices());
   }
 
-  public async SendDeviceMessage(aDevice: ButtplugClientDevice,
-                                 aDeviceMsg: Messages.ButtplugDeviceMessage): Promise<void> {
+  public async SendDeviceMessage(device: ButtplugClientDevice,
+                                 deviceMsg: Messages.ButtplugDeviceMessage): Promise<void> {
     this.CheckConnector();
-    const dev = this._devices.get(aDevice.Index);
+    const dev = this._devices.get(device.Index);
     if (dev === undefined) {
       throw ButtplugException.LogAndError(ButtplugDeviceException,
                                           this._logger,
-                                          `Device ${aDevice.Index} not available.`);
+                                          `Device ${device.Index} not available.`);
     }
-    if (dev.AllowedMessages.indexOf(aDeviceMsg.Type.name) === -1) {
+    if (dev.AllowedMessages.indexOf(deviceMsg.Type.name) === -1) {
       throw ButtplugException.LogAndError(ButtplugDeviceException,
                                           this._logger,
-                                          `Device ${aDevice.Name} does not accept message type ${aDeviceMsg.Type}.`);
+                                          `Device ${device.Name} does not accept message type ${deviceMsg.Type}.`);
     }
-    aDeviceMsg.DeviceIndex = aDevice.Index;
-    await this.SendMsgExpectOk(aDeviceMsg);
+    deviceMsg.DeviceIndex = device.Index;
+    await this.SendMsgExpectOk(deviceMsg);
   }
 
-  public ParseMessages = (aMsgs: Messages.ButtplugMessage[]) => {
-    this.ParseMessagesInternal(aMsgs);
+  public ParseMessages = (msgs: Messages.ButtplugMessage[]) => {
+    this.ParseMessagesInternal(msgs);
   }
 
   protected DisconnectHandler = () => {
@@ -121,8 +121,8 @@ export class ButtplugClient extends EventEmitter {
     this.emit("disconnect");
   }
 
-  protected ParseMessagesInternal(aMsgs: Messages.ButtplugMessage[]) {
-    for (const x of aMsgs) {
+  protected ParseMessagesInternal(msgs: Messages.ButtplugMessage[]) {
+    for (const x of msgs) {
       switch (x.constructor) {
         case Messages.Log:
           this.emit("log", x);
@@ -220,9 +220,9 @@ export class ButtplugClient extends EventEmitter {
     }
   }
 
-  protected async SendMessage(aMsg: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage> {
+  protected async SendMessage(msg: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage> {
     this.CheckConnector();
-    return await this._connector!.Send(aMsg);
+    return await this._connector!.Send(msg);
   }
 
   protected CheckConnector() {
@@ -231,22 +231,22 @@ export class ButtplugClient extends EventEmitter {
     }
   }
 
-  protected SendMsgExpectOk = async (aMsg: Messages.ButtplugMessage): Promise<void> => {
-    const msg = await this.SendMessage(aMsg);
-    switch (msg.constructor) {
+  protected SendMsgExpectOk = async (msg: Messages.ButtplugMessage): Promise<void> => {
+    const response = await this.SendMessage(msg);
+    switch (response.constructor) {
       case Messages.Ok:
         return;
       case Messages.Error:
-        throw ButtplugException.FromError(msg as Messages.Error);
+        throw ButtplugException.FromError(response as Messages.Error);
       default:
         throw ButtplugException.LogAndError(ButtplugMessageException,
                                             this._logger,
-                                            `Message type ${msg.constructor} not handled bySendMsgExpectOk`);
+                                            `Message type ${response.constructor} not handled by SendMsgExpectOk`);
     }
   }
 
-  protected SendDeviceMessageClosure = async (aDevice: ButtplugClientDevice,
-                                              aMsg: Messages.ButtplugDeviceMessage): Promise<void> => {
-    await this.SendDeviceMessage(aDevice, aMsg);
+  protected SendDeviceMessageClosure = async (device: ButtplugClientDevice,
+                                              msg: Messages.ButtplugDeviceMessage): Promise<void> => {
+    await this.SendDeviceMessage(device, msg);
   }
 }

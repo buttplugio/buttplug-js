@@ -36,8 +36,8 @@ describe("Websocket Client Tests", () => {
         // (socket as any).removeListener("message", serverInfo);
       }
     };
-    mockServer.on("connection", (aSocket: Client) => {
-      socket = aSocket;
+    mockServer.on("connection", (connectedSocket: Client) => {
+      socket = connectedSocket;
       // TODO Bug in typescript defs for mock-socket 8 means we can't use the
       // socket type as it was meant. See
       // https://github.com/thoov/mock-socket/issues/224
@@ -51,8 +51,8 @@ describe("Websocket Client Tests", () => {
     mockServer.stop(done);
   });
 
-  function delaySend(aMsg: Messages.ButtplugMessage) {
-    process.nextTick(() => socket.send("[" + aMsg.toJSON() + "]"));
+  function delaySend(msg: Messages.ButtplugMessage) {
+    process.nextTick(() => socket.send("[" + msg.toJSON() + "]"));
   }
 
   it("Should deal with request/reply correctly", async () => {

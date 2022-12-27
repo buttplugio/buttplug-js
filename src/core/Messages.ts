@@ -105,7 +105,7 @@ export class Error extends ButtplugSystemMessage {
     super(Id);
   }
 
-  get SchemaVersion() { return 0; }
+  get Schemversion() { return 0; }
 }
 
 export class DeviceInfo {
@@ -215,17 +215,17 @@ export class SpeedSubcommand extends GenericMessageSubcommand {
 
 export class VibrateCmd extends ButtplugDeviceMessage {
 
-  public static Create(aDeviceIndex: number,
-                       aSpeeds: number[]): VibrateCmd {
+  public static Create(deviceIndex: number,
+                       speeds: number[]): VibrateCmd {
     const cmdList: SpeedSubcommand[] = new Array<SpeedSubcommand>();
 
     let i = 0;
-    for (const speed of aSpeeds) {
+    for (const speed of speeds) {
       cmdList.push(new SpeedSubcommand(i, speed));
       ++i;
     }
 
-    return new VibrateCmd(cmdList, aDeviceIndex, DEFAULT_MESSAGE_ID);
+    return new VibrateCmd(cmdList, deviceIndex, DEFAULT_MESSAGE_ID);
   }
   constructor(public Speeds: SpeedSubcommand[],
               public DeviceIndex: number = -1,
@@ -236,17 +236,17 @@ export class VibrateCmd extends ButtplugDeviceMessage {
 
 export class RotateSubcommand extends GenericMessageSubcommand {
 
-  public static Create(aDeviceIndex: number,
-                       aSpeeds: number[]): VibrateCmd {
+  public static Create(deviceIndex: number,
+                       speeds: number[]): VibrateCmd {
     const cmdList: SpeedSubcommand[] = new Array<SpeedSubcommand>();
 
     let i = 0;
-    for (const speed of aSpeeds) {
+    for (const speed of speeds) {
       cmdList.push(new SpeedSubcommand(i, speed));
       ++i;
     }
 
-    return new VibrateCmd(cmdList, aDeviceIndex);
+    return new VibrateCmd(cmdList, deviceIndex);
   }
   constructor(Index: number,
               public Speed: number,
@@ -257,17 +257,17 @@ export class RotateSubcommand extends GenericMessageSubcommand {
 
 export class RotateCmd extends ButtplugDeviceMessage {
 
-  public static Create(aDeviceIndex: number,
-                       aCommands: [number, boolean][]): RotateCmd {
+  public static Create(deviceIndex: number,
+                       commands: [number, boolean][]): RotateCmd {
     const cmdList: RotateSubcommand[] = new Array<RotateSubcommand>();
 
     let i = 0;
-    for (const cmd of aCommands) {
+    for (const cmd of commands) {
       cmdList.push(new RotateSubcommand(i, cmd[0], cmd[1]));
       ++i;
     }
 
-    return new RotateCmd(cmdList, aDeviceIndex);
+    return new RotateCmd(cmdList, deviceIndex);
   }
   constructor(public Rotations: RotateSubcommand[],
               public DeviceIndex: number = -1,
@@ -286,17 +286,17 @@ export class VectorSubcommand extends GenericMessageSubcommand {
 
 export class LinearCmd extends ButtplugDeviceMessage {
 
-  public static Create(aDeviceIndex: number,
-                       aCommands: [number, number][]): LinearCmd {
+  public static Create(deviceIndex: number,
+                       commands: [number, number][]): LinearCmd {
     const cmdList: VectorSubcommand[] = new Array<VectorSubcommand>();
 
     let i = 0;
-    for (const cmd of aCommands) {
+    for (const cmd of commands) {
       cmdList.push(new VectorSubcommand(i, cmd[0], cmd[1]));
       ++i;
     }
 
-    return new LinearCmd(cmdList, aDeviceIndex);
+    return new LinearCmd(cmdList, deviceIndex);
   }
   constructor(public Vectors: VectorSubcommand[],
               public DeviceIndex: number = -1,

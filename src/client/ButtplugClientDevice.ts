@@ -43,12 +43,12 @@ export class ButtplugClientDevice extends EventEmitter {
     return obj;
   }
 
-  public static fromMsg(aMsg: Messages.DeviceAdded | Messages.DeviceInfo,
-                        sendClosure: (aDevice: ButtplugClientDevice,
-                                      aMsg: Messages.ButtplugDeviceMessage) => Promise<void>): ButtplugClientDevice {
-    return new ButtplugClientDevice(aMsg.DeviceIndex,
-                                    aMsg.DeviceName,
-                                    aMsg.DeviceMessages,
+  public static fromMsg(msg: Messages.DeviceAdded | Messages.DeviceInfo,
+                        sendClosure: (device: ButtplugClientDevice,
+                                      msg: Messages.ButtplugDeviceMessage) => Promise<void>): ButtplugClientDevice {
+    return new ButtplugClientDevice(msg.DeviceIndex,
+                                    msg.DeviceName,
+                                    msg.DeviceMessages,
                                     sendClosure);
   }
 
@@ -63,17 +63,17 @@ export class ButtplugClientDevice extends EventEmitter {
   constructor(private _index: number,
               private _name: string,
               allowedMsgsObj: object,
-              private _sendClosure: (aDevice: ButtplugClientDevice,
-                                     aMsg: Messages.ButtplugDeviceMessage) => Promise<void>) {
+              private _sendClosure: (device: ButtplugClientDevice,
+                                     msg: Messages.ButtplugDeviceMessage) => Promise<void>) {
     super();
     for (const k of Object.keys(allowedMsgsObj)) {
       this.allowedMsgs.set(k, allowedMsgsObj[k]);
     }
   }
 
-  public CheckAllowedMessageType(aName: string) {
-    if (this.AllowedMessages.indexOf(aName) === -1) {
-      throw new ButtplugDeviceException(`Message ${aName} does not exist on device ${this._name}`);
+  public CheckAllowedMessageType(name: string) {
+    if (this.AllowedMessages.indexOf(name) === -1) {
+      throw new ButtplugDeviceException(`Message ${name} does not exist on device ${this._name}`);
     }
   }
 
@@ -85,23 +85,23 @@ export class ButtplugClientDevice extends EventEmitter {
     return this.allowedMsgs.get(messageName)!;
   }
 
-  public async SendMessageAsync(aMsg: Messages.ButtplugDeviceMessage): Promise<void> {
+  public async SendMessageAsync(msg: Messages.ButtplugDeviceMessage): Promise<void> {
     // Assume we're getting the closure from ButtplugClient, which does all of
     // the index/existence/connection/message checks for us.
-    await this._sendClosure(this, aMsg);
+    await this._sendClosure(this, msg);
   }
 
-  public async SendVibrateCmd(aSpeed: number | number[]): Promise<void> {
+  public async SendVibrateCmd(speed: number | number[]): Promise<void> {
     this.CheckAllowedMessageType(Messages.VibrateCmd.name);
     let msg: Messages.VibrateCmd;
-    if (typeof(aSpeed) === "number") {
+    if (typeof(speed) === "number") {
       // We can skip the check here since we're building the command array ourselves.
       const features = this.MessageAttributes(Messages.VibrateCmd.name).FeatureCount;
       msg = Messages.VibrateCmd.Create(this._index,
-                                       new Array(features).fill(aSpeed));
-    } else if (Array.isArray(aSpeed)) {
+                                       new Array(features).fill(speed));
+    } else if (Array.isArray(speed)) {
       msg = Messages.VibrateCmd.Create(this._index,
-                                       aSpeed);
+                                       speed);
       this.CheckGenericSubcommandList(Messages.SpeedSubcommand.name,
                                       msg.Speeds,
                                       this.MessageAttributes(Messages.VibrateCmd.name).FeatureCount);
@@ -111,17 +111,17 @@ export class ButtplugClientDevice extends EventEmitter {
     await this.SendMessageAsync(msg);
   }
 
-  public async SendRotateCmd(aValues: number | [number, boolean][], aClockwise?: boolean): Promise<void> {
+  public async SendRotateCmd(values: number | [number, boolean][], clockwise?: boolean): Promise<void> {
     this.CheckAllowedMessageType(Messages.RotateCmd.name);
     let msg: Messages.RotateCmd;
-    if (typeof(aValues) === "number") {
+    if (typeof(values) === "number") {
       // We can skip the check here since we're building the command array ourselves.
       const features = this.MessageAttributes(Messages.RotateCmd.name).FeatureCount;
       msg = Messages.RotateCmd.Create(this._index,
-                                      new Array(features).fill([aValues, aClockwise]));
-    } else if (Array.isArray(aValues)) {
+                                      new Array(features).fill([values, clockwise]));
+    } else if (Array.isArray(values)) {
       msg = Messages.RotateCmd.Create(this._index,
-                                      aValues);
+                                      values);
       this.CheckGenericSubcommandList(Messages.SpeedSubcommand.name,
                                       msg.Rotations,
                                       this.MessageAttributes(Messages.RotateCmd.name).FeatureCount);
@@ -132,17 +132,17 @@ export class ButtplugClientDevice extends EventEmitter {
     await this.SendMessageAsync(msg);
   }
 
-  public async SendLinearCmd(aValues: number | [number, number][], aDuration?: number): Promise<void> {
+  public async SendLinearCmd(values: number | [number, number][], duration?: number): Promise<void> {
     this.CheckAllowedMessageType(Messages.LinearCmd.name);
     let msg: Messages.LinearCmd;
-    if (typeof(aValues) === "number") {
+    if (typeof(values) === "number") {
       // We can skip the check here since we're building the command array ourselves.
       const features = this.MessageAttributes(Messages.LinearCmd.name).FeatureCount;
       msg = Messages.LinearCmd.Create(this._index,
-                                      new Array(features).fill([aValues, aDuration]));
-    } else if (Array.isArray(aValues)) {
+                                      new Array(features).fill([values, duration]));
+    } else if (Array.isArray(values)) {
       msg = Messages.LinearCmd.Create(this._index,
-                                      aValues);
+                                      values);
       this.CheckGenericSubcommandList(Messages.SpeedSubcommand.name,
                                       msg.Vectors,
                                       this.MessageAttributes(Messages.LinearCmd.name).FeatureCount);
@@ -163,22 +163,22 @@ export class ButtplugClientDevice extends EventEmitter {
     this.emit("deviceremoved");
   }
 
-  private CheckGenericSubcommandList<T extends Messages.GenericMessageSubcommand>(aType: string,
-                                                                                  aCmdList: T[],
-                                                                                  aLimitValue: number) {
-    if (aCmdList.length === 0 || aCmdList.length > aLimitValue) {
-      if (aLimitValue === 1) {
+  private CheckGenericSubcommandList<T extends Messages.GenericMessageSubcommand>(type: string,
+                                                                                  cmdList: T[],
+                                                                                  limitValue: number) {
+    if (cmdList.length === 0 || cmdList.length > limitValue) {
+      if (limitValue === 1) {
         throw new ButtplugDeviceException(
-          `${aType} requires 1 subcommand for this device, ${aCmdList.length} present.`);
+          `${type} requires 1 subcommand for this device, ${cmdList.length} present.`);
       }
 
       throw new ButtplugDeviceException(
-        `${aType} requires between 1 and ${aLimitValue} subcommands for this device, ${aCmdList.length} present.`);
+        `${type} requires between 1 and ${limitValue} subcommands for this device, ${cmdList.length} present.`);
     }
 
-    for (const cmd of aCmdList) {
-      if (cmd.Index >= aLimitValue) {
-        throw new ButtplugDeviceException(`Index ${cmd.Index} is out of bounds for ${aType} for this device.`);
+    for (const cmd of cmdList) {
+      if (cmd.Index >= limitValue) {
+        throw new ButtplugDeviceException(`Index ${cmd.Index} is out of bounds for ${type} for this device.`);
       }
     }
   }

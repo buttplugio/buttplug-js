@@ -1517,7 +1517,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ajv@npm:^6.1.0, ajv@npm:^6.10.2, ajv@npm:^6.12.0, ajv@npm:^6.12.3, ajv@npm:^6.12.4, ajv@npm:^6.12.5":
+"ajv@npm:^6.1.0, ajv@npm:^6.10.2, ajv@npm:^6.12.3, ajv@npm:^6.12.4, ajv@npm:^6.12.5":
   version: 6.12.6
   resolution: "ajv@npm:6.12.6"
   dependencies:
@@ -2347,7 +2347,6 @@ __metadata:
     "@types/node": ^12.12.31
     "@types/uuid-parse": ^1.0.0
     "@types/ws": ^7.2.3
-    ajv: ^6.12.0
     class-transformer: ^0.3.1
     copyfiles: ^2.2.0
     cross-env: ^7.0.2

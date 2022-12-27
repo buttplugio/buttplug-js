@@ -12,17 +12,17 @@ describe("Message Utils Tests", () => {
     RotateCmd: { FeatureCount: 1 },
     LinearCmd: { FeatureCount: 1 },
     StopDeviceCmd: {},
-  }, async (aDevice, aMsg) => { lastMsg = aMsg; });
+  }, async (device, msg) => { lastMsg = msg; });
 
   const testVibrateDevice = new ButtplugClientDevice(0, "Test Vibrate Device", {
     VibrateCmd: { FeatureCount: 2 },
-  }, async (aDevice, aMsg) => { lastMsg = aMsg; });
+  }, async (device, msg) => { lastMsg = msg; });
   const testRotateDevice = new ButtplugClientDevice(0, "Test Rotate Device", {
     RotateCmd: { FeatureCount: 1 },
-  }, async (aDevice, aMsg) => { lastMsg = aMsg; });
+  }, async (device, msg) => { lastMsg = msg; });
   const testLinearDevice = new ButtplugClientDevice(0, "Test Linear Device", {
     LinearCmd: { FeatureCount: 1 },
-  }, async (aDevice, aMsg) => { lastMsg = aMsg; });
+  }, async (device, msg) => { lastMsg = msg; });
 
   it("should create correct message using internal functions", async () => {
     await testDevice.SendVibrateCmd(0.5);

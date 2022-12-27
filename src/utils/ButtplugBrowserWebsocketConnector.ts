@@ -37,7 +37,7 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter {
       this._ws = ws;
       try {
         await this.Initialize();
-        this._ws.addEventListener("message", (aMsg) => { this.ParseIncomingMessage(aMsg); });
+        this._ws.addEventListener("message", (msg) => { this.ParseIncomingMessage(msg); });
         this._ws.removeEventListener("close", conErrorCallback);
         this._ws.addEventListener("close", this.Disconnect);
         // TODO This doesn't really communicate the chain why our initializer failed
@@ -60,31 +60,31 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter {
     this.emit("disconnect");
   }
 
-  public SendMessage(aMsg: ButtplugMessage) {
+  public SendMessage(msg: ButtplugMessage) {
     if (!this.Connected) {
       throw new Error("ButtplugBrowserWebsocketConnector not connected");
     }
-    this._ws!.send("[" + aMsg.toJSON() + "]");
+    this._ws!.send("[" + msg.toJSON() + "]");
   }
 
   public Initialize = async (): Promise<void> => {
     return Promise.resolve();
   }
 
-  protected ParseIncomingMessage(aEvent: MessageEvent) {
+  protected ParseIncomingMessage(event: MessageEvent) {
     console.log("Calling parent parse incoming");
-    if (typeof (aEvent.data) === "string") {
-      const msgs = FromJSON(aEvent.data);
+    if (typeof (event.data) === "string") {
+      const msgs = FromJSON(event.data);
       this.emit("message", msgs);
-    } else if (aEvent.data instanceof Blob) {
+    } else if (event.data instanceof Blob) {
       const reader = new FileReader();
       reader.addEventListener("load", (ev) => { this.OnReaderLoad(ev); });
-      reader.readAsText(aEvent.data);
+      reader.readAsText(event.data);
     }
   }
 
-  protected OnReaderLoad(aEvent: Event) {
-    const msgs = FromJSON((aEvent.target as FileReader).result);
+  protected OnReaderLoad(event: Event) {
+    const msgs = FromJSON((event.target as FileReader).result);
     this.emit("message", msgs);
   }
 }
