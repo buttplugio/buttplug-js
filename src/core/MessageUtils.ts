@@ -7,10 +7,8 @@
  */
 
 "use strict";
-import {plainToClass} from "class-transformer";
-import Ajv from "ajv";
+import {plainToInstance} from "class-transformer";
 import * as Messages from "./Messages";
-import { ButtplugMessageException } from "./Exceptions";
 
 export function FromJSON(str): Messages.ButtplugMessage[] {
   const msgarray: object[] = JSON.parse(str);
@@ -19,8 +17,9 @@ export function FromJSON(str): Messages.ButtplugMessage[] {
     // Can't get this to resolve nicely as a type, so just start from any and cast
     // after. Not sure how to resolve plainToClass to a type since this is
     // dynamic.
-    const msg: any = plainToClass(Messages[Object.getOwnPropertyNames(x)[0]],
-                                  x[Object.getOwnPropertyNames(x)[0]]);
+    const msg: any = plainToInstance(Messages[Object.getOwnPropertyNames(x)[0]],
+                                     x[Object.getOwnPropertyNames(x)[0]]);
+    (msg as Messages.ButtplugMessage).update();
     msgs.push(msg as Messages.ButtplugMessage);
   }
   return msgs;

@@ -88,8 +88,8 @@ export class ButtplugClient extends EventEmitter {
     await this.SendMsgExpectOk(new Messages.StopAllDevices());
   }
 
-  public async SendDeviceMessage(device: ButtplugClientDevice,
-                                 deviceMsg: Messages.ButtplugDeviceMessage): Promise<void> {
+  private async SendDeviceMessage(device: ButtplugClientDevice,
+                                 deviceMsg: Messages.ButtplugDeviceMessage): Promise<Messages.ButtplugMessage> {
     this.CheckConnector();
     const dev = this._devices.get(device.Index);
     if (dev === undefined) {
@@ -97,16 +97,11 @@ export class ButtplugClient extends EventEmitter {
                                           this._logger,
                                           `Device ${device.Index} not available.`);
     }
-    if (dev.AllowedMessages.indexOf(deviceMsg.Type.name) === -1) {
-      throw ButtplugException.LogAndError(ButtplugDeviceException,
-                                          this._logger,
-                                          `Device ${device.Name} does not accept message type ${deviceMsg.Type}.`);
-    }
     deviceMsg.DeviceIndex = device.Index;
-    await this.SendMsgExpectOk(deviceMsg);
+    return await this.SendMessage(deviceMsg);
   }
 
-  public ParseMessages = (msgs: Messages.ButtplugMessage[]) => {
+  private ParseMessages = (msgs: Messages.ButtplugMessage[]) => {
     this.ParseMessagesInternal(msgs);
   }
 
@@ -237,7 +232,7 @@ export class ButtplugClient extends EventEmitter {
   }
 
   protected SendDeviceMessageClosure = async (device: ButtplugClientDevice,
-                                              msg: Messages.ButtplugDeviceMessage): Promise<void> => {
-    await this.SendDeviceMessage(device, msg);
+                                              msg: Messages.ButtplugDeviceMessage): Promise<Messages.ButtplugMessage> => {
+    return await this.SendDeviceMessage(device, msg);
   }
 }

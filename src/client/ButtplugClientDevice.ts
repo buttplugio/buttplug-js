@@ -8,7 +8,7 @@
 
 "use strict";
 import * as Messages from "../core/Messages";
-import { ButtplugDeviceException } from "../core/Exceptions";
+import { ButtplugDeviceException, ButtplugException, ButtplugMessageException } from "../core/Exceptions";
 import { EventEmitter } from "events";
 
 /**
@@ -20,35 +20,41 @@ export class ButtplugClientDevice extends EventEmitter {
    * Return the name of the device.
    */
   public get Name(): string {
-    return this._name;
+    return this._deviceInfo.DeviceName;
+  }
+
+  /**
+   * Return the user set name of the device.
+   */
+    public get DisplayName(): string | undefined {
+      return this._deviceInfo.DeviceDisplayName;
+    }
+  
+  /**
+   * Return the index of the device.
+   */
+  public get Index(): number {
+    return this._deviceInfo.DeviceIndex;
   }
 
   /**
    * Return the index of the device.
    */
-  public get Index(): number {
-    return this._index;
+  public get MessageTimingGap(): number | undefined {
+    return this._deviceInfo.DeviceMessageTimingGap;
   }
 
   /**
    * Return a list of message types the device accepts.
    */
-  public get AllowedMessages(): string[] {
-    return Array.from(this.allowedMsgs.keys());
+  public get AllowedMessages(): Messages.MessageAttributes {
+    return this._deviceInfo.DeviceMessages;
   }
 
-  public get AllowedMessagesObject(): object {
-    const obj = {};
-    this.allowedMsgs.forEach((value, key) => { obj[key] = value; });
-    return obj;
-  }
-
-  public static fromMsg(msg: Messages.DeviceAdded | Messages.DeviceInfo,
+  public static fromMsg(msg: Messages.DeviceInfo,
                         sendClosure: (device: ButtplugClientDevice,
-                                      msg: Messages.ButtplugDeviceMessage) => Promise<void>): ButtplugClientDevice {
-    return new ButtplugClientDevice(msg.DeviceIndex,
-                                    msg.DeviceName,
-                                    msg.DeviceMessages,
+                                      msg: Messages.ButtplugDeviceMessage) => Promise<Messages.ButtplugMessage>): ButtplugClientDevice {
+    return new ButtplugClientDevice(msg,
                                     sendClosure);
   }
 
@@ -60,126 +66,190 @@ export class ButtplugClientDevice extends EventEmitter {
    * @param _name Name of the device.
    * @param allowedMsgs Buttplug messages the device can receive.
    */
-  constructor(private _index: number,
-              private _name: string,
-              allowedMsgsObj: object,
+  constructor(private _deviceInfo: Messages.DeviceInfo,
               private _sendClosure: (device: ButtplugClientDevice,
-                                     msg: Messages.ButtplugDeviceMessage) => Promise<void>) {
+                                     msg: Messages.ButtplugDeviceMessage) => Promise<Messages.ButtplugMessage>) {
     super();
-    for (const k of Object.keys(allowedMsgsObj)) {
-      this.allowedMsgs.set(k, allowedMsgsObj[k]);
-    }
+    _deviceInfo.DeviceMessages.update();
   }
 
-  public CheckAllowedMessageType(name: string) {
-    if (this.AllowedMessages.indexOf(name) === -1) {
-      throw new ButtplugDeviceException(`Message ${name} does not exist on device ${this._name}`);
-    }
-  }
-
-  /**
-   * Return the message attributes related to the given message
-   */
-  public MessageAttributes(messageName: string): Messages.MessageAttributes {
-    this.CheckAllowedMessageType(messageName);
-    return this.allowedMsgs.get(messageName)!;
-  }
-
-  public async SendMessageAsync(msg: Messages.ButtplugDeviceMessage): Promise<void> {
+  public async send(msg: Messages.ButtplugDeviceMessage): Promise<Messages.ButtplugMessage> {
     // Assume we're getting the closure from ButtplugClient, which does all of
     // the index/existence/connection/message checks for us.
-    await this._sendClosure(this, msg);
+    return await this._sendClosure(this, msg);
   }
 
-  public async SendVibrateCmd(speed: number | number[]): Promise<void> {
-    this.CheckAllowedMessageType(Messages.VibrateCmd.name);
-    let msg: Messages.VibrateCmd;
-    if (typeof(speed) === "number") {
-      // We can skip the check here since we're building the command array ourselves.
-      const features = this.MessageAttributes(Messages.VibrateCmd.name).FeatureCount;
-      msg = Messages.VibrateCmd.Create(this._index,
-                                       new Array(features).fill(speed));
-    } else if (Array.isArray(speed)) {
-      msg = Messages.VibrateCmd.Create(this._index,
-                                       speed);
-      this.CheckGenericSubcommandList(Messages.SpeedSubcommand.name,
-                                      msg.Speeds,
-                                      this.MessageAttributes(Messages.VibrateCmd.name).FeatureCount);
-    } else {
-      throw new ButtplugDeviceException("SendVibrateCmd can only take numbers or arrays of numbers.");
+  public async sendExpectOk(msg: Messages.ButtplugDeviceMessage): Promise<void> {
+    const response = await this.send(msg);
+    switch (response.constructor) {
+      case Messages.Ok:
+        return;
+      case Messages.Error:
+        throw ButtplugException.FromError(response as Messages.Error);
+      default:
+        throw new ButtplugMessageException(`Message type ${response.constructor} not handled by SendMsgExpectOk`);    
     }
-    await this.SendMessageAsync(msg);
   }
 
-  public async SendRotateCmd(values: number | [number, boolean][], clockwise?: boolean): Promise<void> {
-    this.CheckAllowedMessageType(Messages.RotateCmd.name);
+  public async scalar(scalar: Messages.ScalarSubcommand | Messages.ScalarSubcommand[]): Promise<void> {
+    if (Array.isArray(scalar)) {
+      await this.sendExpectOk(new Messages.ScalarCmd(scalar, this.Index));
+    } else {
+      await this.sendExpectOk(new Messages.ScalarCmd([scalar], this.Index));
+    }
+  }
+
+  private async scalarCommandBuilder(speed: number | number[], actuator: Messages.ActuatorType) {
+    let scalarAttrs = this.AllowedMessages.ScalarCmd?.filter((x) => x.ActuatorType == actuator);
+    if (!scalarAttrs || scalarAttrs.length == 0) {
+      throw new ButtplugDeviceException(`Device ${this.Name} has no ${actuator} capabilities`);
+    }
+    let cmds: Messages.ScalarSubcommand[] = [];
+    if (typeof(speed) === "number") {
+      scalarAttrs.forEach((x) => cmds.push(new Messages.ScalarSubcommand(x.Index, speed, actuator)));
+    } else if (Array.isArray(speed)) {
+      if (speed.length > scalarAttrs.length) {
+        throw new ButtplugDeviceException(`${speed.length} commands send to a device with ${scalarAttrs.length} vibrators`);
+      }
+      scalarAttrs.forEach((x, i) => {
+        cmds.push(new Messages.ScalarSubcommand(x.Index, speed[i], actuator))
+      });
+    } else {
+      throw new ButtplugDeviceException(`${actuator} can only take numbers or arrays of numbers.`);
+    }
+    await this.scalar(cmds);
+  }
+
+  public async vibrate(speed: number | number[]): Promise<void> {
+    await this.scalarCommandBuilder(speed, Messages.ActuatorType.Vibrate);
+  }
+
+  public async oscillate(speed: number | number[]): Promise<void> {
+    await this.scalarCommandBuilder(speed, Messages.ActuatorType.Oscillate);
+  }
+
+  public async rotate(values: number | [number, boolean][], clockwise?: boolean): Promise<void> {
+    let rotateAttrs = this.AllowedMessages.RotateCmd;
+    if (!rotateAttrs || rotateAttrs.length == 0) {
+      throw new ButtplugDeviceException(`Device ${this.Name} has no Rotate capabilities`);
+    }
     let msg: Messages.RotateCmd;
     if (typeof(values) === "number") {
-      // We can skip the check here since we're building the command array ourselves.
-      const features = this.MessageAttributes(Messages.RotateCmd.name).FeatureCount;
-      msg = Messages.RotateCmd.Create(this._index,
-                                      new Array(features).fill([values, clockwise]));
+      msg = Messages.RotateCmd.Create(this.Index,
+                                      new Array(rotateAttrs.length).fill([values, clockwise]));
     } else if (Array.isArray(values)) {
-      msg = Messages.RotateCmd.Create(this._index,
-                                      values);
-      this.CheckGenericSubcommandList(Messages.SpeedSubcommand.name,
-                                      msg.Rotations,
-                                      this.MessageAttributes(Messages.RotateCmd.name).FeatureCount);
+      msg = Messages.RotateCmd.Create(this.Index, values);
     } else {
       throw new ButtplugDeviceException(
         "SendRotateCmd can only take a number and boolean, or an array of number/boolean tuples");
     }
-    await this.SendMessageAsync(msg);
+    await this.sendExpectOk(msg);
   }
 
-  public async SendLinearCmd(values: number | [number, number][], duration?: number): Promise<void> {
-    this.CheckAllowedMessageType(Messages.LinearCmd.name);
+  public async linear(values: number | [number, number][], duration?: number): Promise<void> {
+    let linearAttrs = this.AllowedMessages.LinearCmd;
+    if (!linearAttrs || linearAttrs.length == 0) {
+      throw new ButtplugDeviceException(`Device ${this.Name} has no Linear capabilities`);
+    }
     let msg: Messages.LinearCmd;
     if (typeof(values) === "number") {
-      // We can skip the check here since we're building the command array ourselves.
-      const features = this.MessageAttributes(Messages.LinearCmd.name).FeatureCount;
-      msg = Messages.LinearCmd.Create(this._index,
-                                      new Array(features).fill([values, duration]));
+      msg = Messages.LinearCmd.Create(this.Index,
+                                      new Array(linearAttrs.length).fill([values, duration]));
     } else if (Array.isArray(values)) {
-      msg = Messages.LinearCmd.Create(this._index,
-                                      values);
-      this.CheckGenericSubcommandList(Messages.SpeedSubcommand.name,
-                                      msg.Vectors,
-                                      this.MessageAttributes(Messages.LinearCmd.name).FeatureCount);
+      msg = Messages.LinearCmd.Create(this.Index, values);
     } else {
       throw new ButtplugDeviceException(
         "SendLinearCmd can only take a number and number, or an array of number/number tuples");
     }
-    await this.SendMessageAsync(msg);
+    await this.sendExpectOk(msg);
   }
 
-  public async SendStopDeviceCmd(): Promise<void> {
-    // Every message should support this, but it doesn't hurt to check
-    this.CheckAllowedMessageType(Messages.StopDeviceCmd.name);
-    await this.SendMessageAsync(new Messages.StopDeviceCmd(this._index));
+  public async sensorRead(sensorIndex: number, sensorType: Messages.SensorType): Promise<number[]> {
+    let response = await this.send(new Messages.SensorReadCmd(this.Index, sensorIndex, sensorType));
+    switch (response.constructor) {
+      case Messages.SensorReading:
+        return (response as Messages.SensorReading).Data;
+      case Messages.Error:
+        throw ButtplugException.FromError(response as Messages.Error);
+      default:
+        throw new ButtplugMessageException(`Message type ${response.constructor} not handled by sensorRead`);    
+    }
+  }
+
+  public async battery(): Promise<number> {
+    let batteryAttrs = this.AllowedMessages.SensorReadCmd?.filter((x) => x.SensorType == Messages.SensorType.Battery);
+    if (!batteryAttrs || batteryAttrs.length == 0) {
+      throw new ButtplugDeviceException(`Device ${this.Name} has no Battery capabilities`);
+    }
+    // Find the battery sensor, we'll need its index.
+    let result = await this.sensorRead(batteryAttrs[0].Index, Messages.SensorType.Battery);
+    return result[0] / 100.0;
+  }
+
+  public async rssi(): Promise<number> {
+    let rssiAttrs = this.AllowedMessages.SensorReadCmd?.filter((x) => x.SensorType == Messages.SensorType.RSSI);
+    if (!rssiAttrs || rssiAttrs.length == 0) {
+      throw new ButtplugDeviceException(`Device ${this.Name} has no RSSI capabilities`);
+    }
+    // Find the battery sensor, we'll need its index.
+    let result = await this.sensorRead(rssiAttrs[0].Index, Messages.SensorType.RSSI);
+    return result[0];
+  }
+
+  public async rawRead(endpoint: string, expectedLength: number, timeout: number): Promise<Uint8Array> {
+    if (!this.AllowedMessages.RawReadCmd) {
+      throw new ButtplugDeviceException(`Device ${this.Name} has no raw read capabilities`);
+    }
+    if (this.AllowedMessages.RawReadCmd.Endpoints.indexOf(endpoint) == -1) {
+      throw new ButtplugDeviceException(`Device ${this.Name} has no raw readable endpoint ${endpoint}`);
+    }
+    let response = await this.send(new Messages.RawReadCmd(this.Index, endpoint, expectedLength, timeout));
+    switch (response.constructor) {
+      case Messages.RawReading:
+        return new Uint8Array((response as Messages.RawReading).Data);
+      case Messages.Error:
+        throw ButtplugException.FromError(response as Messages.Error);
+      default:
+        throw new ButtplugMessageException(`Message type ${response.constructor} not handled by rawRead`);    
+    }
+  }
+
+  public async rawWrite(endpoint: string, data: Uint8Array, writeWithResponse: boolean): Promise<void> {
+    if (!this.AllowedMessages.RawWriteCmd) {
+      throw new ButtplugDeviceException(`Device ${this.Name} has no raw write capabilities`);
+    }
+    if (this.AllowedMessages.RawWriteCmd.Endpoints.indexOf(endpoint) == -1) {
+      throw new ButtplugDeviceException(`Device ${this.Name} has no raw writable endpoint ${endpoint}`);
+    }
+    await this.sendExpectOk(new Messages.RawWriteCmd(this.Index, endpoint, data, writeWithResponse));
+  }
+
+  public async rawSubscribe(endpoint: string): Promise<void> {
+    if (!this.AllowedMessages.RawSubscribeCmd) {
+      throw new ButtplugDeviceException(`Device ${this.Name} has no raw subscribe capabilities`);
+    }
+    if (this.AllowedMessages.RawSubscribeCmd.Endpoints.indexOf(endpoint) == -1) {
+      throw new ButtplugDeviceException(`Device ${this.Name} has no raw subscribable endpoint ${endpoint}`);
+    }
+    await this.sendExpectOk(new Messages.RawSubscribeCmd(this.Index, endpoint));    
+  }
+
+  public async rawUnsubscribe(endpoint: string): Promise<void> {
+    // This reuses raw subscribe's info.
+    if (!this.AllowedMessages.RawSubscribeCmd) {
+      throw new ButtplugDeviceException(`Device ${this.Name} has no raw unsubscribe capabilities`);
+    }
+    if (this.AllowedMessages.RawSubscribeCmd.Endpoints.indexOf(endpoint) == -1) {
+      throw new ButtplugDeviceException(`Device ${this.Name} has no raw unsubscribable endpoint ${endpoint}`);
+    }
+    await this.sendExpectOk(new Messages.RawUnsubscribeCmd(this.Index, endpoint));    
+  }
+
+  public async stop(): Promise<void> {
+    await this.sendExpectOk(new Messages.StopDeviceCmd(this.Index));
   }
 
   public EmitDisconnected() {
     this.emit("deviceremoved");
-  }
-
-  private CheckGenericSubcommandList<T extends Messages.GenericMessageSubcommand>(type: string,
-                                                                                  cmdList: T[],
-                                                                                  limitValue: number) {
-    if (cmdList.length === 0 || cmdList.length > limitValue) {
-      if (limitValue === 1) {
-        throw new ButtplugDeviceException(
-          `${type} requires 1 subcommand for this device, ${cmdList.length} present.`);
-      }
-
-      throw new ButtplugDeviceException(
-        `${type} requires between 1 and ${limitValue} subcommands for this device, ${cmdList.length} present.`);
-    }
-
-    for (const cmd of cmdList) {
-      if (cmd.Index >= limitValue) {
-        throw new ButtplugDeviceException(`Index ${cmd.Index} is out of bounds for ${type} for this device.`);
-      }
-    }
   }
 }
