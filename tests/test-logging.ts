@@ -25,7 +25,6 @@ describe("Logging Tests", () => {
       rej();
     });
     logger.Debug("test");
-    logger.Fatal("test");
     logger.Error("test");
     logger.Warn("test");
     logger.Info("test");
@@ -45,13 +44,12 @@ describe("Logging Tests", () => {
       count++;
     });
     logger.Debug("test");
-    logger.Fatal("test");
     logger.Error("test");
     logger.Warn("test");
     logger.Info("test");
     logger.Trace("test");
 
-    if (count === 6) {
+    if (count === 5) {
       return Promise.resolve();
     }
     return Promise.reject("Log event count incorrect!");

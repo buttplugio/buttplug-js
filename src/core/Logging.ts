@@ -9,13 +9,8 @@
 import { EventEmitter } from "events";
 import * as Messages from "./Messages";
 
-/**
- * Enumeration of log levels for LogMessage message types. Log levels must match
- * order and name specified in LogMessage portion of the Buttplug protocol spec.
- */
 export enum ButtplugLogLevel {
   Off,
-  Fatal,
   Error,
   Warn,
   Info,
@@ -138,13 +133,6 @@ export class ButtplugLogger extends EventEmitter {
    */
   public set MaximumEventLogLevel(logLevel: ButtplugLogLevel) {
     this.maximumEventLogLevel = logLevel;
-  }
-
-  /**
-   * Log new message at Fatal level.
-   */
-  public Fatal(msg: string) {
-    this.AddLogMessage(msg, ButtplugLogLevel.Fatal);
   }
 
   /**
