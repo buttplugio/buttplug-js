@@ -73,10 +73,10 @@ describe("Websocket Client Tests", () => {
   it("Should throw exception on return of error message", async () => {
     (socket as any).on("message", (jsonmsg: string) => {
       const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
-      if (msg.Type === Messages.RequestLog) {
+      if (msg.Type === Messages.StopAllDevices) {
         delaySend(new Messages.Error("Error", Messages.ErrorClass.ERROR_MSG, msg.Id));
       }
     });
-    await expect(bp.RequestLog("Debug")).rejects.toBeInstanceOf(ButtplugMessageException);
+    await expect(bp.StopAllDevices()).rejects.toBeInstanceOf(ButtplugMessageException);
   });
 });

@@ -160,20 +160,6 @@ export class ScanningFinished extends ButtplugSystemMessage {
   }
 }
 
-export class RequestLog extends ButtplugMessage {
-  constructor(public LogLevel: string,
-              public Id: number = DEFAULT_MESSAGE_ID) {
-    super(Id);
-  }
-}
-
-export class Log extends ButtplugSystemMessage {
-  constructor(public LogLevel: string,
-              public LogMessage: string) {
-    super();
-  }
-}
-
 export class RequestServerInfo extends ButtplugMessage {
   constructor(public ClientName: string, public MessageVersion: number = 0, public Id: number = DEFAULT_MESSAGE_ID) {
     super(Id);

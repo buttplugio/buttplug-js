@@ -84,11 +84,6 @@ export class ButtplugClient extends EventEmitter {
     await this.SendMsgExpectOk(new Messages.StopScanning());
   }
 
-  public RequestLog = async (logLevel: string) => {
-    this._logger.Debug(`ButtplugClient: RequestLog called with level ${logLevel}`);
-    await this.SendMsgExpectOk(new Messages.RequestLog(logLevel));
-  }
-
   public StopAllDevices = async () => {
     this._logger.Debug(`ButtplugClient: StopAllDevices`);
     await this.SendMsgExpectOk(new Messages.StopAllDevices());
@@ -124,9 +119,6 @@ export class ButtplugClient extends EventEmitter {
   protected ParseMessagesInternal(msgs: Messages.ButtplugMessage[]) {
     for (const x of msgs) {
       switch (x.constructor) {
-        case Messages.Log:
-          this.emit("log", x);
-          break;
         case Messages.DeviceAdded:
           const addedMsg = x as Messages.DeviceAdded;
           const addedDevice = ButtplugClientDevice.fromMsg(addedMsg, this.SendDeviceMessageClosure);
