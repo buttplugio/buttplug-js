@@ -24,8 +24,7 @@ export class ButtplugClient extends EventEmitter {
   protected _clientName: string;
   protected _logger = ButtplugLogger.Logger;
   protected _isScanning = false;
-  // TODO This should be set on schema load
-  protected _messageVersion: number = 1;
+  protected _messageVersion: number = 3;
 
   constructor(clientName: string = "Generic Buttplug Client") {
     super();

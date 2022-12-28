@@ -29,7 +29,7 @@ describe("Websocket Client Tests", () => {
     const serverInfo = (jsonmsg: string) => {
       const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
       if (msg.Type === Messages.RequestServerInfo) {
-        delaySend(new Messages.ServerInfo(1, 0, "Test Server", msg.Id));
+        delaySend(new Messages.ServerInfo(3, 0, "Test Server", msg.Id));
       }
       if (msg.Type === Messages.RequestDeviceList) {
         delaySend(new Messages.DeviceList([], msg.Id));
