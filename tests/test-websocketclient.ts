@@ -44,7 +44,7 @@ describe("Websocket Client Tests", () => {
       (socket as any).on("message", (data: string) => serverInfo(data));
     });
     bp = new ButtplugClient("Test Buttplug Client");
-    await bp.Connect(new ButtplugBrowserWebsocketClientConnector("ws://localhost:6868"));
+    await bp.connect(new ButtplugBrowserWebsocketClientConnector("ws://localhost:6868"));
   });
 
   afterEach(function(done) {
@@ -60,8 +60,8 @@ describe("Websocket Client Tests", () => {
       const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
       delaySend(new Messages.Ok(msg.Id));
     });
-    await bp.StartScanning();
-    await bp.StopScanning();
+    await bp.startScanning();
+    await bp.stopScanning();
   });
 
   it("Should receive disconnect event on websocket disconnect", async () => {
@@ -77,6 +77,6 @@ describe("Websocket Client Tests", () => {
         delaySend(new Messages.Error("Error", Messages.ErrorClass.ERROR_MSG, msg.Id));
       }
     });
-    await expect(bp.StopAllDevices()).rejects.toBeInstanceOf(ButtplugMessageException);
+    await expect(bp.stopAllDevices()).rejects.toBeInstanceOf(ButtplugMessageException);
   });
 });
