@@ -6,8 +6,7 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-import { EventEmitter } from "events";
-import * as Messages from "./Messages";
+import { EventEmitter } from 'events';
 
 export enum ButtplugLogLevel {
   Off,
@@ -35,8 +34,7 @@ export class LogMessage {
    * @param logMessage Log message.
    * @param logLevel: Log severity level.
    */
-  public constructor(logMessage: string,
-                     logLevel: ButtplugLogLevel) {
+  public constructor(logMessage: string, logLevel: ButtplugLogLevel) {
     const a = new Date();
     const hour = a.getHours();
     const min = a.getMinutes();
@@ -71,7 +69,9 @@ export class LogMessage {
    * Returns a formatted string with timestamp, level, and message.
    */
   public get FormattedMessage() {
-    return `${ButtplugLogLevel[this.logLevel]} : ${this.timestamp} : ${this.logMessage}`;
+    return `${ButtplugLogLevel[this.logLevel]} : ${this.timestamp} : ${
+      this.logMessage
+    }`;
   }
 }
 
@@ -176,7 +176,10 @@ export class ButtplugLogger extends EventEmitter {
    */
   protected AddLogMessage(msg: string, level: ButtplugLogLevel) {
     // If nothing wants the log message we have, ignore it.
-    if (level > this.maximumEventLogLevel && level > this.maximumConsoleLogLevel) {
+    if (
+      level > this.maximumEventLogLevel &&
+      level > this.maximumConsoleLogLevel
+    ) {
       return;
     }
     const logMsg = new LogMessage(msg, level);
@@ -188,7 +191,7 @@ export class ButtplugLogger extends EventEmitter {
       console.log(logMsg.FormattedMessage);
     }
     if (level <= this.maximumEventLogLevel) {
-      this.emit("log", logMsg);
+      this.emit('log', logMsg);
     }
   }
 }

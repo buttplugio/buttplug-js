@@ -6,20 +6,24 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-import * as Messages from "../core/Messages";
-import { ButtplugException } from "../core/Exceptions";
+import * as Messages from '../core/Messages';
+import { ButtplugException } from '../core/Exceptions';
 
 export class ButtplugMessageSorter {
-  protected _counter: number = 1;
-  protected _waitingMsgs: Map<number, [(val: Messages.ButtplugMessage) => void, (err: Error) => void]> = new Map();
+  protected _counter = 1;
+  protected _waitingMsgs: Map<
+    number,
+    [(val: Messages.ButtplugMessage) => void, (err: Error) => void]
+  > = new Map();
 
-  public constructor(private _useCounter: boolean) {
-  }
+  public constructor(private _useCounter: boolean) {}
 
   // One of the places we should actually return a promise, as we need to store
   // them while waiting for them to return across the line.
   // tslint:disable:promise-function-async
-  public PrepareOutgoingMessage(msg: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage> {
+  public PrepareOutgoingMessage(
+    msg: Messages.ButtplugMessage
+  ): Promise<Messages.ButtplugMessage> {
     if (this._useCounter) {
       msg.Id = this._counter;
       // Always increment last, otherwise we might lose sync
@@ -27,12 +31,19 @@ export class ButtplugMessageSorter {
     }
     let res;
     let rej;
-    const msgPromise = new Promise<Messages.ButtplugMessage>((resolve, reject) => { res = resolve; rej = reject; });
+    const msgPromise = new Promise<Messages.ButtplugMessage>(
+      (resolve, reject) => {
+        res = resolve;
+        rej = reject;
+      }
+    );
     this._waitingMsgs.set(msg.Id, [res, rej]);
     return msgPromise;
   }
 
-  public ParseIncomingMessages(msgs: Messages.ButtplugMessage[]): Messages.ButtplugMessage[] {
+  public ParseIncomingMessages(
+    msgs: Messages.ButtplugMessage[]
+  ): Messages.ButtplugMessage[] {
     const noMatch: Messages.ButtplugMessage[] = [];
     for (const x of msgs) {
       if (x.Id !== Messages.SYSTEM_MESSAGE_ID && this._waitingMsgs.has(x.Id)) {

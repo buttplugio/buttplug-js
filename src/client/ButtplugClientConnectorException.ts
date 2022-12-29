@@ -6,8 +6,8 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-import { ButtplugException } from "../core/Exceptions";
-import * as Messages from "../core/Messages";
+import { ButtplugException } from '../core/Exceptions';
+import * as Messages from '../core/Messages';
 
 export class ButtplugClientConnectorException extends ButtplugException {
   public constructor(message: string) {

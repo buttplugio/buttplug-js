@@ -7,16 +7,15 @@
  */
 
 // tslint:disable:max-classes-per-file
-"use strict";
+'use strict';
 
-import { instanceToPlain, Type } from "class-transformer";
-import "reflect-metadata";
+import { instanceToPlain, Type } from 'class-transformer';
+import 'reflect-metadata';
 
 export const SYSTEM_MESSAGE_ID = 0;
 export const DEFAULT_MESSAGE_ID = 1;
 export const MAX_ID = 4294967295;
 export const MESSAGE_SPEC_VERSION = 3;
-
 
 export class MessageAttributes {
   public ScalarCmd?: Array<GenericDeviceMessageAttributes>;
@@ -34,30 +33,30 @@ export class MessageAttributes {
   }
 
   public update() {
-    this.ScalarCmd?.forEach((x, i) => x.Index = i);
-    this.RotateCmd?.forEach((x, i) => x.Index = i);
-    this.LinearCmd?.forEach((x, i) => x.Index = i);
-    this.SensorReadCmd?.forEach((x, i) => x.Index = i);
-    this.SensorSubscribeCmd?.forEach((x, i) => x.Index = i);
+    this.ScalarCmd?.forEach((x, i) => (x.Index = i));
+    this.RotateCmd?.forEach((x, i) => (x.Index = i));
+    this.LinearCmd?.forEach((x, i) => (x.Index = i));
+    this.SensorReadCmd?.forEach((x, i) => (x.Index = i));
+    this.SensorSubscribeCmd?.forEach((x, i) => (x.Index = i));
   }
 }
 
 export enum ActuatorType {
-  Unknown = "Unknown",
-  Vibrate = "Vibrate",
-  Rotate = "Rotate",
-  Oscillate = "Oscillate",
-  Constrict = "Constrict",
-  Inflate = "Inflate",
-  Position = "Position",
+  Unknown = 'Unknown',
+  Vibrate = 'Vibrate',
+  Rotate = 'Rotate',
+  Oscillate = 'Oscillate',
+  Constrict = 'Constrict',
+  Inflate = 'Inflate',
+  Position = 'Position',
 }
 
 export enum SensorType {
-  Unknown = "Unknown",
-  Battery = "Battery",
-  RSSI = "RSSI",
-  Button = "Button",
-  Pressure = "Pressure",
+  Unknown = 'Unknown',
+  Battery = 'Battery',
+  RSSI = 'RSSI',
+  Button = 'Button',
+  Pressure = 'Pressure',
   // Temperature,
   // Accelerometer,
   // Gyro,
@@ -67,34 +66,27 @@ export class GenericDeviceMessageAttributes {
   public FeatureDescriptor: string;
   public ActuatorType: ActuatorType;
   public StepCount: number;
-  public Index: number = 0;
+  public Index = 0;
   constructor(data: Partial<GenericDeviceMessageAttributes>) {
     Object.assign(this, data);
   }
 }
 
 export class RawDeviceMessageAttributes {
-    constructor(
-      public Endpoints: Array<string>
-    ) {
-
-    }
+  constructor(public Endpoints: Array<string>) {}
 }
 
 export class SensorDeviceMessageAttributes {
   public FeatureDescriptor: string;
   public SensorType: SensorType;
   public StepRange: Array<number>;
-  public Index: number = 0;
+  public Index = 0;
   constructor(data: Partial<GenericDeviceMessageAttributes>) {
     Object.assign(this, data);
   }
-
 }
 export abstract class ButtplugMessage {
-
-  constructor(public Id: number) {
-  }
+  constructor(public Id: number) {}
 
   /***
    * Returns the message type name
@@ -124,8 +116,7 @@ export abstract class ButtplugMessage {
 }
 
 export abstract class ButtplugDeviceMessage extends ButtplugMessage {
-  constructor(public DeviceIndex: number,
-              public Id: number) {
+  constructor(public DeviceIndex: number, public Id: number) {
     super(Id);
   }
 }
@@ -157,14 +148,17 @@ export enum ErrorClass {
 }
 
 export class Error extends ButtplugMessage {
-
-  constructor(public ErrorMessage: string,
-              public ErrorCode: ErrorClass = ErrorClass.ERROR_UNKNOWN,
-              public Id: number = DEFAULT_MESSAGE_ID) {
+  constructor(
+    public ErrorMessage: string,
+    public ErrorCode: ErrorClass = ErrorClass.ERROR_UNKNOWN,
+    public Id: number = DEFAULT_MESSAGE_ID
+  ) {
     super(Id);
   }
 
-  get Schemversion() { return 0; }
+  get Schemversion() {
+    return 0;
+  }
 }
 
 export class DeviceInfo {
@@ -184,7 +178,7 @@ export class DeviceList extends ButtplugMessage {
   @Type(() => DeviceInfo)
   public Devices: DeviceInfo[];
   public Id: number;
-  
+
   constructor(devices: DeviceInfo[], id: number = DEFAULT_MESSAGE_ID) {
     super(id);
     this.Devices = devices;
@@ -192,7 +186,7 @@ export class DeviceList extends ButtplugMessage {
   }
 
   public update() {
-    for(let device of this.Devices) {
+    for (const device of this.Devices) {
       device.DeviceMessages.update();
     }
   }
@@ -247,23 +241,31 @@ export class ScanningFinished extends ButtplugSystemMessage {
 }
 
 export class RequestServerInfo extends ButtplugMessage {
-  constructor(public ClientName: string, public MessageVersion: number = 0, public Id: number = DEFAULT_MESSAGE_ID) {
+  constructor(
+    public ClientName: string,
+    public MessageVersion: number = 0,
+    public Id: number = DEFAULT_MESSAGE_ID
+  ) {
     super(Id);
   }
 }
 
 export class ServerInfo extends ButtplugSystemMessage {
-  constructor(public MessageVersion: number,
-              public MaxPingTime: number,
-              public ServerName: string,
-              public Id: number = DEFAULT_MESSAGE_ID) {
+  constructor(
+    public MessageVersion: number,
+    public MaxPingTime: number,
+    public ServerName: string,
+    public Id: number = DEFAULT_MESSAGE_ID
+  ) {
     super();
   }
 }
 
 export class StopDeviceCmd extends ButtplugDeviceMessage {
-  constructor(public DeviceIndex: number = -1,
-              public Id: number = DEFAULT_MESSAGE_ID) {
+  constructor(
+    public DeviceIndex: number = -1,
+    public Id: number = DEFAULT_MESSAGE_ID
+  ) {
     super(DeviceIndex, Id);
   }
 }
@@ -279,33 +281,36 @@ export class GenericMessageSubcommand {
 }
 
 export class ScalarSubcommand extends GenericMessageSubcommand {
-  constructor(Index: number,
-              public Scalar: number,
-              public ActuatorType: ActuatorType) {
+  constructor(
+    Index: number,
+    public Scalar: number,
+    public ActuatorType: ActuatorType
+  ) {
     super(Index);
   }
 }
 
 export class ScalarCmd extends ButtplugDeviceMessage {
-  constructor(public Scalars: ScalarSubcommand[],
-              public DeviceIndex: number = -1,
-              public Id: number = DEFAULT_MESSAGE_ID) {
+  constructor(
+    public Scalars: ScalarSubcommand[],
+    public DeviceIndex: number = -1,
+    public Id: number = DEFAULT_MESSAGE_ID
+  ) {
     super(DeviceIndex, Id);
   }
 }
 
 export class RotateSubcommand extends GenericMessageSubcommand {
-  constructor(Index: number,
-              public Speed: number,
-              public Clockwise: boolean) {
+  constructor(Index: number, public Speed: number, public Clockwise: boolean) {
     super(Index);
   }
 }
 
 export class RotateCmd extends ButtplugDeviceMessage {
-
-  public static Create(deviceIndex: number,
-                       commands: [number, boolean][]): RotateCmd {
+  public static Create(
+    deviceIndex: number,
+    commands: [number, boolean][]
+  ): RotateCmd {
     const cmdList: RotateSubcommand[] = new Array<RotateSubcommand>();
 
     let i = 0;
@@ -316,25 +321,26 @@ export class RotateCmd extends ButtplugDeviceMessage {
 
     return new RotateCmd(cmdList, deviceIndex);
   }
-  constructor(public Rotations: RotateSubcommand[],
-              public DeviceIndex: number = -1,
-              public Id: number = DEFAULT_MESSAGE_ID) {
+  constructor(
+    public Rotations: RotateSubcommand[],
+    public DeviceIndex: number = -1,
+    public Id: number = DEFAULT_MESSAGE_ID
+  ) {
     super(DeviceIndex, Id);
   }
 }
 
 export class VectorSubcommand extends GenericMessageSubcommand {
-  constructor(Index: number,
-              public Position: number,
-              public Duration: number) {
+  constructor(Index: number, public Position: number, public Duration: number) {
     super(Index);
   }
 }
 
 export class LinearCmd extends ButtplugDeviceMessage {
-
-  public static Create(deviceIndex: number,
-                       commands: [number, number][]): LinearCmd {
+  public static Create(
+    deviceIndex: number,
+    commands: [number, number][]
+  ): LinearCmd {
     const cmdList: VectorSubcommand[] = new Array<VectorSubcommand>();
 
     let i = 0;
@@ -345,28 +351,34 @@ export class LinearCmd extends ButtplugDeviceMessage {
 
     return new LinearCmd(cmdList, deviceIndex);
   }
-  constructor(public Vectors: VectorSubcommand[],
-              public DeviceIndex: number = -1,
-              public Id: number = DEFAULT_MESSAGE_ID) {
+  constructor(
+    public Vectors: VectorSubcommand[],
+    public DeviceIndex: number = -1,
+    public Id: number = DEFAULT_MESSAGE_ID
+  ) {
     super(DeviceIndex, Id);
   }
 }
 
 export class SensorReadCmd extends ButtplugDeviceMessage {
-  constructor(public DeviceIndex: number,
-              public SensorIndex: number,
-              public SensorType: SensorType,
-              public Id: number = DEFAULT_MESSAGE_ID) {
+  constructor(
+    public DeviceIndex: number,
+    public SensorIndex: number,
+    public SensorType: SensorType,
+    public Id: number = DEFAULT_MESSAGE_ID
+  ) {
     super(DeviceIndex, Id);
   }
 }
 
 export class SensorReading extends ButtplugDeviceMessage {
-  constructor(public DeviceIndex: number,
-              public SensorIndex: number,
-              public SensorType: SensorType,
-              public Data: number[],
-              public Id: number = DEFAULT_MESSAGE_ID) {
+  constructor(
+    public DeviceIndex: number,
+    public SensorIndex: number,
+    public SensorType: SensorType,
+    public Data: number[],
+    public Id: number = DEFAULT_MESSAGE_ID
+  ) {
     super(DeviceIndex, Id);
   }
 }
@@ -377,8 +389,9 @@ export class RawReadCmd extends ButtplugDeviceMessage {
     public Endpoint: string,
     public ExpectedLength: number,
     public Timeout: number,
-    public Id: number = DEFAULT_MESSAGE_ID) {
-      super(DeviceIndex, Id);
+    public Id: number = DEFAULT_MESSAGE_ID
+  ) {
+    super(DeviceIndex, Id);
   }
 }
 
@@ -388,8 +401,9 @@ export class RawWriteCmd extends ButtplugDeviceMessage {
     public Endpoint: string,
     public Data: Uint8Array,
     public WriteWithResponse: boolean,
-    public Id: number = DEFAULT_MESSAGE_ID) {
-      super(DeviceIndex, Id);
+    public Id: number = DEFAULT_MESSAGE_ID
+  ) {
+    super(DeviceIndex, Id);
   }
 }
 
@@ -397,8 +411,9 @@ export class RawSubscribeCmd extends ButtplugDeviceMessage {
   constructor(
     public DeviceIndex: number,
     public Endpoint: string,
-    public Id: number = DEFAULT_MESSAGE_ID) {
-      super(DeviceIndex, Id);
+    public Id: number = DEFAULT_MESSAGE_ID
+  ) {
+    super(DeviceIndex, Id);
   }
 }
 
@@ -406,16 +421,19 @@ export class RawUnsubscribeCmd extends ButtplugDeviceMessage {
   constructor(
     public DeviceIndex: number,
     public Endpoint: string,
-    public Id: number = DEFAULT_MESSAGE_ID) {
-      super(DeviceIndex, Id);
+    public Id: number = DEFAULT_MESSAGE_ID
+  ) {
+    super(DeviceIndex, Id);
   }
 }
 
 export class RawReading extends ButtplugDeviceMessage {
-  constructor(public DeviceIndex: number,
-              public Endpoint: string,
-              public Data: number[],
-              public Id: number = DEFAULT_MESSAGE_ID) {
+  constructor(
+    public DeviceIndex: number,
+    public Endpoint: string,
+    public Data: number[],
+    public Id: number = DEFAULT_MESSAGE_ID
+  ) {
     super(DeviceIndex, Id);
   }
 }

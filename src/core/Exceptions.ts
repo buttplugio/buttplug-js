@@ -6,11 +6,10 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-import * as Messages from "./Messages";
-import { ButtplugLogger } from "./Logging";
+import * as Messages from './Messages';
+import { ButtplugLogger } from './Logging';
 
 export class ButtplugException extends Error {
-
   public get ErrorClass(): Messages.ErrorClass {
     return this.errorClass;
   }
@@ -27,10 +26,12 @@ export class ButtplugException extends Error {
     return new Messages.Error(this.message, this.ErrorClass, this.Id);
   }
 
-  public static LogAndError<T extends ButtplugException>(constructor: new(str: string, num: number) => T,
-                                                         logger: ButtplugLogger,
-                                                         message: string,
-                                                         id: number = Messages.SYSTEM_MESSAGE_ID): T {
+  public static LogAndError<T extends ButtplugException>(
+    constructor: new (str: string, num: number) => T,
+    logger: ButtplugLogger,
+    message: string,
+    id: number = Messages.SYSTEM_MESSAGE_ID
+  ): T {
     logger.Error(message);
     return new constructor(message, id);
   }
@@ -56,10 +57,12 @@ export class ButtplugException extends Error {
   public innerError: Error | undefined;
   public messageId: number | undefined;
 
-  protected constructor(message: string,
-                        errorClass: Messages.ErrorClass,
-                        id: number = Messages.SYSTEM_MESSAGE_ID,
-                        inner?: Error) {
+  protected constructor(
+    message: string,
+    errorClass: Messages.ErrorClass,
+    id: number = Messages.SYSTEM_MESSAGE_ID,
+    inner?: Error
+  ) {
     super(message);
     this.errorClass = errorClass;
     this.innerError = inner;

@@ -6,9 +6,9 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-"use strict";
-import {plainToInstance} from "class-transformer";
-import * as Messages from "./Messages";
+'use strict';
+import { plainToInstance } from 'class-transformer';
+import * as Messages from './Messages';
 
 export function FromJSON(str): Messages.ButtplugMessage[] {
   const msgarray: object[] = JSON.parse(str);
@@ -17,8 +17,12 @@ export function FromJSON(str): Messages.ButtplugMessage[] {
     // Can't get this to resolve nicely as a type, so just start from any and cast
     // after. Not sure how to resolve plainToClass to a type since this is
     // dynamic.
-    const msg: any = plainToInstance(Messages[Object.getOwnPropertyNames(x)[0]],
-                                     x[Object.getOwnPropertyNames(x)[0]]);
+    //
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const msg: any = plainToInstance(
+      Messages[Object.getOwnPropertyNames(x)[0]],
+      x[Object.getOwnPropertyNames(x)[0]]
+    );
     (msg as Messages.ButtplugMessage).update();
     msgs.push(msg as Messages.ButtplugMessage);
   }

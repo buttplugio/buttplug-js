@@ -6,8 +6,8 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-import { ButtplugMessage } from "../core/Messages";
-import { EventEmitter } from "events";
+import { ButtplugMessage } from '../core/Messages';
+import { EventEmitter } from 'events';
 
 export interface IButtplugClientConnector extends EventEmitter {
   Connect: () => Promise<void>;
