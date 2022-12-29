@@ -31,15 +31,11 @@ export class ButtplugClient extends EventEmitter {
     this._logger.Debug(`ButtplugClient: Client ${clientName} created.`);
   }
 
-  public get Connector(): IButtplugClientConnector | null {
-    return this._connector;
-  }
-
-  public get Connected(): boolean {
+  public get connected(): boolean {
     return this._connector !== null && this._connector.Connected;
   }
 
-  public get Devices(): ButtplugClientDevice[] {
+  public get devices(): ButtplugClientDevice[] {
     // While this function doesn't actually send a message, if we don't have a
     // connector, we shouldn't have devices.
     this.checkConnector();
@@ -50,7 +46,7 @@ export class ButtplugClient extends EventEmitter {
     return devices;
   }
 
-  public get IsScanning(): boolean {
+  public get isScanning(): boolean {
     return this._isScanning;
   }
 
@@ -88,15 +84,15 @@ export class ButtplugClient extends EventEmitter {
   }
 
   private async sendDeviceMessage(device: ButtplugClientDevice,
-                                 deviceMsg: Messages.ButtplugDeviceMessage): Promise<Messages.ButtplugMessage> {
+                                  deviceMsg: Messages.ButtplugDeviceMessage): Promise<Messages.ButtplugMessage> {
     this.checkConnector();
-    const dev = this._devices.get(device.Index);
+    const dev = this._devices.get(device.index);
     if (dev === undefined) {
       throw ButtplugException.LogAndError(ButtplugDeviceException,
                                           this._logger,
-                                          `Device ${device.Index} not available.`);
+                                          `Device ${device.index} not available.`);
     }
-    deviceMsg.DeviceIndex = device.Index;
+    deviceMsg.DeviceIndex = device.index;
     return await this.SendMessage(deviceMsg);
   }
 
@@ -207,7 +203,7 @@ export class ButtplugClient extends EventEmitter {
   }
 
   protected checkConnector() {
-    if (!this.Connected) {
+    if (!this.connected) {
       throw new ButtplugClientConnectorException("ButtplugClient not connected");
     }
   }
