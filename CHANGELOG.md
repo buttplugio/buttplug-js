@@ -1,6 +1,12 @@
-# v2.0.0 (2022/12/28)
+# v3.0.0 (2022/12/28)
 
 - Back to pure Typescript. Back to the good shit.
+
+# v2.0.0
+
+- There is no buttplug-js v2
+- There is no Miss Zarves
+- (Version skipped to align JS and C# implementation versions)
 
 # v1.0.16 (2021/10/16) (FFI Impl)
 

@@ -1,13 +1,13 @@
 {
   "name": "buttplug",
-  "version": "0.13.2",
-  "description": "Javascript library for creating or accessing Buttplug Intimate Hardware Protocol servers/clients, for node or web",
-  "homepage": "https://github.com/buttplugio/buttplug-js/packages/buttplug#readme",
+  "version": "3.0.0-alpha.0",
+  "description": "Buttplug Client Implementation for Typescript/Javascript",
+  "homepage": "https://github.com/buttplugio/buttplug-js/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/buttplugio/buttplug-js.git"
   },
-  "author": "The Buttplug Project Team",
+  "author": "Nonpolynomial Labs, LLC",
   "keywords": [
     "teledildonics",
     "hardware"
@@ -99,9 +99,6 @@
     "testMatch": [
       "<rootDir>/tests/**/test-*.ts",
       "<rootDir>/web-tests/**/test-*.ts"
-    ],
-    "testPathIgnorePatterns": [
-      "<rootDir>/tests/test-webbluetooth.ts"
     ],
     "coverageDirectory": "./coverage/",
     "coverageReporters": [
