@@ -103,7 +103,7 @@ export class ButtplugClient extends EventEmitter {
       );
     }
     deviceMsg.DeviceIndex = device.index;
-    return await this.SendMessage(deviceMsg);
+    return await this.sendMessage(deviceMsg);
   }
 
   protected disconnectHandler = () => {
@@ -128,7 +128,7 @@ export class ButtplugClient extends EventEmitter {
           const removedMsg = x as Messages.DeviceRemoved;
           if (this._devices.has(removedMsg.DeviceIndex)) {
             const removedDevice = this._devices.get(removedMsg.DeviceIndex);
-            removedDevice?.EmitDisconnected();
+            removedDevice?.emitDisconnected();
             this._devices.delete(removedMsg.DeviceIndex);
             this.emit('deviceremoved', removedDevice);
           }
@@ -144,7 +144,7 @@ export class ButtplugClient extends EventEmitter {
 
   protected initializeConnection = async (): Promise<boolean> => {
     this.checkConnector();
-    const msg = await this.SendMessage(
+    const msg = await this.sendMessage(
       new Messages.RequestServerInfo(
         this._clientName,
         Messages.MESSAGE_SPEC_VERSION
@@ -201,7 +201,7 @@ export class ButtplugClient extends EventEmitter {
   protected requestDeviceList = async () => {
     this.checkConnector();
     this._logger.Debug('ButtplugClient: ReceiveDeviceList called');
-    const deviceList = (await this.SendMessage(
+    const deviceList = (await this.sendMessage(
       new Messages.RequestDeviceList()
     )) as Messages.DeviceList;
     deviceList.Devices.forEach((d) => {
@@ -227,7 +227,7 @@ export class ButtplugClient extends EventEmitter {
     }
   };
 
-  protected async SendMessage(
+  protected async sendMessage(
     msg: Messages.ButtplugMessage
   ): Promise<Messages.ButtplugMessage> {
     this.checkConnector();
@@ -245,7 +245,7 @@ export class ButtplugClient extends EventEmitter {
   protected sendMsgExpectOk = async (
     msg: Messages.ButtplugMessage
   ): Promise<void> => {
-    const response = await this.SendMessage(msg);
+    const response = await this.sendMessage(msg);
     switch (response.constructor) {
       case Messages.Ok:
         return;

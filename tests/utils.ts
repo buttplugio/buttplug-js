@@ -10,8 +10,8 @@ export class BPTestClient extends ButtplugClient {
     return this._pingTimer;
   }
 
-  public async SendMessage(msg: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage>  {
-    return super.SendMessage(msg);
+  public async sendMessage(msg: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage>  {
+    return super.sendMessage(msg);
   }
 }
 

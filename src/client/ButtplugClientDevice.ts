@@ -380,7 +380,7 @@ export class ButtplugClientDevice extends EventEmitter {
     await this.sendExpectOk(new Messages.StopDeviceCmd(this.index));
   }
 
-  public EmitDisconnected() {
+  public emitDisconnected() {
     this.emit('deviceremoved');
   }
 }
