@@ -257,35 +257,49 @@ export class ButtplugClientDevice extends EventEmitter {
     }
   }
 
-  public async battery(): Promise<number> {
+  public get hasBattery(): boolean {
     const batteryAttrs = this.messageAttributes.SensorReadCmd?.filter(
       (x) => x.SensorType === Messages.SensorType.Battery
     );
-    if (!batteryAttrs || batteryAttrs.length === 0) {
+    return batteryAttrs !== undefined && batteryAttrs.length > 0;
+  }
+
+  public async battery(): Promise<number> {
+    if (!this.hasBattery) {
       throw new ButtplugDeviceException(
         `Device ${this.name} has no Battery capabilities`
       );
     }
+    const batteryAttrs = this.messageAttributes.SensorReadCmd?.filter(
+      (x) => x.SensorType === Messages.SensorType.Battery
+    );
     // Find the battery sensor, we'll need its index.
     const result = await this.sensorRead(
-      batteryAttrs[0].Index,
+      batteryAttrs![0].Index,
       Messages.SensorType.Battery
     );
     return result[0] / 100.0;
   }
 
-  public async rssi(): Promise<number> {
+  public get hasRssi(): boolean {
     const rssiAttrs = this.messageAttributes.SensorReadCmd?.filter(
       (x) => x.SensorType === Messages.SensorType.RSSI
     );
-    if (!rssiAttrs || rssiAttrs.length === 0) {
+    return rssiAttrs !== undefined && rssiAttrs.length === 0;
+  }
+
+  public async rssi(): Promise<number> {
+    if (!this.hasRssi) {
       throw new ButtplugDeviceException(
         `Device ${this.name} has no RSSI capabilities`
       );
     }
+    const rssiAttrs = this.messageAttributes.SensorReadCmd?.filter(
+      (x) => x.SensorType === Messages.SensorType.RSSI
+    );
     // Find the battery sensor, we'll need its index.
     const result = await this.sensorRead(
-      rssiAttrs[0].Index,
+      rssiAttrs![0].Index,
       Messages.SensorType.RSSI
     );
     return result[0];
