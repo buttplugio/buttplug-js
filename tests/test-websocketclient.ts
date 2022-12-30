@@ -4,7 +4,7 @@ import * as Messages from "../src/core/Messages";
 import { ButtplugLogLevel } from "../src/core/Logging";
 import { FromJSON } from "../src/core/MessageUtils";
 import { SetupTestSuite } from "./utils";
-import { ButtplugMessageException, ButtplugBrowserWebsocketClientConnector } from "../src";
+import { ButtplugMessageError, ButtplugBrowserWebsocketClientConnector } from "../src";
 
 SetupTestSuite();
 
@@ -70,13 +70,13 @@ describe("Websocket Client Tests", () => {
     return p;
   });
 
-  it("Should throw exception on return of error message", async () => {
+  it("Should throw Error on return of error message", async () => {
     (socket as any).on("message", (jsonmsg: string) => {
       const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
       if (msg.Type === Messages.StopAllDevices) {
         delaySend(new Messages.Error("Error", Messages.ErrorClass.ERROR_MSG, msg.Id));
       }
     });
-    await expect(bp.stopAllDevices()).rejects.toBeInstanceOf(ButtplugMessageException);
+    await expect(bp.stopAllDevices()).rejects.toBeInstanceOf(ButtplugMessageError);
   });
 });

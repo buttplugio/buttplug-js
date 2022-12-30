@@ -9,12 +9,12 @@
 import * as Messages from './Messages';
 import { ButtplugLogger } from './Logging';
 
-export class ButtplugException extends Error {
+export class ButtplugError extends Error {
   public get ErrorClass(): Messages.ErrorClass {
     return this.errorClass;
   }
 
-  public get InnerException(): Error | undefined {
+  public get InnerError(): Error | undefined {
     return this.innerError;
   }
 
@@ -26,7 +26,7 @@ export class ButtplugException extends Error {
     return new Messages.Error(this.message, this.ErrorClass, this.Id);
   }
 
-  public static LogAndError<T extends ButtplugException>(
+  public static LogAndError<T extends ButtplugError>(
     constructor: new (str: string, num: number) => T,
     logger: ButtplugLogger,
     message: string,
@@ -39,15 +39,15 @@ export class ButtplugException extends Error {
   public static FromError(error: Messages.Error) {
     switch (error.ErrorCode) {
       case Messages.ErrorClass.ERROR_DEVICE:
-        return new ButtplugDeviceException(error.ErrorMessage, error.Id);
+        return new ButtplugDeviceError(error.ErrorMessage, error.Id);
       case Messages.ErrorClass.ERROR_INIT:
-        return new ButtplugInitException(error.ErrorMessage, error.Id);
+        return new ButtplugInitError(error.ErrorMessage, error.Id);
       case Messages.ErrorClass.ERROR_UNKNOWN:
-        return new ButtplugUnknownException(error.ErrorMessage, error.Id);
+        return new ButtplugUnknownError(error.ErrorMessage, error.Id);
       case Messages.ErrorClass.ERROR_PING:
-        return new ButtplugPingException(error.ErrorMessage, error.Id);
+        return new ButtplugPingError(error.ErrorMessage, error.Id);
       case Messages.ErrorClass.ERROR_MSG:
-        return new ButtplugMessageException(error.ErrorMessage, error.Id);
+        return new ButtplugMessageError(error.ErrorMessage, error.Id);
       default:
         throw new Error(`Message type ${error.ErrorCode} not handled`);
     }
@@ -70,31 +70,31 @@ export class ButtplugException extends Error {
   }
 }
 
-export class ButtplugInitException extends ButtplugException {
+export class ButtplugInitError extends ButtplugError {
   public constructor(message: string, id: number = Messages.SYSTEM_MESSAGE_ID) {
     super(message, Messages.ErrorClass.ERROR_INIT, id);
   }
 }
 
-export class ButtplugDeviceException extends ButtplugException {
+export class ButtplugDeviceError extends ButtplugError {
   public constructor(message: string, id: number = Messages.SYSTEM_MESSAGE_ID) {
     super(message, Messages.ErrorClass.ERROR_DEVICE, id);
   }
 }
 
-export class ButtplugMessageException extends ButtplugException {
+export class ButtplugMessageError extends ButtplugError {
   public constructor(message: string, id: number = Messages.SYSTEM_MESSAGE_ID) {
     super(message, Messages.ErrorClass.ERROR_MSG, id);
   }
 }
 
-export class ButtplugPingException extends ButtplugException {
+export class ButtplugPingError extends ButtplugError {
   public constructor(message: string, id: number = Messages.SYSTEM_MESSAGE_ID) {
     super(message, Messages.ErrorClass.ERROR_PING, id);
   }
 }
 
-export class ButtplugUnknownException extends ButtplugException {
+export class ButtplugUnknownError extends ButtplugError {
   public constructor(message: string, id: number = Messages.SYSTEM_MESSAGE_ID) {
     super(message, Messages.ErrorClass.ERROR_UNKNOWN, id);
   }

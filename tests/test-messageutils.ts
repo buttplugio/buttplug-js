@@ -1,6 +1,6 @@
 import { SetupTestSuite } from "./utils";
 import {ButtplugClientDevice, RotateCmd, LinearCmd, VectorSubcommand,
-        RotateSubcommand, StopDeviceCmd, ButtplugDeviceMessage, ButtplugDeviceException } from "../src/index";
+        RotateSubcommand, StopDeviceCmd, ButtplugDeviceMessage, ButtplugDeviceError } from "../src/index";
 
 SetupTestSuite();
 /*
@@ -56,13 +56,13 @@ describe("Message Utils Tests", () => {
   });
 
   it("should throw on wrong allowed messages", async () => {
-    await expect(testRotateDevice.SendVibrateCmd(0.5)).rejects.toBeInstanceOf(ButtplugDeviceException);
-    await expect(testVibrateDevice.SendRotateCmd(0.5, true)).rejects.toBeInstanceOf(ButtplugDeviceException);
-    await expect(testVibrateDevice.SendLinearCmd(0.5, 1.0)).rejects.toBeInstanceOf(ButtplugDeviceException);
+    await expect(testRotateDevice.SendVibrateCmd(0.5)).rejects.toBeInstanceOf(ButtplugDeviceError);
+    await expect(testVibrateDevice.SendRotateCmd(0.5, true)).rejects.toBeInstanceOf(ButtplugDeviceError);
+    await expect(testVibrateDevice.SendLinearCmd(0.5, 1.0)).rejects.toBeInstanceOf(ButtplugDeviceError);
   });
 
   it("should reject on out of bounds arguments", async () => {
-    await expect(testVibrateDevice.SendVibrateCmd([0.5, 0.5, 0.5])).rejects.toBeInstanceOf(ButtplugDeviceException);
+    await expect(testVibrateDevice.SendVibrateCmd([0.5, 0.5, 0.5])).rejects.toBeInstanceOf(ButtplugDeviceError);
   });
 });
 */

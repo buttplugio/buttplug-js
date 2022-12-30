@@ -7,7 +7,7 @@
  */
 
 import * as Messages from '../core/Messages';
-import { ButtplugException } from '../core/Exceptions';
+import { ButtplugError } from '../core/Exceptions';
 
 export class ButtplugMessageSorter {
   protected _counter = 1;
@@ -51,7 +51,7 @@ export class ButtplugMessageSorter {
         // If we've gotten back an error, reject the related promise using a
         // ButtplugException derived type.
         if (x.Type === Messages.Error) {
-          rej(ButtplugException.FromError(x as Messages.Error));
+          rej(ButtplugError.FromError(x as Messages.Error));
           continue;
         }
         res(x);

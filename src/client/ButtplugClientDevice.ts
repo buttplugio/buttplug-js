@@ -9,9 +9,9 @@
 'use strict';
 import * as Messages from '../core/Messages';
 import {
-  ButtplugDeviceException,
-  ButtplugException,
-  ButtplugMessageException,
+  ButtplugDeviceError,
+  ButtplugError,
+  ButtplugMessageError,
 } from '../core/Exceptions';
 import { EventEmitter } from 'events';
 
@@ -102,9 +102,9 @@ export class ButtplugClientDevice extends EventEmitter {
       case Messages.Ok:
         return;
       case Messages.Error:
-        throw ButtplugException.FromError(response as Messages.Error);
+        throw ButtplugError.FromError(response as Messages.Error);
       default:
-        throw new ButtplugMessageException(
+        throw new ButtplugMessageError(
           `Message type ${response.constructor} not handled by SendMsgExpectOk`
         );
     }
@@ -128,7 +128,7 @@ export class ButtplugClientDevice extends EventEmitter {
       (x) => x.ActuatorType === actuator
     );
     if (!scalarAttrs || scalarAttrs.length === 0) {
-      throw new ButtplugDeviceException(
+      throw new ButtplugDeviceError(
         `Device ${this.name} has no ${actuator} capabilities`
       );
     }
@@ -139,7 +139,7 @@ export class ButtplugClientDevice extends EventEmitter {
       );
     } else if (Array.isArray(speed)) {
       if (speed.length > scalarAttrs.length) {
-        throw new ButtplugDeviceException(
+        throw new ButtplugDeviceError(
           `${speed.length} commands send to a device with ${scalarAttrs.length} vibrators`
         );
       }
@@ -147,7 +147,7 @@ export class ButtplugClientDevice extends EventEmitter {
         cmds.push(new Messages.ScalarSubcommand(x.Index, speed[i], actuator));
       });
     } else {
-      throw new ButtplugDeviceException(
+      throw new ButtplugDeviceError(
         `${actuator} can only take numbers or arrays of numbers.`
       );
     }
@@ -188,7 +188,7 @@ export class ButtplugClientDevice extends EventEmitter {
   ): Promise<void> {
     const rotateAttrs = this.messageAttributes.RotateCmd;
     if (!rotateAttrs || rotateAttrs.length === 0) {
-      throw new ButtplugDeviceException(
+      throw new ButtplugDeviceError(
         `Device ${this.name} has no Rotate capabilities`
       );
     }
@@ -201,7 +201,7 @@ export class ButtplugClientDevice extends EventEmitter {
     } else if (Array.isArray(values)) {
       msg = Messages.RotateCmd.Create(this.index, values);
     } else {
-      throw new ButtplugDeviceException(
+      throw new ButtplugDeviceError(
         'SendRotateCmd can only take a number and boolean, or an array of number/boolean tuples'
       );
     }
@@ -218,7 +218,7 @@ export class ButtplugClientDevice extends EventEmitter {
   ): Promise<void> {
     const linearAttrs = this.messageAttributes.LinearCmd;
     if (!linearAttrs || linearAttrs.length === 0) {
-      throw new ButtplugDeviceException(
+      throw new ButtplugDeviceError(
         `Device ${this.name} has no Linear capabilities`
       );
     }
@@ -231,7 +231,7 @@ export class ButtplugClientDevice extends EventEmitter {
     } else if (Array.isArray(values)) {
       msg = Messages.LinearCmd.Create(this.index, values);
     } else {
-      throw new ButtplugDeviceException(
+      throw new ButtplugDeviceError(
         'SendLinearCmd can only take a number and number, or an array of number/number tuples'
       );
     }
@@ -249,9 +249,9 @@ export class ButtplugClientDevice extends EventEmitter {
       case Messages.SensorReading:
         return (response as Messages.SensorReading).Data;
       case Messages.Error:
-        throw ButtplugException.FromError(response as Messages.Error);
+        throw ButtplugError.FromError(response as Messages.Error);
       default:
-        throw new ButtplugMessageException(
+        throw new ButtplugMessageError(
           `Message type ${response.constructor} not handled by sensorRead`
         );
     }
@@ -266,7 +266,7 @@ export class ButtplugClientDevice extends EventEmitter {
 
   public async battery(): Promise<number> {
     if (!this.hasBattery) {
-      throw new ButtplugDeviceException(
+      throw new ButtplugDeviceError(
         `Device ${this.name} has no Battery capabilities`
       );
     }
@@ -290,7 +290,7 @@ export class ButtplugClientDevice extends EventEmitter {
 
   public async rssi(): Promise<number> {
     if (!this.hasRssi) {
-      throw new ButtplugDeviceException(
+      throw new ButtplugDeviceError(
         `Device ${this.name} has no RSSI capabilities`
       );
     }
@@ -311,12 +311,12 @@ export class ButtplugClientDevice extends EventEmitter {
     timeout: number
   ): Promise<Uint8Array> {
     if (!this.messageAttributes.RawReadCmd) {
-      throw new ButtplugDeviceException(
+      throw new ButtplugDeviceError(
         `Device ${this.name} has no raw read capabilities`
       );
     }
     if (this.messageAttributes.RawReadCmd.Endpoints.indexOf(endpoint) === -1) {
-      throw new ButtplugDeviceException(
+      throw new ButtplugDeviceError(
         `Device ${this.name} has no raw readable endpoint ${endpoint}`
       );
     }
@@ -327,9 +327,9 @@ export class ButtplugClientDevice extends EventEmitter {
       case Messages.RawReading:
         return new Uint8Array((response as Messages.RawReading).Data);
       case Messages.Error:
-        throw ButtplugException.FromError(response as Messages.Error);
+        throw ButtplugError.FromError(response as Messages.Error);
       default:
-        throw new ButtplugMessageException(
+        throw new ButtplugMessageError(
           `Message type ${response.constructor} not handled by rawRead`
         );
     }
@@ -341,12 +341,12 @@ export class ButtplugClientDevice extends EventEmitter {
     writeWithResponse: boolean
   ): Promise<void> {
     if (!this.messageAttributes.RawWriteCmd) {
-      throw new ButtplugDeviceException(
+      throw new ButtplugDeviceError(
         `Device ${this.name} has no raw write capabilities`
       );
     }
     if (this.messageAttributes.RawWriteCmd.Endpoints.indexOf(endpoint) === -1) {
-      throw new ButtplugDeviceException(
+      throw new ButtplugDeviceError(
         `Device ${this.name} has no raw writable endpoint ${endpoint}`
       );
     }
@@ -357,14 +357,14 @@ export class ButtplugClientDevice extends EventEmitter {
 
   public async rawSubscribe(endpoint: string): Promise<void> {
     if (!this.messageAttributes.RawSubscribeCmd) {
-      throw new ButtplugDeviceException(
+      throw new ButtplugDeviceError(
         `Device ${this.name} has no raw subscribe capabilities`
       );
     }
     if (
       this.messageAttributes.RawSubscribeCmd.Endpoints.indexOf(endpoint) === -1
     ) {
-      throw new ButtplugDeviceException(
+      throw new ButtplugDeviceError(
         `Device ${this.name} has no raw subscribable endpoint ${endpoint}`
       );
     }
@@ -374,14 +374,14 @@ export class ButtplugClientDevice extends EventEmitter {
   public async rawUnsubscribe(endpoint: string): Promise<void> {
     // This reuses raw subscribe's info.
     if (!this.messageAttributes.RawSubscribeCmd) {
-      throw new ButtplugDeviceException(
+      throw new ButtplugDeviceError(
         `Device ${this.name} has no raw unsubscribe capabilities`
       );
     }
     if (
       this.messageAttributes.RawSubscribeCmd.Endpoints.indexOf(endpoint) === -1
     ) {
-      throw new ButtplugDeviceException(
+      throw new ButtplugDeviceError(
         `Device ${this.name} has no raw unsubscribable endpoint ${endpoint}`
       );
     }

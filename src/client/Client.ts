@@ -14,10 +14,10 @@ import { ButtplugClientDevice } from './ButtplugClientDevice';
 import { IButtplugClientConnector } from './IButtplugClientConnector';
 import * as Messages from '../core/Messages';
 import {
-  ButtplugDeviceException,
-  ButtplugException,
-  ButtplugInitException,
-  ButtplugMessageException,
+  ButtplugDeviceError,
+  ButtplugError,
+  ButtplugInitError,
+  ButtplugMessageError,
 } from '../core/Exceptions';
 import { ButtplugClientConnectorException } from './ButtplugClientConnectorException';
 
@@ -96,8 +96,8 @@ export class ButtplugClient extends EventEmitter {
     this.checkConnector();
     const dev = this._devices.get(device.index);
     if (dev === undefined) {
-      throw ButtplugException.LogAndError(
-        ButtplugDeviceException,
+      throw ButtplugError.LogAndError(
+        ButtplugDeviceError,
         this._logger,
         `Device ${device.index} not available.`
       );
@@ -161,8 +161,8 @@ export class ButtplugClient extends EventEmitter {
         if (serverinfo.MessageVersion < Messages.MESSAGE_SPEC_VERSION) {
           // Disconnect and throw an exception explaining the version mismatch problem.
           await this._connector!.Disconnect();
-          throw ButtplugException.LogAndError(
-            ButtplugInitException,
+          throw ButtplugError.LogAndError(
+            ButtplugInitError,
             this._logger,
             `Server protocol version ${serverinfo.MessageVersion} is older than client protocol version ${Messages.MESSAGE_SPEC_VERSION}. Please update server.`
           );
@@ -188,8 +188,8 @@ export class ButtplugClient extends EventEmitter {
         // server has detected.
         await this._connector!.Disconnect();
         const err = msg as Messages.Error;
-        throw ButtplugException.LogAndError(
-          ButtplugInitException,
+        throw ButtplugError.LogAndError(
+          ButtplugInitError,
           this._logger,
           `Cannot connect to server. ${err.ErrorMessage}`
         );
@@ -250,10 +250,10 @@ export class ButtplugClient extends EventEmitter {
       case Messages.Ok:
         return;
       case Messages.Error:
-        throw ButtplugException.FromError(response as Messages.Error);
+        throw ButtplugError.FromError(response as Messages.Error);
       default:
-        throw ButtplugException.LogAndError(
-          ButtplugMessageException,
+        throw ButtplugError.LogAndError(
+          ButtplugMessageError,
           this._logger,
           `Message type ${response.constructor} not handled by SendMsgExpectOk`
         );

@@ -6,10 +6,10 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-import { ButtplugException } from '../core/Exceptions';
+import { ButtplugError } from '../core/Exceptions';
 import * as Messages from '../core/Messages';
 
-export class ButtplugClientConnectorException extends ButtplugException {
+export class ButtplugClientConnectorException extends ButtplugError {
   public constructor(message: string) {
     super(message, Messages.ErrorClass.ERROR_UNKNOWN);
   }

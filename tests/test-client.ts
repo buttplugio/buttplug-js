@@ -4,7 +4,7 @@ import { ButtplugClient, ButtplugLogger,
 import { TestDeviceSubtypeManager } from "../src/test/TestDeviceSubtypeManager";
 import * as Messages from "../src/core/Messages";
 import { BPTestClient, SetupTestSuite, SetupTestServer } from "./utils";
-import { ButtplugMessageException, ButtplugDeviceException } from "../src/core/Exceptions";
+import { ButtplugMessageError, ButtplugDeviceError } from "../src/core/Errors";
 
 SetupTestSuite();
 
@@ -107,7 +107,7 @@ describe("Client Tests", () => {
 
       await expect(bp.SendDeviceMessage(bp.Devices[0], new Messages.KiirooCmd(2)))
         .rejects
-        .toBeInstanceOf(ButtplugDeviceException);
+        .toBeInstanceOf(ButtplugDeviceError);
       res();
     });
     await bp.StartScanning();
@@ -120,7 +120,7 @@ describe("Client Tests", () => {
       expect(bp.Devices.length).toBeGreaterThan(0);
       await expect(bp.SendDeviceMessage(bp.Devices[0], new Messages.SingleMotorVibrateCmd(50)))
         .rejects
-        .toBeInstanceOf(ButtplugMessageException);
+        .toBeInstanceOf(ButtplugMessageError);
       res();
     });
     await bp.StartScanning();
@@ -149,7 +149,7 @@ describe("Client Tests", () => {
   it("Should get error on scanning when no device managers available.", async () => {
     const bplocal = new ButtplugClient("Test Client");
     await bplocal.Connect(new ButtplugEmbeddedClientConnector());
-    await expect(bplocal.StartScanning()).rejects.toBeInstanceOf(ButtplugDeviceException);
+    await expect(bplocal.StartScanning()).rejects.toBeInstanceOf(ButtplugDeviceError);
   });
 });
 */
