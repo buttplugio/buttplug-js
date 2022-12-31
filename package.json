@@ -1,6 +1,6 @@
 {
   "name": "buttplug",
-  "version": "3.0.0-alpha.4",
+  "version": "3.0.0",
   "description": "Buttplug Client Implementation for Typescript/Javascript",
   "homepage": "https://github.com/buttplugio/buttplug-js/",
   "repository": {

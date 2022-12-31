@@ -1,12 +1,16 @@
-# v3.0.0 (2022/12/28)
+# v3.0.0 (2022/12/30)
 
 - Back to pure Typescript. Back to the good shit.
+- Removed server
+- Brought implementation in line with the FFI Client API, so minimal changes should be needed for
+  porting from v1.
 
 # v2.0.0
 
 - There is no buttplug-js v2
 - There is no Miss Zarves
-- (Version skipped to align JS and C# implementation versions)
+- (Version skipped to align JS and C# implementation versions, which will probably fall out of
+  alignment again very quickly)
 
 # v1.0.16 (2021/10/16) (FFI Impl)
 
