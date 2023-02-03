@@ -36,7 +36,9 @@
   },
   "dependencies": {
     "class-transformer": "^0.5.1",
-    "reflect-metadata": "^0.1.13"
+    "filereader": "^0.10.3",
+    "reflect-metadata": "^0.1.13",
+    "ws": "^8.12.0"
   },
   "devDependencies": {
     "@types/commander": "^2.12.2",
@@ -45,7 +47,7 @@
     "@types/jest-environment-puppeteer": "^5.0.3",
     "@types/node": "^18.11.18",
     "@types/uuid-parse": "^1.0.0",
-    "@types/ws": "^8.5.3",
+    "@types/ws": "^8.5.4",
     "@typescript-eslint/eslint-plugin": "^5.47.1",
     "@typescript-eslint/parser": "^5.47.1",
     "copyfiles": "^2.4.1",

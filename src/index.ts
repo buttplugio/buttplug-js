@@ -9,6 +9,7 @@
 export * from './client/Client';
 export * from './client/ButtplugClientDevice';
 export * from './client/ButtplugBrowserWebsocketClientConnector';
+export * from './client/ButtplugNodeWebsocketClientConnector';
 export * from './client/ButtplugClientConnectorException';
 export * from './utils/ButtplugMessageSorter';
 export * from './client/IButtplugClientConnector';

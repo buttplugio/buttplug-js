@@ -14,6 +14,8 @@ import { FromJSON } from '../core/MessageUtils';
 
 export class ButtplugBrowserWebsocketConnector extends EventEmitter {
   protected _ws: WebSocket | undefined;
+  protected _websocketConstructor: typeof WebSocket | null = null;
+  protected _filereaderConstructor: typeof FileReader | null = null;
 
   public constructor(private _url: string) {
     super();
@@ -24,7 +26,7 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter {
   }
 
   public Connect = async (): Promise<void> => {
-    const ws = new WebSocket(this._url);
+    const ws = new (this._websocketConstructor ?? WebSocket)(this._url);
     let res;
     let rej;
     const p = new Promise<void>((resolve, reject) => {
@@ -81,7 +83,7 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter {
       const msgs = FromJSON(event.data);
       this.emit('message', msgs);
     } else if (event.data instanceof Blob) {
-      const reader = new FileReader();
+      const reader = new (this._filereaderConstructor ?? FileReader)();
       reader.addEventListener('load', (ev) => {
         this.OnReaderLoad(ev);
       });
