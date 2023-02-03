@@ -1322,12 +1322,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ws@npm:^8.5.3":
-  version: 8.5.3
-  resolution: "@types/ws@npm:8.5.3"
+"@types/ws@npm:^8.5.4":
+  version: 8.5.4
+  resolution: "@types/ws@npm:8.5.4"
   dependencies:
     "@types/node": "*"
-  checksum: 0ce46f850d41383fcdc2149bcacc86d7232fa7a233f903d2246dff86e31701a02f8566f40af5f8b56d1834779255c04ec6ec78660fe0f9b2a69cf3d71937e4ae
+  checksum: fefbad20d211929bb996285c4e6f699b12192548afedbe4930ab4384f8a94577c9cd421acaad163cacd36b88649509970a05a0b8f20615b30c501ed5269038d1
   languageName: node
   linkType: hard
 
@@ -2699,7 +2699,7 @@ __metadata:
     "@types/jest-environment-puppeteer": ^5.0.3
     "@types/node": ^18.11.18
     "@types/uuid-parse": ^1.0.0
-    "@types/ws": ^8.5.3
+    "@types/ws": ^8.5.4
     "@typescript-eslint/eslint-plugin": ^5.47.1
     "@typescript-eslint/parser": ^5.47.1
     class-transformer: ^0.5.1
@@ -2708,6 +2708,7 @@ __metadata:
     eslint: ^8.30.0
     eslint-plugin-node: ^11.1.0
     eslint-plugin-prettier: ^4.2.1
+    filereader: ^0.10.3
     fork-ts-checker-webpack-plugin: ^7.2.14
     gts: ^3.1.1
     jest: ^29.3.1
@@ -2747,6 +2748,7 @@ __metadata:
     webpack-bundle-analyzer: ^3.6.1
     webpack-cli: ^3.3.11
     webpack-merge: ^4.2.2
+    ws: ^8.12.0
     yarn: ^1.22.19
   languageName: unknown
   linkType: soft
@@ -4896,6 +4898,13 @@ __metadata:
   version: 1.0.0
   resolution: "file-uri-to-path@npm:1.0.0"
   checksum: b648580bdd893a008c92c7ecc96c3ee57a5e7b6c4c18a9a09b44fb5d36d79146f8e442578bc0e173dc027adf3987e254ba1dfd6e3ec998b7c282873010502144
+  languageName: node
+  linkType: hard
+
+"filereader@npm:^0.10.3":
+  version: 0.10.3
+  resolution: "filereader@npm:0.10.3"
+  checksum: 870b38a4ea2e77512c642cdc03059171e4792a49610929f14d7e495137de8f4d3c8e408f5e30b22d45c5b18f6813bebb1854d7c8356ab9b7f08f06a6745a2772
   languageName: node
   linkType: hard
 
@@ -11974,11 +11983,11 @@ __metadata:
 
 "typescript@patch:typescript@^4.9.4#~builtin<compat/typescript>":
   version: 4.9.4
-  resolution: "typescript@patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=d73830"
+  resolution: "typescript@patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=23ec76"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 37f6e2c3c5e2aa5934b85b0fddbf32eeac8b1bacf3a5b51d01946936d03f5377fe86255d4e5a4ae628fd0cd553386355ad362c57f13b4635064400f3e8e05b9d
+  checksum: 3e2ab0772908676d9b9cb83398c70003a3b08e1c6b3b122409df9f4b520f2fdaefa20c3d7d57dce283fed760ac94b3ce94d4a7fa875127b67852904425a1f0dc
   languageName: node
   linkType: hard
 
@@ -12577,6 +12586,21 @@ __metadata:
   dependencies:
     async-limiter: ~1.0.0
   checksum: aec3154ec51477c094ac2cb5946a156e17561a581fa27005cbf22c53ac57f8d4e5f791dd4bbba6a488602cb28778c8ab7df06251d590507c3c550fd8ebeee949
+  languageName: node
+  linkType: hard
+
+"ws@npm:^8.12.0":
+  version: 8.12.0
+  resolution: "ws@npm:8.12.0"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ">=5.0.2"
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 818ff3f8749c172a95a114cceb8b89cedd27e43a82d65c7ad0f7882b1e96a2ee6709e3746a903c3fa88beec0c8bae9a9fcd75f20858b32a166dfb7519316a5d7
   languageName: node
   linkType: hard
 

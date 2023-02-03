@@ -19,15 +19,6 @@ export class ButtplugBrowserWebsocketClientConnector
   implements IButtplugClientConnector
 {
   private _sorter: ButtplugMessageSorter = new ButtplugMessageSorter(true);
-  protected _ws: WebSocket | undefined;
-
-  public constructor(_url: string) {
-    super(_url);
-  }
-
-  public get Connected(): boolean {
-    return this._ws !== undefined;
-  }
 
   public Send = async (msg: ButtplugMessage): Promise<ButtplugMessage> => {
     if (!this.Connected) {
@@ -44,7 +35,7 @@ export class ButtplugBrowserWebsocketClientConnector
       const emitMsgs = this._sorter.ParseIncomingMessages(msgs);
       this.emit('message', emitMsgs);
     } else if (event.data instanceof Blob) {
-      const reader = new FileReader();
+      const reader = new (this._filereaderConstructor ?? FileReader)();
       reader.addEventListener('load', (ev) => {
         this.OnReaderLoad(ev);
       });
