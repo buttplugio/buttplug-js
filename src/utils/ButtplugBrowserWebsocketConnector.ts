@@ -17,7 +17,7 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter {
   protected _websocketConstructor: typeof WebSocket | null = null;
   protected _filereaderConstructor: typeof FileReader | null = null;
 
-  public constructor(private _url: string) {
+  public constructor(private _connectorOptions: WebSocket | string) {
     super();
   }
 
@@ -26,7 +26,30 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter {
   }
 
   public Connect = async (): Promise<void> => {
-    const ws = new (this._websocketConstructor ?? WebSocket)(this._url);
+    if (typeof this._connectorOptions === 'string') {
+      return this.ConnectUrl();
+    }
+    return this.ConnectWs();
+  };
+
+  private ConnectWs = async (): Promise<void> => {
+    this._ws = this._connectorOptions as WebSocket;
+    try {
+      await this.Initialize();
+      this._ws.addEventListener('message', (msg) => {
+        this.ParseIncomingMessage(msg);
+      });
+      this._ws.addEventListener('close', this.Disconnect);
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  };
+
+  private ConnectUrl = async (): Promise<void> => {
+    const ws = new (this._websocketConstructor ?? WebSocket)(
+      this._connectorOptions as string
+    );
     let res;
     let rej;
     const p = new Promise<void>((resolve, reject) => {
