@@ -10,21 +10,31 @@
 import { plainToInstance } from 'class-transformer';
 import * as Messages from './Messages';
 
+function getMessageClass(
+  type: string
+): (new (...args: unknown[]) => Messages.ButtplugMessage) | null {
+  for (const value of Object.values(Messages)) {
+    if (typeof value === 'function' && 'Name' in value && value.Name === type) {
+      return value;
+    }
+  }
+  return null;
+}
+
 export function FromJSON(str): Messages.ButtplugMessage[] {
   const msgarray: object[] = JSON.parse(str);
   const msgs: Messages.ButtplugMessage[] = [];
   for (const x of Array.from(msgarray)) {
-    // Can't get this to resolve nicely as a type, so just start from any and cast
-    // after. Not sure how to resolve plainToClass to a type since this is
-    // dynamic.
-    //
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const msg: any = plainToInstance(
-      Messages[Object.getOwnPropertyNames(x)[0]],
-      x[Object.getOwnPropertyNames(x)[0]]
-    );
-    (msg as Messages.ButtplugMessage).update();
-    msgs.push(msg as Messages.ButtplugMessage);
+    const type = Object.getOwnPropertyNames(x)[0];
+    const cls = getMessageClass(type);
+    if (cls) {
+      const msg = plainToInstance<Messages.ButtplugMessage, unknown>(
+        cls,
+        x[type]
+      );
+      msg.update();
+      msgs.push(msg);
+    }
   }
   return msgs;
 }
