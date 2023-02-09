@@ -85,18 +85,10 @@ export class SensorDeviceMessageAttributes {
     Object.assign(this, data);
   }
 }
+
 export abstract class ButtplugMessage {
   constructor(public Id: number) {}
 
-  /***
-   * Returns the message type name
-   *
-   * Usually, the message type name will be the same as the message class
-   * constructor, so the constructor name is used by default. However, in
-   * instances where a message has different versions (i.e. DeviceAddedVersion0
-   * and DeviceAddedVersion1), we will need to override this to set the message
-   * name.
-   */
   // tslint:disable-next-line:ban-types
   public get Type(): Function {
     return this.constructor;
@@ -108,7 +100,8 @@ export abstract class ButtplugMessage {
 
   public toProtocolFormat(): object {
     const jsonObj = {};
-    jsonObj[this.constructor.name] = instanceToPlain(this);
+    jsonObj[(this.constructor as unknown as { Name: string }).Name] =
+      instanceToPlain(this);
     return jsonObj;
   }
 
@@ -128,12 +121,16 @@ export abstract class ButtplugSystemMessage extends ButtplugMessage {
 }
 
 export class Ok extends ButtplugSystemMessage {
+  static Name = 'Ok';
+
   constructor(public Id: number = DEFAULT_MESSAGE_ID) {
     super(Id);
   }
 }
 
 export class Ping extends ButtplugMessage {
+  static Name = 'Ping';
+
   constructor(public Id: number = DEFAULT_MESSAGE_ID) {
     super(Id);
   }
@@ -148,6 +145,8 @@ export enum ErrorClass {
 }
 
 export class Error extends ButtplugMessage {
+  static Name = 'Error';
+
   constructor(
     public ErrorMessage: string,
     public ErrorCode: ErrorClass = ErrorClass.ERROR_UNKNOWN,
@@ -175,6 +174,8 @@ export class DeviceInfo {
 }
 
 export class DeviceList extends ButtplugMessage {
+  static Name = 'DeviceList';
+
   @Type(() => DeviceInfo)
   public Devices: DeviceInfo[];
   public Id: number;
@@ -193,6 +194,8 @@ export class DeviceList extends ButtplugMessage {
 }
 
 export class DeviceAdded extends ButtplugSystemMessage {
+  static Name = 'DeviceAdded';
+
   public DeviceIndex: number;
   public DeviceName: string;
   @Type(() => MessageAttributes)
@@ -211,36 +214,48 @@ export class DeviceAdded extends ButtplugSystemMessage {
 }
 
 export class DeviceRemoved extends ButtplugSystemMessage {
+  static Name = 'DeviceRemoved';
+
   constructor(public DeviceIndex: number) {
     super();
   }
 }
 
 export class RequestDeviceList extends ButtplugMessage {
+  static Name = 'RequestDeviceList';
+
   constructor(public Id: number = DEFAULT_MESSAGE_ID) {
     super(Id);
   }
 }
 
 export class StartScanning extends ButtplugMessage {
+  static Name = 'StartScanning';
+
   constructor(public Id: number = DEFAULT_MESSAGE_ID) {
     super(Id);
   }
 }
 
 export class StopScanning extends ButtplugMessage {
+  static Name = 'StopScanning';
+
   constructor(public Id: number = DEFAULT_MESSAGE_ID) {
     super(Id);
   }
 }
 
 export class ScanningFinished extends ButtplugSystemMessage {
+  static Name = 'ScanningFinished';
+
   constructor() {
     super();
   }
 }
 
 export class RequestServerInfo extends ButtplugMessage {
+  static Name = 'RequestServerInfo';
+
   constructor(
     public ClientName: string,
     public MessageVersion: number = 0,
@@ -251,6 +266,8 @@ export class RequestServerInfo extends ButtplugMessage {
 }
 
 export class ServerInfo extends ButtplugSystemMessage {
+  static Name = 'ServerInfo';
+
   constructor(
     public MessageVersion: number,
     public MaxPingTime: number,
@@ -262,6 +279,8 @@ export class ServerInfo extends ButtplugSystemMessage {
 }
 
 export class StopDeviceCmd extends ButtplugDeviceMessage {
+  static Name = 'StopDeviceCmd';
+
   constructor(
     public DeviceIndex: number = -1,
     public Id: number = DEFAULT_MESSAGE_ID
@@ -271,6 +290,8 @@ export class StopDeviceCmd extends ButtplugDeviceMessage {
 }
 
 export class StopAllDevices extends ButtplugMessage {
+  static Name = 'StopAllDevices';
+
   constructor(public Id: number = DEFAULT_MESSAGE_ID) {
     super(Id);
   }
@@ -291,6 +312,8 @@ export class ScalarSubcommand extends GenericMessageSubcommand {
 }
 
 export class ScalarCmd extends ButtplugDeviceMessage {
+  static Name = 'ScalarCmd';
+
   constructor(
     public Scalars: ScalarSubcommand[],
     public DeviceIndex: number = -1,
@@ -307,6 +330,8 @@ export class RotateSubcommand extends GenericMessageSubcommand {
 }
 
 export class RotateCmd extends ButtplugDeviceMessage {
+  static Name = 'RotateCmd';
+
   public static Create(
     deviceIndex: number,
     commands: [number, boolean][]
@@ -337,6 +362,8 @@ export class VectorSubcommand extends GenericMessageSubcommand {
 }
 
 export class LinearCmd extends ButtplugDeviceMessage {
+  static Name = 'LinearCmd';
+
   public static Create(
     deviceIndex: number,
     commands: [number, number][]
@@ -361,6 +388,8 @@ export class LinearCmd extends ButtplugDeviceMessage {
 }
 
 export class SensorReadCmd extends ButtplugDeviceMessage {
+  static Name = 'SensorReadCmd';
+
   constructor(
     public DeviceIndex: number,
     public SensorIndex: number,
@@ -372,6 +401,8 @@ export class SensorReadCmd extends ButtplugDeviceMessage {
 }
 
 export class SensorReading extends ButtplugDeviceMessage {
+  static Name = 'SensorReading';
+
   constructor(
     public DeviceIndex: number,
     public SensorIndex: number,
@@ -384,6 +415,8 @@ export class SensorReading extends ButtplugDeviceMessage {
 }
 
 export class RawReadCmd extends ButtplugDeviceMessage {
+  static Name = 'RawReadCmd';
+
   constructor(
     public DeviceIndex: number,
     public Endpoint: string,
@@ -396,6 +429,8 @@ export class RawReadCmd extends ButtplugDeviceMessage {
 }
 
 export class RawWriteCmd extends ButtplugDeviceMessage {
+  static Name = 'RawWriteCmd';
+
   constructor(
     public DeviceIndex: number,
     public Endpoint: string,
@@ -408,6 +443,8 @@ export class RawWriteCmd extends ButtplugDeviceMessage {
 }
 
 export class RawSubscribeCmd extends ButtplugDeviceMessage {
+  static Name = 'RawSubscribeCmd';
+
   constructor(
     public DeviceIndex: number,
     public Endpoint: string,
@@ -418,6 +455,8 @@ export class RawSubscribeCmd extends ButtplugDeviceMessage {
 }
 
 export class RawUnsubscribeCmd extends ButtplugDeviceMessage {
+  static Name = 'RawUnsubscribeCmd';
+
   constructor(
     public DeviceIndex: number,
     public Endpoint: string,
@@ -428,6 +467,8 @@ export class RawUnsubscribeCmd extends ButtplugDeviceMessage {
 }
 
 export class RawReading extends ButtplugDeviceMessage {
+  static Name = 'RawReading';
+
   constructor(
     public DeviceIndex: number,
     public Endpoint: string,
