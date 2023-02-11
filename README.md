@@ -12,6 +12,17 @@ the Version 3 Buttplug Spec. It is expected to run from a browser against either
 (GUI)](https://intiface.com/central) or [Initface Engine
 (CLI)](https://github.com/intiface/intiface-engine). No Rust FFI bindings are required.
 
+
+## Using buttplug-js with Node
+
+buttplug-js works with both pure web builds, as well as node applications. To use buttplug-js with node, use the `ButtplugNodeWebsocketClientConnector` class instead of the `ButtplugBrowserWebsocketClientConnector` class. That should be the only change needed, all of the API stays the same. See the Documentation section for more info.
+
+## Documentation
+
+Documentation on how to use Buttplug in general, as well as examples for buttplug-js, can be found in the [Buttplug Developer Guide](https://docs.buttplug.io/docs/dev-guide).
+
+API documentation for buttplug-js can be found at https://buttplugio.github.io/buttplug-js.
+
 ## What happened? Why is buttplug-js back?
 
 For those of you that have been around a while, you may remember that this used to be the main
@@ -31,7 +42,6 @@ and server to use the FFI was overkill, and caused many extremely difficult-to-d
 that in mind, the Typescript implementation in this repo is being turned into a Client only. The
 WASM server and Embedded Connector will stay in the FFI repo, but will be another NPM package that
 will be optional.
-
 
 ## Contributing
 
