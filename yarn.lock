@@ -1238,7 +1238,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:*, @types/jest@npm:^29.2.4":
+"@types/jest@npm:*, @types/jest@npm:^29.4.0":
   version: 29.4.0
   resolution: "@types/jest@npm:29.4.0"
   dependencies:
@@ -1262,7 +1262,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^18.11.18":
+"@types/node@npm:*, @types/node@npm:^18.13.0":
   version: 18.13.0
   resolution: "@types/node@npm:18.13.0"
   checksum: 4ea10f8802848b01672bce938f678b6774ca2cee0c9774f12275ab064ae07818419c3e2e41d6257ce7ba846d1ea26c63214aa1dfa4166fa3746291752b8c6416
@@ -1396,7 +1396,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/eslint-plugin@npm:^5.47.1":
+"@typescript-eslint/eslint-plugin@npm:^5.51.0":
   version: 5.51.0
   resolution: "@typescript-eslint/eslint-plugin@npm:5.51.0"
   dependencies:
@@ -1453,7 +1453,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:^5.47.1":
+"@typescript-eslint/parser@npm:^5.51.0":
   version: 5.51.0
   resolution: "@typescript-eslint/parser@npm:5.51.0"
   dependencies:
@@ -2218,6 +2218,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"asynckit@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "asynckit@npm:0.4.0"
+  checksum: 7b78c451df768adba04e2d02e63e2d0bf3b07adcd6e42b4cf665cb7ce899bedd344c69a1dcbce355b5f972d597b25aaa1c1742b52cffd9caccb22f348114f6be
+  languageName: node
+  linkType: hard
+
 "at-least-node@npm:^1.0.0":
   version: 1.0.0
   resolution: "at-least-node@npm:1.0.0"
@@ -2234,12 +2241,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^0.25.0":
-  version: 0.25.0
-  resolution: "axios@npm:0.25.0"
+"axios@npm:^0.27.2":
+  version: 0.27.2
+  resolution: "axios@npm:0.27.2"
   dependencies:
-    follow-redirects: ^1.14.7
-  checksum: 2a8a3787c05f2a0c9c3878f49782357e2a9f38945b93018fb0c4fd788171c43dceefbb577988628e09fea53952744d1ecebde234b561f1e703aa43e0a598a3ad
+    follow-redirects: ^1.14.9
+    form-data: ^4.0.0
+  checksum: 38cb7540465fe8c4102850c4368053c21683af85c5fdf0ea619f9628abbcb59415d1e22ebc8a6390d2bbc9b58a9806c874f139767389c862ec9b772235f06854
   languageName: node
   linkType: hard
 
@@ -2712,29 +2720,29 @@ __metadata:
   dependencies:
     "@types/commander": ^2.12.2
     "@types/expect-puppeteer": ^5.0.2
-    "@types/jest": ^29.2.4
+    "@types/jest": ^29.4.0
     "@types/jest-environment-puppeteer": ^5.0.3
-    "@types/node": ^18.11.18
+    "@types/node": ^18.13.0
     "@types/uuid-parse": ^1.0.0
     "@types/ws": ^8.5.4
-    "@typescript-eslint/eslint-plugin": ^5.47.1
-    "@typescript-eslint/parser": ^5.47.1
+    "@typescript-eslint/eslint-plugin": ^5.51.0
+    "@typescript-eslint/parser": ^5.51.0
     class-transformer: ^0.5.1
     copyfiles: ^2.4.1
     cross-env: ^7.0.3
-    eslint: ^8.30.0
+    eslint: ^8.34.0
     eslint-plugin-node: ^11.1.0
     eslint-plugin-prettier: ^4.2.1
     filereader: ^0.10.3
-    fork-ts-checker-webpack-plugin: ^7.2.14
+    fork-ts-checker-webpack-plugin: ^7.3.0
     gts: ^3.1.1
-    jest: ^29.3.1
-    jest-puppeteer: ^6.2.0
-    mock-socket: ^9.1.5
+    jest: ^29.4.2
+    jest-puppeteer: ^7.0.0
+    mock-socket: ^9.2.0
     pkg: ^5.8.0
-    puppeteer: ^19.4.1
+    puppeteer: ^19.6.3
     reflect-metadata: ^0.1.13
-    rollup: ^3.8.1
+    rollup: ^3.15.0
     rollup-plugin-auto-external: ^2.0.0
     rollup-plugin-commonjs: ^10.1.0
     rollup-plugin-html: ^0.2.1
@@ -2743,7 +2751,7 @@ __metadata:
     rollup-plugin-node-globals: ^1.4.0
     rollup-plugin-node-resolve: ^5.2.0
     rollup-plugin-postcss: ^4.0.2
-    rollup-plugin-postcss-modules: ^2.1.0
+    rollup-plugin-postcss-modules: ^2.1.1
     rollup-plugin-terser: ^5.3.0
     rollup-plugin-typescript2: ^0.34.1
     selfsigned: ^2.1.1
@@ -2751,15 +2759,15 @@ __metadata:
     terser: ^4.x
     terser-webpack-plugin: ^4.x
     tmp: ^0.2.1
-    trash: ^8.1.0
+    trash: ^8.1.1
     trash-cli: ^5.0.0
-    ts-jest: ^29.0.3
+    ts-jest: ^29.0.5
     ts-loader: ^8.x
     ts-node: ^10.9.1
-    tslib: ^2.4.1
+    tslib: ^2.5.0
     tslint: ^6.1.0
-    typedoc: ^0.23.23
-    typescript: ^4.9.4
+    typedoc: ^0.23.25
+    typescript: ^4.9.5
     url-loader: ^4.1.1
     webpack: ^4.42.1
     webpack-bundle-analyzer: ^3.6.1
@@ -3277,6 +3285,15 @@ __metadata:
   version: 2.9.3
   resolution: "colord@npm:2.9.3"
   checksum: 95d909bfbcfd8d5605cbb5af56f2d1ce2b323990258fd7c0d2eb0e6d3bb177254d7fb8213758db56bb4ede708964f78c6b992b326615f81a18a6aaf11d64c650
+  languageName: node
+  linkType: hard
+
+"combined-stream@npm:^1.0.8":
+  version: 1.0.8
+  resolution: "combined-stream@npm:1.0.8"
+  dependencies:
+    delayed-stream: ~1.0.0
+  checksum: 49fa4aeb4916567e33ea81d088f6584749fc90c7abec76fd516bf1c5aa5c79f3584b5ba3de6b86d26ddd64bae5329c4c7479343250cfe71c75bb366eae53bb7c
   languageName: node
   linkType: hard
 
@@ -3869,6 +3886,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"delayed-stream@npm:~1.0.0":
+  version: 1.0.0
+  resolution: "delayed-stream@npm:1.0.0"
+  checksum: 46fe6e83e2cb1d85ba50bd52803c68be9bd953282fa7096f51fc29edd5d67ff84ff753c51966061e5ba7cb5e47ef6d36a91924eddb7f3f3483b1c560f77a0020
+  languageName: node
+  linkType: hard
+
 "delegates@npm:^1.0.0":
   version: 1.0.0
   resolution: "delegates@npm:1.0.0"
@@ -4435,7 +4459,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^8.30.0":
+"eslint@npm:^8.34.0":
   version: 8.34.0
   resolution: "eslint@npm:8.34.0"
   dependencies:
@@ -4696,10 +4720,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expect-puppeteer@npm:^6.1.1":
-  version: 6.1.1
-  resolution: "expect-puppeteer@npm:6.1.1"
-  checksum: c2e306494126ef64bcd69582b216c981fed1ef89cc0ecc08dc63ab6daee63dd9f8ca5498f1abd2d6ad0a97f20f0fcad557682d00ff79b595874f21da2da093af
+"expect-puppeteer@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "expect-puppeteer@npm:7.0.0"
+  checksum: f5c5feab0fea3056ec61cd5f0b15db65613f4e96fdd9698bb0f8bfdb01a3fe91b022ff25c4302aac04798991e96c5ecf532f74408589ee9ce41d122db0f97975
   languageName: node
   linkType: hard
 
@@ -5090,7 +5114,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.14.7":
+"follow-redirects@npm:^1.14.9":
   version: 1.15.2
   resolution: "follow-redirects@npm:1.15.2"
   peerDependenciesMeta:
@@ -5130,7 +5154,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fork-ts-checker-webpack-plugin@npm:^7.2.14":
+"fork-ts-checker-webpack-plugin@npm:^7.3.0":
   version: 7.3.0
   resolution: "fork-ts-checker-webpack-plugin@npm:7.3.0"
   dependencies:
@@ -5154,6 +5178,17 @@ __metadata:
     vue-template-compiler:
       optional: true
   checksum: 49c2af801e264349a3fdf0afe4ad33065960c43bd7e56c8351a5e0d32c8c54146cc89d6a0b70b1e0f810de96787bd0c7fd275cc8727a9aea1a077c53de99659a
+  languageName: node
+  linkType: hard
+
+"form-data@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "form-data@npm:4.0.0"
+  dependencies:
+    asynckit: ^0.4.0
+    combined-stream: ^1.0.8
+    mime-types: ^2.1.12
+  checksum: 01135bf8675f9d5c61ff18e2e2932f719ca4de964e3be90ef4c36aacfc7b9cb2fceb5eca0b7e0190e3383fe51c5b37f4cb80b62ca06a99aaabfcfd6ac7c9328c
   languageName: node
   linkType: hard
 
@@ -6636,18 +6671,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-dev-server@npm:^6.2.0":
-  version: 6.2.0
-  resolution: "jest-dev-server@npm:6.2.0"
+"jest-dev-server@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "jest-dev-server@npm:7.0.0"
   dependencies:
     chalk: ^4.1.2
     cwd: ^0.10.0
     find-process: ^1.4.7
     prompts: ^2.4.2
-    spawnd: ^6.2.0
+    spawnd: ^7.0.0
     tree-kill: ^1.2.2
-    wait-on: ^6.0.1
-  checksum: 44dc5be5a9a01f132838a3acbc7fee506a096f5b990fbca4a916280da27c707ea752be475ecf0e3dd019871bc6afd2ebdaff5d40ccd33e9a858bc2b6f7c65736
+    wait-on: ^7.0.1
+  checksum: d2fa847f8f356f017933a4039706fab502b0dd36b37102be1d1e1b8c750c135b5fe48c75c06161e48b0e3a53127e921a4d310e1b868271cf71b8240d9d201cda
   languageName: node
   linkType: hard
 
@@ -6685,7 +6720,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-environment-node@npm:>=24 <=27, jest-environment-node@npm:^27.5.1":
+"jest-environment-node@npm:>=24 <=27":
   version: 27.5.1
   resolution: "jest-environment-node@npm:27.5.1"
   dependencies:
@@ -6699,7 +6734,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-environment-node@npm:^29.4.2":
+"jest-environment-node@npm:^29.4.1, jest-environment-node@npm:^29.4.2":
   version: 29.4.2
   resolution: "jest-environment-node@npm:29.4.2"
   dependencies:
@@ -6713,16 +6748,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-environment-puppeteer@npm:^6.2.0":
-  version: 6.2.0
-  resolution: "jest-environment-puppeteer@npm:6.2.0"
+"jest-environment-puppeteer@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "jest-environment-puppeteer@npm:7.0.0"
   dependencies:
     chalk: ^4.1.2
     cwd: ^0.10.0
-    jest-dev-server: ^6.2.0
-    jest-environment-node: ^27.5.1
+    jest-dev-server: ^7.0.0
+    jest-environment-node: ^29.4.1
     merge-deep: ^3.0.3
-  checksum: 8b9922e9940d3bb651be203a0dc01fb6d8b22eb466e0e2c58270ab7152c6de45b6423e1e248a09b4da02d2e5514e6a564e6dded7529e0d343a4c8f75e3619f77
+  checksum: 51d0cdd7ccebc2aa2e01f351979c1964b837ab61f1646546ad45e713da8538ee456f02dd077efdb698768e788c25954100603bb28c8f7371611bed1078b5f588
   languageName: node
   linkType: hard
 
@@ -6845,15 +6880,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-puppeteer@npm:^6.2.0":
-  version: 6.2.0
-  resolution: "jest-puppeteer@npm:6.2.0"
+"jest-puppeteer@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "jest-puppeteer@npm:7.0.0"
   dependencies:
-    expect-puppeteer: ^6.1.1
-    jest-environment-puppeteer: ^6.2.0
+    expect-puppeteer: ^7.0.0
+    jest-environment-puppeteer: ^7.0.0
   peerDependencies:
-    puppeteer: ">= 1.5.0"
-  checksum: 9e2c917b681bac4c319ff7fcb4c09ede4ac07458511f0cd3c244e2aee6efaf2d5484961a5b7b46dca6954c3debf42491a95f25bac0c8c58f4c360e7c2df0ff36
+    puppeteer: ">=19"
+  checksum: b939bfd9cab2edbd95a76e183bcece9452436fc1ae08786f62e3892dcc6ee83745372694402fc249ea4c716b2e0d4b54b1b203e00159349e439ef42ec141b54c
   languageName: node
   linkType: hard
 
@@ -7074,7 +7109,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest@npm:^29.3.1":
+"jest@npm:^29.4.2":
   version: 29.4.2
   resolution: "jest@npm:29.4.2"
   dependencies:
@@ -7093,7 +7128,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"joi@npm:^17.6.0":
+"joi@npm:^17.7.0":
   version: 17.7.1
   resolution: "joi@npm:17.7.1"
   dependencies:
@@ -7886,7 +7921,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime-types@npm:^2.1.27, mime-types@npm:~2.1.24, mime-types@npm:~2.1.34":
+"mime-types@npm:^2.1.12, mime-types@npm:^2.1.27, mime-types@npm:~2.1.24, mime-types@npm:~2.1.34":
   version: 2.1.35
   resolution: "mime-types@npm:2.1.35"
   dependencies:
@@ -7977,7 +8012,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimist@npm:^1.2.0, minimist@npm:^1.2.3, minimist@npm:^1.2.5, minimist@npm:^1.2.6":
+"minimist@npm:^1.2.0, minimist@npm:^1.2.3, minimist@npm:^1.2.6, minimist@npm:^1.2.7":
   version: 1.2.8
   resolution: "minimist@npm:1.2.8"
   checksum: 75a6d645fb122dad29c06a7597bddea977258957ed88d7a6df59b5cd3fe4a527e253e9bbf2e783e4b73657f9098b96a5fe96ab8a113655d4109108577ecf85b0
@@ -8126,7 +8161,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mock-socket@npm:^9.1.5":
+"mock-socket@npm:^9.2.0":
   version: 9.2.0
   resolution: "mock-socket@npm:9.2.0"
   checksum: 146057ba8ef25ca97d39a64161e197dd5351082f7627216f71050aa1e2bd8f8853978572d8c2ce4254e4d1d4058fdeca863ac95f314df000d348be5bdd3db494
@@ -9786,7 +9821,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:^19.4.1":
+"puppeteer@npm:^19.6.3":
   version: 19.6.3
   resolution: "puppeteer@npm:19.6.3"
   dependencies:
@@ -10387,7 +10422,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup-plugin-postcss-modules@npm:^2.1.0":
+"rollup-plugin-postcss-modules@npm:^2.1.1":
   version: 2.1.1
   resolution: "rollup-plugin-postcss-modules@npm:2.1.1"
   dependencies:
@@ -10474,7 +10509,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup@npm:^3.8.1":
+"rollup@npm:^3.15.0":
   version: 3.15.0
   resolution: "rollup@npm:3.15.0"
   dependencies:
@@ -10522,7 +10557,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rxjs@npm:^7.5.4":
+"rxjs@npm:^7.8.0":
   version: 7.8.0
   resolution: "rxjs@npm:7.8.0"
   dependencies:
@@ -10996,14 +11031,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"spawnd@npm:^6.2.0":
-  version: 6.2.0
-  resolution: "spawnd@npm:6.2.0"
+"spawnd@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "spawnd@npm:7.0.0"
   dependencies:
     exit: ^0.1.2
     signal-exit: ^3.0.7
     tree-kill: ^1.2.2
-  checksum: 527e4cc99e983f8e93d02acdb6f92a3aefa7fd669c0fcdea392f576a6533a91fd9f8cecb448023de29d23bd5b53454f59677e09da993b3f18b05a957c6c8ea63
+  checksum: b6ef029fb78e3d100a65e101ed02c9755be36a84ba86e38d5a7a51c12dff08123c06462aabff8a3f9d6308bf179de1bbea4438307ab199a104b0bbd6c4ff1a10
   languageName: node
   linkType: hard
 
@@ -11696,7 +11731,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"trash@npm:^8.0.0, trash@npm:^8.1.0":
+"trash@npm:^8.0.0, trash@npm:^8.1.1":
   version: 8.1.1
   resolution: "trash@npm:8.1.1"
   dependencies:
@@ -11742,7 +11777,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-jest@npm:^29.0.3":
+"ts-jest@npm:^29.0.5":
   version: 29.0.5
   resolution: "ts-jest@npm:29.0.5"
   dependencies:
@@ -11836,7 +11871,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.1.0, tslib@npm:^2.4.0, tslib@npm:^2.4.1":
+"tslib@npm:^2.1.0, tslib@npm:^2.4.0, tslib@npm:^2.5.0":
   version: 2.5.0
   resolution: "tslib@npm:2.5.0"
   checksum: ae3ed5f9ce29932d049908ebfdf21b3a003a85653a9a140d614da6b767a93ef94f460e52c3d787f0e4f383546981713f165037dc2274df212ea9f8a4541004e1
@@ -11997,7 +12032,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typedoc@npm:^0.23.23":
+"typedoc@npm:^0.23.25":
   version: 0.23.25
   resolution: "typedoc@npm:0.23.25"
   dependencies:
@@ -12013,7 +12048,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.9.4":
+"typescript@npm:^4.9.5":
   version: 4.9.5
   resolution: "typescript@npm:4.9.5"
   bin:
@@ -12023,7 +12058,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.9.4#~builtin<compat/typescript>":
+"typescript@patch:typescript@^4.9.5#~builtin<compat/typescript>":
   version: 4.9.5
   resolution: "typescript@patch:typescript@npm%3A4.9.5#~builtin<compat/typescript>::version=4.9.5&hash=d73830"
   bin:
@@ -12332,18 +12367,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"wait-on@npm:^6.0.1":
-  version: 6.0.1
-  resolution: "wait-on@npm:6.0.1"
+"wait-on@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "wait-on@npm:7.0.1"
   dependencies:
-    axios: ^0.25.0
-    joi: ^17.6.0
+    axios: ^0.27.2
+    joi: ^17.7.0
     lodash: ^4.17.21
-    minimist: ^1.2.5
-    rxjs: ^7.5.4
+    minimist: ^1.2.7
+    rxjs: ^7.8.0
   bin:
     wait-on: bin/wait-on
-  checksum: e4d62aa4145d99fe34747ccf7506d4b4d6e60dd677c0eb18a51e316d38116ace2d194e4b22a9eb7b767b0282f39878ddcc4ae9440dcb0c005c9150668747cf5b
+  checksum: 1e8a17d8ee6436f71d3ab82781ce31267481fcd7bbccde49b0f8124871e6e40a1acac3401f04f775ba6203853a5813352fa131620fc139914351f3b2894d573f
   languageName: node
   linkType: hard
 
