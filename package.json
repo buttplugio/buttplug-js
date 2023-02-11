@@ -22,7 +22,7 @@
     "build": "trash dist dist-bundle && yarn build:all",
     "build:all": "yarn build:main && yarn build:web && yarn build:web:release",
     "build:main": "tsc -p tsconfig.json",
-    "build:doc": "typedoc --options typedoc.js --out doc .",
+    "build:doc": "typedoc --options typedocconfig.js --out doc ./src/index.ts",
     "build:rollup": "rollup -c",
     "tslint": "tslint --project tsconfig.json --outputAbsolutePaths -c ../../tslint.json \"src/**/*.ts\" \"tests/**/*.ts\"",
     "tslint:fix": "tslint --project tsconfig.json --outputAbsolutePaths -c ../../tslint.json --fix semicolon,comma,no-var-keyword,ordered-imports \"src/**/*.ts\" \"tests/**/*.ts\"",

@@ -1,0 +1,29 @@
+name: Doc Build
+
+on: 
+  push:
+    branches:
+      - master
+
+jobs:
+  publish-docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set Node.js 17.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: 17.x
+    - name: Run install
+      uses: borales/actions-yarn@v4
+      with:
+        cmd: install # will run `yarn install` command
+    - name: Build production bundle
+      uses: borales/actions-yarn@v4
+      with:
+        cmd: build:doc
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: doc/
