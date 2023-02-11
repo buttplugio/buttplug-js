@@ -1,4 +1,18 @@
+# v3.1.0 (2023/02/11)
+
+## Features
+
+- Added support for Node Websockets via new connector class (#244)
+
+## Bugfixes
+
+- Fixed issues with using buttplug-js in minified projects (#246)
+  - Changed from type-based class resolution to static naming, class name mangling should no longer
+    be an issue.
+
 # v3.0.0 (2022/12/30)
+
+## Features
 
 - Back to pure Typescript. Back to the good shit.
 - Removed server
@@ -6,6 +20,8 @@
   porting from v1.
 
 # v2.0.0
+
+## Whatever
 
 - There is no buttplug-js v2
 - There is no Miss Zarves
