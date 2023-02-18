@@ -37,7 +37,6 @@
   "dependencies": {
     "class-transformer": "^0.5.1",
     "eventemitter3": "^5.0.0",
-    "filereader": "^0.10.3",
     "reflect-metadata": "^0.1.13",
     "ws": "^8.12.0"
   },

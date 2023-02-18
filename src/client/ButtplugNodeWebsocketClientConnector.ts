@@ -10,10 +10,8 @@
 
 import { ButtplugBrowserWebsocketClientConnector } from './ButtplugBrowserWebsocketClientConnector';
 import { WebSocket as NodeWebSocket } from 'ws';
-import { FileReader } from 'filereader';
 
 export class ButtplugNodeWebsocketClientConnector extends ButtplugBrowserWebsocketClientConnector {
   protected _websocketConstructor =
     NodeWebSocket as unknown as typeof WebSocket;
-  protected _filereaderConstructor = FileReader;
 }

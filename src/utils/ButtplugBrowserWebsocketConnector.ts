@@ -15,7 +15,6 @@ import { FromJSON } from '../core/MessageUtils';
 export class ButtplugBrowserWebsocketConnector extends EventEmitter {
   protected _ws: WebSocket | undefined;
   protected _websocketConstructor: typeof WebSocket | null = null;
-  protected _filereaderConstructor: typeof FileReader | null = null;
 
   public constructor(private _url: string) {
     super();
@@ -78,16 +77,11 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter {
   };
 
   protected ParseIncomingMessage(event: MessageEvent) {
-    console.log('Calling parent parse incoming');
     if (typeof event.data === 'string') {
       const msgs = FromJSON(event.data);
       this.emit('message', msgs);
     } else if (event.data instanceof Blob) {
-      const reader = new (this._filereaderConstructor ?? FileReader)();
-      reader.addEventListener('load', (ev) => {
-        this.OnReaderLoad(ev);
-      });
-      reader.readAsText(event.data);
+      // No-op, we only use text message types.
     }
   }
 

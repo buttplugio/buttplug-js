@@ -35,11 +35,7 @@ export class ButtplugBrowserWebsocketClientConnector
       const emitMsgs = this._sorter.ParseIncomingMessages(msgs);
       this.emit('message', emitMsgs);
     } else if (event.data instanceof Blob) {
-      const reader = new (this._filereaderConstructor ?? FileReader)();
-      reader.addEventListener('load', (ev) => {
-        this.OnReaderLoad(ev);
-      });
-      reader.readAsText(event.data);
+      // No-op, buttplug only uses text formatting.
     }
   };
 
