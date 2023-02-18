@@ -2,6 +2,8 @@
 
 ## Bugfixes
 
+- Replace events with eventemitter3
+  - API Compatible and easier for building across web/node
 - Remove blob reading from websocket connectors
   - We never use binary messages on websockets, and the extra filereader dep for node was
     causing issues with web builds.
