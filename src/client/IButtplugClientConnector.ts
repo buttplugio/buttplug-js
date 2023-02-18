@@ -7,7 +7,7 @@
  */
 
 import { ButtplugMessage } from '../core/Messages';
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'eventemitter3';
 
 export interface IButtplugClientConnector extends EventEmitter {
   Connect: () => Promise<void>;

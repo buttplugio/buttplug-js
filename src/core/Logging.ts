@@ -6,7 +6,7 @@
  * @copyright Copyright (c) Nonpolynomial Labs LLC. All rights reserved.
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'eventemitter3';
 
 export enum ButtplugLogLevel {
   Off,

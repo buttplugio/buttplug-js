@@ -8,7 +8,7 @@
 
 'use strict';
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'eventemitter3';
 import { ButtplugMessage } from '../core/Messages';
 import { FromJSON } from '../core/MessageUtils';
 

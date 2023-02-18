@@ -13,7 +13,7 @@ import {
   ButtplugError,
   ButtplugMessageError,
 } from '../core/Exceptions';
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'eventemitter3';
 
 /**
  * Represents an abstract device, capable of taking certain kinds of messages.

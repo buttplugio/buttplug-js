@@ -9,7 +9,7 @@
 'use strict';
 
 import { ButtplugLogger } from '../core/Logging';
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'eventemitter3';
 import { ButtplugClientDevice } from './ButtplugClientDevice';
 import { IButtplugClientConnector } from './IButtplugClientConnector';
 import * as Messages from '../core/Messages';
