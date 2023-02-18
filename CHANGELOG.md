@@ -1,3 +1,11 @@
+# v3.1.1 (2023/02/18)
+
+## Bugfixes
+
+- Remove blob reading from websocket connectors
+  - We never use binary messages on websockets, and the extra filereader dep for node was
+    causing issues with web builds.
+
 # v3.1.0 (2023/02/11)
 
 ## Features
