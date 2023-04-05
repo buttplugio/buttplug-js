@@ -209,7 +209,7 @@ export class ButtplugClientDevice extends EventEmitter {
   }
 
   public get linearAttributes(): Messages.GenericDeviceMessageAttributes[] {
-    return this.messageAttributes.RotateCmd ?? [];
+    return this.messageAttributes.LinearCmd ?? [];
   }
 
   public async linear(
