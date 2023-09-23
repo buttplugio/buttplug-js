@@ -17,6 +17,7 @@ jobs:
     - name: Run install
       uses: borales/actions-yarn@v4
       with:
+        dir: js
         cmd: install # will run `yarn install` command
     - name: Build production bundle
       uses: borales/actions-yarn@v4
