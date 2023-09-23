@@ -13,7 +13,7 @@ export default defineConfig({
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'buttplug-server-wasm',
       // the proper extensions will be added
-      fileName: 'buttplug-server-wasm',
+      fileName: (format) => 'buttplug-server-wasm.mjs',
       formats: ['es'],
     },
     outDir: 'dist',
