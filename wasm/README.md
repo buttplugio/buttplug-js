@@ -6,6 +6,12 @@ This will only work in browser that include WebBluetooth implementations, like G
 
 If you are going to use this project, it is recommended that you provide users with the choice of connecting to Intiface Central *or* using the WASM server, as you will need to update the WASM server every time we release a new version to stay up to date with the latest hardware and protocol changes. Allowing the user to also connect to Intiface Central means that if your WASM server version becomes outdated, the user can still update Intiface Central and connect to it for support wiht newer hardware.
 
+## Examples
+
+Examples of how to use this system are contained in this repo (the `example` directory), as well as in this glitch project:
+
+https://glitch.com/edit/#!/how-to-buttplug-wasm
+
 ## Distribution and Size Warnings
 
 As this project only works on the web, it is distributed as an ES Module. In order to accommodate loading from a CDN, the WASM blob is encoded to base64 and loaded within the module. The WASM blob itself is quite large due to bringing in the Rust standard library and requiring a lot of code internally.
