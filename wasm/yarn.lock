@@ -717,7 +717,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "buttplug-wasm@workspace:."
   dependencies:
-    buttplug: ^3.2.0
+    buttplug: ^3.2.1
     eventemitter3: ^5.0.1
     rollup: ^3.29.2
     typescript: ^5.2.2
@@ -728,15 +728,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"buttplug@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "buttplug@npm:3.2.0"
+"buttplug@npm:^3.2.1":
+  version: 3.2.1
+  resolution: "buttplug@npm:3.2.1"
   dependencies:
     class-transformer: ^0.5.1
     eventemitter3: ^5.0.1
     reflect-metadata: ^0.1.13
     ws: ^8.14.2
-  checksum: 4d46921f83e10f865125e41825c8d2b28ffa794d57ed9cdf5c06a599c98ed0e5417caaa7a7d180f59dda0a62d7b4ae1b55cd72a4db9e782f3b2c352ced88e6e4
+  checksum: c65f0a2a4a422b1f05c5157ce97cdef0321dfbf837c637db955fd1a8164c471c264cdce6a3ec94016ffc6fb9e6869662e93bcb29dc1419c9f30e27d257ebb1c7
   languageName: node
   linkType: hard
 
