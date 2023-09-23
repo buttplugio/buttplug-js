@@ -713,9 +713,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"buttplug-server-wasm@workspace:.":
+"buttplug-wasm@workspace:.":
   version: 0.0.0-use.local
-  resolution: "buttplug-server-wasm@workspace:."
+  resolution: "buttplug-wasm@workspace:."
   dependencies:
     buttplug: ^3.2.0
     eventemitter3: ^5.0.1

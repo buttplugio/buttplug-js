@@ -1,5 +1,5 @@
 {
-  "name": "buttplug-server-wasm",
+  "name": "buttplug-wasm",
   "version": "2.0.0",
   "scripts": {
     "build:main": "tsc -p tsconfig.json",
