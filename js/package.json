@@ -20,7 +20,7 @@
   "types": "./dist/main/src/index.d.ts",
   "scripts": {
     "build": "trash dist dist-bundle && yarn build:all",
-    "build:all": "yarn build:main && yarn build:web && yarn build:web:release",
+    "build:all": "yarn build:main && yarn build:web",
     "build:main": "tsc -p tsconfig.json",
     "build:doc": "typedoc --options typedocconfig.js --out doc ./src/index.ts",
     "build:web": "vite build",
