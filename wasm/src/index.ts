@@ -52,7 +52,7 @@ export class ButtplugWasmClientConnector extends EventEmitter implements IButtpl
   };
 
   private emitMessage = (msg: Uint8Array) => {
-    let str = new TextDecoder().decode(output);
+    let str = new TextDecoder().decode(msg);
     // This needs to use buttplug-js's fromJSON, otherwise we won't resolve the message name correctly.
     this.emit('message', fromJSON(str));
   }
