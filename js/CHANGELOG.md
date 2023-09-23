@@ -1,3 +1,17 @@
+# v3.2.0 (2023/09/23)
+
+## Features
+
+- Web package building now uses vite instead of webpack
+  - Long live vite. May I never have to fucking deal with webpack ever again.
+
+## Bugfixes
+
+- Cleaned up naming conventions
+- Changed connector interface (this is technically a breaking change but afaik no one else
+  implements their own connector)
+- Fix linear attribute enumeration
+
 # v3.1.1 (2023/02/18)
 
 ## Bugfixes
