@@ -262,7 +262,7 @@ export class ButtplugClient extends EventEmitter {
         throw ButtplugError.LogAndError(
           ButtplugMessageError,
           this._logger,
-          `Message type ${getMessageClassFromMessage(response).constructor} not handled by SendMsgExpectOk`
+          `Message type ${getMessageClassFromMessage(response)!.constructor} not handled by SendMsgExpectOk`
         );
     }
   };
