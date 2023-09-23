@@ -44,9 +44,7 @@ pub fn send_server_message(
   {
     let this = JsValue::null();
     let uint8buf = unsafe { Uint8Array::new(&Uint8Array::view(buf)) };
-    info!("Calling callback now");
     callback.call1(&this, &JsValue::from(uint8buf));
-    info!("Callback called.");
   }
 }
 
@@ -99,7 +97,6 @@ pub fn buttplug_client_send_json_message(
   let input_msg = serializer.deserialize(&ButtplugSerializedMessage::Text(std::str::from_utf8(buf).unwrap().to_owned())).unwrap();
   async_manager::spawn(async move {
     let response = server.parse_message(input_msg[0].clone()).await.unwrap();
-    info!("Finished call, sending callback");
     send_server_message(&response.try_into().unwrap(), &callback);
   });
 }

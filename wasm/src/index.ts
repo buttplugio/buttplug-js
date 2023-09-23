@@ -35,7 +35,6 @@ export class ButtplugWasmClientConnector extends EventEmitter implements IButtpl
   public connect = async (): Promise<void> => {
     await ButtplugWasmClientConnector.maybeLoadWasm();
     //ButtplugWasmClientConnector.wasmInstance.buttplug_activate_env_logger('debug');
-    console.log(ButtplugWasmClientConnector.wasmInstance.buttplug_create_embedded_wasm_server);    
     this.client = ButtplugWasmClientConnector.wasmInstance.buttplug_create_embedded_wasm_server((msgs) => {
       this.emitMessage(msgs);
     }, this.serverPtr);
@@ -45,7 +44,6 @@ export class ButtplugWasmClientConnector extends EventEmitter implements IButtpl
   public disconnect = async (): Promise<void> => {};
 
   public send = (msg: ButtplugMessage): void => {
-    console.log(msg);
     ButtplugWasmClientConnector.wasmInstance.buttplug_client_send_json_message(this.client, new TextEncoder().encode('[' + msg.toJSON() + ']'), (output) => {
       this.emitMessage(output);
     });
