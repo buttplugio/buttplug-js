@@ -1,4 +1,4 @@
-import {ButtplugWasmClientConnector} from "../dist/buttplug-server-wasm.mjs";
+import {ButtplugWasmClientConnector} from "../dist/buttplug-wasm.mjs";
 import {ButtplugClient} from "../../js/dist/web/buttplug.mjs";
 
 async function test_wasm() {
