@@ -1,6 +1,6 @@
 {
   "name": "buttplug-server-wasm",
-  "version": "7.1.3",
+  "version": "2.0.0",
   "scripts": {
     "build:main": "tsc -p tsconfig.json",
     "build:web": "vite build",

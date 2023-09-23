@@ -1,46 +1,20 @@
-# Buttplug Typescript/JS Client Implementation
+# Buttplug Server - WASM Version
 
-[![Patreon donate button](https://img.shields.io/badge/patreon-donate-yellow.svg)](https://www.patreon.com/qdot)
-[![Github donate button](https://img.shields.io/badge/github-donate-ff69b4.svg)](https://www.github.com/sponsors/qdot)
+A WASM compilation of the Rust implementation of the Buttplug Server. This projects allows the Buttplug Server (hardware connecting portion of Buttplug) to be run completely in the browser without the need to connect to [Intiface Central](https://intiface.com/central).
 
-[![Discourse Forum](https://img.shields.io/badge/discourse-forum-blue.svg)](https://discuss.buttplug.io)
-[![Discord](https://img.shields.io/discord/353303527587708932.svg?logo=discord)](https://discord.buttplug.io)
-[![Twitter](https://img.shields.io/twitter/follow/buttplugio.svg?style=social&logo=twitter)](https://twitter.com/buttplugio)
+This will only work in browser that include WebBluetooth implementations, like Google Chrome, Microsoft Edge, etc...
 
-A implementation of the Buttplug Client in Typescript/Javascript, implementing the Version 3
-Buttplug Spec. It is expected to run from a browser against either [Intiface Central
-(GUI)](https://intiface.com/central), [Initface Engine
-(CLI)](https://github.com/intiface/intiface-engine), or [the Buttplug WASM Server](https://github.com/buttplugio/buttplug-js).
+If you are going to use this project, it is recommended that you provide users with the choice of connecting to Intiface Central *or* using the WASM server, as you will need to update the WASM server every time we release a new version to stay up to date with the latest hardware and protocol changes. Allowing the user to also connect to Intiface Central means that if your WASM server version becomes outdated, the user can still update Intiface Central and connect to it for support wiht newer hardware.
 
-## Compilation information
+## Distribution and Size Warnings
 
-buttplug-js builds to 3 different types of library:
+As this project only works on the web, it is distributed as an ES Module. In order to accommodate loading from a CDN, the WASM blob is encoded to base64 and loaded within the module. The WASM blob itself is quite large due to bringing in the Rust standard library and requiring a lot of code internally.
 
-- CommonJS for node
-- UMD and ES Modules for the web
+**THIS MEANS THE ES MODULE WILL BE ANYWHERE FROM 1.5MB (ZIPPED) TO 5MB (UNZIPPED).**
 
-For node, simply include the package as you would any other package.
+You will need to take measures to show the user some sort of feedback while loading this module, as on some connections this may be quite slow.
 
-For inclusion in web projects, the UMD project can be found at dist/web/buttplug.js, and the es6 module at dist/web/buttplug.mjs.
-
-## Using buttplug-js with Node
-
-buttplug-js works with both pure web builds, as well as node applications. To use buttplug-js with
-node, use the `ButtplugNodeWebsocketClientConnector` class instead of the
-`ButtplugBrowserWebsocketClientConnector` class. That should be the only change needed, all of the
-API stays the same. See the Documentation section for more info.
-
-(The WASM Server *does not work* with pure node applications. It requires a browser environment in order to run. See the WASM project README for more info.)
-
-## Documentation and Examples
-
-Documentation on how to use Buttplug in general, as well as examples for buttplug-js, can be found in the [Buttplug Developer Guide](https://docs.buttplug.io/docs/dev-guide).
-
-API documentation for buttplug-js can be found at https://buttplugio.github.io/buttplug-js.
-
-If you would like to see a demo of using Buttplug in a pure web context, check out the following glitch project, which shows how to pull the Buttplug libraries from a CDN and use them in a pure HTML/JS context without node:
-
-https://glitch.com/edit/#!/how-to-buttplug
+This is a tradeoff you must be willing to make to use this library.
 
 ## Contributing
 
@@ -68,7 +42,7 @@ This project is BSD 3-Clause licensed.
 
 ```text
 
-Copyright (c) 2016-2023, Nonpolynomial Labs, LLC
+Copyright (c) 2016-2023, Nonpolynomial, LLC
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
