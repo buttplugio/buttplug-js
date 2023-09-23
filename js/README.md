@@ -21,7 +21,7 @@ buttplug-js builds to 3 different types of library:
 
 For node, simply include the package as you would any other package.
 
-For inclusion in web projects, the UMD project can be found at dist/web/buttplug.js, and the es6 module at dist/web/buttplug.mjs.
+For inclusion in web projects, the UMD project can be found at `dist/web/buttplug.js` (Note that the namespace is `buttplug`, so you'll access types like `buttplug.ButtplugClient`, etc...), and the es6 module at `dist/web/buttplug.mjs`.
 
 ## Using buttplug-js with Node
 
