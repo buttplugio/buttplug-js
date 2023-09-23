@@ -5,16 +5,21 @@ module.exports = {
     node: true,
   },
   extends: [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "./node_modules/gts",
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    './node_modules/gts',
   ],
   overrides: [],
-  parser: "@typescript-eslint/parser",
+  parser: '@typescript-eslint/parser',
   parserOptions: {
-    ecmaVersion: "latest",
-    sourceType: "module",
+    ecmaVersion: 'latest',
+    sourceType: 'module',
   },
-  plugins: ["@typescript-eslint"],
-  rules: {},
+  plugins: ['@typescript-eslint'],
+  rules: {
+    'node/no-unsupported-features/es-syntax': [
+      'error',
+      { ignores: ['modules'] },
+    ],
+  },
 };
