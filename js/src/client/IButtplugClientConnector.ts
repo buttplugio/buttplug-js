@@ -10,9 +10,9 @@ import { ButtplugMessage } from '../core/Messages';
 import { EventEmitter } from 'eventemitter3';
 
 export interface IButtplugClientConnector extends EventEmitter {
-  Connect: () => Promise<void>;
-  Disconnect: () => Promise<void>;
-  Initialize: () => Promise<void>;
-  Send: (msg: ButtplugMessage) => Promise<ButtplugMessage>;
+  connect: () => Promise<void>;
+  disconnect: () => Promise<void>;
+  initialize: () => Promise<void>;
+  send: (msg: ButtplugMessage) => void;
   readonly Connected: boolean;
 }

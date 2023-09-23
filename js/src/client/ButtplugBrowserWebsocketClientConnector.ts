@@ -10,38 +10,16 @@
 
 import { IButtplugClientConnector } from './IButtplugClientConnector';
 import { ButtplugMessage } from '../core/Messages';
-import { FromJSON } from '../core/MessageUtils';
-import { ButtplugMessageSorter } from '../utils/ButtplugMessageSorter';
 import { ButtplugBrowserWebsocketConnector } from '../utils/ButtplugBrowserWebsocketConnector';
 
 export class ButtplugBrowserWebsocketClientConnector
   extends ButtplugBrowserWebsocketConnector
   implements IButtplugClientConnector
 {
-  private _sorter: ButtplugMessageSorter = new ButtplugMessageSorter(true);
-
-  public Send = async (msg: ButtplugMessage): Promise<ButtplugMessage> => {
+  public send = (msg: ButtplugMessage): void => {
     if (!this.Connected) {
       throw new Error('ButtplugClient not connected');
     }
-    const p = this._sorter.PrepareOutgoingMessage(msg);
-    this.SendMessage(msg);
-    return await p;
+    this.sendMessage(msg);
   };
-
-  protected ParseIncomingMessage = (event: MessageEvent) => {
-    if (typeof event.data === 'string') {
-      const msgs = FromJSON(event.data);
-      const emitMsgs = this._sorter.ParseIncomingMessages(msgs);
-      this.emit('message', emitMsgs);
-    } else if (event.data instanceof Blob) {
-      // No-op, buttplug only uses text formatting.
-    }
-  };
-
-  protected OnReaderLoad(event: Event) {
-    const msgs = FromJSON((event.target as FileReader).result);
-    const emitMsgs = this._sorter.ParseIncomingMessages(msgs);
-    this.emit('message', emitMsgs);
-  }
 }

@@ -24,7 +24,7 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter {
     return this._ws !== undefined;
   }
 
-  public Connect = async (): Promise<void> => {
+  public connect = async (): Promise<void> => {
     const ws = new (this._websocketConstructor ?? WebSocket)(this._url);
     let res;
     let rej;
@@ -39,12 +39,12 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter {
     ws.addEventListener('open', async () => {
       this._ws = ws;
       try {
-        await this.Initialize();
+        await this.initialize();
         this._ws.addEventListener('message', (msg) => {
-          this.ParseIncomingMessage(msg);
+          this.parseIncomingMessage(msg);
         });
         this._ws.removeEventListener('close', conErrorCallback);
-        this._ws.addEventListener('close', this.Disconnect);
+        this._ws.addEventListener('close', this.disconnect);
         // TODO This doesn't really communicate the chain why our initializer failed
         res();
       } catch (e) {
@@ -56,7 +56,7 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter {
     return p;
   };
 
-  public Disconnect = async (): Promise<void> => {
+  public disconnect = async (): Promise<void> => {
     if (!this.Connected) {
       return;
     }
@@ -65,18 +65,18 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter {
     this.emit('disconnect');
   };
 
-  public SendMessage(msg: ButtplugMessage) {
+  public sendMessage(msg: ButtplugMessage) {
     if (!this.Connected) {
       throw new Error('ButtplugBrowserWebsocketConnector not connected');
     }
     this._ws!.send('[' + msg.toJSON() + ']');
   }
 
-  public Initialize = async (): Promise<void> => {
+  public initialize = async (): Promise<void> => {
     return Promise.resolve();
   };
 
-  protected ParseIncomingMessage(event: MessageEvent) {
+  protected parseIncomingMessage(event: MessageEvent) {
     if (typeof event.data === 'string') {
       const msgs = FromJSON(event.data);
       this.emit('message', msgs);
@@ -85,7 +85,7 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter {
     }
   }
 
-  protected OnReaderLoad(event: Event) {
+  protected onReaderLoad(event: Event) {
     const msgs = FromJSON((event.target as FileReader).result);
     this.emit('message', msgs);
   }

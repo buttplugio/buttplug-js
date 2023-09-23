@@ -12,6 +12,8 @@ import { ButtplugLogger } from '../core/Logging';
 import { EventEmitter } from 'eventemitter3';
 import { ButtplugClientDevice } from './ButtplugClientDevice';
 import { IButtplugClientConnector } from './IButtplugClientConnector';
+import { ButtplugMessageSorter } from '../utils/ButtplugMessageSorter';
+
 import * as Messages from '../core/Messages';
 import {
   ButtplugDeviceError,
@@ -28,6 +30,7 @@ export class ButtplugClient extends EventEmitter {
   protected _clientName: string;
   protected _logger = ButtplugLogger.Logger;
   protected _isScanning = false;
+  private _sorter: ButtplugMessageSorter = new ButtplugMessageSorter(true);
 
   constructor(clientName = 'Generic Buttplug Client') {
     super();
@@ -58,7 +61,7 @@ export class ButtplugClient extends EventEmitter {
     this._logger.Info(
       `ButtplugClient: Connecting using ${connector.constructor.name}`
     );
-    await connector.Connect();
+    await connector.connect();
     this._connector = connector;
     this._connector.addListener('message', this.parseMessages);
     this._connector.addListener('disconnect', this.disconnectHandler);
@@ -69,7 +72,7 @@ export class ButtplugClient extends EventEmitter {
     this._logger.Debug('ButtplugClient: Disconnect called');
     this.checkConnector();
     await this.shutdownConnection();
-    await this._connector!.Disconnect();
+    await this._connector!.disconnect();
   };
 
   public startScanning = async () => {
@@ -112,7 +115,8 @@ export class ButtplugClient extends EventEmitter {
   };
 
   protected parseMessages = (msgs: Messages.ButtplugMessage[]) => {
-    for (const x of msgs) {
+    const leftoverMsgs = this._sorter.ParseIncomingMessages(msgs);
+    for (const x of leftoverMsgs) {
       switch (x.constructor) {
         case Messages.DeviceAdded: {
           const addedMsg = x as Messages.DeviceAdded;
@@ -160,7 +164,7 @@ export class ButtplugClient extends EventEmitter {
         const ping = serverinfo.MaxPingTime;
         if (serverinfo.MessageVersion < Messages.MESSAGE_SPEC_VERSION) {
           // Disconnect and throw an exception explaining the version mismatch problem.
-          await this._connector!.Disconnect();
+          await this._connector!.disconnect();
           throw ButtplugError.LogAndError(
             ButtplugInitError,
             this._logger,
@@ -186,7 +190,7 @@ export class ButtplugClient extends EventEmitter {
         // Disconnect and throw an exception with the error message we got back.
         // This will usually only error out if we have a version mismatch that the
         // server has detected.
-        await this._connector!.Disconnect();
+        await this._connector!.disconnect();
         const err = msg as Messages.Error;
         throw ButtplugError.LogAndError(
           ButtplugInitError,
@@ -231,7 +235,9 @@ export class ButtplugClient extends EventEmitter {
     msg: Messages.ButtplugMessage
   ): Promise<Messages.ButtplugMessage> {
     this.checkConnector();
-    return await this._connector!.Send(msg);
+    const p = this._sorter.PrepareOutgoingMessage(msg);
+    await this._connector!.send(msg);
+    return await p;
   }
 
   protected checkConnector() {
