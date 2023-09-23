@@ -21,6 +21,14 @@ function getMessageClass(
   return null;
 }
 
+export function getMessageClassFromMessage(
+  msg: Messages.ButtplugMessage
+): (new (...args: unknown[]) => Messages.ButtplugMessage) | null {
+  // Making the bold assumption all message classes have the Name static. Should define a
+  // requirement for this in the abstract class.
+  return getMessageClass(Object.getPrototypeOf(msg).constructor.Name);
+}
+
 export function fromJSON(str): Messages.ButtplugMessage[] {
   const msgarray: object[] = JSON.parse(str);
   const msgs: Messages.ButtplugMessage[] = [];

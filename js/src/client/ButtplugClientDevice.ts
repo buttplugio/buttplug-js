@@ -14,6 +14,7 @@ import {
   ButtplugMessageError,
 } from '../core/Exceptions';
 import { EventEmitter } from 'eventemitter3';
+import { getMessageClassFromMessage } from '../core/MessageUtils';
 
 /**
  * Represents an abstract device, capable of taking certain kinds of messages.
@@ -98,7 +99,7 @@ export class ButtplugClientDevice extends EventEmitter {
     msg: Messages.ButtplugDeviceMessage
   ): Promise<void> {
     const response = await this.send(msg);
-    switch (response.constructor) {
+    switch (getMessageClassFromMessage(response)) {
       case Messages.Ok:
         return;
       case Messages.Error:
@@ -245,7 +246,7 @@ export class ButtplugClientDevice extends EventEmitter {
     const response = await this.send(
       new Messages.SensorReadCmd(this.index, sensorIndex, sensorType)
     );
-    switch (response.constructor) {
+    switch (getMessageClassFromMessage(response)) {
       case Messages.SensorReading:
         return (response as Messages.SensorReading).Data;
       case Messages.Error:
@@ -323,7 +324,7 @@ export class ButtplugClientDevice extends EventEmitter {
     const response = await this.send(
       new Messages.RawReadCmd(this.index, endpoint, expectedLength, timeout)
     );
-    switch (response.constructor) {
+    switch (getMessageClassFromMessage(response)) {
       case Messages.RawReading:
         return new Uint8Array((response as Messages.RawReading).Data);
       case Messages.Error:

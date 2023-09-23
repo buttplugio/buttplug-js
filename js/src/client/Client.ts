@@ -22,6 +22,7 @@ import {
   ButtplugMessageError,
 } from '../core/Exceptions';
 import { ButtplugClientConnectorException } from './ButtplugClientConnectorException';
+import { getMessageClassFromMessage } from '../core/MessageUtils';
 
 export class ButtplugClient extends EventEmitter {
   protected _pingTimer: NodeJS.Timeout | null = null;
@@ -117,7 +118,7 @@ export class ButtplugClient extends EventEmitter {
   protected parseMessages = (msgs: Messages.ButtplugMessage[]) => {
     const leftoverMsgs = this._sorter.ParseIncomingMessages(msgs);
     for (const x of leftoverMsgs) {
-      switch (x.constructor) {
+      switch (getMessageClassFromMessage(x)) {
         case Messages.DeviceAdded: {
           const addedMsg = x as Messages.DeviceAdded;
           const addedDevice = ButtplugClientDevice.fromMsg(
@@ -154,7 +155,7 @@ export class ButtplugClient extends EventEmitter {
         Messages.MESSAGE_SPEC_VERSION
       )
     );
-    switch (msg.constructor) {
+    switch (getMessageClassFromMessage(msg)) {
       case Messages.ServerInfo: {
         const serverinfo = msg as Messages.ServerInfo;
         this._logger.Info(
@@ -252,7 +253,7 @@ export class ButtplugClient extends EventEmitter {
     msg: Messages.ButtplugMessage
   ): Promise<void> => {
     const response = await this.sendMessage(msg);
-    switch (response.constructor) {
+    switch (getMessageClassFromMessage(response)) {
       case Messages.Ok:
         return;
       case Messages.Error:
@@ -261,7 +262,7 @@ export class ButtplugClient extends EventEmitter {
         throw ButtplugError.LogAndError(
           ButtplugMessageError,
           this._logger,
-          `Message type ${response.constructor} not handled by SendMsgExpectOk`
+          `Message type ${getMessageClassFromMessage(response).constructor} not handled by SendMsgExpectOk`
         );
     }
   };
