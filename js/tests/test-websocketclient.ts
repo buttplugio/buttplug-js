@@ -2,7 +2,7 @@ import { Server, WebSocket, Client } from "mock-socket";
 import { ButtplugClient } from "../src/client/Client";
 import * as Messages from "../src/core/Messages";
 import { ButtplugLogLevel } from "../src/core/Logging";
-import { FromJSON } from "../src/core/MessageUtils";
+import { fromJSON } from "../src/core/MessageUtils";
 import { SetupTestSuite } from "./utils";
 import { ButtplugMessageError, ButtplugBrowserWebsocketClientConnector } from "../src";
 
@@ -27,7 +27,7 @@ describe("Websocket Client Tests", () => {
     mockServer = new Server("ws://localhost:6868");
     p = new Promise((resolve, reject) => { res = resolve; rej = reject; });
     const serverInfo = (jsonmsg: string) => {
-      const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
+      const msg: Messages.ButtplugMessage = fromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
       if (msg.Type === Messages.RequestServerInfo) {
         delaySend(new Messages.ServerInfo(3, 0, "Test Server", msg.Id));
       }
@@ -57,7 +57,7 @@ describe("Websocket Client Tests", () => {
 
   it("Should deal with request/reply correctly", async () => {
     (socket as any).on("message", (jsonmsg: string) => {
-      const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
+      const msg: Messages.ButtplugMessage = fromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
       delaySend(new Messages.Ok(msg.Id));
     });
     await bp.startScanning();
@@ -72,7 +72,7 @@ describe("Websocket Client Tests", () => {
 
   it("Should throw Error on return of error message", async () => {
     (socket as any).on("message", (jsonmsg: string) => {
-      const msg: Messages.ButtplugMessage = FromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
+      const msg: Messages.ButtplugMessage = fromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
       if (msg.Type === Messages.StopAllDevices) {
         delaySend(new Messages.Error("Error", Messages.ErrorClass.ERROR_MSG, msg.Id));
       }

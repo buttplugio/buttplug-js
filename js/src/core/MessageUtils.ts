@@ -21,7 +21,7 @@ function getMessageClass(
   return null;
 }
 
-export function FromJSON(str): Messages.ButtplugMessage[] {
+export function fromJSON(str): Messages.ButtplugMessage[] {
   const msgarray: object[] = JSON.parse(str);
   const msgs: Messages.ButtplugMessage[] = [];
   for (const x of Array.from(msgarray)) {

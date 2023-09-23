@@ -10,7 +10,7 @@
 
 import { EventEmitter } from 'eventemitter3';
 import { ButtplugMessage } from '../core/Messages';
-import { FromJSON } from '../core/MessageUtils';
+import { fromJSON } from '../core/MessageUtils';
 
 export class ButtplugBrowserWebsocketConnector extends EventEmitter {
   protected _ws: WebSocket | undefined;
@@ -78,7 +78,7 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter {
 
   protected parseIncomingMessage(event: MessageEvent) {
     if (typeof event.data === 'string') {
-      const msgs = FromJSON(event.data);
+      const msgs = fromJSON(event.data);
       this.emit('message', msgs);
     } else if (event.data instanceof Blob) {
       // No-op, we only use text message types.
@@ -86,7 +86,7 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter {
   }
 
   protected onReaderLoad(event: Event) {
-    const msgs = FromJSON((event.target as FileReader).result);
+    const msgs = fromJSON((event.target as FileReader).result);
     this.emit('message', msgs);
   }
 }

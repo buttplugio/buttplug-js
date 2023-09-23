@@ -1,6 +1,6 @@
 import * as Messages from "../src/core/Messages";
 import { ButtplugClient } from "../src/client/Client";
-import { FromJSON } from "../src/core/MessageUtils";
+import { fromJSON } from "../src/core/MessageUtils";
 import { SetupTestSuite } from "./utils";
 import { ScalarSubcommand, VectorSubcommand, RotateSubcommand } from "../src/core/Messages";
 
@@ -15,7 +15,7 @@ describe("Message", () => {
   it("Converts ok message from json correctly",
      () => {
        const jsonStr = '[{"Ok":{"Id":2}}]';
-       expect(FromJSON(jsonStr)).toEqual([new Messages.Ok(2)]);
+       expect(fromJSON(jsonStr)).toEqual([new Messages.Ok(2)]);
      });
   it("Converts DeviceList message from json correctly",
      () => {
@@ -64,7 +64,7 @@ describe("Message", () => {
         }
       ]       
        `;
-       expect(FromJSON(jsonStr))
+       expect(fromJSON(jsonStr))
         .toEqual(
             [
               new Messages.DeviceList(
@@ -121,7 +121,7 @@ describe("Message", () => {
           }
         }
       ]`;
-      expect(FromJSON(jsonStr)[0] as Messages.DeviceAdded)
+      expect(fromJSON(jsonStr)[0] as Messages.DeviceAdded)
       .toEqual(
             new Messages.DeviceAdded({
               DeviceIndex: 0, 
@@ -139,7 +139,7 @@ describe("Message", () => {
   it("Converts Error message from json correctly",
      () => {
        const jsonStr = '[{"Error":{"Id":2,"ErrorCode":3,"ErrorMessage":"TestError"}}]';
-       expect(FromJSON(jsonStr)).toEqual([new Messages.Error("TestError",
+       expect(fromJSON(jsonStr)).toEqual([new Messages.Error("TestError",
                                                              Messages.ErrorClass.ERROR_MSG,
                                                              2)]);
      });
@@ -147,7 +147,7 @@ describe("Message", () => {
   it("Handles Device Commands with Subcommand arrays correctly",
      () => {
        const jsonStr = '[{"VibrateCmd":{"Id":2, "DeviceIndex": 3, "Speeds": [{ "Index": 0, "Speed": 1.0}, {"Index": 1, "Speed": 0.5}]}}]';
-       expect(FromJSON(jsonStr)).toEqual([new Messages.VibrateCmd([{Index: 0, Speed: 1.0}, {Index: 1, Speed: 0.5}], 3, 2)]);
+       expect(fromJSON(jsonStr)).toEqual([new Messages.VibrateCmd([{Index: 0, Speed: 1.0}, {Index: 1, Speed: 0.5}], 3, 2)]);
      });
      */
 });

@@ -1,4 +1,4 @@
-import { ButtplugMessage, IButtplugClientConnector, FromJSON } from 'buttplug';
+import { ButtplugMessage, IButtplugClientConnector, fromJSON } from 'buttplug';
 import { EventEmitter } from 'eventemitter3';
 
 export class ButtplugWasmClientConnector extends EventEmitter implements IButtplugClientConnector {
@@ -37,8 +37,7 @@ export class ButtplugWasmClientConnector extends EventEmitter implements IButtpl
     //ButtplugWasmClientConnector.wasmInstance.buttplug_activate_env_logger('debug');
     console.log(ButtplugWasmClientConnector.wasmInstance.buttplug_create_embedded_wasm_server);    
     this.client = ButtplugWasmClientConnector.wasmInstance.buttplug_create_embedded_wasm_server((msgs) => {
-      let str = new TextDecoder().decode(msgs);
-      this.emit('message', FromJSON(str));
+      this.emitMessage(msgs);
     }, this.serverPtr);
     this._connected = true;
   };
@@ -48,8 +47,13 @@ export class ButtplugWasmClientConnector extends EventEmitter implements IButtpl
   public send = (msg: ButtplugMessage): void => {
     console.log(msg);
     ButtplugWasmClientConnector.wasmInstance.buttplug_client_send_json_message(this.client, new TextEncoder().encode('[' + msg.toJSON() + ']'), (output) => {
-      let str = new TextDecoder().decode(output);
-      this.emit('message', FromJSON(str));
+      this.emitMessage(output);
     });
   };
+
+  private emitMessage = (msg: Uint8Array) => {
+    let str = new TextDecoder().decode(output);
+    // This needs to use buttplug-js's fromJSON, otherwise we won't resolve the message name correctly.
+    this.emit('message', fromJSON(str));
+  }
 }
