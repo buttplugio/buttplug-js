@@ -1,6 +1,17 @@
+# 2.0.1 (2023-09-23)
+
+## Features
+
+- Bump Buttplug version to v7.1.5 
+
+## Bugfixes
+
+- Bump to buttplug-js v3.2.1, fixing minifinier errors
+- Fix issue with misnamed arguments causing messages not to emit.
+
 # 2.0.0 (2023-09-23)
 
-# Features
+## Features
 
 - First actual release!
   - Mostly because this repo was just a test repo which became the main buttplug-js repo for a

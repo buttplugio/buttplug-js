@@ -155,7 +155,9 @@ checksum = "a3e2c3daef883ecc1b5d58c15adae93470a91d425f3532ba1695849656af3fc1"
 
 [[package]]
 name = "buttplug"
-version = "7.1.4"
+version = "7.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bf03b6099e1136653c2406de686e9ab8344873c1a932a15e35a416b52065b0db"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -209,7 +211,7 @@ dependencies = [
 
 [[package]]
 name = "buttplug_wasm"
-version = "7.1.3"
+version = "7.1.5"
 dependencies = [
  "async-trait",
  "buttplug",

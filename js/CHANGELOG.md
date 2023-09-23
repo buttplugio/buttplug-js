@@ -1,3 +1,10 @@
+# v3.2.1 (2023/09/23)
+
+## Bugfixes
+
+- Fix issue with name minifying causing problems with class name reflection (again, see v3.1.0 notes
+  for the first round of this)
+
 # v3.2.0 (2023/09/23)
 
 ## Features

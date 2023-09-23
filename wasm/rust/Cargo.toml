@@ -1,6 +1,6 @@
 [package]
 name = "buttplug_wasm"
-version = "7.1.3"
+version = "7.1.5"
 authors = ["Nonpolynomial Labs, LLC <kyle@nonpolynomial.com>"]
 description = "WASM Interop for the Buttplug Intimate Hardware Control Library"
 license = "BSD-3-Clause"
@@ -16,8 +16,8 @@ name = "buttplug_wasm"
 path = "src/lib.rs"
 
 [dependencies]
-#buttplug = { version = "7.1.3", default-features = false, features = ["wasm"] }
-buttplug = { path = "../../../buttplug/buttplug", default-features = false, features = ["wasm"] }
+buttplug = { version = "7.1.5", default-features = false, features = ["wasm"] }
+# buttplug = { path = "../../../buttplug/buttplug", default-features = false, features = ["wasm"] }
 # buttplug_derive = { path = "../buttplug_derive" }
 js-sys = "0.3.55"
 tracing-wasm = "0.2.1"
