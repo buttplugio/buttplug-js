@@ -28,7 +28,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         [null, {\
           "packageLocation": "./",\
           "packageDependencies": [\
-            ["buttplug", "npm:3.1.1"],\
+            ["buttplug", "npm:3.2.0"],\
             ["eventemitter3", "npm:5.0.1"],\
             ["rollup", "npm:3.29.2"],\
             ["typescript", "patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=d73830"],\
@@ -913,14 +913,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["buttplug", [\
-        ["npm:3.1.1", {\
-          "packageLocation": "./.yarn/cache/buttplug-npm-3.1.1-950daf58bf-22c07d8ed7.zip/node_modules/buttplug/",\
+        ["npm:3.2.0", {\
+          "packageLocation": "./.yarn/cache/buttplug-npm-3.2.0-c663cedb8f-4d46921f83.zip/node_modules/buttplug/",\
           "packageDependencies": [\
-            ["buttplug", "npm:3.1.1"],\
+            ["buttplug", "npm:3.2.0"],\
             ["class-transformer", "npm:0.5.1"],\
             ["eventemitter3", "npm:5.0.1"],\
             ["reflect-metadata", "npm:0.1.13"],\
-            ["ws", "virtual:950daf58bf5f970bbe48b596515f2ec65a6079bb6b02ff243160986cacdd7fe379ac3fefa8b6c403ea55c018777efb21d284bad9db58b53c75153d7109c8cfe9#npm:8.13.0"]\
+            ["ws", "virtual:c663cedb8fbf86a4a8657ef3286ac4a861403c26f70b83a02a23a97559be66efbfc813e2395e843ba8862bc966c27cbb1021fa6ee7c498071776452462018fa5#npm:8.14.2"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -930,7 +930,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./",\
           "packageDependencies": [\
             ["buttplug-server-wasm", "workspace:."],\
-            ["buttplug", "npm:3.1.1"],\
+            ["buttplug", "npm:3.2.0"],\
             ["eventemitter3", "npm:5.0.1"],\
             ["rollup", "npm:3.29.2"],\
             ["typescript", "patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=d73830"],\
@@ -2573,17 +2573,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["ws", [\
-        ["npm:8.13.0", {\
-          "packageLocation": "./.yarn/cache/ws-npm-8.13.0-26ffa3016a-53e991bbf9.zip/node_modules/ws/",\
+        ["npm:8.14.2", {\
+          "packageLocation": "./.yarn/cache/ws-npm-8.14.2-b339ac47a2-3ca0dad26e.zip/node_modules/ws/",\
           "packageDependencies": [\
-            ["ws", "npm:8.13.0"]\
+            ["ws", "npm:8.14.2"]\
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:950daf58bf5f970bbe48b596515f2ec65a6079bb6b02ff243160986cacdd7fe379ac3fefa8b6c403ea55c018777efb21d284bad9db58b53c75153d7109c8cfe9#npm:8.13.0", {\
-          "packageLocation": "./.yarn/__virtual__/ws-virtual-2075fc8097/0/cache/ws-npm-8.13.0-26ffa3016a-53e991bbf9.zip/node_modules/ws/",\
+        ["virtual:c663cedb8fbf86a4a8657ef3286ac4a861403c26f70b83a02a23a97559be66efbfc813e2395e843ba8862bc966c27cbb1021fa6ee7c498071776452462018fa5#npm:8.14.2", {\
+          "packageLocation": "./.yarn/__virtual__/ws-virtual-531a434bd9/0/cache/ws-npm-8.14.2-b339ac47a2-3ca0dad26e.zip/node_modules/ws/",\
           "packageDependencies": [\
-            ["ws", "virtual:950daf58bf5f970bbe48b596515f2ec65a6079bb6b02ff243160986cacdd7fe379ac3fefa8b6c403ea55c018777efb21d284bad9db58b53c75153d7109c8cfe9#npm:8.13.0"],\
+            ["ws", "virtual:c663cedb8fbf86a4a8657ef3286ac4a861403c26f70b83a02a23a97559be66efbfc813e2395e843ba8862bc966c27cbb1021fa6ee7c498071776452462018fa5#npm:8.14.2"],\
             ["@types/bufferutil", null],\
             ["@types/utf-8-validate", null],\
             ["bufferutil", null],\
