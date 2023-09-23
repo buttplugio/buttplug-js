@@ -11,9 +11,9 @@ export default defineConfig({
     lib: {
       // Could also be a dictionary or array of multiple entry points
       entry: resolve(__dirname, 'src/index.ts'),
-      name: 'buttplug-server-wasm',
+      name: 'buttplug-wasm',
       // the proper extensions will be added
-      fileName: (format) => 'buttplug-server-wasm.mjs',
+      fileName: (format) => 'buttplug-wasm.mjs',
       formats: ['es'],
     },
     outDir: 'dist',
