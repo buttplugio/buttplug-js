@@ -25,35 +25,32 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter {
   }
 
   public connect = async (): Promise<void> => {
-    const ws = new (this._websocketConstructor ?? WebSocket)(this._url);
-    let res;
-    let rej;
-    const p = new Promise<void>((resolve, reject) => {
-      res = resolve;
-      rej = reject;
+    return new Promise<void>((resolve, reject) => {
+      const ws = new (this._websocketConstructor ?? WebSocket)(this._url);
+      const onErrorCallback = (event: Event) => {reject(event)}
+      const onCloseCallback = (event: CloseEvent) => reject(event.reason)
+      ws.addEventListener('open', async () => {
+        this._ws = ws;
+        try {
+          await this.initialize();
+          this._ws.addEventListener('message', (msg) => {
+            this.parseIncomingMessage(msg);
+          });
+          this._ws.removeEventListener('close', onCloseCallback);
+          this._ws.removeEventListener('error', onErrorCallback);
+          this._ws.addEventListener('close', this.disconnect);
+          resolve();
+        } catch (e) {
+          reject(e);
+        }
+      });
+      // In websockets, our error rarely tells us much, as for security reasons
+      // browsers usually only throw Error Code 1006. It's up to those using this
+      // library to state what the problem might be.
+
+      ws.addEventListener('error', onErrorCallback)
+      ws.addEventListener('close', onCloseCallback);
     });
-    // In websockets, our error rarely tells us much, as for security reasons
-    // browsers usually only throw Error Code 1006. It's up to those using this
-    // library to state what the problem might be.
-    const conErrorCallback = () => rej();
-    ws.addEventListener('open', async () => {
-      this._ws = ws;
-      try {
-        await this.initialize();
-        this._ws.addEventListener('message', (msg) => {
-          this.parseIncomingMessage(msg);
-        });
-        this._ws.removeEventListener('close', conErrorCallback);
-        this._ws.addEventListener('close', this.disconnect);
-        // TODO This doesn't really communicate the chain why our initializer failed
-        res();
-      } catch (e) {
-        console.log(e);
-        rej();
-      }
-    });
-    ws.addEventListener('close', conErrorCallback);
-    return p;
   };
 
   public disconnect = async (): Promise<void> => {

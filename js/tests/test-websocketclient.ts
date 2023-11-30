@@ -79,4 +79,13 @@ describe("Websocket Client Tests", () => {
     });
     await expect(bp.stopAllDevices()).rejects.toBeInstanceOf(ButtplugMessageError);
   });
+
+  it("Should throw Error on TCPCONNECTREFUSED", async () => {
+    const connector = new ButtplugBrowserWebsocketClientConnector("ws://localhost:31000")
+    try {
+      await connector.connect();
+    } catch (e) {
+      expect(e).toBeDefined();
+    }
+  });
 });
