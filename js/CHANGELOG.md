@@ -1,3 +1,9 @@
+# v3.2.2 (2024/03/02)
+
+## Bugfixes
+
+- Actually throw exceptions when there are websocket connection issues. (#257)
+
 # v3.2.1 (2023/09/23)
 
 ## Bugfixes
