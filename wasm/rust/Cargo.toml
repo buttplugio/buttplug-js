@@ -16,27 +16,27 @@ name = "buttplug_wasm"
 path = "src/lib.rs"
 
 [dependencies]
-buttplug = { version = "7.1.5", default-features = false, features = ["wasm"] }
+buttplug = { version = "7.1.13", default-features = false, features = ["wasm"] }
 # buttplug = { path = "../../../buttplug/buttplug", default-features = false, features = ["wasm"] }
 # buttplug_derive = { path = "../buttplug_derive" }
-js-sys = "0.3.55"
+js-sys = "0.3.68"
 tracing-wasm = "0.2.1"
-log-panics = { version = "2.0.0", features = ["with-backtrace"] }
+log-panics = { version = "2.1.0", features = ["with-backtrace"] }
 console_error_panic_hook = "0.1.7"
 wasmtimer = "0.2.0"
-wasm-bindgen = { version = "0.2.87", features = ["serde-serialize"] }
-tokio = { version = "1.29.1", features = ["sync", "macros", "io-util"] }
+wasm-bindgen = { version = "0.2.91", features = ["serde-serialize"] }
+tokio = { version = "1.36.0", features = ["sync", "macros", "io-util"] }
 tokio-stream = "0.1.14"
-tracing = "0.1.37"
+tracing = "0.1.40"
 tracing-futures = "0.2.5"
-tracing-subscriber = { version = "0.3.17", features = ["json"] }
-futures = "0.3.28"
-futures-util = "0.3.28"
-async-trait = "0.1.71"
-wasm-bindgen-futures = "0.4.37"
+tracing-subscriber = { version = "0.3.18", features = ["json"] }
+futures = "0.3.30"
+futures-util = "0.3.30"
+async-trait = "0.1.77"
+wasm-bindgen-futures = "0.4.41"
 
 [dependencies.web-sys]
-version = "0.3.64"
+version = "0.3.68"
 # path = "../../wasm-bindgen/crates/web-sys"
 #git = "https://github.com/rustwasm/wasm-bindgen"
 features = [
