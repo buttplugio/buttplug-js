@@ -5474,9 +5474,9 @@ vite-plugin-dts@^3.7.3:
     vue-tsc "^1.8.26"
 
 vite@^5.1.4:
-  version "5.2.4"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-5.2.4.tgz#cd4065f8ae2164bcd4fe04570066351fc5c62f72"
-  integrity sha512-vjFghvHWidBTinu5TCymJk/lRHlR5ljqB83yugr0HA1xspUPdOZHqbqDLnZ8f9/jINrtFHTCYYyIUi+o+Q5iyg==
+  version "5.2.5"
+  resolved "https://registry.yarnpkg.com/vite/-/vite-5.2.5.tgz#5de3a80c46567c015b4009200a0af901ded22110"
+  integrity sha512-a+rTAqkMmJ2hQpC6dfAyyc5M0YLH3BGZKLpA6pU9AhzlcK1YZS8P/ov9OcdHxaf+j0sM0DIh/txH7ydTHUpISg==
   dependencies:
     esbuild "^0.20.1"
     postcss "^8.4.36"
