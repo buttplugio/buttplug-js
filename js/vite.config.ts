@@ -12,9 +12,12 @@ export default defineConfig({
       fileName: (format): string => {
         if (format === 'umd') {
           return 'buttplug.js';
+        } else if (format === 'iife') {
+          return 'buttplug.global.js';
         }
         return 'buttplug.mjs';
       },
+      formats: ['es', 'umd', 'iife'],
     },
     outDir: 'dist/web',
   },

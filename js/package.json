@@ -3,6 +3,17 @@
   "version": "3.2.2",
   "description": "Buttplug Client Implementation for Typescript/Javascript",
   "homepage": "https://github.com/buttplugio/buttplug-js/",
+  "main": "./dist/main/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/main/index.mjs",
+      "require": "./dist/main/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.com"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/buttplugio/buttplug-js.git"
@@ -16,14 +27,14 @@
   "bugs": {
     "url": "https://github.com/buttplugio/buttplug-js/issues"
   },
-  "main": "./dist/main/src/index.js",
-  "types": "./dist/main/src/index.d.ts",
+  "types": "./dist/main/index.d.ts",
   "scripts": {
     "build": "trash dist dist-bundle && yarn build:all",
     "build:all": "yarn build:main && yarn build:web",
-    "build:main": "tsc -p tsconfig.json",
+    "build:main": "tsup",
     "build:doc": "typedoc --options typedocconfig.js --out doc ./src/index.ts",
     "build:web": "vite build",
+    "lint:type": "tsc --noEmit -p ./tsconfig.json",
     "pretest": "yarn build:main",
     "test": "jest tests/*",
     "web-test": "jest web-tests/test-web-library.ts",
@@ -36,7 +47,7 @@
     "ws": "^8.16.0"
   },
   "devDependencies": {
-    "@types/commander": "^2.12.2",
+    "@swc/core": "^1.4.8",
     "@types/expect-puppeteer": "^5.0.6",
     "@types/jest": "^29.5.12",
     "@types/jest-environment-puppeteer": "^5.0.6",
@@ -59,6 +70,7 @@
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
     "tslib": "^2.6.2",
+    "tsup": "^8.0.2",
     "typedoc": "^0.25.9",
     "typescript": "^5.3.3",
     "vite": "^5.1.4",
