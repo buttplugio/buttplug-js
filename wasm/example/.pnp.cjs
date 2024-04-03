@@ -28,7 +28,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         [null, {\
           "packageLocation": "./",\
           "packageDependencies": [\
-            ["vite", "virtual:89f1682cb4abb18ee68e5022dcde4dc6225b6381ee93fe03c10bdd24f3281b4eaee449f2261821c57842f12cde65ac2a5a2a18c22dc55bf93b5a6b9672a86eb8#npm:4.4.9"]\
+            ["vite", "virtual:89f1682cb4abb18ee68e5022dcde4dc6225b6381ee93fe03c10bdd24f3281b4eaee449f2261821c57842f12cde65ac2a5a2a18c22dc55bf93b5a6b9672a86eb8#npm:4.5.3"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -1453,17 +1453,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["vite", [\
-        ["npm:4.4.9", {\
-          "packageLocation": "./.yarn/cache/vite-npm-4.4.9-e845c1bbf8-c511024cea.zip/node_modules/vite/",\
+        ["npm:4.5.3", {\
+          "packageLocation": "./.yarn/cache/vite-npm-4.5.3-5cedc7cb8f-fd3f512ce4.zip/node_modules/vite/",\
           "packageDependencies": [\
-            ["vite", "npm:4.4.9"]\
+            ["vite", "npm:4.5.3"]\
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:89f1682cb4abb18ee68e5022dcde4dc6225b6381ee93fe03c10bdd24f3281b4eaee449f2261821c57842f12cde65ac2a5a2a18c22dc55bf93b5a6b9672a86eb8#npm:4.4.9", {\
-          "packageLocation": "./.yarn/__virtual__/vite-virtual-7433045039/0/cache/vite-npm-4.4.9-e845c1bbf8-c511024cea.zip/node_modules/vite/",\
+        ["virtual:89f1682cb4abb18ee68e5022dcde4dc6225b6381ee93fe03c10bdd24f3281b4eaee449f2261821c57842f12cde65ac2a5a2a18c22dc55bf93b5a6b9672a86eb8#npm:4.5.3", {\
+          "packageLocation": "./.yarn/__virtual__/vite-virtual-0b1f85891f/0/cache/vite-npm-4.5.3-5cedc7cb8f-fd3f512ce4.zip/node_modules/vite/",\
           "packageDependencies": [\
-            ["vite", "virtual:89f1682cb4abb18ee68e5022dcde4dc6225b6381ee93fe03c10bdd24f3281b4eaee449f2261821c57842f12cde65ac2a5a2a18c22dc55bf93b5a6b9672a86eb8#npm:4.4.9"],\
+            ["vite", "virtual:89f1682cb4abb18ee68e5022dcde4dc6225b6381ee93fe03c10bdd24f3281b4eaee449f2261821c57842f12cde65ac2a5a2a18c22dc55bf93b5a6b9672a86eb8#npm:4.5.3"],\
             ["@types/less", null],\
             ["@types/lightningcss", null],\
             ["@types/node", null],\
@@ -1505,7 +1505,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./",\
           "packageDependencies": [\
             ["wasm-example", "workspace:."],\
-            ["vite", "virtual:89f1682cb4abb18ee68e5022dcde4dc6225b6381ee93fe03c10bdd24f3281b4eaee449f2261821c57842f12cde65ac2a5a2a18c22dc55bf93b5a6b9672a86eb8#npm:4.4.9"]\
+            ["vite", "virtual:89f1682cb4abb18ee68e5022dcde4dc6225b6381ee93fe03c10bdd24f3281b4eaee449f2261821c57842f12cde65ac2a5a2a18c22dc55bf93b5a6b9672a86eb8#npm:4.5.3"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -12083,7 +12083,7 @@ function makeManager(pnpapi, opts) {
     apiEntry.lastRefreshCheck = timeNow;
     const stats = opts.fakeFs.statSync(pnpApiPath);
     if (stats.mtime > apiEntry.stats.mtime) {
-      process.emitWarning(`[Warning] The runtime detected new informations in a PnP file; reloading the API instance (${npath.fromPortablePath(pnpApiPath)})`);
+      process.emitWarning(`[Warning] The runtime detected new information in a PnP file; reloading the API instance (${npath.fromPortablePath(pnpApiPath)})`);
       apiEntry.stats = stats;
       apiEntry.instance = loadApiInstance(pnpApiPath);
     }
