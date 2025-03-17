@@ -8,3 +8,8 @@ This repo includes 2 projects:
   WebBluetooth device communication manager. This will allow connection to hardware in browsers that have WebBluetooth connectivity (Chromium/Blink based browsers like Chrome, Microsoft Edge, Brave, Opera, etc...)
 
 See the README in each of the project directories for more info on the projects.
+
+# Tugged Buttplug JS and WASM
+
+There will be no back-sharing with buttplug with our implementation of the PowerBlow
+that code will remain as-is in our repository.
