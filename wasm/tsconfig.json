@@ -1,9 +1,9 @@
 {
-  "compilerOptions" : {
+  "compilerOptions": {
     "baseUrl": "./src",
     "lib": ["es2015", "dom", "es6"],
     "target": "es6",
-    "module": "commonjs",
+    "module": "esnext",
     "moduleResolution": "node",
     "sourceMap": true,
     "emitDecoratorMetadata": true,
@@ -12,7 +12,14 @@
     "noImplicitThis": true,
     "declaration": true,
     "outDir": "./dist/main",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@/*": ["src/*"],
+      "@/../rust/pkg/*": ["../rust/pkg/*"],
+      "buttplug": ["../../node_modules/buttplug/dist/web/buttplug.mjs"],
+      "eventemitter3": ["../../node_modules/eventemitter3/index.js"]
+    }
   },
   "include": [
     "./src/*.ts",

@@ -2,9 +2,9 @@
   "name": "buttplug-wasm",
   "version": "2.0.1",
   "scripts": {
-    "build:main": "tsc -p tsconfig.json",
+    "build:main": "cd rust && wasm-pack build --target web --release && cd .. && tsc -p tsconfig.json",
     "build:web": "vite build",
-    "build:wasm": "cd rust; wasm-pack build"
+    "build:wasm": "cd rust; wasm-pack build --target web --release"
   },
   "type": "module",
   "dependencies": {

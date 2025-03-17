@@ -5,8 +5,8 @@ use buttplug::{
     message::Endpoint,
   },
   server::device::{
-  configuration::{BluetoothLESpecifier, ProtocolCommunicationSpecifier},
-  hardware::{
+    configuration::{BluetoothLESpecifier, ProtocolCommunicationSpecifier},
+    hardware::{
       Hardware,
       HardwareConnector,
       HardwareEvent,
@@ -17,8 +17,8 @@ use buttplug::{
       HardwareSubscribeCmd,
       HardwareUnsubscribeCmd,
       HardwareWriteCmd,
+    },
   },
-},
   util::future::{ButtplugFuture, ButtplugFutureStateShared},
 };
 use futures::future::{self, BoxFuture};
@@ -45,28 +45,20 @@ type WebBluetoothResultFuture = ButtplugFuture<Result<(), ButtplugDeviceError>>;
 type WebBluetoothReadResultFuture = ButtplugFuture<Result<HardwareReading, ButtplugDeviceError>>;
 
 struct BluetoothDeviceWrapper {
-  pub device: BluetoothDevice
+  pub device: BluetoothDevice,
 }
 
-
-unsafe impl Send for BluetoothDeviceWrapper {
-}
-unsafe impl Sync for BluetoothDeviceWrapper {
-}
-
+unsafe impl Send for BluetoothDeviceWrapper {}
+unsafe impl Sync for BluetoothDeviceWrapper {}
 
 pub struct WebBluetoothHardwareConnector {
   device: Option<BluetoothDeviceWrapper>,
 }
 
 impl WebBluetoothHardwareConnector {
-  pub fn new(
-    device: BluetoothDevice,
-  ) -> Self {
+  pub fn new(device: BluetoothDevice) -> Self {
     Self {
-      device: Some(BluetoothDeviceWrapper {
-        device,
-      })
+      device: Some(BluetoothDeviceWrapper { device }),
     }
   }
 }
@@ -85,15 +77,16 @@ impl HardwareConnector for WebBluetoothHardwareConnector {
     ProtocolCommunicationSpecifier::BluetoothLE(BluetoothLESpecifier::new_from_device(
       &self.device.as_ref().unwrap().device.name().unwrap(),
       &HashMap::new(),
-      &[]
-    ))    
+      &[],
+    ))
   }
 
   async fn connect(&mut self) -> Result<Box<dyn HardwareSpecializer>, ButtplugDeviceError> {
-    Ok(Box::new(WebBluetoothHardwareSpecializer::new(self.device.take().unwrap())))
+    Ok(Box::new(WebBluetoothHardwareSpecializer::new(
+      self.device.take().unwrap(),
+    )))
   }
 }
-
 
 pub struct WebBluetoothHardwareSpecializer {
   device: Option<BluetoothDeviceWrapper>,
@@ -118,11 +111,6 @@ impl HardwareSpecializer for WebBluetoothHardwareSpecializer {
     let name;
     let address;
     let event_sender;
-    // This block limits the lifetime of device. Since the compiler doesn't
-    // realize we move device in the spawn_local block, it'll complain that
-    // device's lifetime lives across the channel await, which gets all
-    // angry because it's a *mut u8. So this limits the visible lifetime to
-    // before we start waiting for the reply from the event loop.
     let protocol = if let ProtocolCommunicationSpecifier::BluetoothLE(btle) = &specifiers[0] {
       btle
     } else {
@@ -147,9 +135,8 @@ impl HardwareSpecializer for WebBluetoothHardwareSpecializer {
     }
 
     match receiver.recv().await.unwrap() {
-      WebBluetoothEvent::Connected(_) => {
+      WebBluetoothEvent::Connected => {
         info!("Web Bluetooth device connected, returning device");
-
         let device_impl: Box<dyn HardwareInternal> = Box::new(WebBluetoothHardware::new(
           event_sender,
           receiver,
@@ -157,21 +144,16 @@ impl HardwareSpecializer for WebBluetoothHardwareSpecializer {
         ));
         Ok(Hardware::new(&name, &address, &[], device_impl))
       }
-      WebBluetoothEvent::Disconnected => Err(
-        ButtplugDeviceError::DeviceCommunicationError(
-          "Could not connect to WebBluetooth device".to_string(),
-        )
-        .into(),
-      ),
+      WebBluetoothEvent::Disconnected => Err(ButtplugDeviceError::DeviceCommunicationError(
+        "Could not connect to WebBluetooth device".to_string(),
+      ).into()),
     }
   }
 }
 
 #[derive(Debug, Clone)]
 pub enum WebBluetoothEvent {
-  // This is the only way we have to get our endpoints back to device creation
-  // right now. My god this is a mess.
-  Connected(Vec<Endpoint>),
+  Connected,
   Disconnected,
 }
 
@@ -201,7 +183,6 @@ async fn run_webbluetooth_loop(
   device_external_event_sender: broadcast::Sender<HardwareEvent>,
   mut device_command_receiver: mpsc::Receiver<WebBluetoothDeviceCommand>,
 ) {
-  //let device = self.device.take().unwrap();
   let mut char_map = HashMap::new();
   let connect_future = device.gatt().unwrap().connect();
   let server: BluetoothRemoteGattServer = match JsFuture::from(connect_future).await {
@@ -239,7 +220,18 @@ async fn run_webbluetooth_loop(
           .await
           .unwrap()
           .into();
-      char_map.insert(chr_name.clone(), char);
+      // Explicitly map Powerblow characteristics
+      match chr_uuid.to_string().as_str() {
+        "00001401-0000-1000-8000-00805f9b34fb" => {
+          char_map.insert(Endpoint::Tx, char); // Motor
+        }
+        "00001402-0000-1000-8000-00805f9b34fb" => {
+          char_map.insert(Endpoint::Rx, char); // Solenoid
+        }
+        _ => {
+          char_map.insert(chr_name.clone(), char); // Other characteristics
+        }
+      }
     }
   }
   {
@@ -251,30 +243,41 @@ async fn run_webbluetooth_loop(
         .send(HardwareEvent::Disconnected(id.clone()))
         .unwrap();
     }) as Box<dyn FnMut(Event)>);
-    // set disconnection event handler on BluetoothDevice
     device.set_ongattserverdisconnected(Some(ondisconnected_callback.as_ref().unchecked_ref()));
     ondisconnected_callback.forget();
   }
-  //let web_btle_device = WebBluetoothDeviceImpl::new(device, char_map);
   info!("device created!");
-  let endpoints = char_map.keys().into_iter().cloned().collect();
-  device_local_event_sender
-    .send(WebBluetoothEvent::Connected(endpoints))
-    .await;
+  if device_local_event_sender
+    .send(WebBluetoothEvent::Connected)
+    .await
+    .is_err()
+  {
+    error!("Failed to send Connected event");
+  }
   while let Some(msg) = device_command_receiver.recv().await {
     match msg {
       WebBluetoothDeviceCommand::Write(write_cmd, waker) => {
         debug!("Writing to endpoint {:?}", write_cmd.endpoint());
         let chr = char_map.get(&write_cmd.endpoint()).unwrap().clone();
         spawn_local(async move {
-          JsFuture::from(chr.write_value_with_u8_array(&mut write_cmd.data().clone()))
-            .await
-            .unwrap();
-          waker.set_reply(Ok(()));
+          let data = write_cmd.data().clone();
+          let uint8_array = Uint8Array::from(&data[..]);
+          let write_result = chr.write_value_with_u8_array(&uint8_array); // Returns Result<Promise, JsValue>
+          match write_result {
+            Ok(promise) => match JsFuture::from(promise).await {
+              Ok(_) => waker.set_reply(Ok(())),
+              Err(err) => waker.set_reply(Err(ButtplugDeviceError::DeviceCommunicationError(
+                format!("Failed to write value: {:?}", err),
+              ))),
+            },
+            Err(err) => waker.set_reply(Err(ButtplugDeviceError::DeviceCommunicationError(
+              format!("Failed to write value: {:?}", err),
+            ))),
+          }
         });
       }
       WebBluetoothDeviceCommand::Read(read_cmd, waker) => {
-        debug!("Writing to endpoint {:?}", read_cmd.endpoint());
+        debug!("Reading from endpoint {:?}", read_cmd.endpoint());
         let chr = char_map.get(&read_cmd.endpoint()).unwrap().clone();
         spawn_local(async move {
           let read_value = JsFuture::from(chr.read_value()).await.unwrap();
@@ -304,7 +307,6 @@ async fn run_webbluetooth_loop(
             .send(HardwareEvent::Notification(id.clone(), ep, value_vec))
             .unwrap();
         }) as Box<dyn FnMut(MessageEvent)>);
-        // set message event handler on WebSocket
         chr.set_oncharacteristicvaluechanged(Some(onchange_callback.as_ref().unchecked_ref()));
         onchange_callback.forget();
         spawn_local(async move {
@@ -313,35 +315,37 @@ async fn run_webbluetooth_loop(
           waker.set_reply(Ok(()));
         });
       }
-      WebBluetoothDeviceCommand::Unsubscribe(_unsubscribe_cmd, _waker) => {}
+      WebBluetoothDeviceCommand::Unsubscribe(unsubscribe_cmd, waker) => {
+        debug!("Unsubscribing from endpoint {:?}", unsubscribe_cmd.endpoint());
+        let chr = char_map.get(&unsubscribe_cmd.endpoint()).unwrap().clone();
+        spawn_local(async move {
+          match JsFuture::from(chr.stop_notifications()).await {
+            Ok(_) => waker.set_reply(Ok(())),
+            Err(err) => waker.set_reply(Err(ButtplugDeviceError::DeviceCommunicationError(
+              format!("Failed to unsubscribe: {:?}", err),
+            ))),
+          }
+        });
+      }
     }
   }
   debug!("run_webbluetooth_loop exited!");
 }
 
-
 #[derive(Debug)]
 pub struct WebBluetoothHardware {
   device_command_sender: mpsc::Sender<WebBluetoothDeviceCommand>,
-  device_event_receiver: mpsc::Receiver<WebBluetoothEvent>,
   event_sender: broadcast::Sender<HardwareEvent>,
 }
-/*
-unsafe impl Send for WebBluetoothHardware {
-}
-unsafe impl Sync for WebBluetoothHardware {
-}
-*/
 
 impl WebBluetoothHardware {
   pub fn new(
     event_sender: broadcast::Sender<HardwareEvent>,
-    device_event_receiver: mpsc::Receiver<WebBluetoothEvent>,
+    _device_event_receiver: mpsc::Receiver<WebBluetoothEvent>,
     device_command_sender: mpsc::Sender<WebBluetoothDeviceCommand>,
   ) -> Self {
     Self {
       event_sender,
-      device_event_receiver,
       device_command_sender,
     }
   }
@@ -365,43 +369,74 @@ impl HardwareInternal for WebBluetoothHardware {
     Box::pin(async move {
       let fut = WebBluetoothReadResultFuture::default();
       let waker = fut.get_state_clone();
-      sender
+      if sender
         .send(WebBluetoothDeviceCommand::Read(msg, waker))
-        .await;
+        .await
+        .is_err()
+      {
+        error!("Failed to send Read command");
+      }
       fut.await
     })
   }
 
-  fn write_value(&self, msg: &HardwareWriteCmd) -> BoxFuture<'static, Result<(), ButtplugDeviceError>> {
+  fn write_value(
+    &self,
+    msg: &HardwareWriteCmd,
+  ) -> BoxFuture<'static, Result<(), ButtplugDeviceError>> {
     let sender = self.device_command_sender.clone();
     let msg = msg.clone();
     Box::pin(async move {
       let fut = WebBluetoothResultFuture::default();
       let waker = fut.get_state_clone();
-      sender
+      if sender
         .send(WebBluetoothDeviceCommand::Write(msg.clone(), waker))
-        .await;
+        .await
+        .is_err()
+      {
+        error!("Failed to send Write command");
+      }
       fut.await
     })
   }
 
-  fn subscribe(&self, msg: &HardwareSubscribeCmd) -> BoxFuture<'static, Result<(), ButtplugDeviceError>> {
+  fn subscribe(
+    &self,
+    msg: &HardwareSubscribeCmd,
+  ) -> BoxFuture<'static, Result<(), ButtplugDeviceError>> {
     let sender = self.device_command_sender.clone();
     let msg = msg.clone();
     Box::pin(async move {
       let fut = WebBluetoothResultFuture::default();
       let waker = fut.get_state_clone();
-      sender
+      if sender
         .send(WebBluetoothDeviceCommand::Subscribe(msg.clone(), waker))
-        .await;
+        .await
+        .is_err()
+      {
+        error!("Failed to send Subscribe command");
+      }
       fut.await
     })
   }
 
-  fn unsubscribe(&self, _msg: &HardwareUnsubscribeCmd) -> BoxFuture<'static, Result<(), ButtplugDeviceError>> {
+  fn unsubscribe(
+    &self,
+    msg: &HardwareUnsubscribeCmd,
+  ) -> BoxFuture<'static, Result<(), ButtplugDeviceError>> {
+    let sender = self.device_command_sender.clone();
+    let msg = msg.clone();
     Box::pin(async move {
-      error!("IMPLEMENT UNSUBSCRIBE FOR WEBBLUETOOTH WASM");
-      Ok(())
+      let fut = WebBluetoothResultFuture::default();
+      let waker = fut.get_state_clone();
+      if sender
+        .send(WebBluetoothDeviceCommand::Unsubscribe(msg, waker))
+        .await
+        .is_err()
+      {
+        error!("Failed to send Unsubscribe command");
+      }
+      fut.await
     })
   }
 }

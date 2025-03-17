@@ -3,27 +3,25 @@ extern crate tracing;
 #[macro_use]
 extern crate futures;
 
-
 mod webbluetooth;
+mod devices;
+
 use js_sys;
 use tokio_stream::StreamExt;
 use crate::webbluetooth::*;
+use crate::devices::powerblow::PowerblowIdentifierFactory;
 use buttplug::{
   core::message::{ButtplugCurrentSpecServerMessage, serializer::vec_to_protocol_json},
-  server::ButtplugServer,
-  util::async_manager, server::ButtplugServerBuilder, core::message::{BUTTPLUG_CURRENT_MESSAGE_SPEC_VERSION, serializer::{ButtplugSerializedMessage, ButtplugMessageSerializer, ButtplugServerJSONSerializer}}
+  server::{
+    ButtplugServer,
+    ButtplugServerBuilder,
+    device::configuration::DeviceConfigurationManagerBuilder,
+  },
+  util::async_manager,
+  core::message::{BUTTPLUG_CURRENT_MESSAGE_SPEC_VERSION, serializer::{ButtplugSerializedMessage, ButtplugMessageSerializer, ButtplugServerJSONSerializer}}
 };
 
 type FFICallback = js_sys::Function;
-type FFICallbackContext = u32;
-
-#[derive(Clone, Copy)]
-pub struct FFICallbackContextWrapper(FFICallbackContext);
-
-unsafe impl Send for FFICallbackContextWrapper {
-}
-unsafe impl Sync for FFICallbackContextWrapper {
-}
 
 use console_error_panic_hook;
 use tracing_subscriber::{layer::SubscriberExt, Registry};
@@ -35,25 +33,28 @@ use js_sys::Uint8Array;
 pub type ButtplugWASMServer = Arc<ButtplugServer>;
 
 pub fn send_server_message(
-  message: &ButtplugCurrentSpecServerMessage,
-  callback: &FFICallback,
+    message: &ButtplugCurrentSpecServerMessage,
+    callback: &FFICallback,
 ) {
-  let msg_array = [message.clone()];
-  let json_msg = vec_to_protocol_json(&msg_array);
-  let buf = json_msg.as_bytes();
-  {
-    let this = JsValue::null();
-    let uint8buf = unsafe { Uint8Array::new(&Uint8Array::view(buf)) };
-    callback.call1(&this, &JsValue::from(uint8buf));
-  }
+    let msg_array = [message.clone()];
+    let json_msg = vec_to_protocol_json(&msg_array);
+    let buf = json_msg.as_bytes();
+    {
+        let this = JsValue::null();
+        let uint8buf = unsafe { Uint8Array::new(&Uint8Array::view(buf)) };
+        if let Err(err) = callback.call1(&this, &JsValue::from(uint8buf)) {
+          error!("Failed to call callback: {:?}", err);
+        }
+    }
 }
 
 #[no_mangle]
 #[wasm_bindgen]
-pub fn buttplug_create_embedded_wasm_server(
-  callback: &FFICallback,
-) -> *mut ButtplugWASMServer {
+pub fn buttplug_create_embedded_wasm_server(callback: &FFICallback) -> *mut ButtplugWASMServer {
   console_error_panic_hook::set_once();
+  let mut dcm_builder = DeviceConfigurationManagerBuilder::default();
+  dcm_builder.protocol_factory(PowerblowIdentifierFactory::default());
+  let _dcm = dcm_builder.finish().unwrap();
   let mut builder = ButtplugServerBuilder::default();
   builder.comm_manager(WebBluetoothCommunicationManagerBuilder::default());
   let server = Arc::new(builder.finish().unwrap());
@@ -65,7 +66,6 @@ pub fn buttplug_create_embedded_wasm_server(
       send_server_message(&ButtplugCurrentSpecServerMessage::try_from(message).unwrap(), &callback);
     }
   });
-  
   Box::into_raw(Box::new(server))
 }
 
@@ -78,7 +78,6 @@ pub fn buttplug_free_embedded_wasm_server(ptr: *mut ButtplugWASMServer) {
     }
   }
 }
-
 
 #[no_mangle]
 #[wasm_bindgen]
@@ -103,10 +102,9 @@ pub fn buttplug_client_send_json_message(
 
 #[no_mangle]
 #[wasm_bindgen]
-pub fn buttplug_activate_env_logger(max_level: &str) {
+pub fn buttplug_activate_env_logger(_max_level: &str) {
   tracing::subscriber::set_global_default(
     Registry::default()
-      //.with(EnvFilter::new(max_level))
       .with(WASMLayer::new(WASMLayerConfig::default())),
   )
   .expect("default global");

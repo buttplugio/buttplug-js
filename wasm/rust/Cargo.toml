@@ -16,15 +16,15 @@ name = "buttplug_wasm"
 path = "src/lib.rs"
 
 [dependencies]
-buttplug = { version = "7.1.13", default-features = false, features = ["wasm"] }
+buttplug = { version = "7.1.16", default-features = false, features = ["wasm"] }
 # buttplug = { path = "../../../buttplug/buttplug", default-features = false, features = ["wasm"] }
 # buttplug_derive = { path = "../buttplug_derive" }
-js-sys = "0.3.68"
+js-sys = "0.3.70"
 tracing-wasm = "0.2.1"
 log-panics = { version = "2.1.0", features = ["with-backtrace"] }
 console_error_panic_hook = "0.1.7"
 wasmtimer = "0.2.0"
-wasm-bindgen = { version = "0.2.91", features = ["serde-serialize"] }
+wasm-bindgen = { version = "0.2.93", features = ["serde-serialize"] }
 tokio = { version = "1.36.0", features = ["sync", "macros", "io-util"] }
 tokio-stream = "0.1.14"
 tracing = "0.1.40"
@@ -36,7 +36,7 @@ async-trait = "0.1.77"
 wasm-bindgen-futures = "0.4.41"
 
 [dependencies.web-sys]
-version = "0.3.68"
+version = "0.3.70"
 # path = "../../wasm-bindgen/crates/web-sys"
 #git = "https://github.com/rustwasm/wasm-bindgen"
 features = [

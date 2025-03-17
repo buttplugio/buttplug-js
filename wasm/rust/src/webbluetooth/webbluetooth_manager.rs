@@ -1,5 +1,4 @@
 use super::webbluetooth_hardware::WebBluetoothHardwareConnector;
-
 use buttplug::{
   core::ButtplugResultFuture,
   server::device::{
@@ -24,9 +23,7 @@ pub struct WebBluetoothCommunicationManagerBuilder {
 
 impl HardwareCommunicationManagerBuilder for WebBluetoothCommunicationManagerBuilder {
   fn finish(&mut self, sender: Sender<HardwareCommunicationManagerEvent>) -> Box<dyn HardwareCommunicationManager> {
-    Box::new(WebBluetoothCommunicationManager {
-      sender,
-    })
+    Box::new(WebBluetoothCommunicationManager { sender })
   }
 }
 
@@ -36,8 +33,6 @@ pub struct WebBluetoothCommunicationManager {
 
 #[wasm_bindgen]
 extern "C" {
-  // Use `js_namespace` here to bind `console.log(..)` instead of just
-  // `log(..)`
   #[wasm_bindgen(js_namespace = console)]
   fn log(s: &str);
 }
@@ -55,31 +50,27 @@ impl HardwareCommunicationManager for WebBluetoothCommunicationManager {
     info!("WebBluetooth manager scanning");
     let sender_clone = self.sender.clone();
     spawn_local(async move {
-      // Build the filter block
       let nav = web_sys::window().unwrap().navigator();
       if nav.bluetooth().is_none() {
         error!("WebBluetooth is not supported on this browser");
         return;
       }
       info!("WebBluetooth supported by browser, continuing with scan.");
-      // HACK: As of buttplug v5, we can't just create a HardwareCommunicationManager anymore. This is
-      // using a test method to create a filled out DCM, which will work for now because there's no
-      // way for anyone to add device configurations through FFI yet anyways.
       let config_manager = create_test_dcm(false);
-      let mut options = web_sys::RequestDeviceOptions::new();
+      let options = web_sys::RequestDeviceOptions::new();
       let filters = Array::new();
       let optional_services = Array::new();
       for vals in config_manager.protocol_device_configurations().iter() {
         for config in vals.1 {
           if let ProtocolCommunicationSpecifier::BluetoothLE(btle) = &config {
             for name in btle.names() {
-              let mut filter = web_sys::BluetoothLeScanFilterInit::new();
+              let filter = web_sys::BluetoothLeScanFilterInit::new();
               if name.contains("*") {
                 let mut name_clone = name.clone();
                 name_clone.pop();
-                filter.name_prefix(&name_clone);
+                filter.set_name_prefix(&name_clone);
               } else {
-                filter.name(&name);
+                filter.set_name(name);
               }
               filters.push(&filter.into());
             }
@@ -89,11 +80,9 @@ impl HardwareCommunicationManager for WebBluetoothCommunicationManager {
           }
         }
       }
-      options.filters(&filters.into());
-      options.optional_services(&optional_services.into());
+      options.set_filters(&filters.into());
+      options.set_optional_services(&optional_services.into());
       let nav = web_sys::window().unwrap().navigator();
-      //nav.bluetooth().get_availability();
-      //JsFuture::from(nav.bluetooth().request_device()).await;
       match JsFuture::from(nav.bluetooth().unwrap().request_device(&options)).await {
         Ok(device) => {
           let bt_device = BluetoothDevice::from(device);
