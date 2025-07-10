@@ -9,7 +9,6 @@
 'use strict';
 import * as Messages from '../core/Messages';
 import {
-  ButtplugDeviceError,
   ButtplugError,
   ButtplugMessageError,
 } from '../core/Exceptions';
@@ -51,8 +50,8 @@ export class ButtplugClientDevice extends EventEmitter {
   /**
    * Return a list of message types the device accepts.
    */
-  public get messageAttributes(): Messages.MessageAttributes {
-    return this._deviceInfo.DeviceMessages;
+  public get features(): Messages.DeviceFeature[] {
+    return this._deviceInfo.DeviceFeatures;
   }
 
   public static fromMsg(
@@ -64,12 +63,6 @@ export class ButtplugClientDevice extends EventEmitter {
   ): ButtplugClientDevice {
     return new ButtplugClientDevice(msg, sendClosure);
   }
-
-  // Map of messages and their attributes (feature count, etc...)
-  private allowedMsgs: Map<string, Messages.MessageAttributes> = new Map<
-    string,
-    Messages.MessageAttributes
-  >();
 
   /**
    * @param _index Index of the device, as created by the device manager.
@@ -84,7 +77,6 @@ export class ButtplugClientDevice extends EventEmitter {
     ) => Promise<Messages.ButtplugMessage>
   ) {
     super();
-    _deviceInfo.DeviceMessages.update();
   }
 
   public async send(
@@ -111,137 +103,141 @@ export class ButtplugClientDevice extends EventEmitter {
     }
   }
 
-  public async scalar(
-    scalar: Messages.ScalarSubcommand | Messages.ScalarSubcommand[]
-  ): Promise<void> {
-    if (Array.isArray(scalar)) {
-      await this.sendExpectOk(new Messages.ScalarCmd(scalar, this.index));
-    } else {
-      await this.sendExpectOk(new Messages.ScalarCmd([scalar], this.index));
-    }
-  }
-
-  private async scalarCommandBuilder(
-    speed: number | number[],
-    actuator: Messages.ActuatorType
-  ) {
-    const scalarAttrs = this.messageAttributes.ScalarCmd?.filter(
-      (x) => x.ActuatorType === actuator
-    );
-    if (!scalarAttrs || scalarAttrs.length === 0) {
-      throw new ButtplugDeviceError(
-        `Device ${this.name} has no ${actuator} capabilities`
-      );
-    }
-    const cmds: Messages.ScalarSubcommand[] = [];
-    if (typeof speed === 'number') {
-      scalarAttrs.forEach((x) =>
-        cmds.push(new Messages.ScalarSubcommand(x.Index, speed, actuator))
-      );
-    } else if (Array.isArray(speed)) {
-      if (speed.length > scalarAttrs.length) {
-        throw new ButtplugDeviceError(
-          `${speed.length} commands send to a device with ${scalarAttrs.length} vibrators`
-        );
+  getFeaturesWithOutputType(type: Messages.OutputType): Messages.DeviceFeature[] {
+    return this._deviceInfo.DeviceFeatures.filter(
+      (x) => {
+        if (x.Output != undefined) {
+          return x.Output!.has(type);
+        }
+        return false;
       }
-      scalarAttrs.forEach((x, i) => {
-        cmds.push(new Messages.ScalarSubcommand(x.Index, speed[i], actuator));
-      });
-    } else {
-      throw new ButtplugDeviceError(
-        `${actuator} can only take numbers or arrays of numbers.`
-      );
-    }
-    await this.scalar(cmds);
-  }
-
-  public get vibrateAttributes(): Messages.GenericDeviceMessageAttributes[] {
-    return (
-      this.messageAttributes.ScalarCmd?.filter(
-        (x) => x.ActuatorType === Messages.ActuatorType.Vibrate
-      ) ?? []
     );
   }
 
-  public async vibrate(speed: number | number[]): Promise<void> {
-    await this.scalarCommandBuilder(speed, Messages.ActuatorType.Vibrate);
+  setFeatureValuesWithOutput(type: Messages.OutputType, cmd: Messages.OutputCommand) {
+    let outputCmds: Messages.OutputCmd[] = this.getFeaturesWithOutputType(type).map((x) => {
+      return new Messages.OutputCmd(this.index, x.FeatureIndex, cmd);
+    });
+    // TODO This should all be sent as one messages in a packed array.
+    outputCmds.forEach(async (x) => { await this.sendExpectOk(x); })
   }
 
-  public get oscillateAttributes(): Messages.GenericDeviceMessageAttributes[] {
-    return (
-      this.messageAttributes.ScalarCmd?.filter(
-        (x) => x.ActuatorType === Messages.ActuatorType.Oscillate
-      ) ?? []
-    );
+  setFeatureValuesWithOutputType(type: Messages.OutputType, value: number) {
+    return this.setFeatureValuesWithOutput(type, Messages.OutputCommand.fromOutputTypeAndValue(type, value));
   }
 
-  public async oscillate(speed: number | number[]): Promise<void> {
-    await this.scalarCommandBuilder(speed, Messages.ActuatorType.Oscillate);
+  public get canVibrate(): boolean {
+    return this.vibrateFeatures.length > 0;
   }
 
-  public get rotateAttributes(): Messages.GenericDeviceMessageAttributes[] {
-    return this.messageAttributes.RotateCmd ?? [];
+  public get vibrateFeatures(): Messages.DeviceFeature[] {
+    return this.getFeaturesWithOutputType(Messages.OutputType.Vibrate);
   }
 
-  public async rotate(
-    values: number | [number, boolean][],
-    clockwise?: boolean
-  ): Promise<void> {
-    const rotateAttrs = this.messageAttributes.RotateCmd;
-    if (!rotateAttrs || rotateAttrs.length === 0) {
-      throw new ButtplugDeviceError(
-        `Device ${this.name} has no Rotate capabilities`
-      );
-    }
-    let msg: Messages.RotateCmd;
-    if (typeof values === 'number') {
-      msg = Messages.RotateCmd.Create(
-        this.index,
-        new Array(rotateAttrs.length).fill([values, clockwise])
-      );
-    } else if (Array.isArray(values)) {
-      msg = Messages.RotateCmd.Create(this.index, values);
-    } else {
-      throw new ButtplugDeviceError(
-        'SendRotateCmd can only take a number and boolean, or an array of number/boolean tuples'
-      );
-    }
-    await this.sendExpectOk(msg);
+  public async vibrate(speed: number): Promise<void> {
+    return this.setFeatureValuesWithOutputType(Messages.OutputType.Vibrate, speed);
   }
 
-  public get linearAttributes(): Messages.GenericDeviceMessageAttributes[] {
-    return this.messageAttributes.LinearCmd ?? [];
+  public get canOscillate(): boolean {
+    return this.oscillateFeatures.length > 0;
   }
 
-  public async linear(
-    values: number | [number, number][],
-    duration?: number
-  ): Promise<void> {
-    const linearAttrs = this.messageAttributes.LinearCmd;
-    if (!linearAttrs || linearAttrs.length === 0) {
-      throw new ButtplugDeviceError(
-        `Device ${this.name} has no Linear capabilities`
-      );
-    }
-    let msg: Messages.LinearCmd;
-    if (typeof values === 'number') {
-      msg = Messages.LinearCmd.Create(
-        this.index,
-        new Array(linearAttrs.length).fill([values, duration])
-      );
-    } else if (Array.isArray(values)) {
-      msg = Messages.LinearCmd.Create(this.index, values);
-    } else {
-      throw new ButtplugDeviceError(
-        'SendLinearCmd can only take a number and number, or an array of number/number tuples'
-      );
-    }
-    await this.sendExpectOk(msg);
+  public get oscillateFeatures(): Messages.DeviceFeature[] {
+    return this.getFeaturesWithOutputType(Messages.OutputType.Oscillate);
   }
 
+  public async oscillate(speed: number): Promise<void> {
+    return this.setFeatureValuesWithOutputType(Messages.OutputType.Oscillate, speed);
+  }
+
+  public get canRotate(): boolean {
+    return this.rotateFeatures.length > 0;
+  }
+
+  public get rotateFeatures(): Messages.DeviceFeature[] {
+    return this.getFeaturesWithOutputType(Messages.OutputType.Rotate);
+  }
+
+  public async rotate(speed: number): Promise<void> {
+    return this.setFeatureValuesWithOutputType(Messages.OutputType.Rotate, speed);
+  }
+
+  public get canConstrict(): boolean {
+    return this.constrictFeatures.length > 0;
+  }
+
+  public get constrictFeatures(): Messages.DeviceFeature[] {
+    return this.getFeaturesWithOutputType(Messages.OutputType.Constrict);
+  }
+
+  public async constrict(level: number): Promise<void> {
+    return this.setFeatureValuesWithOutputType(Messages.OutputType.Constrict, level);
+  }
+
+  public get canSpray(): boolean {
+    return this.sprayFeatures.length > 0;
+  }
+
+  public get sprayFeatures(): Messages.DeviceFeature[] {
+    return this.getFeaturesWithOutputType(Messages.OutputType.Spray);
+  }
+
+  public async spray(level: number): Promise<void> {
+    return this.setFeatureValuesWithOutputType(Messages.OutputType.Spray, level);
+  }
+
+  public get canPosition(): boolean {
+    return this.positionFeatures.length > 0;
+  }
+
+  public get positionFeatures(): Messages.DeviceFeature[] {
+    return this.getFeaturesWithOutputType(Messages.OutputType.Position);
+  }
+
+  public async position(level: number): Promise<void> {
+    return this.setFeatureValuesWithOutputType(Messages.OutputType.Position, level);
+  }
+
+  public get canPositionWithDuration(): boolean {
+    return this.positionFeatures.length > 0;
+  }
+
+  public get positionWithDurationFeatures(): Messages.DeviceFeature[] {
+    return this.getFeaturesWithOutputType(Messages.OutputType.PositionWithDuration);
+  }
+
+  public async positionWithDuration(position: number, duration: number): Promise<void> {
+    let cmd = new Messages.OutputCommand();
+    cmd.PositionWithDuration = new Messages.CommandPositionWithDuration(position, duration);
+    return this.setFeatureValuesWithOutput(Messages.OutputType.PositionWithDuration, cmd);
+  }
+
+  public get canRotateWithDirection(): boolean {
+    return this.positionFeatures.length > 0;
+  }
+
+  public get rotateWithDirectionFeatures(): Messages.DeviceFeature[] {
+    return this.getFeaturesWithOutputType(Messages.OutputType.PositionWithDuration);
+  }
+
+  public async rotateWithDirection(speed: number, clockwise: boolean): Promise<void> {
+    let cmd = new Messages.OutputCommand();
+    cmd.RotateWithDirection = new Messages.CommandRotateWithDirection(speed, clockwise);
+    return this.setFeatureValuesWithOutput(Messages.OutputType.RotateWithDirection, cmd);
+  }
+
+  public async stop(): Promise<void> {
+    await this.sendExpectOk(new Messages.StopDeviceCmd(this.index));
+  }
+
+  public emitDisconnected() {
+    this.emit('deviceremoved');
+  }
+
+  /*
   public async sensorRead(
     sensorIndex: number,
-    sensorType: Messages.SensorType
+    sensorType: Messages.InputType
   ): Promise<number[]> {
     const response = await this.send(
       new Messages.SensorReadCmd(this.index, sensorIndex, sensorType)
@@ -260,7 +256,7 @@ export class ButtplugClientDevice extends EventEmitter {
 
   public get hasBattery(): boolean {
     const batteryAttrs = this.messageAttributes.SensorReadCmd?.filter(
-      (x) => x.SensorType === Messages.SensorType.Battery
+      (x) => x.SensorType === Messages.InputType.Battery
     );
     return batteryAttrs !== undefined && batteryAttrs.length > 0;
   }
@@ -272,45 +268,14 @@ export class ButtplugClientDevice extends EventEmitter {
       );
     }
     const batteryAttrs = this.messageAttributes.SensorReadCmd?.filter(
-      (x) => x.SensorType === Messages.SensorType.Battery
+      (x) => x.SensorType === Messages.InputType.Battery
     );
     // Find the battery sensor, we'll need its index.
     const result = await this.sensorRead(
       batteryAttrs![0].Index,
-      Messages.SensorType.Battery
+      Messages.InputType.Battery
     );
     return result[0] / 100.0;
   }
-
-  public get hasRssi(): boolean {
-    const rssiAttrs = this.messageAttributes.SensorReadCmd?.filter(
-      (x) => x.SensorType === Messages.SensorType.RSSI
-    );
-    return rssiAttrs !== undefined && rssiAttrs.length === 0;
-  }
-
-  public async rssi(): Promise<number> {
-    if (!this.hasRssi) {
-      throw new ButtplugDeviceError(
-        `Device ${this.name} has no RSSI capabilities`
-      );
-    }
-    const rssiAttrs = this.messageAttributes.SensorReadCmd?.filter(
-      (x) => x.SensorType === Messages.SensorType.RSSI
-    );
-    // Find the battery sensor, we'll need its index.
-    const result = await this.sensorRead(
-      rssiAttrs![0].Index,
-      Messages.SensorType.RSSI
-    );
-    return result[0];
-  }
-
-  public async stop(): Promise<void> {
-    await this.sendExpectOk(new Messages.StopDeviceCmd(this.index));
-  }
-
-  public emitDisconnected() {
-    this.emit('deviceremoved');
-  }
+*/
 }
