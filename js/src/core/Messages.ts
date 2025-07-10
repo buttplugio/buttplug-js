@@ -15,33 +15,9 @@ import 'reflect-metadata';
 export const SYSTEM_MESSAGE_ID = 0;
 export const DEFAULT_MESSAGE_ID = 1;
 export const MAX_ID = 4294967295;
-export const MESSAGE_SPEC_VERSION = 3;
+export const MESSAGE_SPEC_VERSION = 4;
 
-export class MessageAttributes {
-  public ScalarCmd?: Array<GenericDeviceMessageAttributes>;
-  public RotateCmd?: Array<GenericDeviceMessageAttributes>;
-  public LinearCmd?: Array<GenericDeviceMessageAttributes>;
-  public RawReadCmd?: RawDeviceMessageAttributes;
-  public RawWriteCmd?: RawDeviceMessageAttributes;
-  public RawSubscribeCmd?: RawDeviceMessageAttributes;
-  public SensorReadCmd?: Array<SensorDeviceMessageAttributes>;
-  public SensorSubscribeCmd?: Array<SensorDeviceMessageAttributes>;
-  public StopDeviceCmd: {};
-
-  constructor(data: Partial<MessageAttributes>) {
-    Object.assign(this, data);
-  }
-
-  public update() {
-    this.ScalarCmd?.forEach((x, i) => (x.Index = i));
-    this.RotateCmd?.forEach((x, i) => (x.Index = i));
-    this.LinearCmd?.forEach((x, i) => (x.Index = i));
-    this.SensorReadCmd?.forEach((x, i) => (x.Index = i));
-    this.SensorSubscribeCmd?.forEach((x, i) => (x.Index = i));
-  }
-}
-
-export enum ActuatorType {
+export enum FeatureType {
   Unknown = 'Unknown',
   Vibrate = 'Vibrate',
   Rotate = 'Rotate',
@@ -49,9 +25,27 @@ export enum ActuatorType {
   Constrict = 'Constrict',
   Inflate = 'Inflate',
   Position = 'Position',
+  PositionWithDuration = 'PositionWithDuration',
+  RotateWithDirection = 'RotateWithDirection',
+  Battery = 'Battery',
+  RSSI = 'RSSI',
+  Button = 'Button',
+  Pressure = 'Pressure',
 }
 
-export enum SensorType {
+export enum OutputType {
+  Unknown = 'Unknown',
+  Vibrate = 'Vibrate',
+  Rotate = 'Rotate',
+  Oscillate = 'Oscillate',
+  Constrict = 'Constrict',
+  Inflate = 'Inflate',
+  Position = 'Position',
+  PositionWithDuration = 'PositionWithDuration',
+  RotateWithDirection = 'RotateWithDirection',
+}
+
+export enum InputType {
   Unknown = 'Unknown',
   Battery = 'Battery',
   RSSI = 'RSSI',
@@ -62,32 +56,14 @@ export enum SensorType {
   // Gyro,
 }
 
-export class GenericDeviceMessageAttributes {
-  public FeatureDescriptor: string;
-  public ActuatorType: ActuatorType;
-  public StepCount: number;
-  public Index = 0;
-  constructor(data: Partial<GenericDeviceMessageAttributes>) {
-    Object.assign(this, data);
-  }
-}
-
-export class RawDeviceMessageAttributes {
-  constructor(public Endpoints: Array<string>) {}
-}
-
-export class SensorDeviceMessageAttributes {
-  public FeatureDescriptor: string;
-  public SensorType: SensorType;
-  public StepRange: Array<number>;
-  public Index = 0;
-  constructor(data: Partial<GenericDeviceMessageAttributes>) {
-    Object.assign(this, data);
-  }
+export enum InputCommandType {
+  Read = 'Read',
+  Subscribe = 'Subscribe',
+  Unsubscribe = 'Unsubscribe'
 }
 
 export abstract class ButtplugMessage {
-  constructor(public Id: number) {}
+  constructor(public Id: number) { }
 
   // tslint:disable-next-line:ban-types
   public get Type(): Function {
@@ -105,7 +81,7 @@ export abstract class ButtplugMessage {
     return jsonObj;
   }
 
-  public update() {}
+  public update() { }
 }
 
 export abstract class ButtplugDeviceMessage extends ButtplugMessage {
@@ -154,19 +130,44 @@ export class Error extends ButtplugMessage {
   ) {
     super(Id);
   }
+}
 
-  get Schemversion() {
-    return 0;
-  }
+export class DeviceOutput {
+  constructor(
+    public StepCount: number
+  ) {}
+}
+
+export class DeviceInput {
+  constructor(
+    public ValueRange: number[],
+    public InputCommands: InputCommandType[],
+  ) {}
+}
+
+export class DeviceFeature {
+  public Description: string;
+  public FeatureType: FeatureType;
+  
+  @Type(() => DeviceOutput)
+  public Output?: Map<OutputType, DeviceOutput>;
+  public Input?: Map<InputType, DeviceInput>;
+
+  constructor(description: string, feature: FeatureType, output?: Map<OutputType, DeviceOutput>, input?: Map<InputType, DeviceInput>) {
+    this.Description = description;
+    this.FeatureType = feature;
+    this.Output = output;
+    this.Input = input;
+  };
 }
 
 export class DeviceInfo {
   public DeviceIndex: number;
   public DeviceName: string;
-  @Type(() => MessageAttributes)
-  public DeviceMessages: MessageAttributes;
   public DeviceDisplayName?: string;
-  public DeviceMessageTimingGap?: number;
+  public DeviceMessageTimingGap: number;
+  @Type(() => DeviceFeature)
+  public DeviceFeatures: DeviceFeature[];
 
   constructor(data: Partial<DeviceInfo>) {
     Object.assign(this, data);
@@ -184,40 +185,6 @@ export class DeviceList extends ButtplugMessage {
     super(id);
     this.Devices = devices;
     this.Id = id;
-  }
-
-  public update() {
-    for (const device of this.Devices) {
-      device.DeviceMessages.update();
-    }
-  }
-}
-
-export class DeviceAdded extends ButtplugSystemMessage {
-  static Name = 'DeviceAdded';
-
-  public DeviceIndex: number;
-  public DeviceName: string;
-  @Type(() => MessageAttributes)
-  public DeviceMessages: MessageAttributes;
-  public DeviceDisplayName?: string;
-  public DeviceMessageTimingGap?: number;
-
-  constructor(data: Partial<DeviceAdded>) {
-    super();
-    Object.assign(this, data);
-  }
-
-  public update() {
-    this.DeviceMessages.update();
-  }
-}
-
-export class DeviceRemoved extends ButtplugSystemMessage {
-  static Name = 'DeviceRemoved';
-
-  constructor(public DeviceIndex: number) {
-    super();
   }
 }
 
@@ -297,117 +264,85 @@ export class StopAllDevices extends ButtplugMessage {
   }
 }
 
-export class GenericMessageSubcommand {
-  protected constructor(public Index: number) {}
+export class CommandValue {
+  constructor(
+    public Value: number
+  ) { }
 }
 
-export class ScalarSubcommand extends GenericMessageSubcommand {
+export class CommandPositionWithDuration {
   constructor(
-    Index: number,
-    public Scalar: number,
-    public ActuatorType: ActuatorType
+    public Position: number,
+    public Duration: number
+  ) { }
+}
+
+export class CommandRotateWithDirection {
+  constructor(
+    public Value: number,
+    public Clockwise: boolean
+  ) { }
+}
+
+export class OutputCommand {
+  public Vibrate: CommandValue | undefined;
+  public Rotate: CommandValue | undefined;
+  public Oscillate: CommandValue | undefined;
+  public Constrict: CommandValue | undefined;
+  public Inflate: CommandValue | undefined;
+  public Position: CommandValue | undefined;
+  public PositionWithDuration: CommandPositionWithDuration | undefined;
+  public RotateWithDirection: CommandRotateWithDirection | undefined;
+}
+
+export class OutputCmd extends ButtplugDeviceMessage {
+  static Name = 'OutputCmd';
+
+  constructor(
+    public DeviceIndex: number,
+    public FeatureIndex: number,
+    public Command: OutputCommand,
+    public Id: number = DEFAULT_MESSAGE_ID
   ) {
-    super(Index);
+    super(DeviceIndex, Id)
   }
 }
 
-export class ScalarCmd extends ButtplugDeviceMessage {
-  static Name = 'ScalarCmd';
+export class InputCmd extends ButtplugDeviceMessage {
+  static Name = 'InputCmd';
 
   constructor(
-    public Scalars: ScalarSubcommand[],
-    public DeviceIndex: number = -1,
+    public DeviceIndex: number,
+    public FeatureIndex: number,
+    public InputType: InputType,
+    public InputCommandType: InputCommandType,
     public Id: number = DEFAULT_MESSAGE_ID
   ) {
     super(DeviceIndex, Id);
   }
 }
 
-export class RotateSubcommand extends GenericMessageSubcommand {
-  constructor(Index: number, public Speed: number, public Clockwise: boolean) {
-    super(Index);
-  }
-}
-
-export class RotateCmd extends ButtplugDeviceMessage {
-  static Name = 'RotateCmd';
-
-  public static Create(
-    deviceIndex: number,
-    commands: [number, boolean][]
-  ): RotateCmd {
-    const cmdList: RotateSubcommand[] = new Array<RotateSubcommand>();
-
-    let i = 0;
-    for (const [speed, clockwise] of commands) {
-      cmdList.push(new RotateSubcommand(i, speed, clockwise));
-      ++i;
-    }
-
-    return new RotateCmd(cmdList, deviceIndex);
-  }
+export class InputReadingDataValue {
   constructor(
-    public Rotations: RotateSubcommand[],
-    public DeviceIndex: number = -1,
-    public Id: number = DEFAULT_MESSAGE_ID
-  ) {
-    super(DeviceIndex, Id);
-  }
+    public Data: number
+  ) {}
 }
 
-export class VectorSubcommand extends GenericMessageSubcommand {
-  constructor(Index: number, public Position: number, public Duration: number) {
-    super(Index);
-  }
+export class InputReadingData {
+  public Battery: InputReadingDataValue | undefined;
+  public Rssi: InputReadingDataValue| undefined;
+  public Button: InputReadingDataValue | undefined;
+  public Pressure: InputReadingDataValue | undefined;
 }
 
-export class LinearCmd extends ButtplugDeviceMessage {
-  static Name = 'LinearCmd';
-
-  public static Create(
-    deviceIndex: number,
-    commands: [number, number][]
-  ): LinearCmd {
-    const cmdList: VectorSubcommand[] = new Array<VectorSubcommand>();
-
-    let i = 0;
-    for (const cmd of commands) {
-      cmdList.push(new VectorSubcommand(i, cmd[0], cmd[1]));
-      ++i;
-    }
-
-    return new LinearCmd(cmdList, deviceIndex);
-  }
-  constructor(
-    public Vectors: VectorSubcommand[],
-    public DeviceIndex: number = -1,
-    public Id: number = DEFAULT_MESSAGE_ID
-  ) {
-    super(DeviceIndex, Id);
-  }
-}
-
-export class SensorReadCmd extends ButtplugDeviceMessage {
-  static Name = 'SensorReadCmd';
+export class InputReading extends ButtplugDeviceMessage {
+  static Name = 'InputReading';
 
   constructor(
     public DeviceIndex: number,
     public SensorIndex: number,
-    public SensorType: SensorType,
-    public Id: number = DEFAULT_MESSAGE_ID
-  ) {
-    super(DeviceIndex, Id);
-  }
-}
-
-export class SensorReading extends ButtplugDeviceMessage {
-  static Name = 'SensorReading';
-
-  constructor(
-    public DeviceIndex: number,
-    public SensorIndex: number,
-    public SensorType: SensorType,
-    public Data: number[],
+    public SensorType: InputType,
+    public Data: InputReadingData,
     public Id: number = DEFAULT_MESSAGE_ID
   ) {
     super(DeviceIndex, Id);
