@@ -119,23 +119,28 @@ export class ButtplugClient extends EventEmitter {
     const leftoverMsgs = this._sorter.ParseIncomingMessages(msgs);
     for (const x of leftoverMsgs) {
       switch (getMessageClassFromMessage(x)) {
-        case Messages.DeviceAdded: {
-          const addedMsg = x as Messages.DeviceAdded;
-          const addedDevice = ButtplugClientDevice.fromMsg(
-            addedMsg,
-            this.sendDeviceMessageClosure
-          );
-          this._devices.set(addedMsg.DeviceIndex, addedDevice);
-          this.emit('deviceadded', addedDevice);
-          break;
-        }
-        case Messages.DeviceRemoved: {
-          const removedMsg = x as Messages.DeviceRemoved;
-          if (this._devices.has(removedMsg.DeviceIndex)) {
-            const removedDevice = this._devices.get(removedMsg.DeviceIndex);
-            removedDevice?.emitDisconnected();
-            this._devices.delete(removedMsg.DeviceIndex);
-            this.emit('deviceremoved', removedDevice);
+        case Messages.DeviceList: {
+          const listMsg = x as Messages.DeviceList;
+          let indexes = listMsg.Devices.map((x) => { return x.DeviceIndex; });
+          // Check for removed devices
+          for (let device_index of this._devices.keys()) {
+            if (!indexes.includes(device_index)) {
+              const removedDevice = this._devices.get(device_index);
+              removedDevice?.emitDisconnected();
+              this._devices.delete(device_index);
+              this.emit('deviceremoved', removedDevice);
+            }
+          }
+          let currentDevices: number[] = Array.from(this._devices.keys())
+          for (let device of listMsg.Devices) {
+            if (!currentDevices.includes(device.DeviceIndex)) {
+              const addedDevice = ButtplugClientDevice.fromMsg(
+                device,
+                this.sendDeviceMessageClosure
+              );
+              this._devices.set(device.DeviceIndex, addedDevice);
+              this.emit('deviceadded', addedDevice);
+            }
           }
           break;
         }
