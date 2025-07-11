@@ -168,13 +168,13 @@ export class ButtplugClient extends EventEmitter {
         );
         // TODO: maybe store server name, do something with message template version?
         const ping = serverinfo.MaxPingTime;
-        if (serverinfo.MessageVersion < Messages.MESSAGE_SPEC_VERSION) {
+        if (serverinfo.ProtocolVersionMajor < Messages.MESSAGE_SPEC_VERSION) {
           // Disconnect and throw an exception explaining the version mismatch problem.
           await this._connector!.disconnect();
           throw ButtplugError.LogAndError(
             ButtplugInitError,
             this._logger,
-            `Server protocol version ${serverinfo.MessageVersion} is older than client protocol version ${Messages.MESSAGE_SPEC_VERSION}. Please update server.`
+            `Server protocol version ${serverinfo.ProtocolVersionMajor} is older than client protocol version ${Messages.MESSAGE_SPEC_VERSION}. Please update server.`
           );
         }
         if (ping > 0) {

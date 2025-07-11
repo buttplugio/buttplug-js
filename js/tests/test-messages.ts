@@ -72,7 +72,7 @@ describe("Message", () => {
                     DeviceName: "Test Vibrator", 
                     DeviceMessageTimingGap: 75,
                     DeviceFeatures: [
-                      new Messages.DeviceFeature("Vibrator", Messages.FeatureType.Vibrate, new Map([[Messages.OutputType.Vibrate, new Messages.DeviceOutput(20)]]))
+                      new Messages.DeviceFeature(0, "Vibrator", Messages.FeatureType.Vibrate, new Map([[Messages.OutputType.Vibrate, new Messages.DeviceOutput(20)]]))
                     ]
                   }),
                   new Messages.DeviceInfo({
@@ -81,7 +81,7 @@ describe("Message", () => {
                     DeviceDisplayName: "User set name",
                     DeviceMessageTimingGap: 100,
                     DeviceFeatures: [
-                      new Messages.DeviceFeature("Stroker", Messages.FeatureType.PositionWithDuration, new Map([[Messages.OutputType.PositionWithDuration, new Messages.DeviceOutput(20)]]))
+                      new Messages.DeviceFeature(0, "Stroker", Messages.FeatureType.PositionWithDuration, new Map([[Messages.OutputType.PositionWithDuration, new Messages.DeviceOutput(20)]]))
                     ]
                   })
                 ], 

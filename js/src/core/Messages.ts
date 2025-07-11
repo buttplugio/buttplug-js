@@ -228,7 +228,8 @@ export class RequestServerInfo extends ButtplugMessage {
 
   constructor(
     public ClientName: string,
-    public MessageVersion: number = 0,
+    public ProtocolVersionMajor: number = 4,
+    public ProtocolVersionMinor: number = 0,
     public Id: number = DEFAULT_MESSAGE_ID
   ) {
     super(Id);
@@ -239,7 +240,8 @@ export class ServerInfo extends ButtplugSystemMessage {
   static Name = 'ServerInfo';
 
   constructor(
-    public MessageVersion: number,
+    public ProtocolVersionMajor: number,
+    public ProtocolVersionMinor: number,
     public MaxPingTime: number,
     public ServerName: string,
     public Id: number = DEFAULT_MESSAGE_ID
