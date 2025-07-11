@@ -14,57 +14,16 @@ import {
 } from '../core/Exceptions';
 import { EventEmitter } from 'eventemitter3';
 import { getMessageClassFromMessage } from '../core/MessageUtils';
-import { ButtplugClientDeviceFeature } from './ButtplugClientDeviceFeature';
 
 /**
  * Represents an abstract device, capable of taking certain kinds of messages.
  */
-export class ButtplugClientDevice extends EventEmitter {
-  private _features: Map<number, ButtplugClientDeviceFeature> = new Map();
-
-  /**
-   * Return the name of the device.
-   */
-  public get name(): string {
-    return this._deviceInfo.DeviceName;
-  }
-
-  /**
-   * Return the user set name of the device.
-   */
-  public get displayName(): string | undefined {
-    return this._deviceInfo.DeviceDisplayName;
-  }
-
+export class ButtplugClientDeviceFeature extends EventEmitter {
   /**
    * Return the index of the device.
    */
   public get index(): number {
-    return this._deviceInfo.DeviceIndex;
-  }
-
-  /**
-   * Return the index of the device.
-   */
-  public get messageTimingGap(): number | undefined {
-    return this._deviceInfo.DeviceMessageTimingGap;
-  }
-
-  /**
-   * Return a list of message types the device accepts.
-   */
-  public get features(): Map<number, ButtplugClientDeviceFeature> {
-    return this._features;
-  }
-
-  public static fromMsg(
-    msg: Messages.DeviceInfo,
-    sendClosure: (
-      device: ButtplugClientDevice,
-      msg: Messages.ButtplugDeviceMessage
-    ) => Promise<Messages.ButtplugMessage>
-  ): ButtplugClientDevice {
-    return new ButtplugClientDevice(msg, sendClosure);
+    return this._deviceFeature.FeatureIndex;
   }
 
   /**
@@ -73,16 +32,12 @@ export class ButtplugClientDevice extends EventEmitter {
    * @param allowedMsgs Buttplug messages the device can receive.
    */
   constructor(
-    private _deviceInfo: Messages.DeviceInfo,
+    private _deviceFeature: Messages.DeviceFeature,
     private _sendClosure: (
-      device: ButtplugClientDevice,
       msg: Messages.ButtplugDeviceMessage
     ) => Promise<Messages.ButtplugMessage>
   ) {
     super();
-    for (let feature of _deviceInfo.DeviceFeatures) {
-      this._features.set(feature.FeatureIndex, new ButtplugClientDeviceFeature(feature, (msg) => { return _sendClosure(this, msg); }));
-    }
   }
 
   public async send(
@@ -90,7 +45,7 @@ export class ButtplugClientDevice extends EventEmitter {
   ): Promise<Messages.ButtplugMessage> {
     // Assume we're getting the closure from ButtplugClient, which does all of
     // the index/existence/connection/message checks for us.
-    return await this._sendClosure(this, msg);
+    return await this._sendClosure(msg);
   }
 
   public async sendExpectOk(
@@ -109,16 +64,12 @@ export class ButtplugClientDevice extends EventEmitter {
     }
   }
 
-  getFeaturesWithOutputType(type: Messages.OutputType): ButtplugClientDeviceFeature[] {
-    return Array.from(this._features.values()).filter((x) => x.hasOutputType(type));
+  public hasOutputType(type: Messages.OutputType): boolean {
+    return this._deviceFeature.Output != undefined && this._deviceFeature.Output!.has(type);
   }
 
   setFeatureValuesWithOutput(type: Messages.OutputType, cmd: Messages.OutputCommand) {
-    let outputCmds: Messages.OutputCmd[] = this.getFeaturesWithOutputType(type).map((x) => {
-      return new Messages.OutputCmd(this.index, x.index, cmd);
-    });
-    // TODO This should all be sent as one messages in a packed array.
-    outputCmds.forEach(async (x) => { await this.sendExpectOk(x); })
+    return this.sendExpectOk(new Messages.OutputCmd(this.index, this._deviceFeature.FeatureIndex, cmd));
   }
 
   setFeatureValuesWithOutputType(type: Messages.OutputType, value: number) {
@@ -126,11 +77,7 @@ export class ButtplugClientDevice extends EventEmitter {
   }
 
   public get canVibrate(): boolean {
-    return this.vibrateFeatures.length > 0;
-  }
-
-  public get vibrateFeatures(): ButtplugClientDeviceFeature[] {
-    return this.getFeaturesWithOutputType(Messages.OutputType.Vibrate);
+    return this.hasOutputType(Messages.OutputType.Vibrate);
   }
 
   public async vibrate(speed: number): Promise<void> {
@@ -138,11 +85,7 @@ export class ButtplugClientDevice extends EventEmitter {
   }
 
   public get canOscillate(): boolean {
-    return this.oscillateFeatures.length > 0;
-  }
-
-  public get oscillateFeatures(): ButtplugClientDeviceFeature[] {
-    return this.getFeaturesWithOutputType(Messages.OutputType.Oscillate);
+    return this.hasOutputType(Messages.OutputType.Oscillate);
   }
 
   public async oscillate(speed: number): Promise<void> {
@@ -150,11 +93,7 @@ export class ButtplugClientDevice extends EventEmitter {
   }
 
   public get canRotate(): boolean {
-    return this.rotateFeatures.length > 0;
-  }
-
-  public get rotateFeatures(): ButtplugClientDeviceFeature[] {
-    return this.getFeaturesWithOutputType(Messages.OutputType.Rotate);
+    return this.hasOutputType(Messages.OutputType.Rotate);
   }
 
   public async rotate(speed: number): Promise<void> {
@@ -162,11 +101,7 @@ export class ButtplugClientDevice extends EventEmitter {
   }
 
   public get canConstrict(): boolean {
-    return this.constrictFeatures.length > 0;
-  }
-
-  public get constrictFeatures(): ButtplugClientDeviceFeature[] {
-    return this.getFeaturesWithOutputType(Messages.OutputType.Constrict);
+    return this.hasOutputType(Messages.OutputType.Constrict);
   }
 
   public async constrict(level: number): Promise<void> {
@@ -174,11 +109,7 @@ export class ButtplugClientDevice extends EventEmitter {
   }
 
   public get canSpray(): boolean {
-    return this.sprayFeatures.length > 0;
-  }
-
-  public get sprayFeatures(): ButtplugClientDeviceFeature[] {
-    return this.getFeaturesWithOutputType(Messages.OutputType.Spray);
+    return this.hasOutputType(Messages.OutputType.Spray);
   }
 
   public async spray(level: number): Promise<void> {
@@ -186,11 +117,7 @@ export class ButtplugClientDevice extends EventEmitter {
   }
 
   public get canPosition(): boolean {
-    return this.positionFeatures.length > 0;
-  }
-
-  public get positionFeatures(): ButtplugClientDeviceFeature[] {
-    return this.getFeaturesWithOutputType(Messages.OutputType.Position);
+    return this.hasOutputType(Messages.OutputType.Position);
   }
 
   public async position(level: number): Promise<void> {
@@ -198,11 +125,7 @@ export class ButtplugClientDevice extends EventEmitter {
   }
 
   public get canPositionWithDuration(): boolean {
-    return this.positionFeatures.length > 0;
-  }
-
-  public get positionWithDurationFeatures(): ButtplugClientDeviceFeature[] {
-    return this.getFeaturesWithOutputType(Messages.OutputType.PositionWithDuration);
+    return this.hasOutputType(Messages.OutputType.PositionWithDuration);
   }
 
   public async positionWithDuration(position: number, duration: number): Promise<void> {
@@ -212,25 +135,13 @@ export class ButtplugClientDevice extends EventEmitter {
   }
 
   public get canRotateWithDirection(): boolean {
-    return this.positionFeatures.length > 0;
-  }
-
-  public get rotateWithDirectionFeatures(): ButtplugClientDeviceFeature[] {
-    return this.getFeaturesWithOutputType(Messages.OutputType.PositionWithDuration);
+    return this.hasOutputType(Messages.OutputType.RotateWithDirection);
   }
 
   public async rotateWithDirection(speed: number, clockwise: boolean): Promise<void> {
     let cmd = new Messages.OutputCommand();
     cmd.RotateWithDirection = new Messages.CommandRotateWithDirection(speed, clockwise);
     return this.setFeatureValuesWithOutput(Messages.OutputType.RotateWithDirection, cmd);
-  }
-
-  public async stop(): Promise<void> {
-    await this.sendExpectOk(new Messages.StopDeviceCmd(this.index));
-  }
-
-  public emitDisconnected() {
-    this.emit('deviceremoved');
   }
 
   /*
