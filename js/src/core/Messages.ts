@@ -11,6 +11,7 @@
 
 import { instanceToPlain, Type } from 'class-transformer';
 import 'reflect-metadata';
+import {match, P} from 'ts-pattern';
 
 export const SYSTEM_MESSAGE_ID = 0;
 export const DEFAULT_MESSAGE_ID = 1;
@@ -146,6 +147,7 @@ export class DeviceInput {
 }
 
 export class DeviceFeature {
+  public FeatureIndex: number;
   public Description: string;
   public FeatureType: FeatureType;
   
@@ -153,7 +155,8 @@ export class DeviceFeature {
   public Output?: Map<OutputType, DeviceOutput>;
   public Input?: Map<InputType, DeviceInput>;
 
-  constructor(description: string, feature: FeatureType, output?: Map<OutputType, DeviceOutput>, input?: Map<InputType, DeviceInput>) {
+  constructor(featureIndex: number, description: string, feature: FeatureType, output?: Map<OutputType, DeviceOutput>, input?: Map<InputType, DeviceInput>) {
+    this.FeatureIndex = featureIndex;
     this.Description = description;
     this.FeatureType = feature;
     this.Output = output;
