@@ -33,6 +33,7 @@
     "class-transformer": "^0.5.1",
     "eventemitter3": "^5.0.1",
     "reflect-metadata": "^0.2.2",
+    "ts-pattern": "^5.7.1",
     "ws": "^8.18.3"
   },
   "devDependencies": {
@@ -75,7 +76,7 @@
       "^.+\\.ts$": "ts-jest"
     },
     "testMatch": [
-      "<rootDir>/tests/**/test-*.ts",
+      "<rootDir>/tests/**/test-messages.ts",
       "<rootDir>/web-tests/**/test-*.ts"
     ],
     "coverageDirectory": "./coverage/",

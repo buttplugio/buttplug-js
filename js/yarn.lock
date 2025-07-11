@@ -3440,6 +3440,7 @@ __metadata:
     trash-cli: "npm:^6.0.0"
     ts-jest: "npm:^29.4.0"
     ts-node: "npm:^10.9.2"
+    ts-pattern: "npm:^5.7.1"
     tslib: "npm:^2.8.1"
     typedoc: "npm:^0.28.7"
     typescript: "npm:^5.8.3"
@@ -8725,6 +8726,13 @@ __metadata:
     ts-node-transpile-only: dist/bin-transpile.js
     ts-script: dist/bin-script-deprecated.js
   checksum: 10/a91a15b3c9f76ac462f006fa88b6bfa528130dcfb849dd7ef7f9d640832ab681e235b8a2bc58ecde42f72851cc1d5d4e22c901b0c11aa51001ea1d395074b794
+  languageName: node
+  linkType: hard
+
+"ts-pattern@npm:^5.7.1":
+  version: 5.7.1
+  resolution: "ts-pattern@npm:5.7.1"
+  checksum: 10/010ea63fed84c4961fc8ff45cd65f58f2aec8063953fd32f825ff322c4dff83cd1f7192fd11e3095b0cd48bd6fac0eca4077881e4239775a86955e702b235a49
   languageName: node
   linkType: hard
 
