@@ -23,7 +23,7 @@ export enum FeatureType {
   Rotate = 'Rotate',
   Oscillate = 'Oscillate',
   Constrict = 'Constrict',
-  Inflate = 'Inflate',
+  Spray = 'Spray',
   Position = 'Position',
   PositionWithDuration = 'PositionWithDuration',
   RotateWithDirection = 'RotateWithDirection',
@@ -39,7 +39,7 @@ export enum OutputType {
   Rotate = 'Rotate',
   Oscillate = 'Oscillate',
   Constrict = 'Constrict',
-  Inflate = 'Inflate',
+  Spray = 'Spray',
   Position = 'Position',
   PositionWithDuration = 'PositionWithDuration',
   RotateWithDirection = 'RotateWithDirection',
@@ -289,10 +289,23 @@ export class OutputCommand {
   public Rotate: CommandValue | undefined;
   public Oscillate: CommandValue | undefined;
   public Constrict: CommandValue | undefined;
-  public Inflate: CommandValue | undefined;
+  public Spray: CommandValue | undefined;
   public Position: CommandValue | undefined;
   public PositionWithDuration: CommandPositionWithDuration | undefined;
   public RotateWithDirection: CommandRotateWithDirection | undefined;
+
+  public static fromOutputTypeAndValue(type: OutputType, value: number): OutputCommand {
+    let cmd = new OutputCommand();
+    match(type)
+      .with(OutputType.Vibrate, () => { cmd.Vibrate = new CommandValue(value) })
+      .with(OutputType.Rotate, () => { cmd.Rotate= new CommandValue(value) })
+      .with(OutputType.Oscillate, () => { cmd.Oscillate = new CommandValue(value) })
+      .with(OutputType.Constrict, () => { cmd.Constrict = new CommandValue(value) })
+      .with(OutputType.Spray, () => { cmd.Spray = new CommandValue(value) })
+      .with(OutputType.Position, () => { cmd.Position = new CommandValue(value) })
+      .otherwise(() => { throw "Not a Value OutputType!" });
+    return cmd;
+  }
 }
 
 export class OutputCmd extends ButtplugDeviceMessage {
@@ -305,7 +318,7 @@ export class OutputCmd extends ButtplugDeviceMessage {
     public Id: number = DEFAULT_MESSAGE_ID
   ) {
     super(DeviceIndex, Id)
-  }
+  }  
 }
 
 export class InputCmd extends ButtplugDeviceMessage {
