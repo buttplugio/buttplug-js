@@ -15,76 +15,10 @@ import 'reflect-metadata';
 export const SYSTEM_MESSAGE_ID = 0;
 export const DEFAULT_MESSAGE_ID = 1;
 export const MAX_ID = 4294967295;
-export const MESSAGE_SPEC_VERSION = 3;
+export const MESSAGE_SPEC_VERSION_MAJOR = 4;
+export const MESSAGE_SPEC_VERSION_MINOR = 0;
 
-export class MessageAttributes {
-  public ScalarCmd?: Array<GenericDeviceMessageAttributes>;
-  public RotateCmd?: Array<GenericDeviceMessageAttributes>;
-  public LinearCmd?: Array<GenericDeviceMessageAttributes>;
-  public RawReadCmd?: RawDeviceMessageAttributes;
-  public RawWriteCmd?: RawDeviceMessageAttributes;
-  public RawSubscribeCmd?: RawDeviceMessageAttributes;
-  public SensorReadCmd?: Array<SensorDeviceMessageAttributes>;
-  public SensorSubscribeCmd?: Array<SensorDeviceMessageAttributes>;
-  public StopDeviceCmd: {};
-
-  constructor(data: Partial<MessageAttributes>) {
-    Object.assign(this, data);
-  }
-
-  public update() {
-    this.ScalarCmd?.forEach((x, i) => (x.Index = i));
-    this.RotateCmd?.forEach((x, i) => (x.Index = i));
-    this.LinearCmd?.forEach((x, i) => (x.Index = i));
-    this.SensorReadCmd?.forEach((x, i) => (x.Index = i));
-    this.SensorSubscribeCmd?.forEach((x, i) => (x.Index = i));
-  }
-}
-
-export enum ActuatorType {
-  Unknown = 'Unknown',
-  Vibrate = 'Vibrate',
-  Rotate = 'Rotate',
-  Oscillate = 'Oscillate',
-  Constrict = 'Constrict',
-  Inflate = 'Inflate',
-  Position = 'Position',
-}
-
-export enum SensorType {
-  Unknown = 'Unknown',
-  Battery = 'Battery',
-  RSSI = 'RSSI',
-  Button = 'Button',
-  Pressure = 'Pressure',
-  // Temperature,
-  // Accelerometer,
-  // Gyro,
-}
-
-export class GenericDeviceMessageAttributes {
-  public FeatureDescriptor: string;
-  public ActuatorType: ActuatorType;
-  public StepCount: number;
-  public Index = 0;
-  constructor(data: Partial<GenericDeviceMessageAttributes>) {
-    Object.assign(this, data);
-  }
-}
-
-export class RawDeviceMessageAttributes {
-  constructor(public Endpoints: Array<string>) {}
-}
-
-export class SensorDeviceMessageAttributes {
-  public FeatureDescriptor: string;
-  public SensorType: SensorType;
-  public StepRange: Array<number>;
-  public Index = 0;
-  constructor(data: Partial<GenericDeviceMessageAttributes>) {
-    Object.assign(this, data);
-  }
-}
+// Base message interfaces
 
 export abstract class ButtplugMessage {
   constructor(public Id: number) {}
@@ -119,6 +53,8 @@ export abstract class ButtplugSystemMessage extends ButtplugMessage {
     super(Id);
   }
 }
+
+// Status Messages
 
 export class Ok extends ButtplugSystemMessage {
   static Name = 'Ok';
@@ -160,66 +96,36 @@ export class Error extends ButtplugMessage {
   }
 }
 
-export class DeviceInfo {
-  public DeviceIndex: number;
-  public DeviceName: string;
-  @Type(() => MessageAttributes)
-  public DeviceMessages: MessageAttributes;
-  public DeviceDisplayName?: string;
-  public DeviceMessageTimingGap?: number;
+// Server Info Messages
 
-  constructor(data: Partial<DeviceInfo>) {
-    Object.assign(this, data);
+export class RequestServerInfo extends ButtplugMessage {
+  static Name = 'RequestServerInfo';
+
+  constructor(
+    public ClientName: string,
+    public ProtocolMajorVersion: number = MESSAGE_SPEC_VERSION_MAJOR,
+    public ProtocolMinorVersion: number = MESSAGE_SPEC_VERSION_MINOR,
+    public Id: number = DEFAULT_MESSAGE_ID
+  ) {
+    super(Id);
   }
 }
 
-export class DeviceList extends ButtplugMessage {
-  static Name = 'DeviceList';
+export class ServerInfo extends ButtplugSystemMessage {
+  static Name = 'ServerInfo';
 
-  @Type(() => DeviceInfo)
-  public Devices: DeviceInfo[];
-  public Id: number;
-
-  constructor(devices: DeviceInfo[], id: number = DEFAULT_MESSAGE_ID) {
-    super(id);
-    this.Devices = devices;
-    this.Id = id;
-  }
-
-  public update() {
-    for (const device of this.Devices) {
-      device.DeviceMessages.update();
-    }
-  }
-}
-
-export class DeviceAdded extends ButtplugSystemMessage {
-  static Name = 'DeviceAdded';
-
-  public DeviceIndex: number;
-  public DeviceName: string;
-  @Type(() => MessageAttributes)
-  public DeviceMessages: MessageAttributes;
-  public DeviceDisplayName?: string;
-  public DeviceMessageTimingGap?: number;
-
-  constructor(data: Partial<DeviceAdded>) {
-    super();
-    Object.assign(this, data);
-  }
-
-  public update() {
-    this.DeviceMessages.update();
-  }
-}
-
-export class DeviceRemoved extends ButtplugSystemMessage {
-  static Name = 'DeviceRemoved';
-
-  constructor(public DeviceIndex: number) {
+  constructor(
+    public MaxPingTime: number,
+    public ServerName: string,
+    public ProtocolMajorVersion: number,
+    public ProtocolMinorVersion: number,
+    public Id: number = DEFAULT_MESSAGE_ID
+  ) {
     super();
   }
 }
+
+// Device Enumeration Messages
 
 export class RequestDeviceList extends ButtplugMessage {
   static Name = 'RequestDeviceList';
@@ -253,31 +159,6 @@ export class ScanningFinished extends ButtplugSystemMessage {
   }
 }
 
-export class RequestServerInfo extends ButtplugMessage {
-  static Name = 'RequestServerInfo';
-
-  constructor(
-    public ClientName: string,
-    public MessageVersion: number = 0,
-    public Id: number = DEFAULT_MESSAGE_ID
-  ) {
-    super(Id);
-  }
-}
-
-export class ServerInfo extends ButtplugSystemMessage {
-  static Name = 'ServerInfo';
-
-  constructor(
-    public MessageVersion: number,
-    public MaxPingTime: number,
-    public ServerName: string,
-    public Id: number = DEFAULT_MESSAGE_ID
-  ) {
-    super();
-  }
-}
-
 export class StopDeviceCmd extends ButtplugDeviceMessage {
   static Name = 'StopDeviceCmd';
 
@@ -297,182 +178,125 @@ export class StopAllDevices extends ButtplugMessage {
   }
 }
 
-export class GenericMessageSubcommand {
-  protected constructor(public Index: number) {}
-}
+// Device Information Messages
 
-export class ScalarSubcommand extends GenericMessageSubcommand {
-  constructor(
-    Index: number,
-    public Scalar: number,
-    public ActuatorType: ActuatorType
-  ) {
-    super(Index);
+export class DeviceInfo {
+  public DeviceIndex: number;
+  public DeviceName: string;
+  @Type(() => DeviceFeature)
+  public DeviceFeatures: DeviceFeature[];
+  public DeviceDisplayName?: string;
+  public DeviceMessageTimingGap?: number;
+
+  constructor(data: Partial<DeviceInfo>) {
+    Object.assign(this, data);
   }
 }
 
-export class ScalarCmd extends ButtplugDeviceMessage {
-  static Name = 'ScalarCmd';
+export class DeviceList extends ButtplugMessage {
+  static Name = 'DeviceList';
+
+  @Type(() => DeviceInfo)
+  public Devices: DeviceInfo[];
+  public Id: number;
+
+  constructor(devices: DeviceInfo[], id: number = DEFAULT_MESSAGE_ID) {
+    super(id);
+    this.Devices = devices;
+    this.Id = id;
+  }
+}
+
+// Device Output Commands
+
+export enum OutputType {
+  Unknown = 'Unknown',
+  Vibrate = 'Vibrate',
+  Rotate = 'Rotate',
+  Oscillate = 'Oscillate',
+  Constrict = 'Constrict',
+  Inflate = 'Inflate',
+  Position = 'Position',
+  PositionWithDuration = 'PositionWithDuration',
+  Temperature = 'Temperature',
+  Led = 'Led'
+}
+
+export enum InputType {
+  Unknown = 'Unknown',
+  Battery = 'Battery',
+  RSSI = 'RSSI',
+  Button = 'Button',
+  Pressure = 'Pressure',
+  // Temperature,
+  // Accelerometer,
+  // Gyro,
+}
+
+export enum InputCommandType {
+  Read = 'Read',
+  Subscribe = 'Subscribe'
+}
+
+export class DeviceFeature {
+  public FeatureDescriptor: string;
+  public Outputs: Map<OutputType, DeviceFeatureOutput>;
+  public Inputs: Map<InputType, DeviceFeatureInput>;
+  public Index: number;
+  constructor() {
+  }
+}
+
+export class DeviceFeatureInput {
+  public InputCommandType: InputCommandType[];
+}
+
+export class DeviceFeatureOutput {
+  public Value: number | undefined;
+  public Position: number | undefined;
+  public Duration: number | undefined;
+} 
+
+export class OutputCmd extends ButtplugDeviceMessage {
+  static Name = 'OutputCmd';
 
   constructor(
-    public Scalars: ScalarSubcommand[],
     public DeviceIndex: number = -1,
+    public FeatureIndex: number = -1,
+    public Command: Map<OutputType, DeviceFeatureOutput>,
     public Id: number = DEFAULT_MESSAGE_ID
   ) {
     super(DeviceIndex, Id);
   }
 }
 
-export class RotateSubcommand extends GenericMessageSubcommand {
-  constructor(Index: number, public Speed: number, public Clockwise: boolean) {
-    super(Index);
-  }
-}
+// Device Input Commands
 
-export class RotateCmd extends ButtplugDeviceMessage {
-  static Name = 'RotateCmd';
-
-  public static Create(
-    deviceIndex: number,
-    commands: [number, boolean][]
-  ): RotateCmd {
-    const cmdList: RotateSubcommand[] = new Array<RotateSubcommand>();
-
-    let i = 0;
-    for (const [speed, clockwise] of commands) {
-      cmdList.push(new RotateSubcommand(i, speed, clockwise));
-      ++i;
-    }
-
-    return new RotateCmd(cmdList, deviceIndex);
-  }
-  constructor(
-    public Rotations: RotateSubcommand[],
-    public DeviceIndex: number = -1,
-    public Id: number = DEFAULT_MESSAGE_ID
-  ) {
-    super(DeviceIndex, Id);
-  }
-}
-
-export class VectorSubcommand extends GenericMessageSubcommand {
-  constructor(Index: number, public Position: number, public Duration: number) {
-    super(Index);
-  }
-}
-
-export class LinearCmd extends ButtplugDeviceMessage {
-  static Name = 'LinearCmd';
-
-  public static Create(
-    deviceIndex: number,
-    commands: [number, number][]
-  ): LinearCmd {
-    const cmdList: VectorSubcommand[] = new Array<VectorSubcommand>();
-
-    let i = 0;
-    for (const cmd of commands) {
-      cmdList.push(new VectorSubcommand(i, cmd[0], cmd[1]));
-      ++i;
-    }
-
-    return new LinearCmd(cmdList, deviceIndex);
-  }
-  constructor(
-    public Vectors: VectorSubcommand[],
-    public DeviceIndex: number = -1,
-    public Id: number = DEFAULT_MESSAGE_ID
-  ) {
-    super(DeviceIndex, Id);
-  }
-}
-
-export class SensorReadCmd extends ButtplugDeviceMessage {
-  static Name = 'SensorReadCmd';
+export class InputCmd extends ButtplugDeviceMessage {
+  static Name = 'InputCmd';
 
   constructor(
     public DeviceIndex: number,
-    public SensorIndex: number,
-    public SensorType: SensorType,
+    public FeatureIndex: number,
+    public InputType: InputType,
+    public InputCommandtype: InputCommandType,
     public Id: number = DEFAULT_MESSAGE_ID
   ) {
     super(DeviceIndex, Id);
   }
 }
 
-export class SensorReading extends ButtplugDeviceMessage {
-  static Name = 'SensorReading';
-
-  constructor(
-    public DeviceIndex: number,
-    public SensorIndex: number,
-    public SensorType: SensorType,
-    public Data: number[],
-    public Id: number = DEFAULT_MESSAGE_ID
-  ) {
-    super(DeviceIndex, Id);
-  }
+export class InputValue {
+  Level: number;
 }
 
-export class RawReadCmd extends ButtplugDeviceMessage {
-  static Name = 'RawReadCmd';
+export class InputReading extends ButtplugDeviceMessage {
+  static Name = 'InputReading';
 
   constructor(
     public DeviceIndex: number,
-    public Endpoint: string,
-    public ExpectedLength: number,
-    public Timeout: number,
-    public Id: number = DEFAULT_MESSAGE_ID
-  ) {
-    super(DeviceIndex, Id);
-  }
-}
-
-export class RawWriteCmd extends ButtplugDeviceMessage {
-  static Name = 'RawWriteCmd';
-
-  constructor(
-    public DeviceIndex: number,
-    public Endpoint: string,
-    public Data: Uint8Array,
-    public WriteWithResponse: boolean,
-    public Id: number = DEFAULT_MESSAGE_ID
-  ) {
-    super(DeviceIndex, Id);
-  }
-}
-
-export class RawSubscribeCmd extends ButtplugDeviceMessage {
-  static Name = 'RawSubscribeCmd';
-
-  constructor(
-    public DeviceIndex: number,
-    public Endpoint: string,
-    public Id: number = DEFAULT_MESSAGE_ID
-  ) {
-    super(DeviceIndex, Id);
-  }
-}
-
-export class RawUnsubscribeCmd extends ButtplugDeviceMessage {
-  static Name = 'RawUnsubscribeCmd';
-
-  constructor(
-    public DeviceIndex: number,
-    public Endpoint: string,
-    public Id: number = DEFAULT_MESSAGE_ID
-  ) {
-    super(DeviceIndex, Id);
-  }
-}
-
-export class RawReading extends ButtplugDeviceMessage {
-  static Name = 'RawReading';
-
-  constructor(
-    public DeviceIndex: number,
-    public Endpoint: string,
-    public Data: number[],
+    public FeatureIndex: number,
+    public InputData: Map<InputType, InputValue>,
     public Id: number = DEFAULT_MESSAGE_ID
   ) {
     super(DeviceIndex, Id);
