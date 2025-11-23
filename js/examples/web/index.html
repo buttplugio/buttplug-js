@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <style>
+      button {
+        display: block;
+        margin-bottom: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <button id="async-example-button">Run Async Example</button>
+    <button id="errors-example-button">Run Errors Example</button>
+    <button id="remote-connector-example-button">Run Websocket Connection Example</button>
+    <button id="device-enumeration-example-button">Run Device Enumeration (Embedded) Example</button>
+    <button id="device-control-example-button">Run Device Control (Embedded) Example</button>
+    <script lang="javascript" src="https://cdn.jsdelivr.net/npm/buttplug@3.0.0/dist/web/buttplug.min.js"></script>
+    <script lang="javascript" src="async-example.js"></script>
+    <script lang="javascript" src="errors-example.js"></script>
+    <script lang="javascript" src="device-control-example.js"></script>
+    <script lang="javascript" src="device-enumeration-example.js"></script>
+    <script lang="javascript" src="remote-connector-example.js"></script>
+    <script lang="javascript" defer>      
+      document
+        .getElementById("async-example-button")
+        .addEventListener("click", async() => await runAsyncExample());
+      document
+        .getElementById("errors-example-button")
+        .addEventListener("click", async () => await runErrorExample());
+      document
+        .getElementById("remote-connector-example-button")
+        .addEventListener("click", async () => await runWebsocketConnectionExample());
+      document
+        .getElementById("device-enumeration-example-button")
+        .addEventListener("click", async() => await runDeviceEnumerationExample());        
+      document
+        .getElementById("device-control-example-button")
+        .addEventListener("click", async () => await runDeviceControlExample());        
+    </script>
+  </body>
+</html>
