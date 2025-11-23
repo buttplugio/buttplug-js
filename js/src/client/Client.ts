@@ -119,24 +119,8 @@ export class ButtplugClient extends EventEmitter {
     const leftoverMsgs = this._sorter.ParseIncomingMessages(msgs);
     for (const x of leftoverMsgs) {
       switch (getMessageClassFromMessage(x)) {
-        case Messages.DeviceAdded: {
-          const addedMsg = x as Messages.DeviceAdded;
-          const addedDevice = ButtplugClientDevice.fromMsg(
-            addedMsg,
-            this.sendDeviceMessageClosure
-          );
-          this._devices.set(addedMsg.DeviceIndex, addedDevice);
-          this.emit('deviceadded', addedDevice);
-          break;
-        }
-        case Messages.DeviceRemoved: {
-          const removedMsg = x as Messages.DeviceRemoved;
-          if (this._devices.has(removedMsg.DeviceIndex)) {
-            const removedDevice = this._devices.get(removedMsg.DeviceIndex);
-            removedDevice?.emitDisconnected();
-            this._devices.delete(removedMsg.DeviceIndex);
-            this.emit('deviceremoved', removedDevice);
-          }
+        case Messages.DeviceList: {
+          this.parseDeviceList(x as Messages.DeviceList);
           break;
         }
         case Messages.ScanningFinished:
@@ -152,7 +136,6 @@ export class ButtplugClient extends EventEmitter {
     const msg = await this.sendMessage(
       new Messages.RequestServerInfo(
         this._clientName,
-        Messages.MESSAGE_SPEC_VERSION
       )
     );
     switch (getMessageClassFromMessage(msg)) {
@@ -163,15 +146,7 @@ export class ButtplugClient extends EventEmitter {
         );
         // TODO: maybe store server name, do something with message template version?
         const ping = serverinfo.MaxPingTime;
-        if (serverinfo.MessageVersion < Messages.MESSAGE_SPEC_VERSION) {
-          // Disconnect and throw an exception explaining the version mismatch problem.
-          await this._connector!.disconnect();
-          throw ButtplugError.LogAndError(
-            ButtplugInitError,
-            this._logger,
-            `Server protocol version ${serverinfo.MessageVersion} is older than client protocol version ${Messages.MESSAGE_SPEC_VERSION}. Please update server.`
-          );
-        }
+        // If the server version is lower than the client version, the server will disconnect here.
         if (ping > 0) {
           /*
           this._pingTimer = setInterval(async () => {
@@ -203,13 +178,8 @@ export class ButtplugClient extends EventEmitter {
     return false;
   };
 
-  protected requestDeviceList = async () => {
-    this.checkConnector();
-    this._logger.Debug('ButtplugClient: ReceiveDeviceList called');
-    const deviceList = (await this.sendMessage(
-      new Messages.RequestDeviceList()
-    )) as Messages.DeviceList;
-    deviceList.Devices.forEach((d) => {
+  private parseDeviceList = (list: Messages.DeviceList) => {
+    for (let d of list.Devices) {
       if (!this._devices.has(d.DeviceIndex)) {
         const device = ButtplugClientDevice.fromMsg(
           d,
@@ -221,7 +191,22 @@ export class ButtplugClient extends EventEmitter {
       } else {
         this._logger.Debug(`ButtplugClient: Device already added: ${d}`);
       }
-    });
+    }
+    for (let [index, device] of this._devices) {
+      if (list.Devices.find((d) => d.DeviceIndex == index) == undefined) {
+        this._devices.delete(index);
+        this.emit('deviceremoved', device);
+      }
+    }
+  }
+
+  protected requestDeviceList = async () => {
+    this.checkConnector();
+    this._logger.Debug('ButtplugClient: ReceiveDeviceList called');
+    const deviceList = (await this.sendMessage(
+      new Messages.RequestDeviceList()
+    )) as Messages.DeviceList;
+    this.parseDeviceList(deviceList);
   };
 
   protected shutdownConnection = async () => {

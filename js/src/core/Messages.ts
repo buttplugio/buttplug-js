@@ -38,8 +38,6 @@ export abstract class ButtplugMessage {
       instanceToPlain(this);
     return jsonObj;
   }
-
-  public update() {}
 }
 
 export abstract class ButtplugDeviceMessage extends ButtplugMessage {

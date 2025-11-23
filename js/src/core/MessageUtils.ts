@@ -40,7 +40,6 @@ export function fromJSON(str): Messages.ButtplugMessage[] {
         cls,
         x[type]
       );
-      msg.update();
       msgs.push(msg);
     }
   }
