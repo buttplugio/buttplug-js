@@ -101,8 +101,8 @@ export class RequestServerInfo extends ButtplugMessage {
 
   constructor(
     public ClientName: string,
-    public ProtocolMajorVersion: number = MESSAGE_SPEC_VERSION_MAJOR,
-    public ProtocolMinorVersion: number = MESSAGE_SPEC_VERSION_MINOR,
+    public ProtocolVersionMajor: number = MESSAGE_SPEC_VERSION_MAJOR,
+    public ProtocolVersionMinor: number = MESSAGE_SPEC_VERSION_MINOR,
     public Id: number = DEFAULT_MESSAGE_ID
   ) {
     super(Id);
@@ -115,8 +115,8 @@ export class ServerInfo extends ButtplugSystemMessage {
   constructor(
     public MaxPingTime: number,
     public ServerName: string,
-    public ProtocolMajorVersion: number,
-    public ProtocolMinorVersion: number,
+    public ProtocolVersionMajor: number,
+    public ProtocolVersionMinor: number,
     public Id: number = DEFAULT_MESSAGE_ID
   ) {
     super();
