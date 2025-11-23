@@ -179,7 +179,7 @@ export class ButtplugClient extends EventEmitter {
   };
 
   private parseDeviceList = (list: Messages.DeviceList) => {
-    for (let d of list.Devices) {
+    for (let [_, d] of list.DeviceMap.entries()) {
       if (!this._devices.has(d.DeviceIndex)) {
         const device = ButtplugClientDevice.fromMsg(
           d,
@@ -192,8 +192,8 @@ export class ButtplugClient extends EventEmitter {
         this._logger.Debug(`ButtplugClient: Device already added: ${d}`);
       }
     }
-    for (let [index, device] of this._devices) {
-      if (list.Devices.find((d) => d.DeviceIndex == index) == undefined) {
+    for (let [index, device] of this._devices.entries()) {
+      if (!list.DeviceMap.has(index)) {
         this._devices.delete(index);
         this.emit('deviceremoved', device);
       }

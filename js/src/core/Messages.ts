@@ -181,27 +181,34 @@ export class StopAllDevices extends ButtplugMessage {
 export class DeviceInfo {
   public DeviceIndex: number;
   public DeviceName: string;
-  @Type(() => DeviceFeature)
-  public DeviceFeatures: DeviceFeature[];
+  private DeviceFeatures: {[key: number]: DeviceFeature};
   public DeviceDisplayName?: string;
   public DeviceMessageTimingGap?: number;
 
   constructor(data: Partial<DeviceInfo>) {
     Object.assign(this, data);
   }
+
+  public get DeviceFeatureMap(): Map<number, DeviceFeature> {
+    return new Map<number, DeviceFeature>(Object.entries(this.DeviceFeatures).map(([index, feature]) => [Number(index), feature as DeviceFeature]));
+  }
 }
 
 export class DeviceList extends ButtplugMessage {
   static Name = 'DeviceList';
 
-  @Type(() => DeviceInfo)
-  public Devices: DeviceInfo[];
+  //@Type(() => DeviceInfo)
+  private Devices: {[key: number]: DeviceInfo};
   public Id: number;
 
-  constructor(devices: DeviceInfo[], id: number = DEFAULT_MESSAGE_ID) {
+  constructor(devices: {[key: number]: DeviceInfo}, id: number = DEFAULT_MESSAGE_ID) {
     super(id);
     this.Devices = devices;
     this.Id = id;
+  }
+
+  public get DeviceMap(): Map<number, DeviceInfo> {
+    return new Map<number, DeviceInfo>(Object.entries(this.Devices).map(([index, feature]) => [Number(index), feature as DeviceInfo]));
   }
 }
 
