@@ -14,6 +14,7 @@ import {
   ButtplugMessageError,
 } from '../core/Exceptions';
 import { EventEmitter } from 'eventemitter3';
+import { ButtplugClientDeviceFeature } from './ButtplugClientDeviceFeature';
 
 export class ButtplugCmdValue {
   private constructor(
@@ -43,6 +44,9 @@ export class ButtplugCmdValue {
  * Represents an abstract device, capable of taking certain kinds of messages.
  */
 export class ButtplugClientDevice extends EventEmitter {
+
+  private _features: Map<number, ButtplugClientDeviceFeature>;
+
   /**
    * Return the name of the device.
    */
@@ -69,6 +73,10 @@ export class ButtplugClientDevice extends EventEmitter {
    */
   public get messageTimingGap(): number | undefined {
     return this._deviceInfo.DeviceMessageTimingGap;
+  }
+
+  public get features(): Map<number, ButtplugClientDeviceFeature> {
+    return this._features;
   }
 
 //  /**
@@ -105,6 +113,7 @@ export class ButtplugClientDevice extends EventEmitter {
     ) => Promise<Messages.ButtplugMessage>
   ) {
     super();
+    this._features = new Map(Object.entries(_deviceInfo.DeviceFeatures).map(([index, v]) => [parseInt(index), new ButtplugClientDeviceFeature(_deviceInfo.DeviceIndex, _deviceInfo.DeviceName, v, _sendClosure)]));
   }
 
   public async send(
@@ -143,93 +152,94 @@ export class ButtplugClientDevice extends EventEmitter {
     }
   }
 
-  protected async sendOutputCmd(featureIndex: number, type: Messages.OutputType, command: ButtplugCmdValue): Promise<void> {
-    let newCommand: Messages.DeviceFeatureOutput = {};
-    // Make sure the requested feature is valid
-    this.isOutputValid(featureIndex, type);
-
-    if (command.float !== undefined) {
-      if (type == Messages.OutputType.Position) {
-         
-      } else if (type == Messages.OutputType.PositionWithDuration) {
-  
-      } else {
-        if (command.float < 0 || command.float > 1.0) {
-          throw new ButtplugDeviceError(`Float value ${command.float} is not in the range 0.0 <= x <= 1.0`);
-        }
-        newCommand.Value = Math.ceil(this._deviceInfo.DeviceFeatures[featureIndex.toString()]!.Output[type]!.Value![1] * command.float);
-      }
-    } else {
-      if (type == Messages.OutputType.Position) {
-         
-      } else if (type == Messages.OutputType.PositionWithDuration) {
-  
-      } else {
-        // TODO Check step limits here
-        newCommand.Value = command.steps;
-      }
-    }
-
-    console.log(newCommand);
-    let outCommand = {};
-    outCommand[type.toString()] = newCommand;
-
-    let cmd: Messages.ButtplugMessage = {
-      OutputCmd: {
-        Id: 1,
-        DeviceIndex: this.index, 
-        FeatureIndex: featureIndex, 
-        Command: outCommand 
-      }
-    };
-    await this.sendMsgExpectOk(cmd);
-  }
-
   protected hasOutput(type: Messages.OutputType): boolean {
-    console.log(this._deviceInfo.DeviceFeatures);
-    console.log(Object.entries(this._deviceInfo.DeviceFeatures));
-    return Object.entries(this._deviceInfo.DeviceFeatures).filter(([_, v]) => {
-      console.log(v.Output);
-      if (v.Output !== undefined) {
-        console.log(type.toString());
-        console.log(v.Output.hasOwnProperty(type.toString()))
-        return v.Output.hasOwnProperty(type.toString());
-      } else {
-        return false;
-      }
-    }).length > 0;
+    return this._features.values().filter((f) => f.hasOutput(type)).toArray().length > 0;
   }
 
-  public canVibrate(): boolean {
-    return this.hasOutput(Messages.OutputType.Vibrate);
-  }
-
-  public async vibrate(value: ButtplugCmdValue): Promise<void> {
+  protected async runDeviceValueCmd(type: Messages.OutputType, func: (f: ButtplugClientDeviceFeature) => Promise<void>): Promise<void> {
     let p: Promise<void>[] = [];
-    for (let [index, f] of Object.entries(this._deviceInfo.DeviceFeatures)) {
-      if (f.Output !== undefined && f.Output.hasOwnProperty(Messages.OutputType.Vibrate.toString())) {
-        p.push(this.sendOutputCmd(f.FeatureIndex, Messages.OutputType.Vibrate, value));
+    for (let f of this._features.values()) {
+      if (f.hasOutput(type)) {
+        p.push(func(f));
       }
     }
     if (p.length == 0) {
-      return Promise.reject();
+      return Promise.reject(`No features with output type ${type}`);
     }
     await Promise.all(p);
   }
 
-  public canRotate(): boolean {
+  public hasVibrate(): boolean {
+    return this.hasOutput(Messages.OutputType.Vibrate);
+  }
+
+  public async vibrate(value: ButtplugCmdValue): Promise<void> {
+    this.runDeviceValueCmd(Messages.OutputType.Vibrate, (f) => f.vibrate(value))
+  }
+
+  public hasRotate(): boolean {
     return this.hasOutput(Messages.OutputType.Rotate);
   }
 
   public async rotate(value: ButtplugCmdValue): Promise<void> {
+    this.runDeviceValueCmd(Messages.OutputType.Rotate, (f) => f.rotate(value))
   }
 
-  public canOscillate(): boolean {
+  public hasOscillate(): boolean {
     return this.hasOutput(Messages.OutputType.Oscillate);
   }
 
   public async oscillate(value: ButtplugCmdValue): Promise<void> {
+    this.runDeviceValueCmd(Messages.OutputType.Oscillate, (f) => f.oscillate(value))
   }
+
+  public hasConstrict(): boolean {
+    return this.hasOutput(Messages.OutputType.Constrict);
+  }
+
+  public async constrict(value: ButtplugCmdValue): Promise<void> {
+    this.runDeviceValueCmd(Messages.OutputType.Constrict, (f) => f.constrict(value));
+  }
+
+  public hasTemperature(): boolean {
+    return this.hasOutput(Messages.OutputType.Temperature);
+  }
+
+  public async temperature(value: ButtplugCmdValue): Promise<void> {
+    this.runDeviceValueCmd(Messages.OutputType.Temperature, (f) => f.temperature(value));
+  }
+
+  public hasLed(): boolean {
+    return this.hasOutput(Messages.OutputType.Led);
+  }
+
+  public async led(value: ButtplugCmdValue): Promise<void> {
+    this.runDeviceValueCmd(Messages.OutputType.Led, (f) => f.led(value));
+  }
+
+  public hasInflate(): boolean {
+    return this.hasOutput(Messages.OutputType.Inflate);
+  }
+
+  public async inflate(value: ButtplugCmdValue): Promise<void> {
+    this.runDeviceValueCmd(Messages.OutputType.Inflate, (f) => f.inflate(value));
+  }
+
+  public hasPosition(): boolean {
+    return this.hasOutput(Messages.OutputType.Position);
+  }
+
+  public async position(position: ButtplugCmdValue): Promise<void> {
+    this.runDeviceValueCmd(Messages.OutputType.Position, (f) => f.position(position));
+  }
+
+  public hasPositionWithDuration(): boolean {
+    return this.hasOutput(Messages.OutputType.PositionWithDuration);
+  }
+
+  public async positionWithDuration(position: ButtplugCmdValue, duration: number): Promise<void> {
+    this.runDeviceValueCmd(Messages.OutputType.Position, (f) => f.positionWithDuration(position, duration));
+  }  
 
   public async stop(): Promise<void> {
     await this.sendMsgExpectOk({StopDeviceCmd: { Id: 1, DeviceIndex: this.index}});
