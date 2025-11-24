@@ -10,7 +10,7 @@
 
 import { EventEmitter } from 'eventemitter3';
 import { ButtplugMessage } from '../core/Messages';
-import { fromJSON } from '../core/MessageUtils';
+//import { fromJSON } from '../core/MessageUtils';
 
 export class ButtplugBrowserWebsocketConnector extends EventEmitter {
   protected _ws: WebSocket | undefined;
@@ -66,7 +66,8 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter {
     if (!this.Connected) {
       throw new Error('ButtplugBrowserWebsocketConnector not connected');
     }
-    this._ws!.send('[' + msg.toJSON() + ']');
+    console.log('[' + JSON.stringify(msg) + ']');
+    this._ws!.send('[' + JSON.stringify(msg) + ']');
   }
 
   public initialize = async (): Promise<void> => {
@@ -75,7 +76,8 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter {
 
   protected parseIncomingMessage(event: MessageEvent) {
     if (typeof event.data === 'string') {
-      const msgs = fromJSON(event.data);
+      console.log(event.data);
+      const msgs: ButtplugMessage[] = JSON.parse(event.data);
       this.emit('message', msgs);
     } else if (event.data instanceof Blob) {
       // No-op, we only use text message types.
@@ -83,7 +85,7 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter {
   }
 
   protected onReaderLoad(event: Event) {
-    const msgs = fromJSON((event.target as FileReader).result);
+    const msgs: ButtplugMessage[] = JSON.parse((event.target as FileReader).result as string);
     this.emit('message', msgs);
   }
 }

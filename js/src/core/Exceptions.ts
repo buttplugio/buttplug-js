@@ -23,7 +23,13 @@ export class ButtplugError extends Error {
   }
 
   public get ErrorMessage(): Messages.ButtplugMessage {
-    return new Messages.Error(this.message, this.ErrorClass, this.Id);
+    return {
+      Error: {
+        Id: this.Id,
+        ErrorCode: this.ErrorClass,
+        ErrorMessage: this.message
+      }
+    } 
   }
 
   public static LogAndError<T extends ButtplugError>(

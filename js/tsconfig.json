@@ -1,8 +1,8 @@
 {
   "compilerOptions" : {
     "baseUrl": "./src",
-    "lib": ["es2015", "dom", "es6"],
-    "target": "es6",
+    "lib": ["esnext", "dom"],
+    "target": "esnext",
     "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": true,

@@ -30,9 +30,7 @@
     "web-test-ci": "jest --runInBand web-tests/test-web-library.ts"
   },
   "dependencies": {
-    "class-transformer": "^0.5.1",
     "eventemitter3": "^5.0.1",
-    "reflect-metadata": "^0.2.2",
     "ws": "^8.18.3"
   },
   "devDependencies": {

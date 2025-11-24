@@ -9,8 +9,7 @@
 // tslint:disable:max-classes-per-file
 'use strict';
 
-import { instanceToPlain, Type } from 'class-transformer';
-import 'reflect-metadata';
+import { ButtplugMessageError } from "./Exceptions";
 
 export const SYSTEM_MESSAGE_ID = 0;
 export const DEFAULT_MESSAGE_ID = 1;
@@ -18,56 +17,62 @@ export const MAX_ID = 4294967295;
 export const MESSAGE_SPEC_VERSION_MAJOR = 4;
 export const MESSAGE_SPEC_VERSION_MINOR = 0;
 
+export function testInterfaces() {
+  let serverInfo = '[{"ServerInfo":{"Id":1,"ProtocolVersionMajor":4,"ProtocolVersionMinor":0,"MaxPingTime":0,"ServerName":"Intiface Server"}}]';
+  let deviceList = '[{"DeviceList":{"Id":2,"Devices":{"1":{"DeviceIndex":1,"DeviceName":"Lovense Ridge","DeviceMessageTimingGap":100,"DeviceFeatures":{"0":{"FeatureIndex":0,"FeatureDescription":"","Output":{"Vibrate":{"Value":[0,20]}}},"1":{"FeatureIndex":1,"FeatureDescription":"","Output":{"Rotate":{"Value":[-20,20]}}},"2":{"FeatureIndex":2,"FeatureDescription":"battery Level","Input":{"Battery":{"ValueRange":[[0,100]],"InputCommands":["Read"]}}}}}}}}]';
+
+  let si: ButtplugMessage[] = JSON.parse(serverInfo);
+  console.log(si);
+
+  let dl: ButtplugMessage[] = JSON.parse(deviceList);
+  console.log(dl[0]);
+  console.log(dl[0].DeviceList);
+  console.log(dl[0].DeviceList!.Devices);
+}
+
 // Base message interfaces
+export interface ButtplugMessage {
+  Ok?: Ok;
+  Ping?: Ping;
+  Error?: Error;
+  RequestServerInfo?: RequestServerInfo;
+  ServerInfo?: ServerInfo;
+  RequestDeviceList?: RequestDeviceList;
+  StartScanning?: StartScanning;
+  StopScanning?: StopScanning;
+  StopAllDevices?: StopAllDevices;
+  ScanningFinished?: ScanningFinished;
+  StopDeviceCmd?: StopDeviceCmd;
+  InputCmd?: InputCmd;
+  OutputCmd?: OutputCmd;
+  DeviceList?: DeviceList;
+};
 
-export abstract class ButtplugMessage {
-  constructor(public Id: number) {}
-
-  // tslint:disable-next-line:ban-types
-  public get Type(): Function {
-    return this.constructor;
+export function msgId(msg: ButtplugMessage): number {
+  for (let [_, entry] of Object.entries(msg)) {
+    if (entry != undefined) {
+      return entry.Id;
+    }
   }
-
-  public toJSON(): string {
-    return JSON.stringify(this.toProtocolFormat());
-  }
-
-  public toProtocolFormat(): object {
-    const jsonObj = {};
-    jsonObj[(this.constructor as unknown as { Name: string }).Name] =
-      instanceToPlain(this);
-    return jsonObj;
-  }
+  throw new ButtplugMessageError(`Message ${msg} does not have an ID.`);
 }
 
-export abstract class ButtplugDeviceMessage extends ButtplugMessage {
-  constructor(public DeviceIndex: number, public Id: number) {
-    super(Id);
+export function setMsgId(msg: ButtplugMessage, id: number) {
+  for (let [_, entry] of Object.entries(msg)) {
+    if (entry != undefined) {
+      entry.Id = id;
+      return;
+    }
   }
+  throw new ButtplugMessageError(`Message ${msg} does not have an ID.`);
 }
 
-export abstract class ButtplugSystemMessage extends ButtplugMessage {
-  constructor(public Id: number = SYSTEM_MESSAGE_ID) {
-    super(Id);
-  }
+export interface Ok {
+  Id: number | undefined;
 }
 
-// Status Messages
-
-export class Ok extends ButtplugSystemMessage {
-  static Name = 'Ok';
-
-  constructor(public Id: number = DEFAULT_MESSAGE_ID) {
-    super(Id);
-  }
-}
-
-export class Ping extends ButtplugMessage {
-  static Name = 'Ping';
-
-  constructor(public Id: number = DEFAULT_MESSAGE_ID) {
-    super(Id);
-  }
+export interface Ping {
+  Id: number | undefined;
 }
 
 export enum ErrorClass {
@@ -78,141 +83,66 @@ export enum ErrorClass {
   ERROR_DEVICE,
 }
 
-export class Error extends ButtplugMessage {
-  static Name = 'Error';
-
-  constructor(
-    public ErrorMessage: string,
-    public ErrorCode: ErrorClass = ErrorClass.ERROR_UNKNOWN,
-    public Id: number = DEFAULT_MESSAGE_ID
-  ) {
-    super(Id);
-  }
-
-  get Schemversion() {
-    return 0;
-  }
+export interface Error {
+  ErrorMessage: string;
+  ErrorCode: ErrorClass;
+  Id: number | undefined;
 }
 
-// Server Info Messages
-
-export class RequestServerInfo extends ButtplugMessage {
-  static Name = 'RequestServerInfo';
-
-  constructor(
-    public ClientName: string,
-    public ProtocolVersionMajor: number = MESSAGE_SPEC_VERSION_MAJOR,
-    public ProtocolVersionMinor: number = MESSAGE_SPEC_VERSION_MINOR,
-    public Id: number = DEFAULT_MESSAGE_ID
-  ) {
-    super(Id);
-  }
+export interface RequestDeviceList {
+  Id: number | undefined;
 }
 
-export class ServerInfo extends ButtplugSystemMessage {
-  static Name = 'ServerInfo';
-
-  constructor(
-    public MaxPingTime: number,
-    public ServerName: string,
-    public ProtocolVersionMajor: number,
-    public ProtocolVersionMinor: number,
-    public Id: number = DEFAULT_MESSAGE_ID
-  ) {
-    super();
-  }
+export interface StartScanning {
+  Id: number | undefined;
 }
 
-// Device Enumeration Messages
-
-export class RequestDeviceList extends ButtplugMessage {
-  static Name = 'RequestDeviceList';
-
-  constructor(public Id: number = DEFAULT_MESSAGE_ID) {
-    super(Id);
-  }
+export interface StopScanning {
+  Id: number | undefined;
 }
 
-export class StartScanning extends ButtplugMessage {
-  static Name = 'StartScanning';
-
-  constructor(public Id: number = DEFAULT_MESSAGE_ID) {
-    super(Id);
-  }
+export interface StopAllDevices {
+  Id: number | undefined;
 }
 
-export class StopScanning extends ButtplugMessage {
-  static Name = 'StopScanning';
-
-  constructor(public Id: number = DEFAULT_MESSAGE_ID) {
-    super(Id);
-  }
+export interface ScanningFinished {
+  Id: number | undefined;
 }
 
-export class ScanningFinished extends ButtplugSystemMessage {
-  static Name = 'ScanningFinished';
-
-  constructor() {
-    super();
-  }
+export interface RequestServerInfo {
+  ClientName: string;
+  ProtocolVersionMajor: number;
+  ProtocolVersionMinor: number;
+  Id: number | undefined;
 }
 
-export class StopDeviceCmd extends ButtplugDeviceMessage {
-  static Name = 'StopDeviceCmd';
-
-  constructor(
-    public DeviceIndex: number = -1,
-    public Id: number = DEFAULT_MESSAGE_ID
-  ) {
-    super(DeviceIndex, Id);
-  }
+export interface ServerInfo {
+  MaxPingTime: number;
+  ServerName: string;
+  ProtocolVersionMajor: number;
+  ProtocolVersionMinor: number;
+  Id: number | undefined;
 }
 
-export class StopAllDevices extends ButtplugMessage {
-  static Name = 'StopAllDevices';
-
-  constructor(public Id: number = DEFAULT_MESSAGE_ID) {
-    super(Id);
-  }
+export interface DeviceFeature {
+  FeatureDescriptor: string;
+  Output: {[key: string]: DeviceFeatureOutput};
+  Input: {[key: string]: DeviceFeatureInput};
+  FeatureIndex: number;
 }
 
-// Device Information Messages
-
-export class DeviceInfo {
-  public DeviceIndex: number;
-  public DeviceName: string;
-  private DeviceFeatures: {[key: number]: DeviceFeature};
-  public DeviceDisplayName?: string;
-  public DeviceMessageTimingGap?: number;
-
-  constructor(data: Partial<DeviceInfo>) {
-    Object.assign(this, data);
-  }
-
-  public get DeviceFeatureMap(): Map<number, DeviceFeature> {
-    return new Map<number, DeviceFeature>(Object.entries(this.DeviceFeatures).map(([index, feature]) => [Number(index), feature as DeviceFeature]));
-  }
+export interface DeviceInfo {
+  DeviceIndex: number;
+  DeviceName: string;
+  DeviceFeatures: {[key: number]: DeviceFeature};
+  DeviceDisplayName?: string;
+  DeviceMessageTimingGap?: number;
 }
 
-export class DeviceList extends ButtplugMessage {
-  static Name = 'DeviceList';
-
-  //@Type(() => DeviceInfo)
-  private Devices: {[key: number]: DeviceInfo};
-  public Id: number;
-
-  constructor(devices: {[key: number]: DeviceInfo}, id: number = DEFAULT_MESSAGE_ID) {
-    super(id);
-    this.Devices = devices;
-    this.Id = id;
-  }
-
-  public get DeviceMap(): Map<number, DeviceInfo> {
-    return new Map<number, DeviceInfo>(Object.entries(this.Devices).map(([index, feature]) => [Number(index), feature as DeviceInfo]));
-  }
+export interface DeviceList {
+  Devices: {[key: number]: DeviceInfo};
+  Id: number | undefined;
 }
-
-// Device Output Commands
 
 export enum OutputType {
   Unknown = 'Unknown',
@@ -243,67 +173,45 @@ export enum InputCommandType {
   Subscribe = 'Subscribe'
 }
 
-export class DeviceFeature {
-  public FeatureDescriptor: string;
-  public Outputs: Map<OutputType, DeviceFeatureOutput>;
-  public Inputs: Map<InputType, DeviceFeatureInput>;
-  public Index: number;
-  constructor() {
-  }
+export interface DeviceFeatureInput {
+  InputCommandType: InputCommandType[];
 }
 
-export class DeviceFeatureInput {
-  public InputCommandType: InputCommandType[];
-}
-
-export class DeviceFeatureOutput {
-  public Value: number | undefined;
-  public Position: number | undefined;
-  public Duration: number | undefined;
+export interface DeviceFeatureOutput {
+  Value?: number;
+  Position?: number;
+  Duration?: number;
 } 
 
-export class OutputCmd extends ButtplugDeviceMessage {
-  static Name = 'OutputCmd';
-
-  constructor(
-    public DeviceIndex: number = -1,
-    public FeatureIndex: number = -1,
-    public Command: Map<OutputType, DeviceFeatureOutput>,
-    public Id: number = DEFAULT_MESSAGE_ID
-  ) {
-    super(DeviceIndex, Id);
-  }
+export interface OutputCmd  {
+  DeviceIndex: number;
+  FeatureIndex: number;
+  Command: {[key: string]: DeviceFeatureOutput};
+  Id: number | undefined;
 }
 
 // Device Input Commands
 
-export class InputCmd extends ButtplugDeviceMessage {
-  static Name = 'InputCmd';
-
-  constructor(
-    public DeviceIndex: number,
-    public FeatureIndex: number,
-    public InputType: InputType,
-    public InputCommandtype: InputCommandType,
-    public Id: number = DEFAULT_MESSAGE_ID
-  ) {
-    super(DeviceIndex, Id);
-  }
+export interface InputCmd {
+  DeviceIndex: number;
+  FeatureIndex: number;
+  InputType: InputType;
+  InputCommandtype: InputCommandType;
+  Id: number | undefined;
 }
 
-export class InputValue {
+export interface InputValue {
   Level: number;
 }
 
-export class InputReading extends ButtplugDeviceMessage {
-  static Name = 'InputReading';
+export interface InputReading {
+  DeviceIndex: number;
+  FeatureIndex: number;
+  InputData: {[key: string]: InputValue};
+  Id: number | undefined;
+}
 
-  constructor(
-    public DeviceIndex: number,
-    public FeatureIndex: number,
-    public InputData: Map<InputType, InputValue>,
-    public Id: number = DEFAULT_MESSAGE_ID
-  ) {
-    super(DeviceIndex, Id);
-  }
+export interface StopDeviceCmd {
+  Id: number | undefined;
+  DeviceIndex: number;
 }

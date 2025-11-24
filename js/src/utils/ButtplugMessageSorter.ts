@@ -25,7 +25,7 @@ export class ButtplugMessageSorter {
     msg: Messages.ButtplugMessage
   ): Promise<Messages.ButtplugMessage> {
     if (this._useCounter) {
-      msg.Id = this._counter;
+      Messages.setMsgId(msg, this._counter);
       // Always increment last, otherwise we might lose sync
       this._counter += 1;
     }
@@ -37,7 +37,7 @@ export class ButtplugMessageSorter {
         rej = reject;
       }
     );
-    this._waitingMsgs.set(msg.Id, [res, rej]);
+    this._waitingMsgs.set(Messages.msgId(msg), [res, rej]);
     return msgPromise;
   }
 
@@ -46,12 +46,13 @@ export class ButtplugMessageSorter {
   ): Messages.ButtplugMessage[] {
     const noMatch: Messages.ButtplugMessage[] = [];
     for (const x of msgs) {
-      if (x.Id !== Messages.SYSTEM_MESSAGE_ID && this._waitingMsgs.has(x.Id)) {
-        const [res, rej] = this._waitingMsgs.get(x.Id)!;
+      let id = Messages.msgId(x);
+      if (id !== Messages.SYSTEM_MESSAGE_ID && this._waitingMsgs.has(id)) {
+        const [res, rej] = this._waitingMsgs.get(id)!;
         // If we've gotten back an error, reject the related promise using a
         // ButtplugException derived type.
-        if (x.Type === Messages.Error) {
-          rej(ButtplugError.FromError(x as Messages.Error));
+        if (x.Error !== undefined) {
+          rej(ButtplugError.FromError(x.Error!));
           continue;
         }
         res(x);
