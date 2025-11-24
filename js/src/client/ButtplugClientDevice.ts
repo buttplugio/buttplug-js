@@ -122,8 +122,9 @@ export class ButtplugClientDevice extends EventEmitter {
   }
 
   private async scalarCommandBuilder(
-    speed: number | number[],
-    actuator: Messages.ActuatorType
+    value: number | number[],
+    actuator: Messages.ActuatorType,
+    index?: number
   ) {
     const scalarAttrs = this.messageAttributes.ScalarCmd?.filter(
       (x) => x.ActuatorType === actuator
@@ -134,18 +135,27 @@ export class ButtplugClientDevice extends EventEmitter {
       );
     }
     const cmds: Messages.ScalarSubcommand[] = [];
-    if (typeof speed === 'number') {
-      scalarAttrs.forEach((x) =>
-        cmds.push(new Messages.ScalarSubcommand(x.Index, speed, actuator))
-      );
-    } else if (Array.isArray(speed)) {
-      if (speed.length > scalarAttrs.length) {
+    if (typeof value === 'number') {
+      if (index !== undefined) {
+        if (index >= scalarAttrs.length) {
+          throw new ButtplugDeviceError(
+            `Index ${index} out of range for device ${this.name} with ${scalarAttrs.length} ${actuator} actuators`
+          );
+        }
+        scalarAttrs.forEach((x) => //push to all actuators when a single unindexed value is sent
+          cmds.push(new Messages.ScalarSubcommand(x.Index, value, actuator))
+        );
+      } else {
+        cmds.push(new Messages.ScalarSubcommand(index ?? 0, value, actuator))
+      }
+    } else if (Array.isArray(value)) {
+      if (value.length > scalarAttrs.length) {
         throw new ButtplugDeviceError(
-          `${speed.length} commands send to a device with ${scalarAttrs.length} vibrators`
+          `${value.length} commands send to a device with ${scalarAttrs.length} vibrators`
         );
       }
       scalarAttrs.forEach((x, i) => {
-        cmds.push(new Messages.ScalarSubcommand(x.Index, speed[i], actuator));
+        cmds.push(new Messages.ScalarSubcommand(x.Index, value[i], actuator));
       });
     } else {
       throw new ButtplugDeviceError(
@@ -163,8 +173,8 @@ export class ButtplugClientDevice extends EventEmitter {
     );
   }
 
-  public async vibrate(speed: number | number[]): Promise<void> {
-    await this.scalarCommandBuilder(speed, Messages.ActuatorType.Vibrate);
+  public async vibrate(speed: number | number[], index?: number): Promise<void> {
+    await this.scalarCommandBuilder(speed, Messages.ActuatorType.Vibrate, index);
   }
 
   public get oscillateAttributes(): Messages.GenericDeviceMessageAttributes[] {
@@ -175,8 +185,8 @@ export class ButtplugClientDevice extends EventEmitter {
     );
   }
 
-  public async oscillate(speed: number | number[]): Promise<void> {
-    await this.scalarCommandBuilder(speed, Messages.ActuatorType.Oscillate);
+  public async oscillate(speed: number | number[], index?: number): Promise<void> {
+    await this.scalarCommandBuilder(speed, Messages.ActuatorType.Oscillate, index);
   }
 
   public get rotateAttributes(): Messages.GenericDeviceMessageAttributes[] {
