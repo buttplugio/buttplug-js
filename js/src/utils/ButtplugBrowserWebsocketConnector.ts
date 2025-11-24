@@ -66,7 +66,6 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter {
     if (!this.Connected) {
       throw new Error('ButtplugBrowserWebsocketConnector not connected');
     }
-    console.log('[' + JSON.stringify(msg) + ']');
     this._ws!.send('[' + JSON.stringify(msg) + ']');
   }
 
@@ -76,7 +75,6 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter {
 
   protected parseIncomingMessage(event: MessageEvent) {
     if (typeof event.data === 'string') {
-      console.log(event.data);
       const msgs: ButtplugMessage[] = JSON.parse(event.data);
       this.emit('message', msgs);
     } else if (event.data instanceof Blob) {

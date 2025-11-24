@@ -116,7 +116,6 @@ export class ButtplugClient extends EventEmitter {
         }
       }
     );
-    console.log(msg);
     if (msg.ServerInfo !== undefined) {
       const serverinfo = msg as Messages.ServerInfo;
       this._logger.Info(
@@ -155,15 +154,12 @@ export class ButtplugClient extends EventEmitter {
   }
 
   private parseDeviceList = (list: Messages.DeviceList) => {
-    console.log(list);
     for (let [_, d] of Object.entries(list.Devices)) {
-      console.log(d);
       if (!this._devices.has(d.DeviceIndex)) {
         const device = ButtplugClientDevice.fromMsg(
           d,
           this.sendMessageClosure
         );
-        console.log(device);
         this._logger.Debug(`ButtplugClient: Adding Device: ${device}`);
         this._devices.set(d.DeviceIndex, device);
         this.emit('deviceadded', device);

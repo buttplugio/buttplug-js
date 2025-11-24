@@ -17,19 +17,6 @@ export const MAX_ID = 4294967295;
 export const MESSAGE_SPEC_VERSION_MAJOR = 4;
 export const MESSAGE_SPEC_VERSION_MINOR = 0;
 
-export function testInterfaces() {
-  let serverInfo = '[{"ServerInfo":{"Id":1,"ProtocolVersionMajor":4,"ProtocolVersionMinor":0,"MaxPingTime":0,"ServerName":"Intiface Server"}}]';
-  let deviceList = '[{"DeviceList":{"Id":2,"Devices":{"1":{"DeviceIndex":1,"DeviceName":"Lovense Ridge","DeviceMessageTimingGap":100,"DeviceFeatures":{"0":{"FeatureIndex":0,"FeatureDescription":"","Output":{"Vibrate":{"Value":[0,20]}}},"1":{"FeatureIndex":1,"FeatureDescription":"","Output":{"Rotate":{"Value":[-20,20]}}},"2":{"FeatureIndex":2,"FeatureDescription":"battery Level","Input":{"Battery":{"ValueRange":[[0,100]],"InputCommands":["Read"]}}}}}}}}]';
-
-  let si: ButtplugMessage[] = JSON.parse(serverInfo);
-  console.log(si);
-
-  let dl: ButtplugMessage[] = JSON.parse(deviceList);
-  console.log(dl[0]);
-  console.log(dl[0].DeviceList);
-  console.log(dl[0].DeviceList!.Devices);
-}
-
 // Base message interfaces
 export interface ButtplugMessage {
   Ok?: Ok;
