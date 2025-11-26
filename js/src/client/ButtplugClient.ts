@@ -64,6 +64,7 @@ export class ButtplugClient extends EventEmitter {
 
   public disconnect = async () => {
     this._logger.Debug('ButtplugClient: Disconnect called');
+    this._devices.clear();
     this.checkConnector();
     await this.shutdownConnection();
     await this._connector!.disconnect();
