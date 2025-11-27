@@ -141,6 +141,7 @@ export enum OutputType {
   Position = 'Position',
   PositionWithDuration = 'PositionWithDuration',
   Temperature = 'Temperature',
+  Spray = 'Spray',
   Led = 'Led'
 }
 
