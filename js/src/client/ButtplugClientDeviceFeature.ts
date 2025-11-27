@@ -1,6 +1,6 @@
 import { ButtplugDeviceError, ButtplugError } from "../core/Exceptions";
 import * as Messages from "../core/Messages";
-import { ButtplugCmdValue } from "./ButtplugClientDevice";
+import { DeviceOutputCommand } from "./ButtplugClientDeviceCommand";
 
 export class ButtplugClientDeviceFeature {
 
@@ -42,32 +42,39 @@ export class ButtplugClientDeviceFeature {
     }
   }
 
-  protected async sendOutputCmd(type: Messages.OutputType, command: ButtplugCmdValue, duration: number = -1): Promise<void> {
+  protected async sendOutputCmd(command: DeviceOutputCommand): Promise<void> {
     let newCommand: Messages.DeviceFeatureOutput = {};
     // Make sure the requested feature is valid
-    this.isOutputValid(type);
+    this.isOutputValid(command.outputType);
 
-    if (command.float !== undefined) {
-      if (command.float < 0 || command.float > 1.0) {
-        throw new ButtplugDeviceError(`Float value ${command.float} is not in the range 0.0 <= x <= 1.0`);
-      }      
-      if (type == Messages.OutputType.Position) {
-        newCommand.Position = Math.ceil(this._feature.Output[type]!.Position![1] * command.float);
-      } else if (type == Messages.OutputType.PositionWithDuration) {
-        newCommand.Position = Math.ceil(this._feature.Output[type]!.Position![1] * command.float);
-        newCommand.Duration = duration;
-      } else {
-        newCommand.Value = Math.ceil(this._feature.Output[type]!.Value![1] * command.float);
+    let type = command.outputType;
+
+    if (type == Messages.OutputType.Position || type == Messages.OutputType.PositionWithDuration) {
+      if (command.position === undefined) {
+        throw new ButtplugDeviceError("Position or PositionWithDuration requires position defined");
       }
-    } else {
-      if (type == Messages.OutputType.Position) {
-        newCommand.Position = command.steps;
-      } else if (type == Messages.OutputType.PositionWithDuration) {
-        newCommand.Position = command.steps;
-        newCommand.Duration = duration;
+      let p = command.position;
+      if (p.percent === undefined) {
+        newCommand.Position = command.position!.steps;
       } else {
+        newCommand.Position = Math.ceil(this._feature.Output[type]!.Position![1] * p.percent);
+      }
+      if (type == Messages.OutputType.PositionWithDuration) {
+        if (command.duration === undefined) {
+          throw new ButtplugDeviceError("PositionWithDuration requires duration defined");
+        }
+        newCommand.Duration = command.duration;
+      }    
+    } else {
+      if (command.value === undefined) {
+        throw new ButtplugDeviceError(`${type} requires value defined`);
+      }
+      let p = command.value;
+      if (p.percent === undefined) {
         // TODO Check step limits here
-        newCommand.Value = command.steps;
+        newCommand.Position = command.value.steps;
+      } else {
+        newCommand.Position = Math.ceil(this._feature.Output[type]!.Value![1] * p.percent);
       }
     }
 
@@ -92,82 +99,10 @@ export class ButtplugClientDeviceFeature {
     return false;
   }
 
-  protected async runDeviceValueCmd(type: Messages.OutputType, value: ButtplugCmdValue, duration: number = -1): Promise<void> {
-    if (this._feature.Output !== undefined && this._feature.Output.hasOwnProperty(type.toString())) {
-      return this.sendOutputCmd(type, value, duration);
+  public async runOutput(cmd: DeviceOutputCommand): Promise<void> {
+    if (this._feature.Output !== undefined && this._feature.Output.hasOwnProperty(cmd.outputType.toString())) {
+      return this.sendOutputCmd(cmd);
     }
-    return Promise.reject();
-  }
-
-  public hasVibrate(): boolean {
-    return this.hasOutput(Messages.OutputType.Vibrate);
-  }
-
-  public async vibrate(value: ButtplugCmdValue): Promise<void> {
-    this.runDeviceValueCmd(Messages.OutputType.Vibrate, value);
-  }
-
-  public hasRotate(): boolean {
-    return this.hasOutput(Messages.OutputType.Rotate);
-  }
-
-  public async rotate(value: ButtplugCmdValue): Promise<void> {
-    this.runDeviceValueCmd(Messages.OutputType.Rotate, value);
-  }
-
-  public hasOscillate(): boolean {
-    return this.hasOutput(Messages.OutputType.Oscillate);
-  }
-
-  public async oscillate(value: ButtplugCmdValue): Promise<void> {
-    this.runDeviceValueCmd(Messages.OutputType.Oscillate, value);
-  }
-
-  public hasConstrict(): boolean {
-    return this.hasOutput(Messages.OutputType.Constrict);
-  }
-
-  public async constrict(value: ButtplugCmdValue): Promise<void> {
-    this.runDeviceValueCmd(Messages.OutputType.Constrict, value);
-  }
-
-  public hasTemperature(): boolean {
-    return this.hasOutput(Messages.OutputType.Temperature);
-  }
-
-  public async temperature(value: ButtplugCmdValue): Promise<void> {
-    this.runDeviceValueCmd(Messages.OutputType.Temperature, value);
-  }
-
-  public hasLed(): boolean {
-    return this.hasOutput(Messages.OutputType.Led);
-  }
-
-  public async led(value: ButtplugCmdValue): Promise<void> {
-    this.runDeviceValueCmd(Messages.OutputType.Led, value);
-  }
-
-  public hasInflate(): boolean {
-    return this.hasOutput(Messages.OutputType.Inflate);
-  }
-
-  public async inflate(value: ButtplugCmdValue): Promise<void> {
-    this.runDeviceValueCmd(Messages.OutputType.Inflate, value);
-  }
-
-  public hasPosition(): boolean {
-    return this.hasOutput(Messages.OutputType.Position);
-  }
-
-  public async position(position: ButtplugCmdValue): Promise<void> {
-    this.runDeviceValueCmd(Messages.OutputType.Position, position);
-  }
-
-  public hasPositionWithDuration(): boolean {
-    return this.hasOutput(Messages.OutputType.PositionWithDuration);
-  }
-
-  public async positionWithDuration(position: ButtplugCmdValue, duration: number): Promise<void> {
-    this.runDeviceValueCmd(Messages.OutputType.PositionWithDuration, position, duration);
+    throw new ButtplugDeviceError(`Output type ${cmd.outputType} not supported by feature.`);
   }
 }

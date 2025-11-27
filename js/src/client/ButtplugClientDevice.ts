@@ -15,30 +15,7 @@ import {
 } from '../core/Exceptions';
 import { EventEmitter } from 'eventemitter3';
 import { ButtplugClientDeviceFeature } from './ButtplugClientDeviceFeature';
-
-export class ButtplugCmdValue {
-  private constructor(
-    private _steps: number | undefined,
-    private _float: number | undefined
-  ) {
-  }
-
-  public get steps(): number | undefined {
-    return this._steps;
-  }
-
-  public get float(): number | undefined {
-    return this._float;
-  }
-
-  public static fromSteps(steps: number): ButtplugCmdValue {
-    return new ButtplugCmdValue(steps, undefined);
-  }
-
-  public static fromFloat(float: number): ButtplugCmdValue {
-    return new ButtplugCmdValue(undefined, float);
-  }
-}
+import { DeviceOutputCommand } from './ButtplugClientDeviceCommand';
 
 /**
  * Represents an abstract device, capable of taking certain kinds of messages.
@@ -152,94 +129,22 @@ export class ButtplugClientDevice extends EventEmitter {
     }
   }
 
-  protected hasOutput(type: Messages.OutputType): boolean {
+  public hasOutput(type: Messages.OutputType): boolean {
     return this._features.values().filter((f) => f.hasOutput(type)).toArray().length > 0;
   }
 
-  protected async runDeviceValueCmd(type: Messages.OutputType, func: (f: ButtplugClientDeviceFeature) => Promise<void>): Promise<void> {
+  public async runOutput(cmd: DeviceOutputCommand): Promise<void> {
     let p: Promise<void>[] = [];
     for (let f of this._features.values()) {
-      if (f.hasOutput(type)) {
-        p.push(func(f));
+      if (f.hasOutput(cmd.outputType)) {
+        p.push(f.runOutput(cmd));
       }
     }
     if (p.length == 0) {
-      return Promise.reject(`No features with output type ${type}`);
+      return Promise.reject(`No features with output type ${cmd.outputType}`);
     }
     await Promise.all(p);
   }
-
-  public hasVibrate(): boolean {
-    return this.hasOutput(Messages.OutputType.Vibrate);
-  }
-
-  public async vibrate(value: ButtplugCmdValue): Promise<void> {
-    this.runDeviceValueCmd(Messages.OutputType.Vibrate, (f) => f.vibrate(value))
-  }
-
-  public hasRotate(): boolean {
-    return this.hasOutput(Messages.OutputType.Rotate);
-  }
-
-  public async rotate(value: ButtplugCmdValue): Promise<void> {
-    this.runDeviceValueCmd(Messages.OutputType.Rotate, (f) => f.rotate(value))
-  }
-
-  public hasOscillate(): boolean {
-    return this.hasOutput(Messages.OutputType.Oscillate);
-  }
-
-  public async oscillate(value: ButtplugCmdValue): Promise<void> {
-    this.runDeviceValueCmd(Messages.OutputType.Oscillate, (f) => f.oscillate(value))
-  }
-
-  public hasConstrict(): boolean {
-    return this.hasOutput(Messages.OutputType.Constrict);
-  }
-
-  public async constrict(value: ButtplugCmdValue): Promise<void> {
-    this.runDeviceValueCmd(Messages.OutputType.Constrict, (f) => f.constrict(value));
-  }
-
-  public hasTemperature(): boolean {
-    return this.hasOutput(Messages.OutputType.Temperature);
-  }
-
-  public async temperature(value: ButtplugCmdValue): Promise<void> {
-    this.runDeviceValueCmd(Messages.OutputType.Temperature, (f) => f.temperature(value));
-  }
-
-  public hasLed(): boolean {
-    return this.hasOutput(Messages.OutputType.Led);
-  }
-
-  public async led(value: ButtplugCmdValue): Promise<void> {
-    this.runDeviceValueCmd(Messages.OutputType.Led, (f) => f.led(value));
-  }
-
-  public hasInflate(): boolean {
-    return this.hasOutput(Messages.OutputType.Inflate);
-  }
-
-  public async inflate(value: ButtplugCmdValue): Promise<void> {
-    this.runDeviceValueCmd(Messages.OutputType.Inflate, (f) => f.inflate(value));
-  }
-
-  public hasPosition(): boolean {
-    return this.hasOutput(Messages.OutputType.Position);
-  }
-
-  public async position(position: ButtplugCmdValue): Promise<void> {
-    this.runDeviceValueCmd(Messages.OutputType.Position, (f) => f.position(position));
-  }
-
-  public hasPositionWithDuration(): boolean {
-    return this.hasOutput(Messages.OutputType.PositionWithDuration);
-  }
-
-  public async positionWithDuration(position: ButtplugCmdValue, duration: number): Promise<void> {
-    this.runDeviceValueCmd(Messages.OutputType.Position, (f) => f.positionWithDuration(position, duration));
-  }  
 
   public async stop(): Promise<void> {
     await this.sendMsgExpectOk({StopDeviceCmd: { Id: 1, DeviceIndex: this.index}});
