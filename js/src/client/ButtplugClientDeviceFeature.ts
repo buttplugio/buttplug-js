@@ -72,9 +72,9 @@ export class ButtplugClientDeviceFeature {
       let p = command.value;
       if (p.percent === undefined) {
         // TODO Check step limits here
-        newCommand.Position = command.value.steps;
+        newCommand.Value = command.value.steps;
       } else {
-        newCommand.Position = Math.ceil(this._feature.Output[type]!.Value![1] * p.percent);
+        newCommand.Value = Math.ceil(this._feature.Output[type]!.Value![1] * p.percent);
       }
     }
 
