@@ -20,7 +20,7 @@ class PercentOrSteps {
   }
 
   public static createPercent(p: number): PercentOrSteps {
-    if (p < 0.0000001 || p > 1.0) {
+    if (p < 0 || p > 1.0) {
       throw new ButtplugDeviceError(`Percent value ${p} is not in the range 0.0 <= x <= 1.0`);
     }      
 
