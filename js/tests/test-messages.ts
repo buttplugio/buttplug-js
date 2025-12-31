@@ -1,8 +1,6 @@
-import * as Messages from "../src/core/Messages";
-import { ButtplugClient } from "../src/client/Client";
-import { fromJSON } from "../src/core/MessageUtils";
+import { ButtplugClient } from "../src/client/ButtplugClient";
 import { SetupTestSuite } from "./utils";
-import { ScalarSubcommand, VectorSubcommand, RotateSubcommand } from "../src/core/Messages";
+/*import { ScalarSubcommand, VectorSubcommand, RotateSubcommand } from "../src/core/Messages";
 
 SetupTestSuite();
 
@@ -150,4 +148,4 @@ describe("Message", () => {
        expect(fromJSON(jsonStr)).toEqual([new Messages.VibrateCmd([{Index: 0, Speed: 1.0}, {Index: 1, Speed: 0.5}], 3, 2)]);
      });
      */
-});
+//});

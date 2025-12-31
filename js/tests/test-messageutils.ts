@@ -1,6 +1,6 @@
 import { SetupTestSuite } from "./utils";
-import {ButtplugClientDevice, RotateCmd, LinearCmd, VectorSubcommand,
-        RotateSubcommand, StopDeviceCmd, ButtplugDeviceMessage, ButtplugDeviceError } from "../src/index";
+//import {ButtplugClientDevice, RotateCmd, LinearCmd, VectorSubcommand,
+ //I ha       RotateSubcommand, StopDeviceCmd, ButtplugDeviceMessage, ButtplugDeviceError } from "../src/index";
 
 SetupTestSuite();
 /*
