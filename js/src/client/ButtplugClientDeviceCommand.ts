@@ -33,8 +33,7 @@ class PercentOrSteps {
 export class DeviceOutputCommand {
   public constructor( 
     private _outputType: OutputType,
-    private _value?: PercentOrSteps,
-    private _position?: PercentOrSteps,
+    private _value: PercentOrSteps,
     private _duration?: number,
   )
   {}
@@ -45,10 +44,6 @@ export class DeviceOutputCommand {
 
   public get value() {
     return this._value;
-  }
-
-  public get position() {
-    return this._position;
   }
 
   public get duration() {
@@ -62,31 +57,21 @@ export class DeviceOutputValueConstructor {
   {}
 
   public steps(steps: number): DeviceOutputCommand {
-    return new DeviceOutputCommand(this._outputType, PercentOrSteps.createSteps(steps), undefined, undefined);
+    return new DeviceOutputCommand(this._outputType, PercentOrSteps.createSteps(steps), undefined);
   }
 
   public percent(percent: number): DeviceOutputCommand {
-    return new DeviceOutputCommand(this._outputType, PercentOrSteps.createPercent(percent), undefined, undefined);
-  }
-}
-
-export class DeviceOutputPositionConstructor {
-  public steps(steps: number): DeviceOutputCommand {
-    return new DeviceOutputCommand(OutputType.Position, undefined, PercentOrSteps.createSteps(steps), undefined);
-  }
-
-  public percent(percent: number): DeviceOutputCommand {
-    return new DeviceOutputCommand(OutputType.PositionWithDuration, undefined, PercentOrSteps.createPercent(percent), undefined);
+    return new DeviceOutputCommand(this._outputType, PercentOrSteps.createPercent(percent), undefined);
   }
 }
 
 export class DeviceOutputPositionWithDurationConstructor {
   public steps(steps: number, duration: number): DeviceOutputCommand {
-    return new DeviceOutputCommand(OutputType.Position, undefined, PercentOrSteps.createSteps(steps), duration);
+    return new DeviceOutputCommand(OutputType.Position, PercentOrSteps.createSteps(steps), duration);
   }
 
   public percent(percent: number, duration: number): DeviceOutputCommand {
-    return new DeviceOutputCommand(OutputType.PositionWithDuration, undefined, PercentOrSteps.createPercent(percent), duration);
+    return new DeviceOutputCommand(OutputType.PositionWithDuration, PercentOrSteps.createPercent(percent), duration);
   }
 }
 
@@ -118,7 +103,7 @@ export class DeviceOutput {
     return new DeviceOutputValueConstructor(OutputType.Spray);
   }
   public static get Position() {
-    return new DeviceOutputPositionConstructor();
+    return new DeviceOutputValueConstructor(OutputType.Position);
   }
   public static get PositionWithDuration() {
     return new DeviceOutputPositionWithDurationConstructor();

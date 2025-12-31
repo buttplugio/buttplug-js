@@ -31,6 +31,7 @@ export interface ButtplugMessage {
   ScanningFinished?: ScanningFinished;
   StopDeviceCmd?: StopDeviceCmd;
   InputCmd?: InputCmd;
+  InputReading?: InputReading;
   OutputCmd?: OutputCmd;
   DeviceList?: DeviceList;
 };
@@ -158,16 +159,17 @@ export enum InputType {
 
 export enum InputCommandType {
   Read = 'Read',
-  Subscribe = 'Subscribe'
+  Subscribe = 'Subscribe',
+  Unsubscribe = 'Unsubscribe'
 }
 
 export interface DeviceFeatureInput {
-  InputCommandType: InputCommandType[];
+  Value: number[];
+  Command: InputCommandType[];
 }
 
 export interface DeviceFeatureOutput {
-  Value?: number;
-  Position?: number;
+  Value: number;
   Duration?: number;
 } 
 
@@ -183,19 +185,19 @@ export interface OutputCmd  {
 export interface InputCmd {
   DeviceIndex: number;
   FeatureIndex: number;
-  InputType: InputType;
-  InputCommandtype: InputCommandType;
+  Type: InputType;
+  Command: InputCommandType;
   Id: number | undefined;
 }
 
 export interface InputValue {
-  Level: number;
+  Value: number;
 }
 
 export interface InputReading {
   DeviceIndex: number;
   FeatureIndex: number;
-  InputData: {[key: string]: InputValue};
+  Reading: {[key: string]: InputValue};
   Id: number | undefined;
 }
 

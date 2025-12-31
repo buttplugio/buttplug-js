@@ -133,6 +133,10 @@ export class ButtplugClientDevice extends EventEmitter {
     return this._features.values().filter((f) => f.hasOutput(type)).toArray().length > 0;
   }
 
+  public hasInput(type: Messages.InputType): boolean {
+    return this._features.values().filter((f) => f.hasInput(type)).toArray().length > 0;
+  }
+
   public async runOutput(cmd: DeviceOutputCommand): Promise<void> {
     let p: Promise<void>[] = [];
     for (let f of this._features.values()) {
@@ -148,6 +152,24 @@ export class ButtplugClientDevice extends EventEmitter {
 
   public async stop(): Promise<void> {
     await this.sendMsgExpectOk({StopDeviceCmd: { Id: 1, DeviceIndex: this.index}});
+  }
+
+  public async battery(): Promise<number> {
+    let p: Promise<void>[] = [];
+    for (let f of this._features.values()) {
+      if (f.hasInput(Messages.InputType.Battery)) {
+        // Right now, we only have one battery per device, so assume the first one we find is it.
+        let response = await f.runInput(Messages.InputType.Battery, Messages.InputCommandType.Read);
+        if (response === undefined) {
+          throw new ButtplugMessageError("Got incorrect message back.");
+        }
+        if (response.Reading[Messages.InputType.Battery] === undefined) {
+          throw new ButtplugMessageError("Got reading with no Battery info.");
+        }
+        return response.Reading[Messages.InputType.Battery].Value;
+      }
+    }
+    throw new ButtplugDeviceError(`No battery present on this device.`);
   }
 
   public emitDisconnected() {
