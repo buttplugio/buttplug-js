@@ -71,7 +71,7 @@ export class DeviceOutputPositionWithDurationConstructor {
   }
 
   public percent(percent: number, duration: number): DeviceOutputCommand {
-    return new DeviceOutputCommand(OutputType.PositionWithDuration, PercentOrSteps.createPercent(percent), duration);
+    return new DeviceOutputCommand(OutputType.HwPositionWithDuration, PercentOrSteps.createPercent(percent), duration);
   }
 }
 

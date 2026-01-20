@@ -51,7 +51,7 @@ export class ButtplugClientDeviceFeature {
 
     let type = command.outputType;
     let duration: undefined | number = undefined;
-    if (type == Messages.OutputType.PositionWithDuration) {
+    if (type == Messages.OutputType.HwPositionWithDuration) {
       if (command.duration === undefined) {
         throw new ButtplugDeviceError("PositionWithDuration requires duration defined");
       }

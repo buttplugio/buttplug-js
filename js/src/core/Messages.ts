@@ -9,7 +9,7 @@
 // tslint:disable:max-classes-per-file
 'use strict';
 
-import { ButtplugMessageError } from "./Exceptions";
+import { ButtplugMessageError } from './Exceptions';
 
 export const SYSTEM_MESSAGE_ID = 0;
 export const DEFAULT_MESSAGE_ID = 1;
@@ -27,14 +27,13 @@ export interface ButtplugMessage {
   RequestDeviceList?: RequestDeviceList;
   StartScanning?: StartScanning;
   StopScanning?: StopScanning;
-  StopAllDevices?: StopAllDevices;
   ScanningFinished?: ScanningFinished;
-  StopDeviceCmd?: StopDeviceCmd;
+  StopCmd?: StopCmd;
   InputCmd?: InputCmd;
   InputReading?: InputReading;
   OutputCmd?: OutputCmd;
   DeviceList?: DeviceList;
-};
+}
 
 export function msgId(msg: ButtplugMessage): number {
   for (let [_, entry] of Object.entries(msg)) {
@@ -114,21 +113,21 @@ export interface ServerInfo {
 
 export interface DeviceFeature {
   FeatureDescriptor: string;
-  Output: {[key: string]: DeviceFeatureOutput};
-  Input: {[key: string]: DeviceFeatureInput};
+  Output: { [key: string]: DeviceFeatureOutput };
+  Input: { [key: string]: DeviceFeatureInput };
   FeatureIndex: number;
 }
 
 export interface DeviceInfo {
   DeviceIndex: number;
   DeviceName: string;
-  DeviceFeatures: {[key: number]: DeviceFeature};
+  DeviceFeatures: { [key: number]: DeviceFeature };
   DeviceDisplayName?: string;
   DeviceMessageTimingGap?: number;
 }
 
 export interface DeviceList {
-  Devices: {[key: number]: DeviceInfo};
+  Devices: { [key: number]: DeviceInfo };
   Id: number | undefined;
 }
 
@@ -140,10 +139,10 @@ export enum OutputType {
   Constrict = 'Constrict',
   Inflate = 'Inflate',
   Position = 'Position',
-  PositionWithDuration = 'PositionWithDuration',
+  HwPositionWithDuration = 'HwPositionWithDuration',
   Temperature = 'Temperature',
   Spray = 'Spray',
-  Led = 'Led'
+  Led = 'Led',
 }
 
 export enum InputType {
@@ -160,7 +159,7 @@ export enum InputType {
 export enum InputCommandType {
   Read = 'Read',
   Subscribe = 'Subscribe',
-  Unsubscribe = 'Unsubscribe'
+  Unsubscribe = 'Unsubscribe',
 }
 
 export interface DeviceFeatureInput {
@@ -171,12 +170,12 @@ export interface DeviceFeatureInput {
 export interface DeviceFeatureOutput {
   Value: number;
   Duration?: number;
-} 
+}
 
-export interface OutputCmd  {
+export interface OutputCmd {
   DeviceIndex: number;
   FeatureIndex: number;
-  Command: {[key: string]: DeviceFeatureOutput};
+  Command: { [key: string]: DeviceFeatureOutput };
   Id: number | undefined;
 }
 
@@ -197,11 +196,14 @@ export interface InputValue {
 export interface InputReading {
   DeviceIndex: number;
   FeatureIndex: number;
-  Reading: {[key: string]: InputValue};
+  Reading: { [key: string]: InputValue };
   Id: number | undefined;
 }
 
-export interface StopDeviceCmd {
+export interface StopCmd {
   Id: number | undefined;
-  DeviceIndex: number;
+  DeviceIndex: number | undefined;
+  FeatureIndex: number | undefined;
+  Inputs: boolean | undefined;
+  Outputs: boolean | undefined;
 }
