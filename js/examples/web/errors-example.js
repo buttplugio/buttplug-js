@@ -1,62 +1,110 @@
-// This example assumes Buttplug is brought in as a root namespace, via
-// inclusion by a script tag, i.e.
+// Buttplug Web - Error Handling Example
 //
-// <script lang="javascript" 
-//   src="https://cdn.jsdelivr.net/npm/buttplug@3.0.0/dist/web/buttplug.min.js">
-// </script>
+// This example demonstrates the different error types in Buttplug
+// and how to handle them. This is a reference for error handling patterns.
 //
-// If you're trying to load this, change the version to the latest available.
+// Include Buttplug via CDN:
+// <script src="https://cdn.jsdelivr.net/npm/buttplug@4.0.0/dist/web/buttplug.min.js"></script>
 
- async function runErrorExample () {
+// All Buttplug errors inherit from ButtplugError.
+// Here's the hierarchy:
+//
+// ButtplugError (base class)
+// +-- ButtplugClientConnectorException - Connection/transport issues
+// +-- ButtplugInitError                - Client/server version mismatch
+// +-- ButtplugDeviceError              - Device communication errors
+// +-- ButtplugMessageError             - Invalid message format/content
+// +-- ButtplugPingError                - Server ping timeout
 
-  async function ThrowError() {
-    // All async functions in Buttplug are written to return exceptions as a
-    // promise rejection, meaning they work as both promise chains and
-    // async/await.
-    throw new ButtplugDeviceError("This is an exception", 0);
+function handleButtplugError(e) {
+  if (e instanceof Buttplug.ButtplugClientConnectorException) {
+    // The connector couldn't establish or maintain connection.
+    // Causes: server not running, wrong address, network issues,
+    // SSL/TLS problems, connection dropped.
+    console.log(`[Connector Error] ${e.message}`);
+    console.log("Check that the server is running and accessible.");
+  } else if (e instanceof Buttplug.ButtplugInitError) {
+    // Client and server couldn't agree on protocol version.
+    // Usually means you need to upgrade client or server.
+    console.log(`[Init/Handshake Error] ${e.message}`);
+    console.log("Client and server versions may be incompatible.");
+  } else if (e instanceof Buttplug.ButtplugDeviceError) {
+    // Something went wrong communicating with a device.
+    // Causes: device disconnected, invalid command for device,
+    // device rejected command, hardware error.
+    console.log(`[Device Error] ${e.message}`);
+    console.log("The device may have disconnected or doesn't support this command.");
+  } else if (e instanceof Buttplug.ButtplugMessageError) {
+    // The message sent was invalid.
+    // Causes: malformed message, missing required fields,
+    // invalid parameter values.
+    console.log(`[Message Error] ${e.message}`);
+    console.log("This usually indicates a bug in the client library or application.");
+  } else if (e instanceof Buttplug.ButtplugPingError) {
+    // Server didn't receive ping in time, connection terminated.
+    // The ping system ensures dead connections are detected.
+    console.log(`[Ping Error] ${e.message}`);
+    console.log("Connection was lost due to ping timeout.");
+  } else if (e instanceof Buttplug.ButtplugError) {
+    // Unknown or future error type
+    console.log(`[Buttplug Error] ${e.message}`);
+  } else if (e instanceof Error) {
+    // Non-Buttplug error
+    console.log(`[System Error] ${e.message}`);
+  } else {
+    console.log(`[Unknown Error] ${e}`);
+  }
+}
+
+async function runErrorExample() {
+  console.log("Error Handling Example");
+  console.log("======================\n");
+
+  // Example 1: Connection error (server not running on wrong port)
+  console.log("1. Attempting to connect to non-existent server...");
+  const client1 = new Buttplug.ButtplugClient("Error Example");
+  try {
+    const badConnector = new Buttplug.ButtplugBrowserWebsocketClientConnector("ws://127.0.0.1:99999");
+    await client1.connect(badConnector);
+  } catch (e) {
+    handleButtplugError(e);
   }
 
+  // Example 2: Demonstrating promise-based error handling
+  console.log("\n2. Demonstrating promise-based error handling...");
+  const client2 = new Buttplug.ButtplugClient("Promise Error Example");
+  const badConnector2 = new Buttplug.ButtplugBrowserWebsocketClientConnector("ws://127.0.0.1:99998");
 
-  async function ButtplugErrors() {
-    const invalid_options = new Buttplug.ButtplugBrowserWebsocketClientConnector("ws://notadomain.local");
-    const client = new Buttplug.ButtplugClient("Error Example Client");
-    //invalid_options.Address = "this is not a websocket address";
+  // You can also catch errors using .catch() on promises
+  await client2
+    .connect(badConnector2)
+    .then(() => {
+      console.log("Connected (unexpected!)");
+    })
+    .catch((e) => {
+      console.log("Caught error using .catch():");
+      handleButtplugError(e);
+    });
 
-    // In javascript, there are 2 ways we can call functions and catch exceptions.
-    // There's promise chain catching.
-    client
-      .connect(invalid_options)
-      .then(() => {
-        console.log("If you got here, shut down Intiface Central or whatever other server you're running :P");
-      })
-      .catch(e => {
-        console.log("Using .catch()");
-        console.log(e);
-      });
-    // There's also try/catch, which is handy for async.
-    try {
-      await client.connect(invalid_options);
-    } catch (e) {
-      // However, we don't have the type of the exception we get back, so it could
-      // be a system exception or something else not buttplug related. If you're
-      // interested in Buttplug related exceptions, it's best to check for them
-      // here.
-      console.log(`${e}`);
-      if (e instanceof Buttplug.ButtplugError) {
-        console.log("this is a buttplug error");
-        // This will make sure we're doing something specific to Buttplug.
-        if (e instanceof Buttplug.ButtplugClientConnectorError) {
-          console.log("This is a connector error");
-          // And possibly even more specific.
-        }
-      } else {
-        console.log("Was another type of error");
+  // Example 3: Using try/catch with async/await
+  console.log("\n3. Using try/catch with async/await...");
+  const client3 = new Buttplug.ButtplugClient("Async Error Example");
+  const invalidConnector = new Buttplug.ButtplugBrowserWebsocketClientConnector("ws://notadomain.local");
+
+  try {
+    await client3.connect(invalidConnector);
+  } catch (e) {
+    // Check for specific Buttplug error types
+    console.log(`Error: ${e}`);
+    if (e instanceof Buttplug.ButtplugError) {
+      console.log("This is a Buttplug-specific error.");
+      if (e instanceof Buttplug.ButtplugClientConnectorException) {
+        console.log("Specifically, it's a connector error.");
       }
+    } else {
+      console.log("This is a non-Buttplug error (system/network level).");
     }
-    // However, as all async javascript functions also return promises, so we can
-    // treat the call as a promise rejection.
-    //ThrowError().catch((e) => console.log("Got an exception back from our promise!"));
   }
 
-  ButtplugErrors();
+  console.log("\nError handling example complete.");
 }

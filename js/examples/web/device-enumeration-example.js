@@ -1,31 +1,49 @@
-// This example assumes Buttplug is brought in as a root namespace, via
-// inclusion by a script tag, i.e.
+// Buttplug Web - Device Enumeration Example
 //
-// <script lang="javascript" 
-//   src="https://cdn.jsdelivr.net/npm/buttplug@3.0.0/dist/web/buttplug.min.js">
-// </script>
+// This example demonstrates how to scan for devices and handle
+// device connection/disconnection events.
 //
-// If you're trying to load this, change the version to the latest available.
+// Include Buttplug via CDN:
+// <script src="https://cdn.jsdelivr.net/npm/buttplug@4.0.0/dist/web/buttplug.min.js"></script>
 
 async function runDeviceEnumerationExample() {
+  const client = new Buttplug.ButtplugClient("Device Enumeration Example");
 
-  let client = new Buttplug.ButtplugClient("Device Enumeration Example");
+  // Set up event handlers BEFORE connecting.
+  // This ensures we don't miss any events, including devices
+  // that are already connected to the server.
 
-  // Set up our DeviceAdded/DeviceRemoved event handlers before connecting. If
-  // devices are already held to the server when we connect to it, we'll get
-  // "deviceadded" events on successful connect.
   client.addListener("deviceadded", (device) => {
-    console.log(`Device Connected: ${device.name}`);
-    console.log("Client currently knows about these devices:");
-    client.devices.forEach((device) => console.log(`- ${device.name}`));
-  });
-  client
-    .addListener("deviceremoved", (device) => console.log(`Device Removed: ${device.name}`));
+    console.log(`Device connected: ${device.name}`);
 
-  // Usual embedded connector setup.
+    // The client maintains a Map of all known devices.
+    // In v4, client.devices is a Map<number, ButtplugClientDevice>
+    console.log("Currently connected devices:");
+    for (const [index, dev] of client.devices) {
+      console.log(`  - ${dev.name} (Index: ${index})`);
+    }
+  });
+
+  client.addListener("deviceremoved", (device) => {
+    console.log(`Device disconnected: ${device.name}`);
+  });
+
+  client.addListener("scanningfinished", () => {
+    console.log("Scanning finished.");
+  });
+
+  // Connect to the server (requires Intiface Central running)
   const connector = new Buttplug.ButtplugBrowserWebsocketClientConnector("ws://localhost:12345");
+
+  console.log("Connecting...");
   await client.connect(connector);
-  
-  // Now that everything is set up, we can scan.
+  console.log("Connected!");
+
+  // Start scanning for devices.
+  // Devices will be announced via the 'deviceadded' event.
+  console.log("Starting device scan... Turn on your devices now!");
   await client.startScanning();
-};
+
+  // Note: In a real application, you would call client.stopScanning()
+  // when you're done scanning, and client.disconnect() when finished.
+}

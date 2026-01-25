@@ -11,15 +11,21 @@
     <button id="async-example-button">Run Async Example</button>
     <button id="errors-example-button">Run Errors Example</button>
     <button id="remote-connector-example-button">Run Websocket Connection Example</button>
-    <button id="device-enumeration-example-button">Run Device Enumeration (Embedded) Example</button>
-    <button id="device-control-example-button">Run Device Control (Embedded) Example</button>
-    <script lang="javascript" src="https://cdn.jsdelivr.net/npm/buttplug@3.0.0/dist/web/buttplug.min.js"></script>
+    <button id="device-enumeration-example-button">Run Device Enumeration Example</button>
+    <button id="device-control-example-button">Run Device Control Example</button>
+    <button id="device-info-example-button">Run Device Info Example</button>
+    <button id="logging-example-button">Run Logging Example</button>
+    <button id="ping-timeout-example-button">Run Ping Timeout Example</button>
+    <script lang="javascript" src="https://cdn.jsdelivr.net/npm/buttplug@4.0.0/dist/web/buttplug.min.js"></script>
     <script lang="javascript" src="async-example.js"></script>
     <script lang="javascript" src="errors-example.js"></script>
     <script lang="javascript" src="device-control-example.js"></script>
     <script lang="javascript" src="device-enumeration-example.js"></script>
+    <script lang="javascript" src="device-info-example.js"></script>
+    <script lang="javascript" src="logging.js"></script>
+    <script lang="javascript" src="ping-timeout-example.js"></script>
     <script lang="javascript" src="remote-connector-example.js"></script>
-    <script lang="javascript" defer>      
+    <script lang="javascript" defer>
       document
         .getElementById("async-example-button")
         .addEventListener("click", async() => await runAsyncExample());
@@ -31,10 +37,19 @@
         .addEventListener("click", async () => await runWebsocketConnectionExample());
       document
         .getElementById("device-enumeration-example-button")
-        .addEventListener("click", async() => await runDeviceEnumerationExample());        
+        .addEventListener("click", async() => await runDeviceEnumerationExample());
       document
         .getElementById("device-control-example-button")
-        .addEventListener("click", async () => await runDeviceControlExample());        
+        .addEventListener("click", async () => await runDeviceControlExample());
+      document
+        .getElementById("device-info-example-button")
+        .addEventListener("click", async () => await runDeviceInfoExample());
+      document
+        .getElementById("logging-example-button")
+        .addEventListener("click", async () => await runLoggingExample());
+      document
+        .getElementById("ping-timeout-example-button")
+        .addEventListener("click", async () => await runPingTimeoutExample());
     </script>
   </body>
 </html>

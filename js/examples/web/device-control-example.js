@@ -1,85 +1,87 @@
-// This example assumes Buttplug is brought in as a root namespace, via
-// inclusion by a script tag, i.e.
+// Buttplug Web - Device Control Example
 //
-// <script lang="javascript" 
-//   src="https://cdn.jsdelivr.net/npm/buttplug@3.0.0/dist/web/buttplug.min.js">
-// </script>
+// This example demonstrates how to send commands to devices,
+// query device capabilities, and use the v4 command builder API.
 //
-// If you're trying to load this, change the version to the latest available.
+// Include Buttplug via CDN:
+// <script src="https://cdn.jsdelivr.net/npm/buttplug@4.0.0/dist/web/buttplug.min.js"></script>
 
 async function runDeviceControlExample() {
-  // Usual embedded connector setup.
   const connector = new Buttplug.ButtplugBrowserWebsocketClientConnector("ws://127.0.0.1:12345");
   const client = new Buttplug.ButtplugClient("Device Control Example");
-  // Set up our DeviceAdded/DeviceRemoved event handlers before connecting. If
-  // devices are already held to the server when we connect to it, we'll get
-  // "deviceadded" events on successful connect.
+
+  // Set up event handlers before connecting
   client.addListener("deviceadded", async (device) => {
-    console.log(`Device Connected: ${device.name}`);
-    console.log("Client currently knows about these devices:");
-    client.devices.forEach((device) => console.log(`- ${device.name}`));
+    console.log(`Device connected: ${device.name}`);
 
-    // In Javascript, allowedMessages is a map, so we'll need to iterate its
-    // properties.
+    // Show currently connected devices (client.devices is a Map in v4)
+    console.log("Currently connected devices:");
+    for (const [index, dev] of client.devices) {
+      console.log(`  - ${dev.name} (Index: ${index})`);
+    }
 
-    console.log("Sending commands");
-
-    // If we aren't working with a toy that vibrates, just return at this point.
-    if (device.vibrateAttributes.length == 0) {
+    // Check if device supports vibration using v4 API
+    if (!device.hasOutput(Buttplug.OutputType.Vibrate)) {
+      console.log("Device does not support vibration, skipping control demo.");
       return;
     }
 
-    // Now that we know the message types for our connected device, and that our
-    // device handles vibration, we can send a message over!
-    //
-    // There's a couple of ways to send this message.
+    console.log("Device supports vibration. Sending commands...");
 
-    // We can use the convenience functions on ButtplugClientDevice to
-    // send the message. This version sets all of the motors on a
-    // vibrating device to the same speed.
     try {
-      await device.vibrate(1.0);
+      // Use the v4 command builder API
+      console.log("Vibrating at 100%...");
+      await device.runOutput(Buttplug.DeviceOutput.Vibrate.percent(1.0));
+
+      await new Promise(r => setTimeout(r, 1000));
+
+      console.log("Vibrating at 50%...");
+      await device.runOutput(Buttplug.DeviceOutput.Vibrate.percent(0.5));
+
+      await new Promise(r => setTimeout(r, 1000));
+
+      console.log("Stopping device...");
+      await device.stop();
     } catch (e) {
-      console.log(e);
+      console.log("Error sending command:", e);
       if (e instanceof Buttplug.ButtplugDeviceError) {
-        console.log("got a device error!");
+        console.log("This is a device error - device may have disconnected.");
       }
     }
-    await new Promise(r => setTimeout(r, 1000));
-    await device.stop();
 
-    const batteryAttrs = device.messageAttributes.SensorReadCmd?.filter(
-      (x) => x.SensorType === Buttplug.SensorType.Battery
-    );
-
-    if (device.hasBattery) {
-      console.log(`${device.name} Battery Level: ${await device.battery()}`);
+    // Check for battery support using v4 API
+    if (device.hasInput(Buttplug.InputType.Battery)) {
+      try {
+        const level = await device.battery();
+        console.log(`${device.name} Battery Level: ${(level * 100).toFixed(0)}%`);
+      } catch (e) {
+        console.log("Could not read battery level:", e);
+      }
     }
 
-    // If we wanted to just set one motor on and the other off, we could
-    // try this version that uses an array. It'll throw an exception if
-    // the array isn't the same size as the number of motors available as
-    // denoted by FeatureCount, though.
-    //
-    // You can get the vibrator count using the following code, though we
-    // know it's 2 so we don't really have to use it.
-    //
-    // This vibrateType variable is just used to keep us under 80 
-    // characters for the dev guide, so don't feel that you have to reassign 
-    // types like this. I'm just trying to make it so you don't have to
-    // horizontally scroll in the manual. :)
+    // Demonstrate other output types if available
+    if (device.hasOutput(Buttplug.OutputType.Rotate)) {
+      console.log("Device supports rotation. Rotating at 50%...");
+      await device.runOutput(Buttplug.DeviceOutput.Rotate.percent(0.5));
+      await new Promise(r => setTimeout(r, 1000));
+      await device.stop();
+    }
 
-    /*
-    var vibratorCount =
-      device.AllowedMessages[vibrateType].FeatureCount;
-    await testClientDevice.SendVibrateCmd(new [] { 1.0, 0.0 });
-    */
+    if (device.hasOutput(Buttplug.OutputType.Position)) {
+      console.log("Device supports position control. Moving...");
+      await device.runOutput(Buttplug.DeviceOutput.PositionWithDuration.percent(1.0, 500));
+      await new Promise(r => setTimeout(r, 1000));
+      await device.runOutput(Buttplug.DeviceOutput.PositionWithDuration.percent(0.0, 500));
+    }
   });
-  client
-    .addListener("deviceremoved", (device) => console.log(`Device Removed: ${device.name}`));
-  
-  await client.connect(connector);
 
-  // Now that everything is set up, we can scan.
+  client.addListener("deviceremoved", (device) => {
+    console.log(`Device disconnected: ${device.name}`);
+  });
+
+  console.log("Connecting...");
+  await client.connect(connector);
+  console.log("Connected! Scanning for devices...");
+
   await client.startScanning();
-};
+}

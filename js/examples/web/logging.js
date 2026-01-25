@@ -1,29 +1,42 @@
-// This example assumes Buttplug is brought in as a root namespace, via
-// inclusion by a script tag, i.e.
+// Buttplug Web - Logging Example
 //
-// <script lang="javascript" 
-//   src="https://cdn.jsdelivr.net/npm/buttplug@3.0.0/dist/web/buttplug.min.js">
-// </script>
+// This example demonstrates basic connection with console logging.
 //
-// If you're trying to load this, change the version to the latest available.
+// Include Buttplug via CDN:
+// <script src="https://cdn.jsdelivr.net/npm/buttplug@4.0.0/dist/web/buttplug.min.js"></script>
 
-async function runEmbeddedConnectionExample () {
-  // With the console logger active, the following code should cause log
-  // messages to show up in the dev console.
+async function runLoggingExample() {
+  console.log("Logging Example - Connecting with verbose logging");
 
-  let connector = new Buttplug.ButtplugBrowserWebsocketClientConnector("ws://127.0.0.1:12345");
-  let client = new Buttplug.ButtplugClient("Developer Guide Example");
+  const connector = new Buttplug.ButtplugBrowserWebsocketClientConnector("ws://127.0.0.1:12345");
+  const client = new Buttplug.ButtplugClient("Logging Example");
+
+  // Set up all event listeners to log activity
+  client.addListener("deviceadded", (device) => {
+    console.log(`[LOG] Device added: ${device.name}`);
+  });
+
+  client.addListener("deviceremoved", (device) => {
+    console.log(`[LOG] Device removed: ${device.name}`);
+  });
+
+  client.addListener("scanningfinished", () => {
+    console.log("[LOG] Scanning finished");
+  });
+
+  client.addListener("disconnect", () => {
+    console.log("[LOG] Disconnected from server");
+  });
+
   try {
+    console.log("[LOG] Connecting...");
     await client.connect(connector);
-  }
-  catch (ex)
-  {
-    console.log(ex);
-  }
+    console.log("[LOG] Connected successfully!");
 
-  // We're connected, yay!
-  console.log("Connected!");
-
-  // And now we disconnect as usual
-  await client.disconnect();
-};
+    // Disconnect after brief demo
+    await client.disconnect();
+    console.log("[LOG] Disconnected.");
+  } catch (ex) {
+    console.log("[LOG] Connection error:", ex);
+  }
+}
