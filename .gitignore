@@ -1,6 +1,6 @@
 **/.yarn/**
 .yarn
-**/.node_modules/**
+**/*node_modules/**
 **/dist/**
 **/pkg/**
 **/target/**

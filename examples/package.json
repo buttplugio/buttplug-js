@@ -1,0 +1,25 @@
+{
+  "name": "buttplug-examples",
+  "version": "1.0.0",
+  "description": "Example code for the Buttplug TypeScript/JavaScript library",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "connection": "npx ts-node --esm connection-example.ts",
+    "device-enumeration": "npx ts-node --esm device-enumeration-example.ts",
+    "device-control": "npx ts-node --esm device-control-example.ts",
+    "device-info": "npx ts-node --esm device-info-example.ts",
+    "async": "npx ts-node --esm async-example.ts",
+    "errors": "npx ts-node --esm errors-example.ts",
+    "remote-connector": "npx ts-node --esm remote-connector-example.ts",
+    "application": "npx ts-node --esm application-example.ts"
+  },
+  "dependencies": {
+    "buttplug": "file:../js"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.0"
+  }
+}
