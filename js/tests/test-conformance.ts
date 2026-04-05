@@ -14,10 +14,11 @@
  * This is analogous to how the Rust buttplug_client tests use
  * build_conformance_server + ButtplugInProcessClientConnector.
  *
- * NOTE: Using the Rust conformance harness binary directly is not viable here
- * because the harness sends RequestServerInfo as a side-effect (directly to the
- * server), which collides with ButtplugClient also sending it on connect —
- * the server rejects the second one with HandshakeAlreadyHappened.
+ * Two test suites:
+ *   1. Mock-server tests — minimal in-process WebSocket server, fast, no deps
+ *   2. Harness-binary tests — real ButtplugServer via the Rust conformance
+ *      binary with --client-driven mode. Skipped if binary not found.
+ *      Build with: cargo build -p buttplug-client-conformance-test
  *
  * Known failures (as of writing):
  *   ping_required — ping timer in ButtplugClient.ts is commented out (~line 134)
@@ -28,6 +29,9 @@
  *   array index — the interface definition is wrong.
  */
 
+import { spawn } from "child_process";
+import * as fs from "fs";
+import * as path from "path";
 import WebSocket, { WebSocketServer } from "ws";
 import {
   ButtplugClient,
@@ -37,6 +41,16 @@ import {
 import * as Messages from "../src/core/Messages";
 
 const PORT_BASE = 14000;
+const HARNESS_PORT_BASE = 15000;
+
+// Rust harness binary — sibling repo's debug build, overridable via env var
+const HARNESS_BINARY =
+  process.env.BUTTPLUG_CONFORMANCE_BINARY ??
+  path.resolve(
+    __dirname,
+    "../../../buttplug/target/debug/buttplug-client-conformance-test"
+  );
+const HARNESS_AVAILABLE = fs.existsSync(HARNESS_BINARY);
 
 jest.setTimeout(15000);
 
@@ -393,5 +407,178 @@ describe("ButtplugClient Conformance Tests", () => {
     expect(client2.connected).toBe(true);
 
     await cleanup();
+  });
+});
+
+// ─── Harness-binary tests (--client-driven) ──────────────────────────────────
+//
+// These tests run the Rust conformance harness binary as a real ButtplugServer
+// and connect the JS ButtplugClient to it. The harness validates server-side
+// state (hardware write logs, device handles) while the client drives all
+// protocol messages.
+//
+// Skipped automatically if the binary is not built.
+
+interface StepResult {
+  step_name: string;
+  passed: boolean;
+  error: string | null;
+  duration_ms: number;
+}
+interface SequenceResult {
+  sequence_name: string;
+  passed: boolean;
+  steps: StepResult[];
+}
+interface HarnessReport {
+  sequences: SequenceResult[];
+}
+
+/** Extract the JSON Report from harness stdout (which has header text before it). */
+function parseHarnessOutput(stdout: string): HarnessReport {
+  const lines = stdout.split("\n");
+  const jsonStart = lines.findIndex(l => l.trim() === "{");
+  if (jsonStart === -1) {
+    throw new Error(`No JSON block in harness output:\n${stdout}`);
+  }
+  return JSON.parse(lines.slice(jsonStart).join("\n")) as HarnessReport;
+}
+
+function startHarness(
+  sequence: string,
+  port: number,
+  timeoutMs = 10000
+): Promise<HarnessReport> {
+  return new Promise((resolve, reject) => {
+    const proc = spawn(HARNESS_BINARY, [
+      "--port", String(port),
+      "--sequence", sequence,
+      "--format", "json",
+      "--timeout", String(timeoutMs),
+      "--client-driven",
+    ]);
+    let stdout = "";
+    proc.stdout.on("data", (chunk: Buffer) => { stdout += chunk.toString(); });
+    proc.on("error", (err: Error) =>
+      reject(new Error(`Harness spawn failed: ${err.message}`))
+    );
+    proc.on("close", () => {
+      try { resolve(parseHarnessOutput(stdout)); }
+      catch (e) { reject(new Error(`Could not parse harness output:\n${stdout}\n${e}`)); }
+    });
+  });
+}
+
+function logSequence(result: SequenceResult): void {
+  for (const step of result.steps) {
+    const icon = step.passed ? "✓" : "✗";
+    const err = step.error ? ` — ${step.error}` : "";
+    console.log(`    ${icon} ${step.step_name}${err}`);
+  }
+}
+
+const describeHarness = HARNESS_AVAILABLE ? describe : describe.skip;
+
+describeHarness("ButtplugClient vs Real Harness (--client-driven)", () => {
+  jest.setTimeout(60000);
+
+  /**
+   * core_protocol: Connect, scan, send all output command types, stop devices.
+   * The harness polls its ValidateDeviceCommand steps until the client's
+   * OutputCmd messages produce the expected hardware write log entries.
+   */
+  it("core_protocol", async () => {
+    const port = HARNESS_PORT_BASE;
+    const harnessPromise = startHarness("core_protocol", port, 10000);
+    await sleep(500);
+
+    const client = new ButtplugClient("JS Conformance Test");
+    const connector = new ButtplugNodeWebsocketClientConnector(
+      `ws://127.0.0.1:${port}`
+    );
+    await client.connect(connector);
+    client.on("disconnect", () => {});
+
+    // Capture device references from deviceadded events — the harness may
+    // execute RemoveDevice before client.devices can be queried.
+    const devicesByName = new Map<string, any>();
+    const devicesReady = new Promise<void>(resolve => {
+      client.on("deviceadded", (d: any) => {
+        devicesByName.set(d.name, d);
+        if (devicesByName.size >= 3) resolve();
+      });
+    });
+    await client.startScanning();
+    await devicesReady;
+
+    const vibrator   = devicesByName.get("Conformance Test Vibrator")!;
+    const positioner = devicesByName.get("Conformance Test Positioner")!;
+    const multi      = devicesByName.get("Conformance Test Multi")!;
+    expect(vibrator).toBeDefined();
+    expect(positioner).toBeDefined();
+    expect(multi).toBeDefined();
+
+    // Device 0: Vibrate feature 0, Vibrate feature 1, Rotate feature 2
+    await vibrator.features.get(0)!.runOutput(DeviceOutput.Vibrate.percent(0.5));
+    await vibrator.features.get(1)!.runOutput(DeviceOutput.Vibrate.percent(0.75));
+    await vibrator.features.get(2)!.runOutput(DeviceOutput.Rotate.percent(0.5));
+
+    // Device 1: Oscillate feature 2, Position feature 0
+    // Note: HwPositionWithDuration maps to Position at feature 0 on the server;
+    // the harness validator only checks feature_index byte (0).
+    await positioner.features.get(2)!.runOutput(DeviceOutput.Oscillate.percent(0.5));
+    await positioner.features.get(0)!.runOutput(DeviceOutput.Position.percent(0.5));
+
+    // Device 2: Constrict, Spray, Temperature, Led
+    await multi.features.get(0)!.runOutput(DeviceOutput.Constrict.percent(0.5));
+    await multi.features.get(1)!.runOutput(DeviceOutput.Spray.percent(0.5));
+    await multi.features.get(2)!.runOutput(DeviceOutput.Temperature.percent(0.5));
+    await multi.features.get(3)!.runOutput(DeviceOutput.Led.percent(0.5));
+
+    // Stop — satisfies "Stop Single Device" and "Stop All Devices" steps
+    await vibrator.stop();
+    await client.stopAllDevices();
+
+    const report = await harnessPromise;
+    const result = report.sequences[0];
+    logSequence(result);
+    expect(result.passed).toBe(true);
+  });
+
+  /**
+   * error_handling: Connect, scan, then send valid OutputCmds so the harness's
+   * "Valid Command After Error" steps pass. The error-causing commands (invalid
+   * device/feature indices) are SendClientMessage side effects that are skipped
+   * in client-driven mode — the Custom validators just check server_connected.
+   */
+  it("error_handling", async () => {
+    const port = HARNESS_PORT_BASE + 1;
+    const harnessPromise = startHarness("error_handling", port, 10000);
+    await sleep(500);
+
+    const client = new ButtplugClient("JS Conformance Test");
+    const connector = new ButtplugNodeWebsocketClientConnector(
+      `ws://127.0.0.1:${port}`
+    );
+    await client.connect(connector);
+    client.on("disconnect", () => {});
+
+    const scanned = new Promise<void>(resolve =>
+      client.on("scanningfinished", () => resolve())
+    );
+    await client.startScanning();
+    await scanned;
+    await sleep(200);
+
+    // Send valid OutputCmds — the harness polls ValidateDeviceCommand steps
+    const allDevs = [...client.devices.values()];
+    const vibrator = allDevs.find(d => d.name.includes("Vibrator"))!;
+    await vibrator.features.get(0)!.runOutput(DeviceOutput.Vibrate.percent(0.5));
+    await vibrator.features.get(2)!.runOutput(DeviceOutput.Rotate.percent(0.75));
+
+    const report = await harnessPromise;
+    const result = report.sequences[0];
+    logSequence(result);
+    expect(result.passed).toBe(true);
   });
 });
