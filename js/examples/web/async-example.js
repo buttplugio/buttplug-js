@@ -10,7 +10,7 @@
 async function runAsyncExample() {
   console.log("Running async example");
 
-  const client = new Buttplug.ButtplugClient("Async Example");
+  const client = new buttplug.ButtplugClient("Async Example");
 
   // Events in buttplug-js use EventEmitter3.
   // You can use addListener or on to subscribe to events.
@@ -21,9 +21,9 @@ async function runAsyncExample() {
     console.log(`[Event] Device added: ${device.name}`);
 
     // You can interact with the device in the event handler
-    if (device.hasOutput(Buttplug.OutputType.Vibrate)) {
+    if (device.hasOutput(buttplug.OutputType.Vibrate)) {
       console.log("  Sending welcome vibration...");
-      await device.runOutput(Buttplug.DeviceOutput.Vibrate.percent(0.25));
+      await device.runOutput(buttplug.DeviceOutput.Vibrate.percent(0.25));
       await new Promise(r => setTimeout(r, 200));
       await device.stop();
     }
@@ -52,7 +52,7 @@ async function runAsyncExample() {
 
   // Connect asynchronously - this may take time due to network
   console.log("Connecting to server...");
-  const connector = new Buttplug.ButtplugBrowserWebsocketClientConnector("ws://127.0.0.1:12345");
+  const connector = new buttplug.ButtplugBrowserWebsocketClientConnector("ws://127.0.0.1:12345");
   await client.connect(connector);
   console.log("Connected!");
 
