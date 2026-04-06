@@ -1,6 +1,7 @@
 import { SetupTestSuite } from "./utils";
-//import {ButtplugClientDevice, RotateCmd, LinearCmd, VectorSubcommand,
- //I ha       RotateSubcommand, StopDeviceCmd, ButtplugDeviceMessage, ButtplugDeviceError } from "../src/index";
+// NOTE: These tests are from the v3 protocol era and use old class-based message APIs
+// (StopDeviceCmd, VibrateCmd, etc.) that no longer exist in v4. The v4 equivalents
+// are StopCmd, OutputCmd, etc. See test-conformance.ts for current v4 tests.
 
 SetupTestSuite();
 /*

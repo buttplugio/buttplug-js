@@ -72,7 +72,7 @@ describe("Websocket Client Tests", () => {
   it("Should throw Error on return of error message", async () => {
     (socket as any).on("message", (jsonmsg: string) => {
       const msg: Messages.ButtplugMessage = fromJSON(jsonmsg)[0] as Messages.ButtplugMessage;
-      if (msg.Type === Messages.StopAllDevices) {
+      if (msg.StopCmd !== undefined) { // was Messages.StopAllDevices in v3
         delaySend(new Messages.Error("Error", Messages.ErrorClass.ERROR_MSG, msg.Id));
       }
     });
