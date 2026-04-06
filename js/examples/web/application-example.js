@@ -17,7 +17,7 @@ async function runApplicationExample() {
 
   // Step 1: Create a client
   // The client name identifies your application to the server.
-  const client = new Buttplug.ButtplugClient("My Buttplug Application");
+  const client = new buttplug.ButtplugClient("My Buttplug Application");
 
   // Step 2: Set up event handlers
   // Always do this BEFORE connecting to avoid missing events.
@@ -36,12 +36,12 @@ async function runApplicationExample() {
   // Step 3: Connect to the server
   console.log("Connecting to Intiface Central...");
   try {
-    const connector = new Buttplug.ButtplugBrowserWebsocketClientConnector(
+    const connector = new buttplug.ButtplugBrowserWebsocketClientConnector(
       "ws://127.0.0.1:12345"
     );
     await client.connect(connector);
   } catch (e) {
-    if (e instanceof Buttplug.ButtplugClientConnectorException) {
+    if (e instanceof buttplug.ButtplugClientConnectorException) {
       alert(
         "Could not connect to Intiface Central!\n\n" +
         "Make sure Intiface Central is running and the server is started.\n" +
