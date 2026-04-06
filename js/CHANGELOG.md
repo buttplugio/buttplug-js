@@ -1,3 +1,17 @@
+# v4.0.1 (2026/04/05)
+
+## Bugfixes
+
+- Fix issue with StopDeviceCmd still being sent when using npm package
+- Fix issue with different decodes of DeviceList depending on server sent or requested
+
+# v4.0.0 (2026/02/02)
+
+## Features
+
+- Update to Buttplug Spec v4
+- Basically a rewrite
+
 # v3.2.2 (2024/03/02)
 
 ## Bugfixes

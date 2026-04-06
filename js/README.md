@@ -2,15 +2,23 @@
 
 [![Patreon donate button](https://img.shields.io/badge/patreon-donate-yellow.svg)](https://www.patreon.com/qdot)
 [![Github donate button](https://img.shields.io/badge/github-donate-ff69b4.svg)](https://www.github.com/sponsors/qdot)
-
-[![Discourse Forum](https://img.shields.io/badge/discourse-forum-blue.svg)](https://discuss.buttplug.io)
+[![Discourse Forums](https://img.shields.io/discourse/status?label=buttplug.io%20forums&server=https%3A%2F%2Fdiscuss.buttplug.io)](https://discuss.buttplug.io)
 [![Discord](https://img.shields.io/discord/353303527587708932.svg?logo=discord)](https://discord.buttplug.io)
-[![Twitter](https://img.shields.io/twitter/follow/buttplugio.svg?style=social&logo=twitter)](https://twitter.com/buttplugio)
+[![bluesky](https://img.shields.io/bluesky/followers/buttplug.io)](https://bsky.app/profile/buttplug.io)
+
 
 A implementation of the Buttplug Client in Typescript/Javascript, implementing the Version 3
 Buttplug Spec. It is expected to run from a browser against either [Intiface Central
 (GUI)](https://intiface.com/central), [Initface Engine
 (CLI)](https://github.com/intiface/intiface-engine), or [the Buttplug WASM Server](https://github.com/buttplugio/buttplug-js).
+
+## This isn't the only JS Library!
+
+While this library *can* work for implementing JS/TS apps with Buttplug, it's really just a reference version we keep for documentation. We highly recommend checking out the following community versions of the client that may be better kept up for have more features:
+
+- [zendrex/buttplug.js](https://www.npmjs.com/package/@zendrex/buttplug.js)
+
+If you have built a client and would like to see it listed here, let us know!
 
 ## Compilation information
 
