@@ -88,10 +88,6 @@ export interface StopScanning {
   Id: number | undefined;
 }
 
-export interface StopAllDevices {
-  Id: number | undefined;
-}
-
 export interface ScanningFinished {
   Id: number | undefined;
 }

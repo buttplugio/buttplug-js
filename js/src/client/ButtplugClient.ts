@@ -83,7 +83,7 @@ export class ButtplugClient extends EventEmitter {
   };
 
   public stopAllDevices = async () => {
-    this._logger.Debug('ButtplugClient: StopAllDevices');
+    this._logger.Debug('ButtplugClient: StopCmd (all devices)');
     await this.sendMsgExpectOk({ StopCmd: { Id: 1, DeviceIndex: undefined, FeatureIndex: undefined, Inputs: true, Outputs: true } });
   };
 
