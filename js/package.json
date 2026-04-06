@@ -19,7 +19,7 @@
   "main": "./dist/main/src/index.js",
   "types": "./dist/main/src/index.d.ts",
   "scripts": {
-    "build": "trash dist dist-bundle && yarn build:all",
+    "build": "trash dist dist-bundle && yarn build:all && yarn build:web",
     "build:all": "yarn build:main && yarn build:web",
     "build:main": "tsc -p tsconfig.json",
     "build:doc": "typedoc --options typedocconfig.js --out doc ./src/index.ts",
