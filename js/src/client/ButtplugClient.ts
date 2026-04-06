@@ -96,7 +96,7 @@ export class ButtplugClient extends EventEmitter {
     const leftoverMsgs = this._sorter.ParseIncomingMessages(msgs);
     for (const x of leftoverMsgs) {
       if (x.DeviceList !== undefined) {
-        this.parseDeviceList(x as Messages.DeviceList);
+        this.parseDeviceList(x.DeviceList!);
         break;
       } else if (x.ScanningFinished !== undefined) {
         this._isScanning = false;
