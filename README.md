@@ -1,10 +1,28 @@
-# Buttplug JS and WASM
+# Buttplug JS
 
-This repo includes 2 projects:
+This repo contains:
 
-- buttplug-js: A pure Typescript/Javascript implementation of a Buttplug Client. This can be used to
-  connect to Buttplug Servers like [Intiface Central](https://intiface.com/central) or the Buttplug WASM Server
-- buttplug-wasm: A WASM compilation of the Rust implementation of the Buttplug Server, with a
-  WebBluetooth device communication manager. This will allow connection to hardware in browsers that have WebBluetooth connectivity (Chromium/Blink based browsers like Chrome, Microsoft Edge, Brave, Opera, etc...)
+- **buttplug-js**: A pure TypeScript/JavaScript implementation of a Buttplug Client. Use this to
+  connect to Buttplug Servers like [Intiface Central](https://intiface.com/central) or the
+  Buttplug WASM Server.
 
-See the README in each of the project directories for more info on the projects.
+## Looking for buttplug-wasm?
+
+The WASM package (`buttplug-wasm`) has moved to the [buttplug](https://github.com/buttplugio/buttplug)
+monorepo. It lives in `wasm/` at the repo root and is built from `crates/buttplug_wasm`.
+
+Install it as:
+
+```
+npm install buttplug-wasm
+```
+
+or build from source:
+
+```bash
+# Build the Rust WASM crate
+wasm-pack build --target web crates/buttplug_wasm
+
+# Build the TypeScript wrapper
+cd wasm && npm install && npm run build:web
+```
