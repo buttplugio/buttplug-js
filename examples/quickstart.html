@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Buttplug Quickstart</title>
+    <style>
+      body { font-family: system-ui, sans-serif; max-width: 600px; margin: 2rem auto; padding: 0 1rem; }
+      button { display: block; margin: 0.5rem 0; padding: 0.5rem 1rem; cursor: pointer; }
+      #log { background: #111; color: #0f0; padding: 1rem; font-family: monospace; font-size: 0.85rem; white-space: pre-wrap; max-height: 300px; overflow-y: auto; }
+      #device-name { font-weight: bold; }
+    </style>
+  </head>
+  <body>
+    <h1>Buttplug Quickstart</h1>
+    <p>Requires <a href="https://intiface.com/central/">Intiface Central</a> running on <code>ws://127.0.0.1:12345</code>.</p>
+
+    <button id="connect">Connect &amp; Scan</button>
+    <button id="vibrate-50" disabled>Vibrate 50%</button>
+    <button id="vibrate-100" disabled>Vibrate 100%</button>
+    <button id="stop" disabled>Stop</button>
+    <p>Device: <span id="device-name">None</span></p>
+    <div id="log"></div>
+
+    <script type="module">
+      import {
+        ButtplugClient,
+        ButtplugBrowserWebsocketClientConnector,
+        DeviceOutput,
+        OutputType,
+      } from "https://cdn.jsdelivr.net/npm/buttplug@4/dist/web/buttplug.mjs";
+
+      const log = (msg) => {
+        const el = document.getElementById("log");
+        el.textContent += msg + "\n";
+        el.scrollTop = el.scrollHeight;
+      };
+
+      let device = null;
+
+      const setControls = (enabled) => {
+        document.getElementById("vibrate-50").disabled = !enabled;
+        document.getElementById("vibrate-100").disabled = !enabled;
+        document.getElementById("stop").disabled = !enabled;
+      };
+
+      document.getElementById("connect").addEventListener("click", async () => {
+        const client = new ButtplugClient("Quickstart");
+
+        client.addListener("deviceadded", (d) => {
+          log(`Device connected: ${d.name}`);
+          document.getElementById("device-name").textContent = d.name;
+          if (d.hasOutput(OutputType.Vibrate)) {
+            device = d;
+            setControls(true);
+          } else {
+            log("(device does not support vibration)");
+          }
+        });
+
+        client.addListener("deviceremoved", (d) => {
+          log(`Device disconnected: ${d.name}`);
+          if (device === d) {
+            device = null;
+            setControls(false);
+            document.getElementById("device-name").textContent = "None";
+          }
+        });
+
+        try {
+          const connector = new ButtplugBrowserWebsocketClientConnector("ws://127.0.0.1:12345");
+          await client.connect(connector);
+          log("Connected to Intiface Central");
+          await client.startScanning();
+          log("Scanning for devices...");
+        } catch (e) {
+          log(`Connection failed: ${e.message}`);
+        }
+      });
+
+      document.getElementById("vibrate-50").addEventListener("click", async () => {
+        await device.runOutput(DeviceOutput.Vibrate.percent(0.5));
+        log("Vibrating at 50%");
+      });
+
+      document.getElementById("vibrate-100").addEventListener("click", async () => {
+        await device.runOutput(DeviceOutput.Vibrate.percent(1.0));
+        log("Vibrating at 100%");
+      });
+
+      document.getElementById("stop").addEventListener("click", async () => {
+        await device.stop();
+        log("Stopped");
+      });
+    </script>
+  </body>
+</html>

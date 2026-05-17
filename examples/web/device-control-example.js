@@ -4,7 +4,7 @@
 // query device capabilities, and use the v4 command builder API.
 //
 // Include Buttplug via CDN:
-// <script src="https://cdn.jsdelivr.net/npm/buttplug@4.0.0/dist/web/buttplug.min.js"></script>
+// <script src="https://cdn.jsdelivr.net/npm/buttplug@4/dist/web/buttplug.js"></script>
 
 async function runDeviceControlExample() {
   const connector = new buttplug.ButtplugBrowserWebsocketClientConnector("ws://127.0.0.1:12345");
@@ -36,7 +36,7 @@ async function runDeviceControlExample() {
       await new Promise(r => setTimeout(r, 1000));
 
       console.log("Vibrating at 50%...");
-      await device.runOutput(Buttplug.DeviceOutput.Vibrate.percent(0.5));
+      await device.runOutput(buttplug.DeviceOutput.Vibrate.percent(0.5));
 
       await new Promise(r => setTimeout(r, 1000));
 
@@ -71,7 +71,7 @@ async function runDeviceControlExample() {
       console.log("Device supports position control. Moving...");
       await device.runOutput(buttplug.DeviceOutput.PositionWithDuration.percent(1.0, 500));
       await new Promise(r => setTimeout(r, 1000));
-      await device.runOutput(Buttplug.DeviceOutput.PositionWithDuration.percent(0.0, 500));
+      await device.runOutput(buttplug.DeviceOutput.PositionWithDuration.percent(0.0, 500));
     }
   });
 

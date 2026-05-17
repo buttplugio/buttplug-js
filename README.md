@@ -60,9 +60,13 @@ Documentation on how to use Buttplug in general, as well as examples for buttplu
 
 API documentation for buttplug-js can be found at https://buttplugio.github.io/buttplug-js.
 
-If you would like to see a demo of using Buttplug in a pure web context, check out the following glitch project, which shows how to pull the Buttplug libraries from a CDN and use them in a pure HTML/JS context without node:
+### Quickstart
 
-https://glitch.com/edit/#!/how-to-buttplug
+A self-contained single-file example that connects to [Intiface Central](https://intiface.com/central/) and controls a vibrating device is available at [`examples/quickstart.html`](examples/quickstart.html). Open it with any local HTTP server (e.g. `npx serve examples`) — no build step or npm install required.
+
+### More Examples
+
+The [`examples/web/`](examples/web/) directory contains additional examples covering error handling, device enumeration, device info, and logging. These use the UMD bundle via a script tag.
 
 ## Contributing
 

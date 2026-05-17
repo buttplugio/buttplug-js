@@ -5,7 +5,7 @@
 // from a browser to Intiface Central.
 //
 // Include Buttplug via CDN:
-// <script src="https://cdn.jsdelivr.net/npm/buttplug@4.0.0/dist/web/buttplug.min.js"></script>
+// <script src="https://cdn.jsdelivr.net/npm/buttplug@4/dist/web/buttplug.js"></script>
 
 const runWebsocketConnectionExample = async () => {
   // This is the default insecure address for Intiface Central (https://intiface.com/central).

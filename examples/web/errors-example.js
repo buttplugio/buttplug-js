@@ -4,7 +4,7 @@
 // and how to handle them. This is a reference for error handling patterns.
 //
 // Include Buttplug via CDN:
-// <script src="https://cdn.jsdelivr.net/npm/buttplug@4.0.0/dist/web/buttplug.min.js"></script>
+// <script src="https://cdn.jsdelivr.net/npm/buttplug@4/dist/web/buttplug.js"></script>
 
 // All Buttplug errors inherit from ButtplugError.
 // Here's the hierarchy:

@@ -7,7 +7,7 @@
 // 1. Install Intiface Central: https://intiface.com/central
 // 2. Start the server in Intiface Central (click "Start Server")
 // 3. Include Buttplug via CDN in your HTML:
-//    <script src="https://cdn.jsdelivr.net/npm/buttplug@4.0.0/dist/web/buttplug.min.js"></script>
+//    <script src="https://cdn.jsdelivr.net/npm/buttplug@4/dist/web/buttplug.js"></script>
 // 4. Call runApplicationExample() from your page
 
 async function runApplicationExample() {
