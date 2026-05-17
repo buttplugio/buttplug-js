@@ -1,3 +1,17 @@
+# v4.0.2 (2026/05/16)
+
+## Features
+
+- Update to typescript 5
+- Added new quickstart tutorial
+
+## Bugfixes
+
+- Fix exposure of HwPositionWithDuration
+- Add more pointers to examples in README
+- Optimizing array filtering
+- Fix issue with websocket errors not throwing
+
 # v4.0.1 (2026/04/05)
 
 ## Bugfixes
