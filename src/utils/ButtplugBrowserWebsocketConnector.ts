@@ -10,7 +10,7 @@
 
 import { EventEmitter } from 'eventemitter3';
 import { ButtplugMessage } from '../core/Messages';
-//import { fromJSON } from '../core/MessageUtils';
+import { ButtplugClientConnectorException } from '../client/ButtplugClientConnectorException';
 
 export class ButtplugBrowserWebsocketConnector extends EventEmitter {
   protected _ws: WebSocket | undefined;
@@ -27,8 +27,12 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter {
   public connect = async (): Promise<void> => {
     return new Promise<void>((resolve, reject) => {
       const ws = new (this._websocketConstructor ?? WebSocket)(this._url);
-      const onErrorCallback = (event: Event) => {reject(event)}
-      const onCloseCallback = (event: CloseEvent) => reject(event.reason)
+      const onErrorCallback = (_event: Event) => {
+        reject(new ButtplugClientConnectorException(`WebSocket connection failed to ${this._url}`));
+      }
+      const onCloseCallback = (event: CloseEvent) => {
+        reject(new ButtplugClientConnectorException(event.reason || `WebSocket closed before connection to ${this._url} was established`));
+      }
       ws.addEventListener('open', async () => {
         this._ws = ws;
         try {
