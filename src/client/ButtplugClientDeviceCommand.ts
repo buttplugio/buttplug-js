@@ -67,7 +67,7 @@ export class DeviceOutputValueConstructor {
 
 export class DeviceOutputPositionWithDurationConstructor {
   public steps(steps: number, duration: number): DeviceOutputCommand {
-    return new DeviceOutputCommand(OutputType.Position, PercentOrSteps.createSteps(steps), duration);
+    return new DeviceOutputCommand(OutputType.HwPositionWithDuration, PercentOrSteps.createSteps(steps), duration);
   }
 
   public percent(percent: number, duration: number): DeviceOutputCommand {
@@ -106,6 +106,9 @@ export class DeviceOutput {
     return new DeviceOutputValueConstructor(OutputType.Position);
   }
   public static get PositionWithDuration() {
+    return new DeviceOutputPositionWithDurationConstructor();
+  }
+  public static get HwPositionWithDuration() {
     return new DeviceOutputPositionWithDurationConstructor();
   }
 }
