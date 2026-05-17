@@ -31,6 +31,20 @@ For node, simply include the package as you would any other package.
 
 For inclusion in web projects, the UMD project can be found at `dist/web/buttplug.js` (Note that the namespace is `buttplug`, so you'll access types like `buttplug.ButtplugClient`, etc...), and the es6 module at `dist/web/buttplug.mjs`.
 
+### CDN Usage
+
+For use directly in HTML without a bundler:
+
+```html
+<!-- UMD (exposes global `buttplug` namespace) -->
+<script src="https://cdn.jsdelivr.net/npm/buttplug@4/dist/web/buttplug.js"></script>
+
+<!-- ES Module -->
+<script type="module">
+  import { ButtplugClient } from 'https://cdn.jsdelivr.net/npm/buttplug@4/dist/web/buttplug.mjs';
+</script>
+```
+
 ## Using buttplug-js with Node
 
 buttplug-js works with both pure web builds, as well as node applications. To use buttplug-js with
