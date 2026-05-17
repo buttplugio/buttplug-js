@@ -65,8 +65,8 @@ export class ButtplugClientDeviceFeature {
     } else {
       value = Math.ceil(this._feature.Output[type]!.Value![1] * p.percent);
     }
-    let newCommand: Messages.DeviceFeatureOutput = { Value: value, Duration: duration };
-    let outCommand = {};
+    let newCommand: Messages.DeviceFeatureOutput = { Value: [value], Duration: duration };
+    let outCommand: { [key: string]: Messages.DeviceFeatureOutput } = {};
     outCommand[type.toString()] = newCommand;
 
     let cmd: Messages.ButtplugMessage = {

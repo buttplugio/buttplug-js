@@ -121,10 +121,10 @@ export class ButtplugClientDevice extends EventEmitter {
   };
 
   protected isOutputValid(featureIndex: number, type: Messages.OutputType) {
-    if (!this._deviceInfo.DeviceFeatures.hasOwnProperty(featureIndex.toString())) {
+    if (!this._deviceInfo.DeviceFeatures.hasOwnProperty(featureIndex)) {
       throw new ButtplugDeviceError(`Feature index ${featureIndex} does not exist for device ${this.name}`);
     }
-    if (this._deviceInfo.DeviceFeatures[featureIndex.toString()].Outputs !== undefined && !this._deviceInfo.DeviceFeatures[featureIndex.toString()].Outputs.hasOwnProperty(type)) {
+    if (this._deviceInfo.DeviceFeatures[featureIndex].Output !== undefined && !this._deviceInfo.DeviceFeatures[featureIndex].Output.hasOwnProperty(type)) {
       throw new ButtplugDeviceError(`Feature index ${featureIndex} does not support type ${type} for device ${this.name}`);
     }
   }

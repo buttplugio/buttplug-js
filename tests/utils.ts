@@ -1,6 +1,5 @@
 import { ButtplugClient} from "../src/index";
 import * as Messages from "../src/core/Messages";
-import { ButtplugClientConnectorException } from "client/ButtplugClientConnectorException";
 
 export class BPTestClient extends ButtplugClient {
   constructor(ClientName: string) {
@@ -16,9 +15,8 @@ export class BPTestClient extends ButtplugClient {
 }
 
 export function SetupTestSuite() {
-  // None of our tests should take very long.
   jest.setTimeout(1000);
-  process.on("unhandledRejection", (reason: Error, p) => {
+  process.on("unhandledRejection", (reason: Error) => {
     throw new Error(`Unhandled Promise rejection!\n---\n${reason.stack}\n---\n`);
   });
 }

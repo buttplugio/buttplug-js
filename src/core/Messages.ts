@@ -164,7 +164,7 @@ export interface DeviceFeatureInput {
 }
 
 export interface DeviceFeatureOutput {
-  Value: number;
+  Value: number[];
   Duration?: number;
 }
 

@@ -29,8 +29,8 @@ export class ButtplugMessageSorter {
       // Always increment last, otherwise we might lose sync
       this._counter += 1;
     }
-    let res;
-    let rej;
+    let res!: (val: Messages.ButtplugMessage) => void;
+    let rej!: (err: Error) => void;
     const msgPromise = new Promise<Messages.ButtplugMessage>(
       (resolve, reject) => {
         res = resolve;

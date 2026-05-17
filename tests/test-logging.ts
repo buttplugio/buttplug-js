@@ -18,10 +18,10 @@ describe("Logging Tests", () => {
   });
 
   it("Should log nothing at start.", async () => {
-    let res;
-    let rej;
-    const p = new Promise((rs, rj) => { res = rs; rej = rj; });
-    logger.addListener("log", (msg) => {
+    let res!: () => void;
+    let rej!: () => void;
+    const p = new Promise<void>((rs, rj) => { res = rs; rej = () => rj(new Error("unexpected log")); });
+    logger.addListener("log", () => {
       rej();
     });
     logger.Debug("test");
@@ -34,13 +34,10 @@ describe("Logging Tests", () => {
   });
 
   it("Should log everything on trace.", async () => {
-    let res;
-    let rej;
     let count = 0;
-    const p = new Promise((rs, rj) => { res = rs; rej = rj; });
     logger.MaximumEventLogLevel = ButtplugLogLevel.Trace;
 
-    logger.addListener("log", (msg) => {
+    logger.addListener("log", () => {
       count++;
     });
     logger.Debug("test");
@@ -57,16 +54,15 @@ describe("Logging Tests", () => {
 
   it("Should deal with different log levels for console and events", async () => {
     jest.spyOn(global.console, "log");
-    let res;
-    let rej;
-    const p = new Promise((rs, rj) => { res = rs; rej = rj; });
-    logger.addListener("log", (msg) => {
+    let res!: () => void;
+    let rej!: () => void;
+    const p = new Promise<void>((rs, rj) => { res = rs; rej = () => rj(new Error("unexpected log")); });
+    logger.addListener("log", () => {
       rej();
     });
     logger.MaximumEventLogLevel = ButtplugLogLevel.Debug;
     logger.MaximumConsoleLogLevel = ButtplugLogLevel.Trace;
     logger.Trace("test");
-    //expect(console.log).toBeCalled();
     res();
     return p;
   });
