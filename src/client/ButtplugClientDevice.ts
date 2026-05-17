@@ -130,11 +130,11 @@ export class ButtplugClientDevice extends EventEmitter {
   }
 
   public hasOutput(type: Messages.OutputType): boolean {
-    return this._features.values().filter((f) => f.hasOutput(type)).toArray().length > 0;
+    return this._features.values().some((f) => f.hasOutput(type));
   }
 
   public hasInput(type: Messages.InputType): boolean {
-    return this._features.values().filter((f) => f.hasInput(type)).toArray().length > 0;
+    return this._features.values().some((f) => f.hasInput(type));
   }
 
   public async runOutput(cmd: DeviceOutputCommand): Promise<void> {
