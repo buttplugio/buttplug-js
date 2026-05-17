@@ -16,8 +16,13 @@
   "bugs": {
     "url": "https://github.com/buttplugio/buttplug-js/issues"
   },
-  "main": "./dist/main/src/index.js",
-  "types": "./dist/main/src/index.d.ts",
+  "main": "./dist/main/index.js",
+  "types": "./dist/main/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "trash dist dist-bundle && yarn build:all",
     "build:all": "yarn build:main && yarn build:web",
