@@ -410,6 +410,78 @@ describe("ButtplugClient Conformance Tests", () => {
   });
 });
 
+// ─── ButtplugClientDeviceFeature unit tests ──────────────────────────────────
+
+describe("ButtplugClientDeviceFeature", () => {
+  let server: MinimalButtplugServer;
+
+  afterEach(async () => {
+    await server.close();
+  });
+
+  async function connectAndEnumerate(port: number) {
+    server = new MinimalButtplugServer(port);
+    const { client, cleanup } = await connectClient(port);
+    const ready = waitForDevices(client, 3);
+    await client.startScanning();
+    await ready;
+    return { client, cleanup };
+  }
+
+  it("featureDescriptor returns the descriptor from the server message", async () => {
+    const { client, cleanup } = await connectAndEnumerate(PORT_BASE + 5);
+
+    const vibrator = client.devices.get(0)!;
+
+    expect(vibrator).toBeDefined();
+    expect(vibrator.features.get(0)).toBeDefined();
+    expect(vibrator.features.get(0)!.featureDescriptor).toBe("Vibrate 1");
+    expect(vibrator.features.get(1)).toBeDefined();
+    expect(vibrator.features.get(1)!.featureDescriptor).toBe("Vibrate 2");
+    expect(vibrator.features.get(2)).toBeDefined();
+    expect(vibrator.features.get(2)!.featureDescriptor).toBe("Rotate");
+    expect(vibrator.features.get(3)).toBeDefined();
+    expect(vibrator.features.get(3)!.featureDescriptor).toBe("Battery");
+
+    await cleanup();
+  });
+
+  it("stepCount returns Value[1] for a present output type", async () => {
+    const { client, cleanup } = await connectAndEnumerate(PORT_BASE + 6);
+
+    const vibrator   = client.devices.get(0)!;
+    const positioner = client.devices.get(1)!;
+
+    expect(vibrator).toBeDefined();
+    expect(vibrator.features.get(0)).toBeDefined();
+    expect(vibrator.features.get(0)!.stepCount(Messages.OutputType.Vibrate)).toBe(100);
+    expect(vibrator.features.get(2)).toBeDefined();
+    expect(vibrator.features.get(2)!.stepCount(Messages.OutputType.Rotate)).toBe(100);
+    expect(positioner.features.get(0)).toBeDefined();
+    expect(positioner.features.get(0)!.stepCount(Messages.OutputType.Position)).toBe(100);
+    expect(positioner.features.get(1)).toBeDefined();
+    expect(positioner.features.get(1)!.stepCount(Messages.OutputType.HwPositionWithDuration)).toBe(100);
+
+    await cleanup();
+  });
+
+  it("stepCount returns undefined for an absent output type", async () => {
+    const { client, cleanup } = await connectAndEnumerate(PORT_BASE + 7);
+
+    const vibrator = client.devices.get(0)!;
+    expect(vibrator).toBeDefined();
+
+    // Battery feature (index 3) has no outputs
+    expect(vibrator.features.get(3)).toBeDefined();
+    expect(vibrator.features.get(3)!.stepCount(Messages.OutputType.Vibrate)).toBeUndefined();
+    // Vibrate feature does not support Rotate
+    expect(vibrator.features.get(0)).toBeDefined();
+    expect(vibrator.features.get(0)!.stepCount(Messages.OutputType.Rotate)).toBeUndefined();
+
+    await cleanup();
+  });
+});
+
 // ─── Harness-binary tests (--client-driven) ──────────────────────────────────
 //
 // These tests run the Rust conformance harness binary as a real ButtplugServer

@@ -80,6 +80,14 @@ export class ButtplugClientDeviceFeature {
     await this.sendMsgExpectOk(cmd);
   }
 
+  public get featureDescriptor(): string {
+    return this._feature.FeatureDescriptor;
+  }
+
+  public stepCount(outputType: Messages.OutputType): number | undefined {
+    return this._feature.Output?.[outputType]?.Value?.[1];
+  }
+
   public hasOutput(type: Messages.OutputType): boolean {
     if (this._feature.Output !== undefined) {
       return this._feature.Output.hasOwnProperty(type.toString());
