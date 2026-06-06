@@ -446,7 +446,7 @@ describe("ButtplugClientDeviceFeature", () => {
     await cleanup();
   });
 
-  it("stepCount returns Value[1] for a present output type", async () => {
+  it("rangeForOutput returns [min, max] for a present output type", async () => {
     const { client, cleanup } = await connectAndEnumerate(PORT_BASE + 6);
 
     const vibrator   = client.devices.get(0)!;
@@ -454,18 +454,18 @@ describe("ButtplugClientDeviceFeature", () => {
 
     expect(vibrator).toBeDefined();
     expect(vibrator.features.get(0)).toBeDefined();
-    expect(vibrator.features.get(0)!.stepCount(Messages.OutputType.Vibrate)).toBe(100);
+    expect(vibrator.features.get(0)!.rangeForOutput(Messages.OutputType.Vibrate)).toEqual([0, 100]);
     expect(vibrator.features.get(2)).toBeDefined();
-    expect(vibrator.features.get(2)!.stepCount(Messages.OutputType.Rotate)).toBe(100);
+    expect(vibrator.features.get(2)!.rangeForOutput(Messages.OutputType.Rotate)).toEqual([-100, 100]);
     expect(positioner.features.get(0)).toBeDefined();
-    expect(positioner.features.get(0)!.stepCount(Messages.OutputType.Position)).toBe(100);
+    expect(positioner.features.get(0)!.rangeForOutput(Messages.OutputType.Position)).toEqual([0, 100]);
     expect(positioner.features.get(1)).toBeDefined();
-    expect(positioner.features.get(1)!.stepCount(Messages.OutputType.HwPositionWithDuration)).toBe(100);
+    expect(positioner.features.get(1)!.rangeForOutput(Messages.OutputType.HwPositionWithDuration)).toEqual([0, 100]);
 
     await cleanup();
   });
 
-  it("stepCount returns undefined for an absent output type", async () => {
+  it("rangeForOutput returns undefined for an absent output type", async () => {
     const { client, cleanup } = await connectAndEnumerate(PORT_BASE + 7);
 
     const vibrator = client.devices.get(0)!;
@@ -473,10 +473,10 @@ describe("ButtplugClientDeviceFeature", () => {
 
     // Battery feature (index 3) has no outputs
     expect(vibrator.features.get(3)).toBeDefined();
-    expect(vibrator.features.get(3)!.stepCount(Messages.OutputType.Vibrate)).toBeUndefined();
+    expect(vibrator.features.get(3)!.rangeForOutput(Messages.OutputType.Vibrate)).toBeUndefined();
     // Vibrate feature does not support Rotate
     expect(vibrator.features.get(0)).toBeDefined();
-    expect(vibrator.features.get(0)!.stepCount(Messages.OutputType.Rotate)).toBeUndefined();
+    expect(vibrator.features.get(0)!.rangeForOutput(Messages.OutputType.Rotate)).toBeUndefined();
 
     await cleanup();
   });
