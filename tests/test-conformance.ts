@@ -480,6 +480,40 @@ describe("ButtplugClientDeviceFeature", () => {
 
     await cleanup();
   });
+
+
+  it("rangeForInput returns [min, max] for a present input type", async () => {
+    const { client, cleanup } = await connectAndEnumerate(PORT_BASE + 6);
+
+    const vibrator   = client.devices.get(0)!;
+    const positioner = client.devices.get(1)!;
+    const positioner3 = client.devices.get(2)!;
+
+    expect(vibrator).toBeDefined();
+    expect(vibrator.features.get(3)).toBeDefined();
+    expect(vibrator.features.get(3)!.rangeForInput(Messages.InputType.Battery)).toEqual([0, 100]);
+    expect(positioner.features.get(3)).toBeDefined();
+    expect(positioner.features.get(3)!.rangeForInput(Messages.InputType.Button)).toEqual([0, 1]);
+    expect(positioner3.features.get(4)).toBeDefined();
+    expect(positioner3.features.get(4)!.rangeForInput(Messages.InputType.RSSI)).toEqual([-128, 0]);
+    expect(positioner3.features.get(5)).toBeDefined();
+    expect(positioner3.features.get(5)!.rangeForInput(Messages.InputType.Pressure)).toEqual([0, 65535]);
+
+    await cleanup();
+  });
+
+  it("rangeForInput returns undefined for an absent input type", async () => {
+    const { client, cleanup } = await connectAndEnumerate(PORT_BASE + 7);
+
+    const vibrator = client.devices.get(0)!;
+    expect(vibrator).toBeDefined();
+
+    // Battery feature (index 0) has no inputs
+    expect(vibrator.features.get(0)).toBeDefined();
+    expect(vibrator.features.get(0)!.rangeForInput(Messages.InputType.Battery)).toBeUndefined();
+   
+    await cleanup();
+  });
 });
 
 // ─── Harness-binary tests (--client-driven) ──────────────────────────────────
