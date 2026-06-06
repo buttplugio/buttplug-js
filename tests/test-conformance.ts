@@ -650,6 +650,22 @@ describe("ButtplugClientDeviceFeature metadata", () => {
 
     await cleanup();
   });
+
+  it("exposes readonly server info after connect", async () => {
+    server = new MinimalButtplugServer(PORT_BASE + 27, 1234);
+    const { client, cleanup } = await connectClient(PORT_BASE + 27);
+
+    expect(Object.isFrozen(client.serverInfo)).toBe(true);
+    expect(client.serverInfo).toEqual({
+      serverName: "Conformance Test Server",
+      maxPingTime: 1234,
+      protocolVersionMajor: 4,
+      protocolVersionMinor: 0,
+    });
+
+    await cleanup();
+    expect(client.serverInfo).toBeUndefined();
+  });
 });
 
 // ─── Harness-binary tests (--client-driven) ──────────────────────────────────

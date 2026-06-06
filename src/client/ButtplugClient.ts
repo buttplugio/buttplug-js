@@ -21,6 +21,13 @@ import {
 } from '../core/Exceptions';
 import { ButtplugClientConnectorException } from './ButtplugClientConnectorException';
 
+export interface ButtplugClientServerInfo {
+  readonly serverName: string;
+  readonly maxPingTime: number;
+  readonly protocolVersionMajor: number;
+  readonly protocolVersionMinor: number;
+}
+
 export class ButtplugClient extends EventEmitter {
   protected _pingTimer: NodeJS.Timeout | null = null;
   protected _connector: IButtplugClientConnector | null = null;
@@ -28,6 +35,7 @@ export class ButtplugClient extends EventEmitter {
   protected _clientName: string;
   protected _logger = ButtplugLogger.Logger;
   protected _isScanning = false;
+  private _serverInfo: ButtplugClientServerInfo | undefined;
   private _sorter: ButtplugMessageSorter = new ButtplugMessageSorter(true);
 
   constructor(clientName = 'Generic Buttplug Client') {
@@ -51,6 +59,10 @@ export class ButtplugClient extends EventEmitter {
     return this._isScanning;
   }
 
+  public get serverInfo(): ButtplugClientServerInfo | undefined {
+    return this._serverInfo;
+  }
+
   public connect = async (connector: IButtplugClientConnector) => {
     this._logger.Info(
       `ButtplugClient: Connecting using ${connector.constructor.name}`
@@ -68,6 +80,7 @@ export class ButtplugClient extends EventEmitter {
     this.checkConnector();
     await this.shutdownConnection();
     await this._connector!.disconnect();
+    this._serverInfo = undefined;
   };
 
   public startScanning = async () => {
@@ -127,7 +140,13 @@ export class ButtplugClient extends EventEmitter {
       }
     );
     if (msg.ServerInfo !== undefined) {
-      const serverinfo = msg as Messages.ServerInfo;
+      const serverinfo = msg.ServerInfo;
+      this._serverInfo = Object.freeze({
+        serverName: serverinfo.ServerName,
+        maxPingTime: serverinfo.MaxPingTime,
+        protocolVersionMajor: serverinfo.ProtocolVersionMajor,
+        protocolVersionMinor: serverinfo.ProtocolVersionMinor,
+      });
       this._logger.Info(
         `ButtplugClient: Connected to Server ${serverinfo.ServerName}`
       );
