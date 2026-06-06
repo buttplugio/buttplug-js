@@ -84,8 +84,12 @@ export class ButtplugClientDeviceFeature {
     return this._feature.FeatureDescriptor;
   }
 
-  public stepCount(outputType: Messages.OutputType): number | undefined {
-    return this._feature.Output?.[outputType]?.Value?.[1];
+  public rangeForOutput(type: Messages.OutputType): number[] | undefined {
+    return this._feature.Output?.[type]?.Value;
+  }
+
+  public rangeForInput(type: Messages.InputType): number[] | undefined {
+    return this._feature.Input?.[type]?.Value;
   }
 
   public hasOutput(type: Messages.OutputType): boolean {
