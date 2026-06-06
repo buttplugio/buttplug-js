@@ -8,6 +8,12 @@
 
 export * from './client/ButtplugClient';
 export * from './client/ButtplugClientDevice';
+export type {
+  IButtplugClientDeviceFeature,
+  ButtplugClientDeviceFeatureInput,
+  ButtplugClientDeviceFeatureOutput,
+  ButtplugClientDeviceFeatureValueRange,
+} from './client/ButtplugClientDeviceFeature';
 export * from './client/ButtplugBrowserWebsocketClientConnector';
 export * from './client/ButtplugNodeWebsocketClientConnector';
 export * from './client/ButtplugClientConnectorException';

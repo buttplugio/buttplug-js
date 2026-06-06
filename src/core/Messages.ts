@@ -165,13 +165,18 @@ export interface DeviceFeatureInput {
 
 export interface DeviceFeatureOutput {
   Value: number[];
+  Duration?: number[];
+}
+
+export interface DeviceFeatureOutputCommand {
+  Value: number[];
   Duration?: number;
 }
 
 export interface OutputCmd {
   DeviceIndex: number;
   FeatureIndex: number;
-  Command: { [key: string]: DeviceFeatureOutput };
+  Command: { [key: string]: DeviceFeatureOutputCommand };
   Id: number | undefined;
 }
 

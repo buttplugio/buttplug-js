@@ -14,7 +14,10 @@ import {
   ButtplugMessageError,
 } from '../core/Exceptions';
 import { EventEmitter } from 'eventemitter3';
-import { ButtplugClientDeviceFeature } from './ButtplugClientDeviceFeature';
+import {
+  ButtplugClientDeviceFeature,
+  IButtplugClientDeviceFeature,
+} from './ButtplugClientDeviceFeature';
 import { DeviceOutputCommand } from './ButtplugClientDeviceCommand';
 
 /**
@@ -52,8 +55,8 @@ export class ButtplugClientDevice extends EventEmitter {
     return this._deviceInfo.DeviceMessageTimingGap;
   }
 
-  public get features(): Map<number, ButtplugClientDeviceFeature> {
-    return this._features;
+  public get features(): ReadonlyMap<number, IButtplugClientDeviceFeature> {
+    return new Map<number, IButtplugClientDeviceFeature>(this._features);
   }
 
 //  /**

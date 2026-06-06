@@ -2,7 +2,38 @@ import { ButtplugDeviceError, ButtplugError, ButtplugMessageError } from "../cor
 import * as Messages from "../core/Messages";
 import { DeviceOutputCommand } from "./ButtplugClientDeviceCommand";
 
-export class ButtplugClientDeviceFeature {
+export type ButtplugClientDeviceFeatureValueRange = readonly [
+  min: number,
+  max: number
+];
+
+export interface ButtplugClientDeviceFeatureOutput {
+  readonly type: Messages.OutputType;
+  readonly valueRange: ButtplugClientDeviceFeatureValueRange;
+  readonly durationRange?: ButtplugClientDeviceFeatureValueRange;
+}
+
+export interface ButtplugClientDeviceFeatureInput {
+  readonly type: Messages.InputType;
+  readonly valueRange: ButtplugClientDeviceFeatureValueRange;
+  readonly commands: readonly Messages.InputCommandType[];
+}
+
+export interface IButtplugClientDeviceFeature {
+  readonly index: number;
+  readonly descriptor: string;
+  readonly featureDescriptor: string;
+  readonly outputs: ReadonlyMap<Messages.OutputType, ButtplugClientDeviceFeatureOutput>;
+  readonly inputs: ReadonlyMap<Messages.InputType, ButtplugClientDeviceFeatureInput>;
+  output(type: Messages.OutputType): ButtplugClientDeviceFeatureOutput | undefined;
+  input(type: Messages.InputType): ButtplugClientDeviceFeatureInput | undefined;
+  hasOutput(type: Messages.OutputType): boolean;
+  hasInput(type: Messages.InputType): boolean;
+  runOutput(cmd: DeviceOutputCommand): Promise<void>;
+  runInput(inputType: Messages.InputType, inputCommand: Messages.InputCommandType): Promise<Messages.InputReading | undefined>;
+}
+
+export class ButtplugClientDeviceFeature implements IButtplugClientDeviceFeature {
 
   constructor(
     private _deviceIndex: number,
@@ -42,6 +73,27 @@ export class ButtplugClientDeviceFeature {
     }
   }
 
+  private valueRange(value: number[]): ButtplugClientDeviceFeatureValueRange {
+    return Object.freeze([value[0], value[1]]) as ButtplugClientDeviceFeatureValueRange;
+  }
+
+  private createOutputInfo(type: Messages.OutputType, output: Messages.DeviceFeatureOutput): ButtplugClientDeviceFeatureOutput {
+    const durationRange = Array.isArray(output.Duration) ? this.valueRange(output.Duration) : undefined;
+    return Object.freeze({
+      type,
+      valueRange: this.valueRange(output.Value),
+      ...(durationRange === undefined ? {} : { durationRange }),
+    });
+  }
+
+  private createInputInfo(type: Messages.InputType, input: Messages.DeviceFeatureInput): ButtplugClientDeviceFeatureInput {
+    return Object.freeze({
+      type,
+      valueRange: this.valueRange(input.Value),
+      commands: Object.freeze([...input.Command]),
+    });
+  }
+
   protected async sendOutputCmd(command: DeviceOutputCommand): Promise<void> {
     // Make sure the requested feature is valid
     this.isOutputValid(command.outputType);
@@ -65,8 +117,8 @@ export class ButtplugClientDeviceFeature {
     } else {
       value = Math.ceil(this._feature.Output[type]!.Value![1] * p.percent);
     }
-    let newCommand: Messages.DeviceFeatureOutput = { Value: [value], Duration: duration };
-    let outCommand: { [key: string]: Messages.DeviceFeatureOutput } = {};
+    let newCommand: Messages.DeviceFeatureOutputCommand = { Value: [value], Duration: duration };
+    let outCommand: { [key: string]: Messages.DeviceFeatureOutputCommand } = {};
     outCommand[type.toString()] = newCommand;
 
     let cmd: Messages.ButtplugMessage = {
@@ -78,6 +130,54 @@ export class ButtplugClientDeviceFeature {
       }
     };
     await this.sendMsgExpectOk(cmd);
+  }
+
+  public get index(): number {
+    return this._feature.FeatureIndex;
+  }
+
+  public get descriptor(): string {
+    return this._feature.FeatureDescriptor;
+  }
+
+  public get featureDescriptor(): string {
+    return this.descriptor;
+  }
+
+  public get outputs(): ReadonlyMap<Messages.OutputType, ButtplugClientDeviceFeatureOutput> {
+    let outputs = new Map<Messages.OutputType, ButtplugClientDeviceFeatureOutput>();
+    if (this._feature.Output !== undefined) {
+      for (let [type, output] of Object.entries(this._feature.Output)) {
+        outputs.set(type as Messages.OutputType, this.createOutputInfo(type as Messages.OutputType, output));
+      }
+    }
+    return outputs;
+  }
+
+  public get inputs(): ReadonlyMap<Messages.InputType, ButtplugClientDeviceFeatureInput> {
+    let inputs = new Map<Messages.InputType, ButtplugClientDeviceFeatureInput>();
+    if (this._feature.Input !== undefined) {
+      for (let [type, input] of Object.entries(this._feature.Input)) {
+        inputs.set(type as Messages.InputType, this.createInputInfo(type as Messages.InputType, input));
+      }
+    }
+    return inputs;
+  }
+
+  public output(type: Messages.OutputType): ButtplugClientDeviceFeatureOutput | undefined {
+    let output = this._feature.Output?.[type];
+    if (output === undefined) {
+      return undefined;
+    }
+    return this.createOutputInfo(type, output);
+  }
+
+  public input(type: Messages.InputType): ButtplugClientDeviceFeatureInput | undefined {
+    let input = this._feature.Input?.[type];
+    if (input === undefined) {
+      return undefined;
+    }
+    return this.createInputInfo(type, input);
   }
 
   public hasOutput(type: Messages.OutputType): boolean {
