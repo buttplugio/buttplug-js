@@ -630,12 +630,12 @@ describe("ButtplugClientDeviceFeature metadata", () => {
     await rotate.runOutput(DeviceOutput.Rotate.percent(0.5));
     let outputCmd = [...server!.received].reverse()
       .find((msg) => msg.OutputCmd !== undefined)!.OutputCmd!;
-    expect(outputCmd.Command[Messages.OutputType.Rotate].Value).toEqual([0]);
+    expect(outputCmd.Command[Messages.OutputType.Rotate].Value).toBe(0);
 
     await rotate.runOutput(DeviceOutput.Rotate.value(-25));
     outputCmd = [...server!.received].reverse()
       .find((msg) => msg.OutputCmd !== undefined)!.OutputCmd!;
-    expect(outputCmd.Command[Messages.OutputType.Rotate].Value).toEqual([-25]);
+    expect(outputCmd.Command[Messages.OutputType.Rotate].Value).toBe(-25);
 
     await expect(
       rotate.runOutput(DeviceOutput.Rotate.value(101))

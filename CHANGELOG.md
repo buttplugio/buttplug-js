@@ -30,6 +30,7 @@
 
 - Correct output percent conversion to map across the full v4 `[min, max]` feature range, including
   ranges with negative minimum values.
+- Send v4 `OutputCmd` values as scalar numbers instead of single-element arrays. (#301)
 - Validate direct output values and duration values against advertised feature ranges before sending
   commands.
 - Update examples to use the public feature metadata and input reading APIs instead of private

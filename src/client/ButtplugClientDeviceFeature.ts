@@ -127,7 +127,7 @@ export class ButtplugClientDeviceFeature extends EventEmitter implements IButtpl
     if (value < min || value > max) {
       throw new ButtplugDeviceError(`${command.outputType} value ${value} is not in the range ${min} <= x <= ${max}`);
     }
-    let newCommand: Messages.DeviceFeatureOutputCommand = { Value: [value], Duration: duration };
+    let newCommand: Messages.DeviceFeatureOutputCommand = { Value: value, Duration: duration };
     let outCommand: { [key: string]: Messages.DeviceFeatureOutputCommand } = {};
     outCommand[type.toString()] = newCommand;
 
