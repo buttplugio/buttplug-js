@@ -1,3 +1,40 @@
+# v5.0.0 (2026/06/06)
+
+## Breaking Changes
+
+- `ButtplugClient.devices` and `ButtplugClientDevice.features` now return copied `ReadonlyMap`
+  instances instead of live mutable internal maps.
+- `ButtplugClientDeviceFeature.runInput()` now returns a readonly
+  `ButtplugClientInputReading` instead of a raw `Messages.InputReading`.
+- The `inputreading` event now emits readonly `ButtplugClientInputReading` objects from the
+  feature, device, and client levels.
+- `DeviceOutputCommand` construction is now internal to the command builder API, and the
+  `DeviceOutputCommand.value` getter now exposes the numeric output value.
+- Raw protocol helpers are no longer part of the root public API. `ButtplugMessageSorter` is no
+  longer root-exported, and raw `send()`/`sendMessage()` methods are protected.
+- `ButtplugError` metadata backing fields are no longer public mutable fields. Use the existing
+  `ErrorClass`, `InnerError`, and `Id` getters.
+- Device feature output metadata and output command payloads now use separate TypeScript
+  interfaces so metadata `Duration` is represented as a range.
+
+## Features
+
+- Expose readonly device feature metadata, including descriptors, feature indexes, input/output
+  value ranges, input commands, and output duration ranges.
+- Add `DeviceOutput.*.value()` command builders for direct v4 output values. Existing `steps()`
+  builders remain as deprecated aliases.
+- Expose readonly server information through `ButtplugClient.serverInfo`.
+- Expose readonly input readings through `ButtplugClientInputReading`.
+
+## Bugfixes
+
+- Correct output percent conversion to map across the full v4 `[min, max]` feature range, including
+  ranges with negative minimum values.
+- Validate direct output values and duration values against advertised feature ranges before sending
+  commands.
+- Update examples to use the public feature metadata and input reading APIs instead of private
+  implementation fields or raw protocol messages.
+
 # v4.0.2 (2026/05/16)
 
 ## Features
