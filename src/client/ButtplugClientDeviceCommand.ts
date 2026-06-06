@@ -1,49 +1,65 @@
 import { ButtplugDeviceError } from "../core/Exceptions";
 import { OutputType } from "../core/Messages";
 
-class PercentOrSteps {
+class PercentOrValue {
   private _percent: number | undefined;
-  private _steps: number | undefined;
+  private _value: number | undefined;
 
   public get percent() {
     return this._percent;
   }
 
-  public get steps() {
-    return this._steps;
+  public get value() {
+    return this._value;
   }
 
-  public static createSteps(s: number): PercentOrSteps {
-    let v = new PercentOrSteps;
-    v._steps = s;
+  public static createValue(value: number): PercentOrValue {
+    if (!Number.isFinite(value)) {
+      throw new ButtplugDeviceError(`Output value ${value} is not finite`);
+    }
+
+    let v = new PercentOrValue;
+    v._value = value;
     return v;
   }
 
-  public static createPercent(p: number): PercentOrSteps {
+  public static createPercent(p: number): PercentOrValue {
     if (p < 0 || p > 1.0) {
       throw new ButtplugDeviceError(`Percent value ${p} is not in the range 0.0 <= x <= 1.0`);
     }      
 
-    let v = new PercentOrSteps;
+    let v = new PercentOrValue;
     v._percent = p;
     return v;
   }
 }
 
 export class DeviceOutputCommand {
-  public constructor( 
+  private constructor(
     private _outputType: OutputType,
-    private _value: PercentOrSteps,
+    private _value: PercentOrValue,
     private _duration?: number,
   )
   {}
+
+  public static createValue(outputType: OutputType, value: number, duration?: number): DeviceOutputCommand {
+    return new DeviceOutputCommand(outputType, PercentOrValue.createValue(value), duration);
+  }
+
+  public static createPercent(outputType: OutputType, percent: number, duration?: number): DeviceOutputCommand {
+    return new DeviceOutputCommand(outputType, PercentOrValue.createPercent(percent), duration);
+  }
 
   public get outputType() {
     return this._outputType;
   }
 
   public get value() {
-    return this._value;
+    return this._value.value;
+  }
+
+  public get percent() {
+    return this._value.percent;
   }
 
   public get duration() {
@@ -56,22 +72,32 @@ export class DeviceOutputValueConstructor {
     private _outputType: OutputType) 
   {}
 
+  public value(value: number): DeviceOutputCommand {
+    return DeviceOutputCommand.createValue(this._outputType, value);
+  }
+
+  /** @deprecated Use value() for v4 output ranges. */
   public steps(steps: number): DeviceOutputCommand {
-    return new DeviceOutputCommand(this._outputType, PercentOrSteps.createSteps(steps), undefined);
+    return this.value(steps);
   }
 
   public percent(percent: number): DeviceOutputCommand {
-    return new DeviceOutputCommand(this._outputType, PercentOrSteps.createPercent(percent), undefined);
+    return DeviceOutputCommand.createPercent(this._outputType, percent);
   }
 }
 
 export class DeviceOutputPositionWithDurationConstructor {
+  public value(value: number, duration: number): DeviceOutputCommand {
+    return DeviceOutputCommand.createValue(OutputType.HwPositionWithDuration, value, duration);
+  }
+
+  /** @deprecated Use value() for v4 output ranges. */
   public steps(steps: number, duration: number): DeviceOutputCommand {
-    return new DeviceOutputCommand(OutputType.HwPositionWithDuration, PercentOrSteps.createSteps(steps), duration);
+    return this.value(steps, duration);
   }
 
   public percent(percent: number, duration: number): DeviceOutputCommand {
-    return new DeviceOutputCommand(OutputType.HwPositionWithDuration, PercentOrSteps.createPercent(percent), duration);
+    return DeviceOutputCommand.createPercent(OutputType.HwPositionWithDuration, percent, duration);
   }
 }
 
@@ -112,4 +138,3 @@ export class DeviceOutput {
     return new DeviceOutputPositionWithDurationConstructor();
   }
 }
-

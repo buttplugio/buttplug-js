@@ -100,25 +100,32 @@ export class ButtplugClientDeviceFeature extends EventEmitter implements IButtpl
   protected async sendOutputCmd(command: DeviceOutputCommand): Promise<void> {
     // Make sure the requested feature is valid
     this.isOutputValid(command.outputType);
-    if (command.value === undefined) {
-      throw new ButtplugDeviceError(`${command.outputType} requires value defined`);
-    }
 
     let type = command.outputType;
+    const outputAttributes = this._feature.Output[type]!;
     let duration: undefined | number = undefined;
     if (type == Messages.OutputType.HwPositionWithDuration) {
       if (command.duration === undefined) {
         throw new ButtplugDeviceError("PositionWithDuration requires duration defined");
       }
       duration = command.duration;
+      if (outputAttributes.Duration !== undefined &&
+          (duration < outputAttributes.Duration[0] || duration > outputAttributes.Duration[1])) {
+        throw new ButtplugDeviceError(`Duration value ${duration} is not in the range ${outputAttributes.Duration[0]} <= x <= ${outputAttributes.Duration[1]}`);
+      }
     } 
     let value: number;
-    let p = command.value;
-    if (p.percent === undefined) {
-      // TODO Check step limits here
-      value = command.value.steps!;
+    const [min, max] = outputAttributes.Value!;
+    if (command.percent === undefined) {
+      if (command.value === undefined) {
+        throw new ButtplugDeviceError(`${command.outputType} requires value defined`);
+      }
+      value = command.value;
     } else {
-      value = Math.ceil(this._feature.Output[type]!.Value![1] * p.percent);
+      value = Math.ceil(min + ((max - min) * command.percent));
+    }
+    if (value < min || value > max) {
+      throw new ButtplugDeviceError(`${command.outputType} value ${value} is not in the range ${min} <= x <= ${max}`);
     }
     let newCommand: Messages.DeviceFeatureOutputCommand = { Value: [value], Duration: duration };
     let outCommand: { [key: string]: Messages.DeviceFeatureOutputCommand } = {};

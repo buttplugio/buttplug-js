@@ -620,6 +620,36 @@ describe("ButtplugClientDeviceFeature metadata", () => {
 
     await cleanup();
   });
+
+  it("maps output percents across value ranges and validates direct values", async () => {
+    const { client, cleanup } = await connectAndEnumerate(PORT_BASE + 26);
+
+    const vibrator = client.devices.get(0)!;
+    const rotate = vibrator.features.get(2)!;
+
+    await rotate.runOutput(DeviceOutput.Rotate.percent(0.5));
+    let outputCmd = [...server!.received].reverse()
+      .find((msg) => msg.OutputCmd !== undefined)!.OutputCmd!;
+    expect(outputCmd.Command[Messages.OutputType.Rotate].Value).toEqual([0]);
+
+    await rotate.runOutput(DeviceOutput.Rotate.value(-25));
+    outputCmd = [...server!.received].reverse()
+      .find((msg) => msg.OutputCmd !== undefined)!.OutputCmd!;
+    expect(outputCmd.Command[Messages.OutputType.Rotate].Value).toEqual([-25]);
+
+    await expect(
+      rotate.runOutput(DeviceOutput.Rotate.value(101))
+    ).rejects.toBeDefined();
+
+    const timedPosition = client.devices.get(1)!.features.get(1)!;
+    await expect(
+      timedPosition.runOutput(
+        DeviceOutput.PositionWithDuration.percent(0.5, 10001)
+      )
+    ).rejects.toBeDefined();
+
+    await cleanup();
+  });
 });
 
 // ─── Harness-binary tests (--client-driven) ──────────────────────────────────
