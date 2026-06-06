@@ -11,15 +11,15 @@ import { ButtplugLogger } from './Logging';
 
 export class ButtplugError extends Error {
   public get ErrorClass(): Messages.ErrorClass {
-    return this.errorClass;
+    return this._errorClass;
   }
 
   public get InnerError(): Error | undefined {
-    return this.innerError;
+    return this._innerError;
   }
 
   public get Id(): number | undefined {
-    return this.messageId;
+    return this._messageId;
   }
 
   public get ErrorMessage(): Messages.ButtplugMessage {
@@ -59,9 +59,9 @@ export class ButtplugError extends Error {
     }
   }
 
-  public errorClass: Messages.ErrorClass = Messages.ErrorClass.ERROR_UNKNOWN;
-  public innerError: Error | undefined;
-  public messageId: number | undefined;
+  private readonly _errorClass: Messages.ErrorClass;
+  private readonly _innerError: Error | undefined;
+  private readonly _messageId: number | undefined;
 
   protected constructor(
     message: string,
@@ -70,9 +70,9 @@ export class ButtplugError extends Error {
     inner?: Error
   ) {
     super(message);
-    this.errorClass = errorClass;
-    this.innerError = inner;
-    this.messageId = id;
+    this._errorClass = errorClass;
+    this._innerError = inner;
+    this._messageId = id;
   }
 }
 
