@@ -521,6 +521,18 @@ describe("ButtplugClientDeviceFeature metadata", () => {
 
     await cleanup();
   });
+
+  it("returns a readonly devices map copy instead of internal client state", async () => {
+    const { client, cleanup } = await connectAndEnumerate(PORT_BASE + 23);
+
+    const devices = client.devices as Map<number, unknown>;
+    devices.clear();
+
+    expect(client.devices.size).toBe(3);
+    expect(client.devices.get(0)!.name).toBe("Conformance Test Vibrator");
+
+    await cleanup();
+  });
 });
 
 // ─── Harness-binary tests (--client-driven) ──────────────────────────────────

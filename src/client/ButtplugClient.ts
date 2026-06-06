@@ -40,11 +40,11 @@ export class ButtplugClient extends EventEmitter {
     return this._connector !== null && this._connector.Connected;
   }
 
-  public get devices(): Map<number, ButtplugClientDevice> {
+  public get devices(): ReadonlyMap<number, ButtplugClientDevice> {
     // While this function doesn't actually send a message, if we don't have a
     // connector, we shouldn't have devices.
     this.checkConnector();
-    return this._devices;
+    return new Map(this._devices);
   }
 
   public get isScanning(): boolean {
