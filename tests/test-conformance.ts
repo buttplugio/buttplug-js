@@ -23,10 +23,9 @@
  * Known failures (as of writing):
  *   ping_required — ping timer in ButtplugClient.ts is commented out (~line 134)
  *
- * Discovered bugs:
- *   DeviceFeatureOutput.Value typed as `number` in Messages.ts but the
- *   implementation (ButtplugClientDeviceFeature.ts:66) reads Value[1] as an
- *   array index — the interface definition is wrong.
+ * Notes:
+ *   DeviceFeatures expose Value as a v4 range, while OutputCmd payloads use a
+ *   single output value. The TypeScript wire interfaces keep those separate.
  */
 
 import { spawn } from "child_process";
@@ -64,8 +63,7 @@ function msgId(msg: Messages.ButtplugMessage): number | undefined {
 
 // ─── Conformance device definitions ──────────────────────────────────────────
 //
-// DeviceFeatureOutput.Value must be [min, max] even though Messages.ts types it
-// as `number`. The feature implementation reads Value[1] as the step ceiling.
+// DeviceFeatureOutput.Value is [min, max] for feature metadata.
 
 const DEVICES: Messages.DeviceList["Devices"] = {
   0: {
@@ -90,7 +88,7 @@ const DEVICES: Messages.DeviceList["Devices"] = {
       0: { FeatureDescriptor: "Position",   FeatureIndex: 0,
            Output: { Position: { Value: [0, 100] } }, Input: {} },
       1: { FeatureDescriptor: "Position With Duration", FeatureIndex: 1,
-           Output: { HwPositionWithDuration: { Value: [0, 100], Duration: 10000 } }, Input: {} },
+           Output: { HwPositionWithDuration: { Value: [0, 100], Duration: [0, 10000] } }, Input: {} },
       2: { FeatureDescriptor: "Oscillate",  FeatureIndex: 2,
            Output: { Oscillate: { Value: [0, 100] } }, Input: {} },
       3: { FeatureDescriptor: "Button",     FeatureIndex: 3,
@@ -405,6 +403,121 @@ describe("ButtplugClient Conformance Tests", () => {
     // Fresh client should connect successfully
     const { client: client2, cleanup } = await connectClient(PORT_BASE + 4);
     expect(client2.connected).toBe(true);
+
+    await cleanup();
+  });
+});
+
+describe("ButtplugClientDeviceFeature metadata", () => {
+  let server: MinimalButtplugServer | undefined;
+
+  afterEach(async () => {
+    await server?.close();
+    server = undefined;
+  });
+
+  async function connectAndEnumerate(port: number) {
+    server = new MinimalButtplugServer(port);
+    const { client, cleanup } = await connectClient(port);
+    const ready = waitForDevices(client, 3);
+    await client.startScanning();
+    await ready;
+    return { client, cleanup };
+  }
+
+  it("exposes feature descriptors, indexes, and output metadata", async () => {
+    const { client, cleanup } = await connectAndEnumerate(PORT_BASE + 20);
+
+    const vibrator = client.devices.get(0)!;
+    const rotate = vibrator.features.get(2)!;
+
+    expect(rotate.index).toBe(2);
+    expect(rotate.descriptor).toBe("Rotate");
+    expect(rotate.featureDescriptor).toBe("Rotate");
+    expect(rotate.output(Messages.OutputType.Vibrate)).toBeUndefined();
+
+    const output = rotate.output(Messages.OutputType.Rotate)!;
+    expect(output.type).toBe(Messages.OutputType.Rotate);
+    expect(output.valueRange).toEqual([-100, 100]);
+    expect(rotate.outputs.size).toBe(1);
+    expect(rotate.outputs.get(Messages.OutputType.Rotate)).toEqual(output);
+
+    const positioner = client.devices.get(1)!;
+    const timedPosition = positioner.features.get(1)!;
+    expect(timedPosition.output(Messages.OutputType.HwPositionWithDuration))
+      .toEqual({
+        type: Messages.OutputType.HwPositionWithDuration,
+        valueRange: [0, 100],
+        durationRange: [0, 10000],
+      });
+
+    await cleanup();
+  });
+
+  it("exposes input metadata and supported input commands", async () => {
+    const { client, cleanup } = await connectAndEnumerate(PORT_BASE + 21);
+
+    const vibrator = client.devices.get(0)!;
+    const battery = vibrator.features.get(3)!.input(Messages.InputType.Battery)!;
+    expect(battery.type).toBe(Messages.InputType.Battery);
+    expect(battery.valueRange).toEqual([0, 100]);
+    expect(battery.commands).toEqual([Messages.InputCommandType.Read]);
+
+    const positioner = client.devices.get(1)!;
+    const button = positioner.features.get(3)!.input(Messages.InputType.Button)!;
+    expect(button.commands).toEqual([
+      Messages.InputCommandType.Subscribe,
+      Messages.InputCommandType.Unsubscribe,
+    ]);
+
+    const multi = client.devices.get(2)!;
+    expect(multi.features.get(4)!.input(Messages.InputType.RSSI)!.valueRange)
+      .toEqual([-128, 0]);
+    expect(multi.features.get(5)!.input(Messages.InputType.Pressure)!.valueRange)
+      .toEqual([0, 65535]);
+    expect(multi.features.get(5)!.input(Messages.InputType.Battery))
+      .toBeUndefined();
+
+    await cleanup();
+  });
+
+  it("returns readonly metadata copies instead of internal feature state", async () => {
+    const { client, cleanup } = await connectAndEnumerate(PORT_BASE + 22);
+
+    const vibrator = client.devices.get(0)!;
+    const features = vibrator.features as Map<number, unknown>;
+    features.clear();
+    expect(vibrator.features.size).toBe(4);
+
+    const rotate = vibrator.features.get(2)!;
+    const outputs = rotate.outputs as Map<Messages.OutputType, unknown>;
+    outputs.clear();
+    expect(rotate.outputs.size).toBe(1);
+
+    const output = rotate.output(Messages.OutputType.Rotate)!;
+    expect(Object.isFrozen(output)).toBe(true);
+    expect(Object.isFrozen(output.valueRange)).toBe(true);
+    try {
+      (output.valueRange as unknown as number[])[0] = 42;
+    } catch (_) {}
+    expect(rotate.output(Messages.OutputType.Rotate)!.valueRange)
+      .toEqual([-100, 100]);
+
+    const batteryFeature = vibrator.features.get(3)!;
+    const battery = batteryFeature.input(Messages.InputType.Battery)!;
+    expect(Object.isFrozen(battery)).toBe(true);
+    expect(Object.isFrozen(battery.valueRange)).toBe(true);
+    expect(Object.isFrozen(battery.commands)).toBe(true);
+    try {
+      (battery.commands as unknown as Messages.InputCommandType[])
+        .push(Messages.InputCommandType.Subscribe);
+    } catch (_) {}
+    expect(batteryFeature.input(Messages.InputType.Battery)!.commands)
+      .toEqual([Messages.InputCommandType.Read]);
+
+    await expect(
+      rotate.runOutput(DeviceOutput.Rotate.percent(0.5))
+    ).resolves.toBeUndefined();
 
     await cleanup();
   });
