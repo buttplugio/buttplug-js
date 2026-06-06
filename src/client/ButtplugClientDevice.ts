@@ -19,6 +19,7 @@ import {
   IButtplugClientDeviceFeature,
 } from './ButtplugClientDeviceFeature';
 import { DeviceOutputCommand } from './ButtplugClientDeviceCommand';
+import { ButtplugClientInputReading } from './ButtplugClientInputReading';
 
 /**
  * Represents an abstract device, capable of taking certain kinds of messages.
@@ -93,7 +94,7 @@ export class ButtplugClientDevice extends EventEmitter {
     ) => Promise<Messages.ButtplugMessage>
   ) {
     super();
-    this._features = new Map(Object.entries(_deviceInfo.DeviceFeatures).map(([index, v]) => [parseInt(index), new ButtplugClientDeviceFeature(_deviceInfo.DeviceIndex, _deviceInfo.DeviceName, v, _sendClosure)]));
+    this._features = new Map(Object.entries(_deviceInfo.DeviceFeatures).map(([index, v]) => [parseInt(index), new ButtplugClientDeviceFeature(this, v, _sendClosure)]));
   }
 
   public async send(
@@ -166,13 +167,22 @@ export class ButtplugClientDevice extends EventEmitter {
         if (response === undefined) {
           throw new ButtplugMessageError("Got incorrect message back.");
         }
-        if (response.Reading[Messages.InputType.Battery] === undefined) {
-          throw new ButtplugMessageError("Got reading with no Battery info.");
-        }
-        return response.Reading[Messages.InputType.Battery].Value;
+        return response.value;
       }
     }
     throw new ButtplugDeviceError(`No battery present on this device.`);
+  }
+
+  public emitInputReading(inputReading: Messages.InputReading): ButtplugClientInputReading[] {
+    const feature = this._features.get(inputReading.FeatureIndex);
+    if (feature === undefined) {
+      return [];
+    }
+    const readings = feature.emitInputReading(inputReading);
+    for (let reading of readings) {
+      this.emit('inputreading', reading);
+    }
+    return readings;
   }
 
   public emitDisconnected() {

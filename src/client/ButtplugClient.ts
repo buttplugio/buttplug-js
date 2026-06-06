@@ -102,8 +102,12 @@ export class ButtplugClient extends EventEmitter {
         this._isScanning = false;
         this.emit('scanningfinished', x);
       } else if (x.InputReading !== undefined) {
-        // TODO this should be emitted from the device or feature, not the client
-        this.emit('inputreading', x);
+        const device = this._devices.get(x.InputReading.DeviceIndex);
+        if (device !== undefined) {
+          for (let reading of device.emitInputReading(x.InputReading)) {
+            this.emit('inputreading', reading);
+          }
+        }
       } else {
         console.log(`Unhandled message: ${x}`);
       }

@@ -8,6 +8,7 @@
 
 export * from './client/ButtplugClient';
 export * from './client/ButtplugClientDevice';
+export type { ButtplugClientInputReading } from './client/ButtplugClientInputReading';
 export type {
   IButtplugClientDeviceFeature,
   ButtplugClientDeviceFeatureInput,

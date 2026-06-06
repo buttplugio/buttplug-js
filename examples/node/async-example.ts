@@ -16,6 +16,7 @@ import {
   DeviceOutput,
   OutputType,
 } from 'buttplug';
+import type { ButtplugClientInputReading } from 'buttplug';
 import * as readline from 'readline';
 
 async function waitForEnter(prompt: string): Promise<void> {
@@ -72,8 +73,10 @@ async function main(): Promise<void> {
   });
 
   // 'inputreading' is fired when subscribed sensor data arrives
-  client.addListener('inputreading', (reading: unknown) => {
-    console.log(`[Event] Input reading: ${JSON.stringify(reading)}`);
+  client.addListener('inputreading', (reading: ButtplugClientInputReading) => {
+    console.log(
+      `[Event] ${reading.device.name} ${reading.inputType}: ${reading.value}`
+    );
   });
 
   // Connect asynchronously - this may take time due to network

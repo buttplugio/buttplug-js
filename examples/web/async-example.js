@@ -47,7 +47,7 @@ async function runAsyncExample() {
 
   // 'inputreading' is fired when subscribed sensor data arrives
   client.addListener("inputreading", (reading) => {
-    console.log(`[Event] Input reading: ${JSON.stringify(reading)}`);
+    console.log(`[Event] ${reading.device.name} ${reading.inputType}: ${reading.value}`);
   });
 
   // Connect asynchronously - this may take time due to network

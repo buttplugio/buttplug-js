@@ -183,7 +183,18 @@ class MinimalButtplugServer {
           this.send({ Ok: { Id: id } });
         }
       } else if (msg.InputCmd !== undefined) {
-        this.send({ Ok: { Id: id } });
+        if (msg.InputCmd.Command === Messages.InputCommandType.Read) {
+          this.send({ InputReading: {
+            Id: id,
+            DeviceIndex: msg.InputCmd.DeviceIndex,
+            FeatureIndex: msg.InputCmd.FeatureIndex,
+            Reading: {
+              [msg.InputCmd.Type]: { Value: 42 },
+            },
+          } });
+        } else {
+          this.send({ Ok: { Id: id } });
+        }
       } else if (msg.StopCmd !== undefined) {
         this.send({ Ok: { Id: id } });
       } else if (msg.Ping !== undefined) {
@@ -195,6 +206,24 @@ class MinimalButtplugServer {
   /** Push a new device list (e.g. to simulate device removal). */
   pushDeviceList(devices: Messages.DeviceList["Devices"]): void {
     this.send({ DeviceList: { Id: 0, Devices: devices } });
+  }
+
+  pushInputReading(
+    deviceIndex: number,
+    featureIndex: number,
+    inputType: Messages.InputType,
+    value: number
+  ): void {
+    this.send({
+      InputReading: {
+        Id: 0,
+        DeviceIndex: deviceIndex,
+        FeatureIndex: featureIndex,
+        Reading: {
+          [inputType]: { Value: value },
+        },
+      },
+    });
   }
 
   /** Drop the WebSocket connection from the server side. */
@@ -530,6 +559,64 @@ describe("ButtplugClientDeviceFeature metadata", () => {
 
     expect(client.devices.size).toBe(3);
     expect(client.devices.get(0)!.name).toBe("Conformance Test Vibrator");
+
+    await cleanup();
+  });
+
+  it("returns readonly input readings from read commands", async () => {
+    const { client, cleanup } = await connectAndEnumerate(PORT_BASE + 24);
+
+    const vibrator = client.devices.get(0)!;
+    const batteryFeature = vibrator.features.get(3)!;
+    const reading = await batteryFeature.runInput(
+      Messages.InputType.Battery,
+      Messages.InputCommandType.Read
+    );
+
+    expect(reading).toBeDefined();
+    expect(Object.isFrozen(reading!)).toBe(true);
+    expect(reading!.device).toBe(vibrator);
+    expect(reading!.feature).toBe(batteryFeature);
+    expect(reading!.inputType).toBe(Messages.InputType.Battery);
+    expect(reading!.value).toBe(42);
+    await expect(vibrator.battery()).resolves.toBe(42);
+
+    await cleanup();
+  });
+
+  it("emits readonly subscribed input readings from feature, device, and client", async () => {
+    const { client, cleanup } = await connectAndEnumerate(PORT_BASE + 25);
+
+    const vibrator = client.devices.get(0)!;
+    const batteryFeature = vibrator.features.get(3)!;
+
+    const featureReading = new Promise(resolve =>
+      batteryFeature.addListener('inputreading', resolve)
+    );
+    const deviceReading = new Promise(resolve =>
+      vibrator.addListener('inputreading', resolve)
+    );
+    const clientReading = new Promise(resolve =>
+      client.addListener('inputreading', resolve)
+    );
+
+    server!.pushInputReading(0, 3, Messages.InputType.Battery, 77);
+
+    const readings = await Promise.all([
+      featureReading,
+      deviceReading,
+      clientReading,
+    ]);
+
+    for (let reading of readings) {
+      expect(Object.isFrozen(reading)).toBe(true);
+      expect(reading).toMatchObject({
+        device: vibrator,
+        feature: batteryFeature,
+        inputType: Messages.InputType.Battery,
+        value: 77,
+      });
+    }
 
     await cleanup();
   });

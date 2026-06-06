@@ -1,6 +1,9 @@
 import { ButtplugDeviceError, ButtplugError, ButtplugMessageError } from "../core/Exceptions";
 import * as Messages from "../core/Messages";
 import { DeviceOutputCommand } from "./ButtplugClientDeviceCommand";
+import { EventEmitter } from 'eventemitter3';
+import type { ButtplugClientDevice } from './ButtplugClientDevice';
+import { ButtplugClientInputReading } from './ButtplugClientInputReading';
 
 export type ButtplugClientDeviceFeatureValueRange = readonly [
   min: number,
@@ -19,7 +22,7 @@ export interface ButtplugClientDeviceFeatureInput {
   readonly commands: readonly Messages.InputCommandType[];
 }
 
-export interface IButtplugClientDeviceFeature {
+export interface IButtplugClientDeviceFeature extends EventEmitter {
   readonly index: number;
   readonly descriptor: string;
   readonly featureDescriptor: string;
@@ -30,18 +33,18 @@ export interface IButtplugClientDeviceFeature {
   hasOutput(type: Messages.OutputType): boolean;
   hasInput(type: Messages.InputType): boolean;
   runOutput(cmd: DeviceOutputCommand): Promise<void>;
-  runInput(inputType: Messages.InputType, inputCommand: Messages.InputCommandType): Promise<Messages.InputReading | undefined>;
+  runInput(inputType: Messages.InputType, inputCommand: Messages.InputCommandType): Promise<ButtplugClientInputReading | undefined>;
 }
 
-export class ButtplugClientDeviceFeature implements IButtplugClientDeviceFeature {
+export class ButtplugClientDeviceFeature extends EventEmitter implements IButtplugClientDeviceFeature {
 
   constructor(
-    private _deviceIndex: number,
-    private _deviceName: string,
+    private _device: ButtplugClientDevice,
     private _feature: Messages.DeviceFeature,
     private _sendClosure: (
       msg: Messages.ButtplugMessage
     ) => Promise<Messages.ButtplugMessage>) {
+    super();
   }
 
   protected send = async (msg: Messages.ButtplugMessage): Promise<Messages.ButtplugMessage> => {
@@ -63,13 +66,13 @@ export class ButtplugClientDeviceFeature implements IButtplugClientDeviceFeature
 
   protected isOutputValid(type: Messages.OutputType) {
     if (this._feature.Output !== undefined && !this._feature.Output.hasOwnProperty(type)) {
-      throw new ButtplugDeviceError(`Feature index ${this._feature.FeatureIndex} does not support type ${type} for device ${this._deviceName}`);
+      throw new ButtplugDeviceError(`Feature index ${this._feature.FeatureIndex} does not support type ${type} for device ${this._device.name}`);
     }
   }
 
   protected isInputValid(type: Messages.InputType) {
     if (this._feature.Input !== undefined && !this._feature.Input.hasOwnProperty(type)) {
-      throw new ButtplugDeviceError(`Feature index ${this._feature.FeatureIndex} does not support type ${type} for device ${this._deviceName}`);
+      throw new ButtplugDeviceError(`Feature index ${this._feature.FeatureIndex} does not support type ${type} for device ${this._device.name}`);
     }
   }
 
@@ -124,7 +127,7 @@ export class ButtplugClientDeviceFeature implements IButtplugClientDeviceFeature
     let cmd: Messages.ButtplugMessage = {
       OutputCmd: {
         Id: 1,
-        DeviceIndex: this._deviceIndex, 
+        DeviceIndex: this._device.index, 
         FeatureIndex: this._feature.FeatureIndex, 
         Command: outCommand 
       }
@@ -180,6 +183,30 @@ export class ButtplugClientDeviceFeature implements IButtplugClientDeviceFeature
     return this.createInputInfo(type, input);
   }
 
+  public inputReadingsFromMessage(inputReading: Messages.InputReading): ButtplugClientInputReading[] {
+    if (inputReading.FeatureIndex !== this._feature.FeatureIndex) {
+      return [];
+    }
+    let readings: ButtplugClientInputReading[] = [];
+    for (let [type, reading] of Object.entries(inputReading.Reading)) {
+      readings.push(Object.freeze({
+        device: this._device,
+        feature: this,
+        inputType: type as Messages.InputType,
+        value: reading.Value,
+      }));
+    }
+    return readings;
+  }
+
+  public emitInputReading(inputReading: Messages.InputReading): ButtplugClientInputReading[] {
+    const readings = this.inputReadingsFromMessage(inputReading);
+    for (let reading of readings) {
+      this.emit('inputreading', reading);
+    }
+    return readings;
+  }
+
   public hasOutput(type: Messages.OutputType): boolean {
     if (this._feature.Output !== undefined) {
       return this._feature.Output.hasOwnProperty(type.toString());
@@ -202,11 +229,10 @@ export class ButtplugClientDeviceFeature implements IButtplugClientDeviceFeature
     throw new ButtplugDeviceError(`Output type ${cmd.outputType} not supported by feature.`);
   }
 
-  public async runInput(inputType: Messages.InputType, inputCommand: Messages.InputCommandType): Promise<Messages.InputReading | undefined> {
+  public async runInput(inputType: Messages.InputType, inputCommand: Messages.InputCommandType): Promise<ButtplugClientInputReading | undefined> {
     // Make sure the requested feature is valid
     this.isInputValid(inputType);
     let inputAttributes = this._feature.Input[inputType];
-    console.log(this._feature.Input);
     if ((inputCommand === Messages.InputCommandType.Unsubscribe && !inputAttributes.Command.includes(Messages.InputCommandType.Subscribe)) && !inputAttributes.Command.includes(inputCommand)) {
       throw new ButtplugDeviceError(`${inputType} does not support command ${inputCommand}`);
     }
@@ -214,7 +240,7 @@ export class ButtplugClientDeviceFeature implements IButtplugClientDeviceFeature
     let cmd: Messages.ButtplugMessage = {
       InputCmd: {
         Id: 1,
-        DeviceIndex: this._deviceIndex, 
+        DeviceIndex: this._device.index, 
         FeatureIndex: this._feature.FeatureIndex, 
         Type: inputType,
         Command: inputCommand,
@@ -223,16 +249,19 @@ export class ButtplugClientDeviceFeature implements IButtplugClientDeviceFeature
     if (inputCommand == Messages.InputCommandType.Read) {
       const response = await this.send(cmd);
       if (response.InputReading !== undefined) {
-        return response.InputReading;
+        const reading = this.inputReadingsFromMessage(response.InputReading)
+          .find((x) => x.inputType === inputType);
+        if (reading === undefined) {
+          throw new ButtplugMessageError(`Expected ${inputType} reading, and didn't get one.`);
+        }
+        return reading;
       } else if (response.Error !== undefined) {
         throw ButtplugError.FromError(response as Messages.Error);
       } else {
         throw new ButtplugMessageError("Expected InputReading or Error, and didn't get either!");
       }
     } else {
-      console.log(`Sending subscribe message: ${JSON.stringify(cmd)}`);
       await this.sendMsgExpectOk(cmd);
-      console.log("Got back ok?");
     }
   }
 }
