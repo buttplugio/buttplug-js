@@ -66,7 +66,7 @@ export class ButtplugBrowserWebsocketConnector extends EventEmitter {
     this.emit('disconnect');
   };
 
-  public sendMessage(msg: ButtplugMessage) {
+  protected sendMessage(msg: ButtplugMessage) {
     if (!this.Connected) {
       throw new Error('ButtplugBrowserWebsocketConnector not connected');
     }

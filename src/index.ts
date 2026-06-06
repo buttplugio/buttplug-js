@@ -18,7 +18,6 @@ export type {
 export * from './client/ButtplugBrowserWebsocketClientConnector';
 export * from './client/ButtplugNodeWebsocketClientConnector';
 export * from './client/ButtplugClientConnectorException';
-export * from './utils/ButtplugMessageSorter';
 export * from './client/ButtplugClientDeviceCommand';
 export * from './client/IButtplugClientConnector';
 //export * from './core/MessageClasses';

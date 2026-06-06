@@ -97,7 +97,7 @@ export class ButtplugClientDevice extends EventEmitter {
     this._features = new Map(Object.entries(_deviceInfo.DeviceFeatures).map(([index, v]) => [parseInt(index), new ButtplugClientDeviceFeature(this, v, _sendClosure)]));
   }
 
-  public async send(
+  protected async send(
     msg: Messages.ButtplugMessage
   ): Promise<Messages.ButtplugMessage> {
     // Assume we're getting the closure from ButtplugClient, which does all of
