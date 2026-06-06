@@ -47,21 +47,19 @@ function printDeviceInfo(device) {
   // Detailed feature breakdown
   console.log("\nDetailed Features:");
   for (const [index, feature] of device.features) {
-    // Access the underlying feature definition
-    const def = feature._feature;
-    console.log(`\n  Feature ${index}: ${def.FeatureDescriptor}`);
+    console.log(`\n  Feature ${index}: ${feature.descriptor}`);
 
-    if (def.Output) {
+    if (feature.outputs.size > 0) {
       console.log("    Outputs:");
-      for (const [type, config] of Object.entries(def.Output)) {
-        console.log(`      - ${type}: steps ${config.Value[0]}-${config.Value[1]}`);
+      for (const output of feature.outputs.values()) {
+        console.log(`      - ${output.type}: range ${output.valueRange[0]}-${output.valueRange[1]}`);
       }
     }
 
-    if (def.Input) {
+    if (feature.inputs.size > 0) {
       console.log("    Inputs:");
-      for (const [type, config] of Object.entries(def.Input)) {
-        console.log(`      - ${type}: commands [${config.Command.join(", ")}]`);
+      for (const input of feature.inputs.values()) {
+        console.log(`      - ${input.type}: commands [${input.commands.join(", ")}]`);
       }
     }
   }

@@ -65,13 +65,10 @@ async function main(): Promise<void> {
   // Show what output types this device supports
   console.log('\nSupported output types:');
   for (const [index, feature] of device.features) {
-    const def = (feature as any)._feature;
-    if (def.Output) {
-      for (const outputType of Object.keys(def.Output)) {
-        console.log(
-          `  - ${outputType} (Feature ${index}: ${def.FeatureDescriptor})`
-        );
-      }
+    for (const output of feature.outputs.values()) {
+      console.log(
+        `  - ${output.type} (Feature ${index}: ${feature.descriptor})`
+      );
     }
   }
 

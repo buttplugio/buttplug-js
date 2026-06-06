@@ -71,26 +71,22 @@ function printDeviceInfo(device: ButtplugClientDevice): void {
   // Detailed feature breakdown
   console.log('\nDetailed Features:');
   for (const [index, feature] of device.features) {
-    // Access the underlying feature definition
-    const def = (feature as any)._feature;
-    console.log(`\n  Feature ${index}: ${def.FeatureDescriptor}`);
+    console.log(`\n  Feature ${index}: ${feature.descriptor}`);
 
-    if (def.Output) {
+    if (feature.outputs.size > 0) {
       console.log('    Outputs:');
-      for (const [type, config] of Object.entries(def.Output)) {
-        const cfg = config as { Value: number[] };
+      for (const output of feature.outputs.values()) {
         console.log(
-          `      - ${type}: steps ${cfg.Value[0]}-${cfg.Value[1]}`
+          `      - ${output.type}: range ${output.valueRange[0]}-${output.valueRange[1]}`
         );
       }
     }
 
-    if (def.Input) {
+    if (feature.inputs.size > 0) {
       console.log('    Inputs:');
-      for (const [type, config] of Object.entries(def.Input)) {
-        const cfg = config as { Value: number[]; Command: string[] };
+      for (const input of feature.inputs.values()) {
         console.log(
-          `      - ${type}: commands [${cfg.Command.join(', ')}]`
+          `      - ${input.type}: commands [${input.commands.join(', ')}]`
         );
       }
     }
