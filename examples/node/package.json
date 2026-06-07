@@ -15,7 +15,7 @@
     "application": "npx ts-node --esm application-example.ts"
   },
   "dependencies": {
-    "buttplug": "file:../js"
+    "buttplug": "file:../.."
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

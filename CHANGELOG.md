@@ -1,3 +1,12 @@
+# v5.0.1 (2026/06/06)
+
+## Bugfixes
+
+- Update examples and CDN snippets to reference the v5 package.
+- Fix node examples to depend on the repository root package instead of the removed `examples/js`
+  path.
+- Standardize browser examples on the documented `buttplug` UMD global.
+
 # v5.0.0 (2026/06/06)
 
 ## Breaking Changes

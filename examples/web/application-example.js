@@ -7,7 +7,7 @@
 // 1. Install Intiface Central: https://intiface.com/central
 // 2. Start the server in Intiface Central (click "Start Server")
 // 3. Include Buttplug via CDN in your HTML:
-//    <script src="https://cdn.jsdelivr.net/npm/buttplug@4/dist/web/buttplug.js"></script>
+//    <script src="https://cdn.jsdelivr.net/npm/buttplug@5/dist/web/buttplug.js"></script>
 // 4. Call runApplicationExample() from your page
 
 async function runApplicationExample() {
@@ -86,11 +86,11 @@ async function runApplicationExample() {
 
     // Check output capabilities
     const outputs = [];
-    if (device.hasOutput(Buttplug.OutputType.Vibrate)) outputs.push("Vibrate");
-    if (device.hasOutput(Buttplug.OutputType.Rotate)) outputs.push("Rotate");
-    if (device.hasOutput(Buttplug.OutputType.Oscillate)) outputs.push("Oscillate");
-    if (device.hasOutput(Buttplug.OutputType.Position)) outputs.push("Position");
-    if (device.hasOutput(Buttplug.OutputType.Constrict)) outputs.push("Constrict");
+    if (device.hasOutput(buttplug.OutputType.Vibrate)) outputs.push("Vibrate");
+    if (device.hasOutput(buttplug.OutputType.Rotate)) outputs.push("Rotate");
+    if (device.hasOutput(buttplug.OutputType.Oscillate)) outputs.push("Oscillate");
+    if (device.hasOutput(buttplug.OutputType.Position)) outputs.push("Position");
+    if (device.hasOutput(buttplug.OutputType.Constrict)) outputs.push("Constrict");
 
     if (outputs.length > 0) {
       console.log(`    Outputs: ${outputs.join(", ")}`);
@@ -98,8 +98,8 @@ async function runApplicationExample() {
 
     // Check input capabilities
     const inputs = [];
-    if (device.hasInput(Buttplug.InputType.Battery)) inputs.push("Battery");
-    if (device.hasInput(Buttplug.InputType.RSSI)) inputs.push("RSSI");
+    if (device.hasInput(buttplug.InputType.Battery)) inputs.push("Battery");
+    if (device.hasInput(buttplug.InputType.RSSI)) inputs.push("RSSI");
 
     if (inputs.length > 0) {
       console.log(`    Inputs: ${inputs.join(", ")}`);
@@ -139,8 +139,8 @@ async function runApplicationExample() {
         if (!isNaN(percent) && percent >= 0 && percent <= 100) {
           const intensity = percent / 100.0;
           for (const device of devices) {
-            if (device.hasOutput(Buttplug.OutputType.Vibrate)) {
-              await device.runOutput(Buttplug.DeviceOutput.Vibrate.percent(intensity));
+            if (device.hasOutput(buttplug.OutputType.Vibrate)) {
+              await device.runOutput(buttplug.DeviceOutput.Vibrate.percent(intensity));
               console.log(`  ${device.name}: vibrating at ${percent}%`);
             }
           }
@@ -155,7 +155,7 @@ async function runApplicationExample() {
         // Read battery levels
         let batteryInfo = "Battery Levels:\n\n";
         for (const device of devices) {
-          if (device.hasInput(Buttplug.InputType.Battery)) {
+          if (device.hasInput(buttplug.InputType.Battery)) {
             try {
               const battery = await device.battery();
               const msg = `${device.name}: ${(battery * 100).toFixed(0)}%`;
@@ -177,10 +177,10 @@ async function runApplicationExample() {
         alert("Unknown command. Use v, s, b, or q.");
       }
     } catch (e) {
-      if (e instanceof Buttplug.ButtplugDeviceError) {
+      if (e instanceof buttplug.ButtplugDeviceError) {
         console.log(`  Device error: ${e.message}`);
         alert(`Device error: ${e.message}`);
-      } else if (e instanceof Buttplug.ButtplugError) {
+      } else if (e instanceof buttplug.ButtplugError) {
         console.log(`  Error: ${e.message}`);
         alert(`Error: ${e.message}`);
       } else {

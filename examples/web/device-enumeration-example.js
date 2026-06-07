@@ -4,7 +4,7 @@
 // device connection/disconnection events.
 //
 // Include Buttplug via CDN:
-// <script src="https://cdn.jsdelivr.net/npm/buttplug@4/dist/web/buttplug.js"></script>
+// <script src="https://cdn.jsdelivr.net/npm/buttplug@5/dist/web/buttplug.js"></script>
 
 async function runDeviceEnumerationExample() {
   const client = new buttplug.ButtplugClient("Device Enumeration Example");

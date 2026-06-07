@@ -37,11 +37,11 @@ For use directly in HTML without a bundler:
 
 ```html
 <!-- UMD (exposes global `buttplug` namespace) -->
-<script src="https://cdn.jsdelivr.net/npm/buttplug@4/dist/web/buttplug.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/buttplug@5/dist/web/buttplug.js"></script>
 
 <!-- ES Module -->
 <script type="module">
-  import { ButtplugClient } from 'https://cdn.jsdelivr.net/npm/buttplug@4/dist/web/buttplug.mjs';
+  import { ButtplugClient } from 'https://cdn.jsdelivr.net/npm/buttplug@5/dist/web/buttplug.mjs';
 </script>
 ```
 

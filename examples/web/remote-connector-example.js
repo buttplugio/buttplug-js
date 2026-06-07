@@ -5,7 +5,7 @@
 // from a browser to Intiface Central.
 //
 // Include Buttplug via CDN:
-// <script src="https://cdn.jsdelivr.net/npm/buttplug@4/dist/web/buttplug.js"></script>
+// <script src="https://cdn.jsdelivr.net/npm/buttplug@5/dist/web/buttplug.js"></script>
 
 const runWebsocketConnectionExample = async () => {
   // This is the default insecure address for Intiface Central (https://intiface.com/central).
@@ -13,8 +13,8 @@ const runWebsocketConnectionExample = async () => {
   const address = "ws://localhost:12345";
 
   // Create the connector with the server address
-  const connector = new Buttplug.ButtplugBrowserWebsocketClientConnector(address);
-  const client = new Buttplug.ButtplugClient("Websocket Connection Example");
+  const connector = new buttplug.ButtplugBrowserWebsocketClientConnector(address);
+  const client = new buttplug.ButtplugClient("Websocket Connection Example");
 
   // Set up disconnect handler before connecting
   client.addListener("disconnect", () => {

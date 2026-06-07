@@ -4,7 +4,7 @@
 // query device capabilities, and use the v4 command builder API.
 //
 // Include Buttplug via CDN:
-// <script src="https://cdn.jsdelivr.net/npm/buttplug@4/dist/web/buttplug.js"></script>
+// <script src="https://cdn.jsdelivr.net/npm/buttplug@5/dist/web/buttplug.js"></script>
 
 async function runDeviceControlExample() {
   const connector = new buttplug.ButtplugBrowserWebsocketClientConnector("ws://127.0.0.1:12345");

@@ -4,7 +4,7 @@
 // and capabilities in detail using the v4 API.
 //
 // Include Buttplug via CDN:
-// <script src="https://cdn.jsdelivr.net/npm/buttplug@4/dist/web/buttplug.js"></script>
+// <script src="https://cdn.jsdelivr.net/npm/buttplug@5/dist/web/buttplug.js"></script>
 
 function printDeviceInfo(device) {
   console.log("==================================================");

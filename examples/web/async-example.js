@@ -5,7 +5,7 @@
 // that might block (network, device communication) use async/await.
 //
 // Include Buttplug via CDN:
-// <script src="https://cdn.jsdelivr.net/npm/buttplug@4/dist/web/buttplug.js"></script>
+// <script src="https://cdn.jsdelivr.net/npm/buttplug@5/dist/web/buttplug.js"></script>
 
 async function runAsyncExample() {
   console.log("Running async example");
@@ -71,10 +71,10 @@ async function runAsyncExample() {
     if (devices.length > 0) {
       // Send commands to all devices concurrently
       const tasks = devices
-        .filter((d) => d.hasOutput(Buttplug.OutputType.Vibrate))
+        .filter((d) => d.hasOutput(buttplug.OutputType.Vibrate))
         .map(async (device) => {
           console.log(`  Vibrating ${device.name}...`);
-          await device.runOutput(Buttplug.DeviceOutput.Vibrate.percent(0.5));
+          await device.runOutput(buttplug.DeviceOutput.Vibrate.percent(0.5));
           await new Promise(r => setTimeout(r, 500));
           await device.stop();
           console.log(`  ${device.name} stopped.`);

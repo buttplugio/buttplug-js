@@ -3,13 +3,13 @@
 // This example demonstrates basic connection with console logging.
 //
 // Include Buttplug via CDN:
-// <script src="https://cdn.jsdelivr.net/npm/buttplug@4/dist/web/buttplug.js"></script>
+// <script src="https://cdn.jsdelivr.net/npm/buttplug@5/dist/web/buttplug.js"></script>
 
 async function runLoggingExample() {
   console.log("Logging Example - Connecting with verbose logging");
 
-  const connector = new Buttplug.ButtplugBrowserWebsocketClientConnector("ws://127.0.0.1:12345");
-  const client = new Buttplug.ButtplugClient("Logging Example");
+  const connector = new buttplug.ButtplugBrowserWebsocketClientConnector("ws://127.0.0.1:12345");
+  const client = new buttplug.ButtplugClient("Logging Example");
 
   // Set up all event listeners to log activity
   client.addListener("deviceadded", (device) => {

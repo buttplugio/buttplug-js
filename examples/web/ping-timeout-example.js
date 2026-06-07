@@ -5,13 +5,13 @@
 // to detect dead connections.
 //
 // Include Buttplug via CDN:
-// <script src="https://cdn.jsdelivr.net/npm/buttplug@4/dist/web/buttplug.js"></script>
+// <script src="https://cdn.jsdelivr.net/npm/buttplug@5/dist/web/buttplug.js"></script>
 
 async function runPingTimeoutExample() {
   console.log("Ping Timeout Example");
   console.log("====================\n");
 
-  const client = new Buttplug.ButtplugClient("Ping Timeout Example");
+  const client = new buttplug.ButtplugClient("Ping Timeout Example");
 
   // The 'disconnect' event is fired when the connection drops,
   // including due to ping timeout.
@@ -24,7 +24,7 @@ async function runPingTimeoutExample() {
   });
 
   // Connect to server
-  const connector = new Buttplug.ButtplugBrowserWebsocketClientConnector("ws://127.0.0.1:12345");
+  const connector = new buttplug.ButtplugBrowserWebsocketClientConnector("ws://127.0.0.1:12345");
 
   try {
     console.log("Connecting...");
@@ -48,9 +48,9 @@ async function runPingTimeoutExample() {
     console.log("\nConnection will stay open. Check console for disconnect event.");
 
   } catch (e) {
-    if (e instanceof Buttplug.ButtplugPingError) {
+    if (e instanceof buttplug.ButtplugPingError) {
       console.log("Connection lost due to ping timeout:", e.message);
-    } else if (e instanceof Buttplug.ButtplugClientConnectorException) {
+    } else if (e instanceof buttplug.ButtplugClientConnectorException) {
       console.log("Could not connect to server:", e.message);
     } else {
       console.log("Error:", e);
