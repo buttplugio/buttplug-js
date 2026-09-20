@@ -159,7 +159,7 @@ export enum InputCommandType {
 }
 
 export interface DeviceFeatureInput {
-  Value: number[];
+  Value: number[] | number[][];
   Command: InputCommandType[];
 }
 

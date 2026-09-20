@@ -76,8 +76,9 @@ export class ButtplugClientDeviceFeature extends EventEmitter implements IButtpl
     }
   }
 
-  private valueRange(value: number[]): ButtplugClientDeviceFeatureValueRange {
-    return Object.freeze([value[0], value[1]]) as ButtplugClientDeviceFeatureValueRange;
+  private valueRange(value: number[] | number[][]): ButtplugClientDeviceFeatureValueRange {
+    const range = Array.isArray(value[0]) ? value[0] : value;
+    return Object.freeze([range[0], range[1]]) as ButtplugClientDeviceFeatureValueRange;
   }
 
   private createOutputInfo(type: Messages.OutputType, output: Messages.DeviceFeatureOutput): ButtplugClientDeviceFeatureOutput {
