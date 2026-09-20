@@ -627,10 +627,20 @@ describe("ButtplugClientDeviceFeature metadata", () => {
     const vibrator = client.devices.get(0)!;
     const rotate = vibrator.features.get(2)!;
 
-    await rotate.runOutput(DeviceOutput.Rotate.percent(0.5));
+    await rotate.runOutput(DeviceOutput.Rotate.percent(0));
     let outputCmd = [...server!.received].reverse()
       .find((msg) => msg.OutputCmd !== undefined)!.OutputCmd!;
+    expect(outputCmd.Command[Messages.OutputType.Rotate].Value).toBe(-100);
+
+    await rotate.runOutput(DeviceOutput.Rotate.percent(0.5));
+    outputCmd = [...server!.received].reverse()
+      .find((msg) => msg.OutputCmd !== undefined)!.OutputCmd!;
     expect(outputCmd.Command[Messages.OutputType.Rotate].Value).toBe(0);
+
+    await rotate.runOutput(DeviceOutput.Rotate.percent(1));
+    outputCmd = [...server!.received].reverse()
+      .find((msg) => msg.OutputCmd !== undefined)!.OutputCmd!;
+    expect(outputCmd.Command[Messages.OutputType.Rotate].Value).toBe(100);
 
     await rotate.runOutput(DeviceOutput.Rotate.value(-25));
     outputCmd = [...server!.received].reverse()
