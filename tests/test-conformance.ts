@@ -78,7 +78,7 @@ const DEVICES: Messages.DeviceList["Devices"] = {
            Output: { Rotate: { Value: [-100, 100] } }, Input: {} },
       3: { FeatureDescriptor: "Battery",   FeatureIndex: 3,
            Output: {},
-           Input: { Battery: { Value: [0, 100], Command: [Messages.InputCommandType.Read] } } },
+           Input: { Battery: { Value: [[0, 100]], Command: [Messages.InputCommandType.Read] } } },
     },
   },
   1: {
