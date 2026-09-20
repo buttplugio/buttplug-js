@@ -49,6 +49,7 @@ export class ButtplugMessageSorter {
       let id = Messages.msgId(x);
       if (id !== Messages.SYSTEM_MESSAGE_ID && this._waitingMsgs.has(id)) {
         const [res, rej] = this._waitingMsgs.get(id)!;
+        this._waitingMsgs.delete(id);
         // If we've gotten back an error, reject the related promise using a
         // ButtplugException derived type.
         if (x.Error !== undefined) {

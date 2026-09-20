@@ -1,3 +1,15 @@
+# v5.0.2 (2026/09/20)
+
+## Bugfixes
+
+- Release completed feature metadata support for nested input ranges such as battery ranges.
+- Fix message sorter request retention after responses resolve or reject.
+- Preserve correct percent mapping and regression coverage for outputs with negative ranges.
+
+## Maintenance
+
+- Refresh Yarn dependency resolutions, including security and compatibility updates.
+
 # v5.0.1 (2026/06/06)
 
 ## Bugfixes
